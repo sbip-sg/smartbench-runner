@@ -27,3 +27,15 @@ dependencies = {file = ["requirements.txt"]}
 # Code formatting
 [tool.black]
 line-length = 80
+
+[tool.isort]
+import_heading_firstparty = "Library"
+import_heading_future = "Futures"
+import_heading_local = "Local"
+import_heading_stdlib = "Standard Library"
+import_heading_thirdparty = "Third Party"
+indent = 4
+known_first_party = "myapp"
+lines_after_imports = 2
+lines_between_types = 1
+profile = "black"
