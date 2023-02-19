@@ -6,7 +6,8 @@ import pathlib
 import sys
 
 # Library
-from smartbench import buglabel, cli
+from smartbench import buglabel, cli, tools
+from smartbench.tools.slither import slither
 
 
 def collect_test_cases_from_file_patterns(patterns: str) -> [str]:
@@ -60,8 +61,9 @@ def collect_test_cases(args) -> [str]:
 # def run_slither(command, timeout):
 
 
-def configure_analysis_tool(tool_name: str):
-    pass
+def configure_analysis_tool(tool: str):
+    if tool == "slither":
+        slither.read_slither_configuration()
 
 
 def main():
@@ -71,6 +73,8 @@ def main():
     args = cli.configure_cli_arguments()
 
     print("Analysis tools:", args.tools)
+    for tool in args.tools:
+        configure_analysis_tool(tool)
 
     # Collect test cases
     input_files = collect_test_cases(args)

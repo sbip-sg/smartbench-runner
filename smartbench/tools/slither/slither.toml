@@ -1,6 +1,6 @@
 [info]
 name = "Slither"
-homepage = https://github.com/crytic/slither
+homepage = "https://github.com/crytic/slither"
 type = "Static analyzer"
 
 [command]
