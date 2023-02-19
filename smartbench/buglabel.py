@@ -15,7 +15,7 @@ class BugLabel:
         self.bug_category = bug_category
 
 
-def parse_bug_label(filename):
+def parse_bug_labels(filename: str) -> [BugLabel]:
     """Parse bug labels from source code"""
     bug_labels = []
     with open(filename, "r", encoding="utf-8") as file:
