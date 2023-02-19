@@ -39,6 +39,15 @@ def configure_cli_arguments():
         help="Directory containing input smart contracts.",
     )
 
+    # Analysis tool
+    arg_parser.add_argument(
+        "-t",
+        "--tools",
+        nargs="+",  # Accept multiple tools.
+        type=str,
+        help="Analysis tools to be evaluated.",
+    )
+
     # Parse CLI arguments
     args = arg_parser.parse_args()
 

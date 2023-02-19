@@ -3,13 +3,10 @@
 # Standard Library
 import os
 import pathlib
+import sys
 
 # Library
 from smartbench import buglabel, cli
-
-
-# import .cli
-# from . import cli
 
 
 def collect_test_cases_from_file_patterns(patterns: str) -> [str]:
@@ -39,8 +36,8 @@ def collect_test_cases_in_directories(directories: str) -> [str]:
                 files.append(abs_fname)
     return files
 
-def run_slither(command, timeout):
 
+# def run_slither(command, timeout):
 
 
 def main():
@@ -56,9 +53,12 @@ def main():
     if args.files is not None:
         input_files += collect_test_cases_from_file_patterns(args.files)
 
+    if input_files == []:
+        sys.exit("No input smart contract is given!")
+
     for file_name, _ in input_files:
         print("\nTest case: " + file_name)
-        labels = buglabel.parse_bug_labels(file_name)
+        labels = buglabel.parse_bug_labels(file_name, "auto")
         for lbl in labels:
             print("  Line " + str(lbl.line_number) + ": " + lbl.bug_category)
 
