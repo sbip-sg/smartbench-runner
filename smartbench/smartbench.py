@@ -37,14 +37,8 @@ def collect_test_cases_in_directories(directories: str) -> [str]:
     return files
 
 
-# def run_slither(command, timeout):
-
-
-def main():
-    """Main function"""
-    print("Run Smartbench")
-    args = cli.configure_cli_arguments()
-
+def collect_test_cases(args) -> [str]:
+    "Collect test cases for the analysis."
     input_files = []
 
     if args.directories is not None:
@@ -53,14 +47,37 @@ def main():
     if args.files is not None:
         input_files += collect_test_cases_from_file_patterns(args.files)
 
-    if input_files == []:
-        sys.exit("No input smart contract is given!")
-
+    # Priting for debugging
     for file_name, _ in input_files:
         print("\nTest case: " + file_name)
         labels = buglabel.parse_bug_labels(file_name, "auto")
         for lbl in labels:
             print("  Line " + str(lbl.line_number) + ": " + lbl.bug_category)
+
+    return input_files
+
+
+# def run_slither(command, timeout):
+
+
+def configure_analysis_tool(tool_name: str):
+    pass
+
+
+def main():
+    """Main function"""
+
+    # Parse CLI
+    args = cli.configure_cli_arguments()
+
+    print("Analysis tools:", args.tools)
+
+    # Collect test cases
+    input_files = collect_test_cases(args)
+    if input_files == []:
+        sys.exit("No input smart contract is given!")
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":
