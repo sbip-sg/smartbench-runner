@@ -6,6 +6,9 @@
 # Library
 from smartbench.tools import tool
 
+
 def read_slither_configuration():
+    """Read configuration of Slither."""
     config = tool.parse_tool_configuration("slither")
-    print("Command:", config.analyzer_path)
+    print("Command:", config.path)
+    return config

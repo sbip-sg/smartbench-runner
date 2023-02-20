@@ -20,18 +20,22 @@ CATEGORY = "category"
 
 # Configuration keyword for tool command
 COMMAND = "command"
-EXECUTABLE_PATH = "executable_path"
-EXECUTABLE_NAME = "executable_name"
+PATH = "path"
+ARGUMENTS = "arguments"
 
 
 class ToolConfig:
     """Configuration of an analysis tool."""
 
-    def __init__(self, name, analyzer_path, executable_file, timeout=15):
+    def __init__(self, name, path, args, timeout=15):
         self.name = name
-        self.analyzer_path = analyzer_path
-        self.anlayzer_file = executable_file
+        self.path = path
+        self.arguments = args
         self.timeout = timeout
+
+    def make_execution_command(self):
+        """Make execution command for a tool."""
+        return self.path + " " + self.arguments
 
 
 def parse_tool_configuration(tool):
@@ -51,7 +55,7 @@ def parse_tool_configuration(tool):
 
         # Parse tool command
         command = config_data.get(COMMAND)
-        tool_path = command.get(EXECUTABLE_PATH)
-        name = command.get(EXECUTABLE_NAME)
+        path = command.get(PATH)
+        args = command.get(ARGUMENTS)
 
-        return ToolConfig(name, tool_path, name)
+        return ToolConfig(name, path, args)

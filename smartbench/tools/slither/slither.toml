@@ -4,5 +4,5 @@ homepage = "https://github.com/crytic/slither"
 category = "Static analyzer"
 
 [command]
-executable_path = "slither"
-executable_file = "slither"
+path = "slither"
+arguments = ""

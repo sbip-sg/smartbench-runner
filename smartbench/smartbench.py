@@ -8,6 +8,7 @@ import sys
 # Library
 from smartbench import buglabel, cli, tools
 from smartbench.tools.slither import slither
+from smartbench.tools.tool import ToolConfig
 
 
 def collect_test_cases_from_file_patterns(patterns: str) -> [str]:
@@ -61,19 +62,22 @@ def collect_test_cases(args) -> [str]:
 # def run_slither(command, timeout):
 
 
-def configure_one_tool(tool: str):
+def configure_one_tool(tool: str) -> ToolConfig:
     """Configure one analysis tool."""
     if tool == "slither":
-        slither.read_slither_configuration()
+        return slither.read_slither_configuration()
 
 
-def configure_analysis_tools(tools: [str]):
+def configure_analysis_tools(tools: [str]) -> [ToolConfig]:
     """Configure all analysis tools."""
     if tools is None or len(tools) == 0:
         sys.exit("No analysis tool is selected!")
 
+    configs = []
     for tool in tools:
-        configure_one_tool(tool)
+        configs.append(configure_one_tool(tool))
+
+    return configs
 
 
 def main():
@@ -83,7 +87,8 @@ def main():
     args = cli.configure_cli_arguments()
 
     # Configure tools
-    configure_analysis_tools(args.tools)
+    configs = configure_analysis_tools(args.tools)
+    print("Configs:", configs)
 
     # Collect test cases
     input_files = collect_test_cases(args)
