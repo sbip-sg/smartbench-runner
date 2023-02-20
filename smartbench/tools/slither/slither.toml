@@ -1,8 +1,8 @@
 [info]
 name = "Slither"
 homepage = "https://github.com/crytic/slither"
-type = "Static analyzer"
+category = "Static analyzer"
 
 [command]
-executable_path = ""
-executable_name = "slither"
+executable_path = "slither"
+executable_file = "slither"

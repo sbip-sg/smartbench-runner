@@ -61,9 +61,19 @@ def collect_test_cases(args) -> [str]:
 # def run_slither(command, timeout):
 
 
-def configure_analysis_tool(tool: str):
+def configure_one_tool(tool: str):
+    """Configure one analysis tool."""
     if tool == "slither":
         slither.read_slither_configuration()
+
+
+def configure_analysis_tools(tools: [str]):
+    """Configure all analysis tools."""
+    if tools is None or len(tools) == 0:
+        sys.exit("No analysis tool is selected!")
+
+    for tool in tools:
+        configure_one_tool(tool)
 
 
 def main():
@@ -72,9 +82,8 @@ def main():
     # Parse CLI
     args = cli.configure_cli_arguments()
 
-    print("Analysis tools:", args.tools)
-    for tool in args.tools:
-        configure_analysis_tool(tool)
+    # Configure tools
+    configure_analysis_tools(args.tools)
 
     # Collect test cases
     input_files = collect_test_cases(args)
