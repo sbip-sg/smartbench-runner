@@ -6,3 +6,6 @@ category = "Static analyzer"
 [command]
 path = "slither"
 arguments = ""
+
+[o1utput]
+j1son_output = "slither_output.json"

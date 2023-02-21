@@ -8,7 +8,7 @@ import sys
 # Library
 from smartbench import buglabel, cli, tools
 from smartbench.tools.slither import slither
-from smartbench.tools.tool import ToolConfig
+from smartbench.tools.tool import Tool
 
 
 def collect_test_cases_from_file_patterns(patterns: str) -> [str]:
@@ -20,7 +20,7 @@ def collect_test_cases_from_file_patterns(patterns: str) -> [str]:
         # print("Root:", root, "spec:", spec)
         abs_fname = os.path.abspath(rel_fname)
         if os.path.isfile(abs_fname) and abs_fname[-4:] in (".sol"):
-            files.append((abs_fname, rel_fname))
+            files.append(abs_fname)
     return files
 
 
@@ -41,34 +41,37 @@ def collect_test_cases_in_directories(directories: str) -> [str]:
 
 def collect_test_cases(args) -> [str]:
     "Collect test cases for the analysis."
-    input_files = []
+    test_files = []
 
     if args.directories is not None:
-        input_files = collect_test_cases_in_directories(args.files)
+        test_files = collect_test_cases_in_directories(args.files)
 
     if args.files is not None:
-        input_files += collect_test_cases_from_file_patterns(args.files)
+        test_files += collect_test_cases_from_file_patterns(args.files)
 
     # Priting for debugging
-    for file_name, _ in input_files:
-        print("\nTest case: " + file_name)
-        labels = buglabel.parse_bug_labels(file_name, "auto")
+    for test_file in test_files:
+        print("\nTest case: " + test_file)
+        labels = buglabel.parse_bug_labels(test_file, "auto")
         for lbl in labels:
             print("  Line " + str(lbl.line_number) + ": " + lbl.bug_category)
 
-    return input_files
+    if len(test_files) == 0:
+        sys.exit("No input smart contract is given!")
+
+    return test_files
 
 
 # def run_slither(command, timeout):
 
 
-def configure_one_tool(tool: str) -> ToolConfig:
+def configure_one_tool(tool: str) -> Tool:
     """Configure one analysis tool."""
     if tool == "slither":
         return slither.read_slither_configuration()
 
 
-def configure_analysis_tools(tools: [str]) -> [ToolConfig]:
+def configure_analysis_tools(tools: [str]) -> [Tool]:
     """Configure all analysis tools."""
     if tools is None or len(tools) == 0:
         sys.exit("No analysis tool is selected!")
@@ -87,14 +90,20 @@ def main():
     args = cli.configure_cli_arguments()
 
     # Configure tools
-    configs = configure_analysis_tools(args.tools)
-    print("Configs:", configs)
+    tools1 = configure_analysis_tools(args.tools)
 
-    # Collect test cases
-    input_files = collect_test_cases(args)
-    if input_files == []:
-        sys.exit("No input smart contract is given!")
+    # Collect test files
+    test_files = collect_test_cases(args)
 
+    # Perform the analysis
+    for tool in tools1:
+        print("Running tool:", tool.name)
+        for test_file in test_files:
+            print("Test file:", test_file)
+            cmd = tool.make_analysis_command(test_file)
+            print("  Command: ", cmd)
+
+    # Quit
     sys.exit(0)
 
 
