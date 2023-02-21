@@ -56,6 +56,7 @@ def configure_cli_arguments():
 
     ################################
     # Slither argument group
+
     slither_args = arg_parser.add_argument_group("Slither arguments")
 
     slither_args.add_argument(
@@ -67,6 +68,7 @@ def configure_cli_arguments():
 
     ################################
     # Confuzzius argument group
+
     confuzzius_args = arg_parser.add_argument_group("Confuzzius arguments")
 
     confuzzius_args.add_argument(
@@ -76,7 +78,9 @@ def configure_cli_arguments():
         help="Additional arguments of Confuzzius",
     )
 
-    # Parse CLI arguments
+    ################################
+    # Parse all arguments
+
     args = arg_parser.parse_args()
 
     return args

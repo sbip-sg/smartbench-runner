@@ -21,8 +21,8 @@ def make_analysis_command(config, test_file):
     """Make analysis command for Slither."""
     command = config.path
 
-    if config.additional_arguments:
-        command += " " + config.additional_arguments
+    if config.default_arguments:
+        command += " " + config.default_arguments
 
     command += " " + test_file
 

@@ -7,6 +7,7 @@ This is the shared interface for all tools.
 
 # Standard Library
 import os
+import sys
 
 # Third Party
 import toml
@@ -22,7 +23,7 @@ HOMEPAGE = "homepage"
 CATEGORY = "category"
 COMMAND = "command"
 PATH = "path"
-ARGUMENTS = "arguments"
+DEFAULT_ARGUMENTS = "default_arguments"
 OUTPUT = "output"
 JSON_OUTPUT = "json_output"
 
@@ -36,7 +37,7 @@ class Tool:
         homepage,
         category,
         path,
-        args,
+        default_arguments,
         json_output=None,
         timeout=None,
     ):
@@ -44,7 +45,7 @@ class Tool:
         self.homepage = homepage
         self.category = category
         self.path = path
-        self.additional_arguments = args
+        self.default_arguments = default_arguments
         self.json_output = json_output
         self.timeout = timeout
 
@@ -85,7 +86,7 @@ def parse_tool_configuration(tool):
         # Parse tool command
         command = config.get(COMMAND)
         path = command.get(PATH)
-        args = command.get(ARGUMENTS)
+        args = command.get(DEFAULT_ARGUMENTS)
 
         # Parse tool's output
         json_output = None
@@ -96,3 +97,22 @@ def parse_tool_configuration(tool):
             pass
 
         return Tool(name, homepage, category, path, args, json_output)
+
+
+def configure_one_tool(tool: str) -> Tool:
+    """Configure one analysis tool."""
+    if tool == slither.TOOL_NAME:
+        return slither.read_slither_configuration()
+
+
+def configure_analysis_tools(args) -> [Tool]:
+    """Configure all analysis tools."""
+    tools = args.tools
+    if tools is None or len(tools) == 0:
+        sys.exit("No analysis tool is selected!")
+
+    configs = []
+    for tool in tools:
+        configs.append(configure_one_tool(tool))
+
+    return configs
