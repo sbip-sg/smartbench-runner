@@ -9,7 +9,7 @@ import sys
 import colored_traceback
 
 # Library
-from smartbench import buglabel
+from smartbench import buglabel, globals
 from smartbench.cli import configure_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
@@ -78,6 +78,8 @@ def main():
 
     # Parse CLI
     args = configure_cli_arguments()
+
+    print("Debug mode: " + str(args.debug))
 
     # Configure tools
     tools = configure_analysis_tools(args)

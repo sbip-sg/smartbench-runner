@@ -15,22 +15,13 @@ def configure_cli_arguments():
         add_help=False,
     )
 
-    # Help
-    arg_parser.add_argument(
-        "-h",
-        "--help",
-        action="help",
-        default=argparse.SUPPRESS,
-        help="Show this help message and exit.",
-    )
-
     ################################
-    # Tool and input argument group
+    # General arguments
 
-    main_args = arg_parser.add_argument_group("Tool and input arguments.")
+    general_args = arg_parser.add_argument_group("Tool and input arguments.")
 
     # Input files
-    main_args.add_argument(
+    general_args.add_argument(
         "-f",
         "--files",
         nargs="+",  # Accept multiple input files
@@ -39,19 +30,35 @@ def configure_cli_arguments():
     )
 
     # Input directories
-    main_args.add_argument(
+    general_args.add_argument(
         "-d",
         "--directories",
         help="Directory containing input smart contracts.",
     )
 
     # Analysis tool
-    main_args.add_argument(
+    general_args.add_argument(
         "-t",
         "--tools",
         nargs="+",  # Accept multiple tools.
         type=str,
         help="Analysis tools to be evaluated.",
+    )
+
+    # Debugging mode
+    general_args.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debugging mode.",
+    )
+
+    # Help
+    arg_parser.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        default=argparse.SUPPRESS,
+        help="Show this help message and exit.",
     )
 
     ################################

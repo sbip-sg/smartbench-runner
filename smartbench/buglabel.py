@@ -32,6 +32,7 @@ class BugLabel:
 # ```solidity
 # // <yes> <report> <bug1>
 # // <yes> <report> <bug2>
+# // <yes> <report> <bug3>
 # ... some Solidity source code
 # ```
 def parse_smartbugs_labels(filename: str) -> [BugLabel]:
