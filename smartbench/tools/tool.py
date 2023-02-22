@@ -10,6 +10,8 @@ import os
 import sys
 import warnings
 
+from datetime import datetime
+
 # Third Party
 import toml
 
@@ -85,8 +87,16 @@ class Tool:
 
     def make_analysis_command(self, test_file):
         """Make an analysis command for a tool."""
+        # Prepare output directory for all results
+        output_dir = os.path.join(
+            ALL_RESULTS_DIR,
+            datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+        )
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         if self.is_slither():
-            return slither.make_analysis_command(self, test_file)
+            return slither.make_analysis_command(self, test_file, output_dir)
 
         if self.is_confuzzius():
             raise Exception("TODO: implement")

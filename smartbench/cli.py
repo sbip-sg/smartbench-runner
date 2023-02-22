@@ -8,7 +8,7 @@ Module for command line configuration.
 import argparse
 
 
-def configure_cli_arguments():
+def parse_cli_arguments():
     """Configure command arguments line."""
     arg_parser = argparse.ArgumentParser(
         description="Detect Solidity compiler version for a smart contract",

@@ -9,8 +9,8 @@ import sys
 import colored_traceback
 
 # Library
-from smartbench import buglabel, globals
-from smartbench.cli import configure_cli_arguments
+from smartbench import buglabel, flags
+from smartbench.cli import parse_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
 
@@ -73,20 +73,7 @@ def collect_test_cases(args) -> [str]:
 # def run_slither(command, timeout):
 
 
-def main():
-    """Main function"""
-
-    # Parse CLI
-    args = configure_cli_arguments()
-
-    print("Debug mode: " + str(args.debug))
-
-    # Configure tools
-    tools = configure_analysis_tools(args)
-
-    # Collect test files
-    test_files = collect_test_cases(args)
-
+def perform_analysis(tools, test_files):
     # Perform the analysis
     for tool in tools:
         print("Running tool:", tool.name)
@@ -95,7 +82,26 @@ def main():
             cmd = tool.make_analysis_command(test_file)
             print("  Command: ", cmd)
 
-    # Quit
+
+def main():
+    """Main function"""
+
+    # Parse CLI
+    args = parse_cli_arguments()
+    flags.configure_global_flags(args)
+
+    print("Debug mode: " + str(flags.DEBUG_MODE))
+
+    # Configure tools
+    tools = configure_analysis_tools(args)
+
+    # Collect test files
+    test_files = collect_test_cases(args)
+
+    # Perform the analysis
+    perform_analysis(tools, test_files)
+
+    # Finish
     sys.exit(0)
 
 

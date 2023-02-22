@@ -21,7 +21,7 @@ def read_slither_configuration():
     return config
 
 
-def make_analysis_command(config, test_file):
+def make_analysis_command(config, test_file, output_dir):
     """Make analysis command for Slither."""
     command = config.path
 
@@ -34,7 +34,7 @@ def make_analysis_command(config, test_file):
 
     if config.json_output:
         # Prepare output directory
-        output_dir = os.path.join(
+        slither_output_dir = os.path.join(
             tool.ALL_RESULTS_DIR,
             datetime.now().strftime("%Y_%m_%d__%H_%M_%S"),
             config.id,
