@@ -63,7 +63,10 @@ def collect_test_cases(args) -> [str]:
         print("\nTest case: " + test_file)
         labels = buglabel.parse_bug_labels(test_file, "auto")
         for lbl in labels:
-            print("  Line " + str(lbl.line_number) + ": " + lbl.bug_category)
+            linum = str(lbl.start_line)
+            if lbl.start_line != lbl.end_line:
+                linum = linum + "-" + str(lbl.end_line)
+            print("  Line " + str(linum) + ": " + lbl.bug_category)
 
     if len(test_files) == 0:
         sys.exit("No input smart contract is given!")

@@ -39,3 +39,9 @@ known_first_party = "myapp"
 lines_after_imports = 2
 lines_between_types = 1
 profile = "black"
+
+# Mypy for type hinting
+[tool.pylsp-mypy]
+enabled = true
+live_mode = true
+strict = true

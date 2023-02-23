@@ -19,9 +19,10 @@ BUG_CLOSE_TAG = "</bug>"
 class BugLabel:
     """Class representing a bug label in smart contracts."""
 
-    def __init__(self, filename, line_number, bug_category):
+    def __init__(self, filename, start_line, end_line, bug_category):
         self.filename = filename
-        self.line_number = line_number
+        self.start_line = start_line
+        self.end_line = end_line
         self.bug_category = bug_category
 
 
@@ -43,7 +44,8 @@ def parse_smartbugs_labels(filename: str) -> [BugLabel]:
     bug_labels = []
     with open(filename, "r", encoding="utf-8") as file:
         for index, line in enumerate(file.readlines()):
-            line_number = index + 1
+            start_line = index + 1
+            end_line = index + 1
             line = line.strip()
             if (
                 line.startswith(COMMENT_TAG)
@@ -54,7 +56,9 @@ def parse_smartbugs_labels(filename: str) -> [BugLabel]:
                 bug_category = bug_category.replace(YES_TAG, "")
                 bug_category = bug_category.replace(REPORT_TAG, "")
                 bug_category = bug_category.strip()
-                bug_label = BugLabel(filename, line_number, bug_category)
+                bug_label = BugLabel(
+                    filename, start_line, end_line, bug_category
+                )
                 bug_labels.append(bug_label)
     return bug_labels
 

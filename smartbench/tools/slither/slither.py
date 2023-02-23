@@ -8,7 +8,9 @@ import os
 from datetime import datetime
 
 # Library
+from smartbench.buginfo import BugInfo
 from smartbench.tools import tool
+from smartbench.tools.tool import Tool
 
 
 TOOL_NAME = "slither"
@@ -19,7 +21,7 @@ def read_slither_configuration():
     return tool.parse_tool_configuration("slither")
 
 
-def make_analysis_command(tool, test_file, output_dir):
+def make_analysis_command(tool: Tool, test_file: str, output_dir: str):
     """Make analysis command for Slither."""
     command = tool.path
 
@@ -43,5 +45,6 @@ def make_analysis_command(tool, test_file, output_dir):
 
     return command
 
-# def parse_json_output(tool):
-#     json_output = tool.
+
+def parse_json_output(tool: Tool, output_dir: str) -> [BugInfo]:
+    json_output = os.path.join(output_dir, tool.id, tool.json_output)

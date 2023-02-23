@@ -86,11 +86,11 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
 
-    def make_analysis_command(self, test_file, output_dir):
+    def make_analysis_command(self, test_file, result_dir):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         if self.is_slither():
-            return slither.make_analysis_command(self, test_file, output_dir)
+            return slither.make_analysis_command(self, test_file, result_dir)
 
         if self.is_confuzzius():
             raise Exception("TODO: implement")
