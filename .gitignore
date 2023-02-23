@@ -4,3 +4,6 @@ venv
 
 # Emacs files
 flycheck_*.py
+
+# Temporary files
+results

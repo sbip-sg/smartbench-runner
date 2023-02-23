@@ -29,6 +29,8 @@ def make_analysis_command(tool, test_file, output_dir):
     command = command + " " + test_file
 
     # TODO: make output directory.
+    base_test_file = os.path.basename(test_file)
+    output_dir = os.path.join(output_dir, tool.id, base_test_file)
 
     if tool.json_output:
         # Prepare output directory
@@ -40,3 +42,6 @@ def make_analysis_command(tool, test_file, output_dir):
         command = command + " --json " + output_file
 
     return command
+
+# def parse_json_output(tool):
+#     json_output = tool.

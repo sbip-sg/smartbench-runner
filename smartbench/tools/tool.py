@@ -151,6 +151,8 @@ def configure_one_tool(tool: str) -> Tool:
     if tool.casefold() == slither.TOOL_NAME:
         return slither.read_slither_configuration()
 
+    return None
+
 
 def configure_analysis_tools(args) -> [Tool]:
     """Configure all analysis tools."""
