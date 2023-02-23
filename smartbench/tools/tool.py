@@ -10,7 +10,7 @@ import os
 import sys
 import warnings
 
-from datetime import datetime
+
 
 # Third Party
 import toml
@@ -32,6 +32,7 @@ PATH = "path"
 DEFAULT_ARGUMENTS = "default_arguments"
 OUTPUT = "output"
 JSON_OUTPUT = "json_output"
+LOG_OUTPUT = "log_output"
 
 # Initiate some global varibles
 ALL_TOOLS_DIR = os.path.dirname(__file__)
@@ -51,6 +52,7 @@ class Tool:
         path,
         default_arguments,
         json_output=None,
+        log_output=None,
         timeout=None,
     ):
         self.id = id
@@ -60,6 +62,7 @@ class Tool:
         self.path = path
         self.default_arguments = default_arguments
         self.json_output = json_output
+        self.log_output = log_output
         self.timeout = timeout
 
     def __str__(self):
@@ -85,16 +88,9 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
 
-    def make_analysis_command(self, test_file):
+    def make_analysis_command(self, test_file, output_dir):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
-        output_dir = os.path.join(
-            ALL_RESULTS_DIR,
-            datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
-        )
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
         if self.is_slither():
             return slither.make_analysis_command(self, test_file, output_dir)
 
@@ -132,15 +128,17 @@ def parse_tool_configuration(tool):
         args = command.get(DEFAULT_ARGUMENTS)
 
         # Parse tool's output
+        output = config.get(OUTPUT)
+        log_output = output.get(LOG_OUTPUT)
         json_output = None
         try:
-            output = config.get(OUTPUT)
             json_output = output.get(JSON_OUTPUT)
         except AttributeError:
             warnings.warn("JSON output file is not configured: " + config.name)
-            pass
 
-        return Tool(id, name, homepage, category, path, args, json_output)
+        return Tool(
+            id, name, homepage, category, path, args, json_output, log_output
+        )
 
 
 def configure_one_tool(tool: str) -> Tool:
