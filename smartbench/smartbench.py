@@ -6,13 +6,10 @@ import pathlib
 import signal
 import sys
 
-# Third Party
-import colored_traceback
-
 # Library
 from smartbench import analyze, buglabel, flags
 from smartbench.cli import parse_cli_arguments
-from smartbench.tools.tool import configure_analysis_tools
+from smartbench.tools.util import configure_analysis_tools
 
 
 def collect_test_cases_from_file_patterns(patterns: str) -> [str]:
@@ -108,5 +105,4 @@ def main():
 
 
 if __name__ == "__main__":
-    colored_traceback.add_hook()
     main()

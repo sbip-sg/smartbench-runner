@@ -8,7 +8,7 @@ import subprocess
 from datetime import datetime
 
 # Library
-from smartbench.tools.tool import ALL_RESULTS_DIR
+from smartbench.tools.util import ALL_RESULTS_DIR
 
 
 def analyze_one_file(tool, test_file, result_dir):

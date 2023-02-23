@@ -13,14 +13,6 @@ from smartbench.tools import tool
 from smartbench.tools.tool import Tool
 
 
-TOOL_NAME = "slither"
-
-
-def read_slither_configuration():
-    """Read configuration of Slither."""
-    return tool.parse_tool_configuration("slither")
-
-
 def make_analysis_command(tool: Tool, test_file: str, output_dir: str):
     """Make analysis command for Slither."""
     command = tool.path
