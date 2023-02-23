@@ -16,9 +16,7 @@ TOOL_NAME = "slither"
 
 def read_slither_configuration():
     """Read configuration of Slither."""
-    config = tool.parse_tool_configuration("slither")
-    print("Command:", config.path)
-    return config
+    return tool.parse_tool_configuration("slither")
 
 
 def make_analysis_command(tool, test_file, output_dir):

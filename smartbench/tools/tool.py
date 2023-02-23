@@ -8,9 +8,6 @@ This is the shared interface for all tools.
 # Standard Library
 import os
 import sys
-import warnings
-
-
 
 # Third Party
 import toml
@@ -18,6 +15,7 @@ import toml
 # Library
 import smartbench
 
+from smartbench import debug
 from smartbench.tools.slither import slither
 
 
@@ -129,16 +127,23 @@ def parse_tool_configuration(tool):
 
         # Parse tool's output
         output = config.get(OUTPUT)
-        log_output = output.get(LOG_OUTPUT)
-        json_output = None
         try:
+            log_output = output.get(LOG_OUTPUT)
+            json_output = None
             json_output = output.get(JSON_OUTPUT)
-        except AttributeError:
-            warnings.warn("JSON output file is not configured: " + config.name)
 
-        return Tool(
-            id, name, homepage, category, path, args, json_output, log_output
-        )
+            return Tool(
+                id,
+                name,
+                homepage,
+                category,
+                path,
+                args,
+                json_output,
+                log_output,
+            )
+        except AttributeError:
+            debug.warning("Error in configuration of tool: " + str(tool))
 
 
 def configure_one_tool(tool: str) -> Tool:
@@ -153,8 +158,12 @@ def configure_analysis_tools(args) -> [Tool]:
     if tools is None or len(tools) == 0:
         sys.exit("No analysis tool is selected!")
 
-    configs = []
+    all_tool_configs = []
     for tool in tools:
-        configs.append(configure_one_tool(tool))
+        config = configure_one_tool(tool)
+        if config is None:
+            debug.warning("Failed to read configuration of: " + tool)
+        else:
+            all_tool_configs.append(config)
 
-    return configs
+    return all_tool_configs
