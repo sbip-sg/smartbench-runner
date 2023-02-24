@@ -9,5 +9,5 @@ path = "slither"
 default_arguments = ""
 
 [output]
-json_output = "slither_output.json"
-log_output = "slither_output.log"
+result_file = "slither_result.json"
+log_file = "slither_execution.log"

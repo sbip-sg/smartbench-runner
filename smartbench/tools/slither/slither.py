@@ -9,34 +9,39 @@ from datetime import datetime
 
 # Library
 from smartbench.buginfo import BugInfo
-from smartbench.tools import tool
-from smartbench.tools.tool import Tool
+from smartbench.tools.util import make_output_directory
 
 
-def make_analysis_command(tool: Tool, test_file: str, output_dir: str):
-    """Make analysis command for Slither."""
-    command = tool.path
+# Tool name
+TOOL_NAME = "slither"
 
-    if tool.default_arguments:
-        command = command + " " + tool.default_arguments
+
+def make_analysis_command(
+    tool_id: str,
+    executable_file: str,
+    arguments: str,
+    test_file: str,
+    result_dir: str,
+    output_file: str,
+):
+    """
+    Function to make analysis command for Slither.
+    This function should have the same signature with other tools.
+    """
+    command = executable_file
+
+    if arguments:
+        command = command + " " + arguments
 
     command = command + " " + test_file
 
-    # TODO: make output directory.
-    base_test_file = os.path.basename(test_file)
-    output_dir = os.path.join(output_dir, tool.id, base_test_file)
-
-    if tool.json_output:
-        # Prepare output directory
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        # Output file
-        output_file = os.path.join(output_dir, tool.json_output)
+    if output_file:
+        output_dir = make_output_directory(tool_id, test_file, result_dir)
+        output_file = os.path.join(output_dir, output_file)
         command = command + " --json " + output_file
 
     return command
 
 
-def parse_json_output(tool: Tool, output_dir: str) -> [BugInfo]:
-    json_output = os.path.join(output_dir, tool.id, tool.json_output)
+# def parse_json_output(tool: Tool, output_dir: str) -> [BugInfo]:
+#     json_output = os.path.join(output_dir, tool.id, tool.output_file)

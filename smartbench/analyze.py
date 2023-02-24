@@ -8,10 +8,11 @@ import subprocess
 from datetime import datetime
 
 # Library
-from smartbench.tools.util import ALL_RESULTS_DIR
+from smartbench.tools.tool import ALL_RESULTS_DIR, Tool
+from smartbench.tools.util import make_output_dir
 
 
-def analyze_one_file(tool, test_file, result_dir):
+def analyze_test_file(tool: Tool, test_file: str, result_dir: str):
     "Run the analysis on one test case."
     command = tool.make_analysis_command(test_file, result_dir)
     print("  Command: ", command)
@@ -22,7 +23,8 @@ def analyze_one_file(tool, test_file, result_dir):
             stderr=subprocess.PIPE,
             check=False,
         )
-        log_file = os.path.join(result_dir, tool.log_output)
+        output_dir = make_output_dir(tool.id, test_file, result_dir)
+        log_file = os.path.join(output_dir, tool.log_file)
         print("  Log file:", log_file)
         # write result to file
         with open(log_file, "w", encoding="utf-8") as file:
@@ -40,7 +42,7 @@ def run_analysis_tool(tool, test_files, result_dir):
     print("Running tool:", tool.name)
     for test_file in test_files:
         print("\nTest file:", test_file)
-        analyze_one_file(tool, test_file, result_dir)
+        analyze_test_file(tool, test_file, result_dir)
 
 
 def perform_analysis(tools, test_files):
