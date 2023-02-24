@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 
-def info(msg):
+def info(*args):
     """Wrapper function to print information."""
-    print("> " + msg)
+    print("> " + " ".join(map(str, args)))
 
-def warning(msg):
+
+def warning(*args):
     """Print a warning message"""
-    print("[Warning] " + msg)
+    print("[Warning]" + " ".join(map(str, args)))
 
 
-def debug(msg):
+def debug(*args):
     """Wrapper function to print information."""
-    print("!! " + msg)
+    print("[dbg]" + " ".join(map(str, args)))

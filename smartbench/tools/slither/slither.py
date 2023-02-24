@@ -3,20 +3,22 @@
 """Module handling Slither."""
 
 # Standard Library
+import json
 import os
 
-from datetime import datetime
+from typing import List
 
 # Library
+from smartbench import debug
 from smartbench.buginfo import BugInfo
-from smartbench.tools.util import make_output_directory
+from smartbench.tools.util import get_output_directory
 
 
 # Tool name
 TOOL_NAME = "slither"
 
 
-def make_analysis_command(
+def make_slither_analysis_command(
     tool_id: str,
     executable_file: str,
     arguments: str,
@@ -36,12 +38,22 @@ def make_analysis_command(
     command = command + " " + test_file
 
     if output_file:
-        output_dir = make_output_directory(tool_id, test_file, result_dir)
+        output_dir = get_output_directory(tool_id, test_file, result_dir)
         output_file = os.path.join(output_dir, output_file)
         command = command + " --json " + output_file
 
     return command
 
 
-# def parse_json_output(tool: Tool, output_dir: str) -> [BugInfo]:
-#     json_output = os.path.join(output_dir, tool.id, tool.output_file)
+def parse_slither_json_output(
+    tool_id: str,
+    test_file: str,
+    result_dir: str,
+    output_file: str,
+) -> List[BugInfo]:
+    output_dir = get_output_directory(tool_id, test_file, result_dir)
+    output_file = os.path.join(output_dir, output_file)
+    debug.debug("[dbg] Slither parse file: ", output_file)
+    result = json.loads(output_file)
+    print(result)
+    return []

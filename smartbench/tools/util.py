@@ -11,8 +11,11 @@ import toml
 import smartbench
 
 
-def make_output_dir(tool_id: str, test_file: str, result_dir: str):
-    """Make output directory of a tool for a test file."""
+def get_output_directory(tool_id: str, test_file: str, result_dir: str):
+    """
+    Get output directory of a tool for a test file.
+    Create a new one if it does not exists.
+    """
 
     # Prepare output directory
     test_name = os.path.basename(test_file)
