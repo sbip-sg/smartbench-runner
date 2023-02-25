@@ -9,8 +9,8 @@ import os
 from typing import List
 
 # Library
-from smartbench import debug
 from smartbench.buginfo import BugInfo
+from smartbench.debug import debug, warning
 from smartbench.tools.util import get_output_directory
 
 
@@ -53,7 +53,29 @@ def parse_slither_json_output(
 ) -> List[BugInfo]:
     output_dir = get_output_directory(tool_id, test_file, result_dir)
     output_file = os.path.join(output_dir, output_file)
-    debug.debug("[dbg] Slither parse file: ", output_file)
-    result = json.loads(output_file)
-    print(result)
-    return []
+    output = None
+
+    debug("Slither parse file: ", output_file)
+    with open(output_file, "r", encoding="utf-8") as file:
+        try:
+            output = json.load(file)
+        except ValueError:
+            warning("Failed to parse Slither output file:", output_file)
+            return []
+
+    if output is None:
+        warning("Failed to parse Slither's output file:", output_file)
+        return []
+
+    try:
+        success = output.get("success")
+        if not success:
+            warning("An error happened when running Slither!")
+            warning("See output file for more details: " + output_file)
+            return []
+
+        results = output.get("results")
+        # TODO: parsing results
+        return []
+    except ValueError:
+        return []

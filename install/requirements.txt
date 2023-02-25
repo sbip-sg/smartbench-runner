@@ -1,4 +1,5 @@
 colored-traceback == 0.3.0
 toml == 0.10.2
+solc-select = 1.0.2
 
 git+https://github.com/taquangtrung/solc-detect.git@main#egg=solc_detect

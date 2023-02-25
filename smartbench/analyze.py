@@ -9,7 +9,9 @@ from datetime import datetime
 from typing import List
 
 # Library
+from smartbench import solc
 from smartbench.buginfo import BugInfo
+from smartbench.debug import debug, warning
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import ALL_RESULTS_DIR, Tool
 from smartbench.tools.util import get_output_directory
@@ -42,9 +44,13 @@ def analyze_test_file(
     tool: Tool, test_file: str, result_dir: str
 ) -> List[BugInfo]:
     "Run the analysis on one test case."
-    command = tool.make_analysis_command(test_file, result_dir)
-    print("  Command: ", command)
+    # Configure Solc compiler
+    # TODO: check if tool doesn't need compiler, then don't configure
+    solc.configure_solc_compiler(test_file)
     try:
+        # Run the analysis
+        command = tool.make_analysis_command(test_file, result_dir)
+        debug("Command:", command)
         output_log = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,
@@ -55,21 +61,22 @@ def analyze_test_file(
         # Write output log
         output_dir = get_output_directory(tool.id, test_file, result_dir)
         log_file = os.path.join(output_dir, tool.log_file)
-        print("  Log file:", log_file)
+        debug("Log file:", log_file)
         record_analysis_log(output_log, log_file)
     except ValueError:
         print("Failed to run command: " + str(command))
         return []
 
     # Parse results
-    return parse_analysis_result(tool, test_file, result_dir)
+    results = parse_analysis_result(tool, test_file, result_dir)
+    print("Results: " + str(results))
+    return results
 
 
 def run_analysis_tool(tool, test_files, result_dir):
     "Run one analysis tool."
-    print("Running tool:", tool.name)
+    debug("Running tool:", tool.name)
     for test_file in test_files:
-        print("\nTest file:", test_file)
         analyze_test_file(tool, test_file, result_dir)
 
 
