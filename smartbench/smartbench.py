@@ -75,11 +75,8 @@ def collect_test_cases(args) -> [str]:
 
 
 def signal_handler(sig, frame):
-    print("Interuptted by Ctrl+C!")
+    print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
 
 
 def main():
@@ -105,4 +102,5 @@ def main():
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
     main()
