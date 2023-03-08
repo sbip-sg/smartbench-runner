@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-# Standard Library
-import os
 
+# Standard Library
 from enum import Enum, auto
 from typing import Union
 
@@ -14,27 +13,59 @@ class IssueKind(Enum):
     """Class representing the kind of issue."""
 
     # Unknown
-    UNKNOWN = auto()
+    UNKNOWN = "Unknown Issue"
 
     # Reentrancy
-    REENTRANCY = auto()
-    REENTRANCY_READ_ONLY = auto()
+    REENTRANCY = "Reentrancy"
+    REENTRANCY_READ_ONLY = "Reentrancy on Read-Only State"
+
+    # Unchecked operations
+    UNCHECKED_SEND = "Unchecked Send"
+    LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
+
+    # Event operations
+    SHOULD_EMIT_EVENT = "Should Emit Event"
+
+    # Compiler
+    OUTDATED_COMPILER_VERSION = "Outdated Compiler Version"
+    COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT = (
+        "Compiler Not Recommended for Deployment"
+    )
+
+    # User input
+    USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
+
+    # Coding style
+    PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
+    VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
+    FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
+    MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
+
+    # Code optimization
+    MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
+    POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
 
     # Deprecated features
-    DEPRECATED_THROW = auto()
+    DEPRECATED_THROW = "Deprecated Throw"
+
+    def __str__(self):
+        return self.value
 
 
 class Severity(Enum):
     """Class representing severity level of an issue."""
 
     # Severity level
-    UNKNOWN = auto()
-    CODING_STYLE = auto()
-    OPTIMIZATION = auto()
-    INFORMATIONAL = auto()
-    LOW_RISK = auto()
-    MEDIUM_RISK = auto()
-    HIGH_RISK = auto()
+    UNKNOWN = "Unknown Severity"
+    CODING_STYLE = "Coding Style"
+    CODE_OPTIMIZATION = "Code Optimization"
+    INFORMATIONAL = "Informational"
+    LOW_RISK = "Low Risk"
+    MEDIUM_RISK = "Medium Risk"
+    HIGH_RISK = "High Risk"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 class Confidence(Enum):
@@ -47,16 +78,28 @@ class Confidence(Enum):
     MEDIUM = auto()
     HIGH = auto()
 
+    def __str__(self) -> str:
+        if self == Confidence.LOW:
+            return "Low Confidence"
+
+        if self == Confidence.MEDIUM:
+            return "Medium Confidence"
+
+        if self == Confidence.HIGH:
+            return "High Confidence"
+
+        return "Unknown Confidence"
+
 
 class Checker:
-    """Class representing an issue checker and its setting."""
+    """Class representing an analyzer and the checking rule that it uses."""
 
     analyzer: str
-    settings: str
+    rule: str
 
-    def __init__(self, analyzer: str, settings: str):
+    def __init__(self, analyzer: str, rule: str):
         self.analyzer = analyzer
-        self.settings = settings
+        self.rule = rule
 
 
 class Issue:
@@ -83,11 +126,12 @@ class Issue:
 
     def __str__(self):
         if self.location:
-            file_name = os.path.basename(self.location.file_path)
-            line_column = self.location.get_line_column_info()
-            location = f"{file_name}:{line_column}"
+            location = f"{self.location.print_concise()}"
         else:
-            location = "Unknown"
+            location = "Unknown location"
         return (
-            f"{self.kind} -- {self.severity} -- {self.confidence} @ {location}"
+            f"Issue: {self.kind}\n"
+            f"  + Rule: {self.checker.rule}\n"
+            f"  + Severity: {self.severity}, {self.confidence}\n"
+            f"  + Location: {location}\n"
         )

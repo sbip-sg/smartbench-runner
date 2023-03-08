@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+import os
 class Location:
     """Class representing a source code location."""
 
@@ -28,9 +29,14 @@ class Location:
             f"-{self.end_line}:{self.end_column}"
         )
 
-    def get_line_column_info(self):
+    def get_line_column(self):
         """Print line and column info"""
         return (
             f"{self.start_line}:{self.start_column}"
             f"-{self.end_line}:{self.end_column}"
         )
+
+    def print_concise(self):
+        """Print location in concise format."""
+        file_name = os.path.basename(self.file_path)
+        return f"{file_name}:{self.get_line_column()}"
