@@ -10,8 +10,8 @@ from typing import List
 
 # Library
 from smartbench import solc
-from smartbench.buginfo import BugInfo
 from smartbench.debug import debug, warning
+from smartbench.issue import Issue
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import ALL_RESULTS_DIR, Tool
 from smartbench.tools.util import get_output_directory
@@ -28,7 +28,7 @@ def record_analysis_log(log_data, log_file):
 
 def parse_analysis_result(
     tool: Tool, test_file: str, result_dir
-) -> List[BugInfo]:
+) -> List[Issue]:
     parse_result = None
 
     if tool.is_slither():
@@ -42,7 +42,7 @@ def parse_analysis_result(
 
 def analyze_test_file(
     tool: Tool, test_file: str, result_dir: str
-) -> List[BugInfo]:
+) -> List[Issue]:
     "Run the analysis on one test case."
     # Configure Solc compiler
     # TODO: check if tool doesn't need compiler, then don't configure

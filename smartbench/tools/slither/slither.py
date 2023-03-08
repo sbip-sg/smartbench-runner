@@ -6,11 +6,12 @@
 import json
 import os
 
-from typing import List
+from typing import List, Union
 
 # Library
-from smartbench.buginfo import BugInfo
 from smartbench.debug import debug, warning
+from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.location import Location
 from smartbench.tools.util import get_output_directory
 
 
@@ -45,12 +46,79 @@ def make_slither_analysis_command(
     return command
 
 
+def parse_confidence(confidence: Union[str, None]) -> Confidence:
+    """Parse confidence level of issue detected by Slither."""
+    if confidence is None:
+        return Confidence.UNKNOWN
+
+    confidence = confidence.casefold()
+
+    if confidence == "high":
+        return Confidence.HIGH
+
+    if confidence == "low":
+        return Confidence.LOW
+
+    if confidence == "medium":
+        return Confidence.MEDIUM
+
+    return Confidence.UNKNOWN
+
+
+def parse_severity(severity: Union[str, None]) -> Severity:
+    """Parse severity level of issue detected by Slither."""
+    if severity is None:
+        return Severity.UNKNOWN
+
+    severity = severity.casefold()
+
+    if severity == "informational":
+        return Severity.INFORMATIONAL
+
+    if severity == "low":
+        return Severity.LOW_RISK
+
+    if severity == "medium":
+        return Severity.MEDIUM_RISK
+
+    if severity == "high":
+        return Severity.HIGH_RISK
+
+    return Severity.UNKNOWN
+
+
+def parse_source_location(backtrace_elements) -> Union[Location, None]:
+    if len(backtrace_elements) == 0:
+        return None
+
+    buggy_element = backtrace_elements[0]
+    source_mapping = buggy_element.get("source_mapping")
+    file_name = source_mapping.get("filename_absolute")
+    lines = source_mapping.get("lines")
+    start_line = lines[0]
+    end_line = lines[len(lines) - 1]
+    start_column = source_mapping.get("starting_column")
+    end_column = source_mapping.get("ending_column")
+
+    return Location(file_name, start_line, start_column, end_line, end_column)
+
+
+def parse_checker(checker: str) -> Checker:
+    return Checker("Slither", checker)
+
+
+def parse_issue_kind(description: str) -> IssueKind:
+    """Parse issue kind from issue description reported by Slither"""
+    return IssueKind.UNKNOWN
+
+
 def parse_slither_json_output(
     tool_id: str,
     test_file: str,
     result_dir: str,
     output_file: str,
-) -> List[BugInfo]:
+) -> List[Issue]:
+    """Parse output of Slither"""
     output_dir = get_output_directory(tool_id, test_file, result_dir)
     output_file = os.path.join(output_dir, output_file)
     output = None
@@ -75,7 +143,27 @@ def parse_slither_json_output(
             return []
 
         results = output.get("results")
-        # TODO: parsing results
-        return []
+        detectors = results.get("detectors")
+
+        issues = []
+
+        for detector in detectors:
+            description = detector.get("description")
+            kind = parse_issue_kind(description)
+            location = parse_source_location(detector.get("elements"))
+            checker = parse_checker(detector.get("check"))
+            severity = parse_severity(detector.get("impact"))
+            confidence = parse_confidence(detector.get("confidence"))
+            issue = Issue(
+                kind,
+                description,
+                severity,
+                confidence,
+                location,
+                checker,
+            )
+            issues.append(issue)
+
+        return issues
     except ValueError:
         return []

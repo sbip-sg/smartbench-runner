@@ -1,15 +1,15 @@
 [project]
 name = "smartbench-runner"
 version = "0.0.1"
-authors = [{name="Ta Quang Trung"}]
+authors = [{ name = "Ta Quang Trung" }]
 description = "A tool to run benchmarks of buggy smart contracts."
 dynamic = ["dependencies"]
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 [project.urls]
@@ -22,12 +22,13 @@ build-backend = "setuptools.build_meta"
 
 # Setuptools
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+dependencies = { file = ["requirements.txt"] }
 
 # Code formatting
 [tool.black]
 line-length = 80
 
+# Code import formating
 [tool.isort]
 import_heading_firstparty = "Library"
 import_heading_future = "Futures"
@@ -40,8 +41,15 @@ lines_after_imports = 2
 lines_between_types = 1
 profile = "black"
 
-# Mypy for type hinting
+# Type hinting by mypy
 [tool.pylsp-mypy]
 enabled = true
 live_mode = true
 strict = true
+
+# Linting by pylint
+[tool.pylint]
+disable = [
+  "too-many-arguments",
+  "too-few-public-methods",
+]
