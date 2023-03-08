@@ -68,9 +68,12 @@ def analyze_test_file(
         return []
 
     # Parse results
-    results = parse_analysis_result(tool, test_file, result_dir)
-    print("Results: " + str(results))
-    return results
+    issues = parse_analysis_result(tool, test_file, result_dir)
+    print("Issues: ")
+    for issue in issues:
+        print("- " + str(issue))
+
+    return issues
 
 
 def run_analysis_tool(tool, test_files, result_dir):

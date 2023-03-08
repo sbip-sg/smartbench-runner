@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # Standard Library
+import os
+
 from enum import Enum, auto
 from typing import Union
 
@@ -78,3 +80,14 @@ class Issue:
         self.confidence = confidence
         self.location = location
         self.checker = checker
+
+    def __str__(self):
+        if self.location:
+            file_name = os.path.basename(self.location.file_path)
+            line_column = self.location.get_line_column_info()
+            location = f"{file_name}:{line_column}"
+        else:
+            location = "Unknown"
+        return (
+            f"{self.kind} -- {self.severity} -- {self.confidence} @ {location}"
+        )
