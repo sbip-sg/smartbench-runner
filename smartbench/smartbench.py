@@ -43,14 +43,16 @@ def main():
     args = parse_cli_arguments()
     flags.configure_global_flags(args)
 
+    print("Smartbench runner")
+
     # Run analysis mode
     if args.sub_command == "analyze":
         analyze_smart_contracts(args)
     # Run result parsing mode
     elif args.sub_command == "result":
         parse_existing_results(args)
-
-    print("No task is specified!")
+    else:
+        print("No task is specified!")
 
     # Finish
     sys.exit(0)

@@ -15,17 +15,34 @@ def parse_cli_arguments():
         add_help=True,
     )
 
+    # Create sub-parser
+    sub_parsers = arg_parser.add_subparsers(
+        dest="sub_command",
+        title="List of sub-commands",
+        help="",
+    )
+
+    ################################
+    # Parent parser for common arguments
+
+    parent_parser = argparse.ArgumentParser(add_help=True)
+
+    parent_parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Enable debugging mode.",
+    )
+
     ################################
     # Parser for sub-command `analyze`
 
-    # create sub-parser
-    sub_parsers = arg_parser.add_subparsers(
-        dest="sub_command", title="List of sub-commands", help=""
-    )
-
     # create the parser for the `analyze` sub-command
     analyze_parser = sub_parsers.add_parser(
-        "analyze", help="Sub-command to analyze smart contracts"
+        "analyze",
+        parents=[parent_parser],
+        add_help=False,
+        help="Sub-command to analyze smart contracts",
     )
 
     # Input files
@@ -46,24 +63,17 @@ def parse_cli_arguments():
     )
 
     analyze_parser.add_argument(
-        "--slither-arguments",
+        "--slither-args",
         metavar="ARGUMENTS",
         type=str,
         help="Additional arguments of Slither",
     )
 
     analyze_parser.add_argument(
-        "--confuzzius-arguments",
+        "--confuzzius-args",
         metavar="ARGUMENTS",
         type=str,
         help="Additional arguments of Confuzzius",
-    )
-
-    # Debugging mode
-    analyze_parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debugging mode.",
     )
 
     ################################
@@ -71,7 +81,10 @@ def parse_cli_arguments():
 
     # create the parser for the `analyze` sub-command
     result_parser = sub_parsers.add_parser(
-        "result", help="Sub-command to read existing analysis results."
+        "result",
+        parents=[parent_parser],
+        add_help=False,
+        help="Sub-command to read existing analysis results.",
     )
 
     # Parse results
@@ -80,13 +93,6 @@ def parse_cli_arguments():
         "--results",
         type=str,
         help="Directory containing results",
-    )
-
-    # Debugging mode
-    result_parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debugging mode.",
     )
 
     ################################
