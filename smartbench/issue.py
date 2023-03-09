@@ -95,11 +95,11 @@ class Checker:
     """Class representing an analyzer and the checking rule that it uses."""
 
     analyzer: str
-    rule: str
+    detector: str
 
-    def __init__(self, analyzer: str, rule: str):
+    def __init__(self, analyzer: str, detector: str):
         self.analyzer = analyzer
-        self.rule = rule
+        self.detector = detector
 
 
 class Issue:
@@ -125,13 +125,16 @@ class Issue:
         self.checker = checker
 
     def __str__(self):
-        if self.location:
-            location = f"{self.location.print_concise()}"
-        else:
-            location = "Unknown location"
+        location = (
+            f"{self.location.print_concise()}"
+            if self.location
+            else "Unknown Location"
+        )
+        analyzer = self.checker.analyzer
+        detector = self.checker.detector
         return (
             f"Issue: {self.kind}\n"
-            f"  + Rule: {self.checker.rule}\n"
+            f"  + Checker: {analyzer} --> {detector}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )

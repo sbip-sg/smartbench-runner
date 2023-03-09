@@ -36,6 +36,14 @@ def parse_cli_arguments():
         help="Directory containing input smart contracts.",
     )
 
+    # Parse results
+    general_args.add_argument(
+        "-r",
+        "--results",
+        type=str,
+        help="Directory containing results",
+    )
+
     # Analysis tool
     general_args.add_argument(
         "-t",
@@ -67,7 +75,7 @@ def parse_cli_arguments():
     slither_args = arg_parser.add_argument_group("Slither arguments")
 
     slither_args.add_argument(
-        "--slither-additional-arguments",
+        "--slither-arguments",
         metavar="ARGUMENTS",
         type=str,
         help="Additional arguments of Slither",
@@ -79,7 +87,7 @@ def parse_cli_arguments():
     confuzzius_args = arg_parser.add_argument_group("Confuzzius arguments")
 
     confuzzius_args.add_argument(
-        "--confuzzius-additional-arguments",
+        "--confuzzius-arguments",
         metavar="ARGUMENTS",
         type=str,
         help="Additional arguments of Confuzzius",

@@ -10,6 +10,7 @@ from typing import List
 
 # Library
 from smartbench import solc
+from smartbench import result
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue
 from smartbench.tools.slither import slither
@@ -26,22 +27,8 @@ def record_analysis_log(log_data, log_file):
         file.write(log_data.stderr.decode("utf-8"))
 
 
-def parse_analysis_result(
-    tool: Tool, test_file: str, result_dir
-) -> List[Issue]:
-    parse_result = None
-
-    if tool.is_slither():
-        parse_result = slither.parse_slither_json_output
-
-    if parse_result:
-        return parse_result(tool.id, test_file, result_dir, tool.output_file)
-
-    return []
-
-
 def analyze_test_file(
-    tool: Tool, test_file: str, result_dir: str
+        tool: Tool, test_file: str, result_dir: str
 ) -> List[Issue]:
     "Run the analysis on one test case."
     # Configure Solc compiler
@@ -68,7 +55,7 @@ def analyze_test_file(
         return []
 
     # Parse results
-    issues = parse_analysis_result(tool, test_file, result_dir)
+    issues = result.parse_analysis_result(tool, test_file, result_dir)
     print("Issues: ")
     for issue in issues:
         print("- " + str(issue))
