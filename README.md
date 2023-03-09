@@ -11,9 +11,18 @@
 
 # Usage
 
-   ```sh
-   ./smartbench.sh -f examples/Rubixi.sol -t slither --debug
-   ```
+- Run `analyze` sub-command:
+
+  ```sh
+  # Input a single file
+  ./smartbench.sh analyze examples/Rubixi.sol -t slither
+
+  # Input a wild-card pattern
+  ./smartbench.sh analyze examples/*.sol -t slither
+
+  # Input a directory
+  ./smartbench.sh analyze examples -t slither
+  ```
 
 # Development
 
