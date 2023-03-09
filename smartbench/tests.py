@@ -49,7 +49,7 @@ def collect_test_cases(args) -> List[str]:
 
     # Printing for debugging
     for test_file in test_files:
-        print("\nTest case: " + test_file)
+        print("\nFile: " + test_file)
         labels = buglabel.parse_bug_labels(test_file, "auto")
         for lbl in labels:
             linum = str(lbl.start_line)

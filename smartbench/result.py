@@ -21,9 +21,7 @@ from smartbench.tools.tool import (
 )
 
 
-def process_analysis_result(
-    tool: Tool, test_file: str, result_dir: str
-) -> List[Issue]:
+def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
     """Process analysis result of a tool."""
     process_result_fn = None
 
@@ -31,7 +29,7 @@ def process_analysis_result(
         process_result_fn = slither.parse_slither_json_output
 
     if process_result_fn:
-        output_file = configure_output_file(tool, test_file, result_dir)
+        output_file = configure_output_file(tool, result_dir)
         return process_result_fn(output_file)
 
     return []
@@ -105,7 +103,6 @@ def process_result_directory(result_dir: str) -> List[Issue]:
             print(f"=== Parsing results in test dir: {test_dir}\n")
             issues = parse_existing_analysis_result(tool, test_dir)
             for issue in issues:
-
                 print(f"- {issue}")
             all_issues = all_issues + issues
 

@@ -123,7 +123,7 @@ class Tool:
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
-        output_file = configure_output_file(self, test_file, result_dir)
+        output_file = configure_output_file(self, result_dir)
 
         return make_command(
             self.path,
@@ -181,36 +181,32 @@ def create_tool_configuration(tool_name: str) -> Union[Tool, None]:
             return None
 
 
-def configure_output_file(tool: Tool, test_file: str, result_dir: str) -> str:
+def configure_output_file(tool: Tool, result_dir: str) -> str:
     """
     Configure output file of a tool for a test file.
     """
 
     # Prepare output directory
-    test_name = os.path.basename(test_file)
-    output_dir = os.path.join(result_dir, tool.id, test_name)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
 
     # Configure output file
-    output_file = os.path.join(output_dir, tool.output_file)
+    output_file = os.path.join(result_dir, tool.output_file)
 
     return output_file
 
 
-def configure_log_file(tool: Tool, test_file: str, result_dir: str) -> str:
+def configure_log_file(tool: Tool, result_dir: str) -> str:
     """
     Configure log file of a tool for a test file.
     """
 
     # Prepare output directory
-    test_name = os.path.basename(test_file)
-    output_dir = os.path.join(result_dir, tool.id, test_name)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
 
     # Configure output file
-    output_file = os.path.join(output_dir, tool.log_file)
+    output_file = os.path.join(result_dir, tool.log_file)
 
     return output_file
 

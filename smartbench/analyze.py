@@ -42,6 +42,7 @@ def analyze_test_file(
     solc.configure_solc_compiler(test_file)
     try:
         # Run the analysis
+        print(f"* Analyzing file: {test_file}\n")
         command = tool.make_analysis_command(test_file, result_dir)
         debug("Command:", command)
         output_log = subprocess.run(
@@ -52,7 +53,7 @@ def analyze_test_file(
         )
 
         # Write output log
-        log_file = configure_log_file(tool, test_file, result_dir)
+        log_file = configure_log_file(tool, result_dir)
         debug("Log file:", log_file)
         record_analysis_log(test_file, command, output_log, log_file)
     except ValueError:
@@ -60,7 +61,7 @@ def analyze_test_file(
         return []
 
     # Process results
-    issues = result.process_analysis_result(tool, test_file, result_dir)
+    issues = result.process_analysis_result(tool, result_dir)
     print("Issues: ")
     for issue in issues:
         print("- " + str(issue))
@@ -75,8 +76,13 @@ def run_analysis_tool(tool, test_files, result_dir):
     the current run.
     """
     debug("Running tool:", tool.name)
+    common_path = os.path.commonpath(test_files)
+    parent_path = os.path.dirname(common_path)
+
     for test_file in test_files:
-        analyze_test_file(tool, test_file, result_dir)
+        rel_path = os.path.relpath(test_file, start=parent_path)
+        output_dir = os.path.join(result_dir, tool.id, rel_path)
+        analyze_test_file(tool, test_file, output_dir)
 
 
 def perform_analysis(tools, test_files):
