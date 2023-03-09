@@ -14,34 +14,22 @@ from typing import List
 from smartbench import buglabel
 
 
-def collect_test_cases_from_file_patterns(patterns: str) -> List[str]:
-    """
-    Collect all Solidity files whose name satisfying a file name pattern.
-    Return a list of absolute file names.
-    """
-    files = []
-    for rel_fname in patterns:
-        # print("Root:", root, "spec:", spec)
-        abs_fname = os.path.abspath(rel_fname)
-        if os.path.isfile(abs_fname) and abs_fname[-4:] in (".sol"):
-            files.append(abs_fname)
-    return files
+def is_solidity_file(filename) -> bool:
+    """Check whether the input file is an existing Solidity file."""
+    return os.path.isfile(filename) and filename[-4:] in (".sol")
 
 
-def collect_test_cases_in_directories(directories: str) -> List[str]:
+def collect_test_cases_in_directory(directory: str) -> List[str]:
     """
     Collect all Solidity files in a directory.
     Return a list of absolute file names.
     """
     files = []
-    for directory in directories:
-        path = pathlib.Path(directory)
-        for rel_fname in path.rglob("*"):
-            rel_fname = os.path.normpath(rel_fname)
-            abs_fname = os.path.abspath(rel_fname)
-            abs_fname = os.path.normpath(abs_fname)
-            if os.path.isfile(abs_fname) and abs_fname[-4:] in (".sol"):
-                files.append(abs_fname)
+    path = pathlib.Path(directory)
+    for file_path in path.rglob("*"):
+        file_name = os.path.normpath(file_path)
+        if is_solidity_file(file_name):
+            files.append(file_name)
     return files
 
 
@@ -51,11 +39,12 @@ def collect_test_cases(args) -> List[str]:
     """
     test_files = []
 
-    if args.directories is not None:
-        test_files = collect_test_cases_in_directories(args.files)
-
-    if args.files is not None:
-        test_files += collect_test_cases_from_file_patterns(args.files)
+    for input_path in args.input_files_directories:
+        if os.path.isdir(input_path):
+            test_files += collect_test_cases_in_directory(input_path)
+        elif os.path.isfile(input_path):
+            if is_solidity_file(input_path):
+                test_files.append(input_path)
 
     # Printing for debugging
     for test_file in test_files:

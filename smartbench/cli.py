@@ -12,40 +12,32 @@ def parse_cli_arguments():
     """Configure command arguments line."""
     arg_parser = argparse.ArgumentParser(
         description="Detect Solidity compiler version for a smart contract",
-        add_help=False,
+        add_help=True,
     )
 
     ################################
-    # General arguments
+    # Parser for sub-command `analyze`
 
-    general_args = arg_parser.add_argument_group("Tool and input arguments.")
+    # create sub-parser
+    sub_parsers = arg_parser.add_subparsers(
+        dest="sub_command", title="List of sub-commands", help=""
+    )
+
+    # create the parser for the `analyze` sub-command
+    analyze_parser = sub_parsers.add_parser(
+        "analyze", help="Sub-command to analyze smart contracts"
+    )
 
     # Input files
-    general_args.add_argument(
-        "-f",
-        "--files",
-        nargs="+",  # Accept multiple input files
+    analyze_parser.add_argument(
+        "input_files_directories",
+        nargs="+",  # Accept multiple input files or directories
         type=str,
-        help="Patterns of input smart contracts.",
-    )
-
-    # Input directories
-    general_args.add_argument(
-        "-d",
-        "--directories",
-        help="Directory containing input smart contracts.",
-    )
-
-    # Parse results
-    general_args.add_argument(
-        "-r",
-        "--results",
-        type=str,
-        help="Directory containing results",
+        help="Input files or directories (accepts wildcard characters).",
     )
 
     # Analysis tool
-    general_args.add_argument(
+    analyze_parser.add_argument(
         "-t",
         "--tools",
         nargs="+",  # Accept multiple tools.
@@ -53,44 +45,48 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
-    # Debugging mode
-    general_args.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debugging mode.",
-    )
-
-    # Help
-    arg_parser.add_argument(
-        "-h",
-        "--help",
-        action="help",
-        default=argparse.SUPPRESS,
-        help="Show this help message and exit.",
-    )
-
-    ################################
-    # Slither argument group
-
-    slither_args = arg_parser.add_argument_group("Slither arguments")
-
-    slither_args.add_argument(
+    analyze_parser.add_argument(
         "--slither-arguments",
         metavar="ARGUMENTS",
         type=str,
         help="Additional arguments of Slither",
     )
 
-    ################################
-    # Confuzzius argument group
-
-    confuzzius_args = arg_parser.add_argument_group("Confuzzius arguments")
-
-    confuzzius_args.add_argument(
+    analyze_parser.add_argument(
         "--confuzzius-arguments",
         metavar="ARGUMENTS",
         type=str,
         help="Additional arguments of Confuzzius",
+    )
+
+    # Debugging mode
+    analyze_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debugging mode.",
+    )
+
+    ################################
+    # Parser for sub-command `parse-result`
+
+    # create the parser for the `analyze` sub-command
+    result_parser = sub_parsers.add_parser(
+        "result", help="Sub-command to read existing analysis results."
+    )
+
+    # Parse results
+    result_parser.add_argument(
+        "-r",
+        "--results",
+        type=str,
+        help="Directory containing results",
+    )
+
+    # Debugging mode
+    result_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debugging mode.",
     )
 
     ################################

@@ -44,10 +44,10 @@ def main():
     flags.configure_global_flags(args)
 
     # Run analysis mode
-    if args.directories is not None or args.files is not None:
+    if args.sub_command == "analyze":
         analyze_smart_contracts(args)
     # Run result parsing mode
-    elif args.results is not None:
+    elif args.sub_command == "result":
         parse_existing_results(args)
 
     print("No task is specified!")
