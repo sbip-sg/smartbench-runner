@@ -133,7 +133,7 @@ class Tool:
         )
 
 
-def parse_tool_configuration(tool_name: str) -> Union[Tool, None]:
+def create_tool_configuration(tool_name: str) -> Union[Tool, None]:
     """Parse configuration of an analysis tool"""
     # Get path of the configuration file
     tool_name = tool_name.casefold()
@@ -223,7 +223,7 @@ def configure_analysis_tools(args) -> List[Tool]:
 
     all_tool_configs = []
     for tool_name in tool_names:
-        config = parse_tool_configuration(tool_name)
+        config = create_tool_configuration(tool_name)
         if config is None:
             debug.warning("Failed to read configuration of: " + tool_name)
         else:

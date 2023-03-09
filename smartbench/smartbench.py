@@ -12,7 +12,7 @@ from smartbench.cli import parse_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
 
-def signal_handler(sig, frame):
+def signal_handler(_sig, _frame):
     print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
 

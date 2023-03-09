@@ -17,69 +17,96 @@ from smartbench.tools.slither import slither
 from smartbench.tools.tool import (
     Tool,
     configure_output_file,
-    parse_tool_configuration,
+    create_tool_configuration,
 )
 
 
 def process_analysis_result(
     tool: Tool, test_file: str, result_dir: str
 ) -> List[Issue]:
-    """Function to process analysis result of a tool."""
-    parse_result = None
+    """Process analysis result of a tool."""
+    process_result_fn = None
 
     if tool.is_slither():
-        parse_result = slither.parse_slither_json_output
+        process_result_fn = slither.parse_slither_json_output
 
-    if parse_result:
+    if process_result_fn:
         output_file = configure_output_file(tool, test_file, result_dir)
-        return parse_result(output_file)
+        return process_result_fn(output_file)
 
     return []
 
 
-def reconstruct_analysis_tools(tool_result_dirs: List[str]) -> List[Tool]:
-    """Reconstruct tool configurations from the result directories.
+def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
+    """Check whether `test_dir` containing analysis result of a tool for
+    a test file."""
 
-    Each tool result directory is supposed to be the same as the tool name.
+    test_dir = os.path.abspath(test_dir)
+    output_file = os.path.join(test_dir, tool.output_file)
+    return os.path.exists(output_file)
+
+
+def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
+    """Parse a test result.
+
+    The input `test_result_dir` is the directory containing the
+    immediate result of an analysis tool.
     """
 
-    tools = []
-    for tool_name in tool_result_dirs:
-        tool = parse_tool_configuration(tool_name)
-        if tool is None:
-            warning(f"Unable to reconstruct tool configuration: {tool_name}")
-        else:
-            tools.append(tool)
+    parse_result_fn = None
 
-    return tools
+    if tool.is_slither():
+        parse_result_fn = slither.parse_slither_json_output
+
+    if parse_result_fn is None:
+        warning(f"Does not support parsing result of tool: {tool.name}")
+        return []
+
+    test_dir = os.path.abspath(test_dir)
+    output_file = os.path.join(test_dir, tool.output_file)
+    return parse_result_fn(output_file)
 
 
-def process_result_directory(result_dir: str):
+def process_result_directory(result_dir: str) -> List[Issue]:
     """Function to process result directory of a tool.
 
-    The input `result_dir` is the directory containing results of all tools.
+    The input `result_dir` is the directory containing results of all
+    tools.
+
     """
 
     print("Result dir: " + result_dir)
     path = pathlib.Path(result_dir)
     if not path.is_dir():
         warning(f"Directory does not exists: {result_dir}")
-        return
+        return []
 
-    tool_result_dirs = list(os.listdir(result_dir))
-    for tool_result_dir in tool_result_dirs:
-        # Tool name is expected to be the same as tool_result_dir
-        tool_name = tool_result_dir
-        print(f"Reconstruct tool configuration for: {tool_name}")
-        tool = parse_tool_configuration(tool_result_dir)
-        tool_result_dir = os.path.join(result_dir, tool_result_dir)
-        test_result_dirs = list(os.listdir(tool_result_dir))
+    all_issues: List[Issue] = []
+
+    tool_dirs = list(os.listdir(result_dir))
+    for tool_dir in tool_dirs:
+        # Tool id is expected to be the same as tool_result_dir
+        tool_id = tool_dir
+        print(f"Create tool configuration for: {tool_id}")
+        tool = create_tool_configuration(tool_id)
+        tool_dir = os.path.join(result_dir, tool_dir)
+        test_dirs = list(os.listdir(tool_dir))
         if tool is None:
-            warning(f"Unable to reconstruct tool configuration: {tool_name}")
+            warning(f"Unable to reconstruct tool configuration: {tool_id}")
             continue
-
         print(f"  - {tool.id}")
 
-        print("Test result dir:")
-        for dir in test_result_dirs:
-            print(f"  - {dir}")
+        test_dirs = [p[0] for p in os.walk(tool_dir)]
+        test_dirs = sorted(test_dirs)
+        for test_dir in test_dirs:
+            if not is_test_result_directory(tool, test_dir):
+                continue
+
+            print(f"=== Parsing results in test dir: {test_dir}\n")
+            issues = parse_existing_analysis_result(tool, test_dir)
+            for issue in issues:
+
+                print(f"- {issue}")
+            all_issues = all_issues + issues
+
+    return all_issues
