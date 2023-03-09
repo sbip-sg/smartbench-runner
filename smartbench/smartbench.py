@@ -7,7 +7,7 @@ import signal
 import sys
 
 # Library
-from smartbench import analyze, buglabel, flags, tests
+from smartbench import analyze, buglabel, flags, result, tests
 from smartbench.cli import parse_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
@@ -31,9 +31,8 @@ def analyze_smart_contracts(args):
 def parse_existing_results(args):
     """Parse existing results obtained from previous analyses."""
     # Configure tools
-    tools = configure_analysis_tools(args)
-
-    pass
+    for result_dir in args.result_directories:
+        result.process_result_directory(result_dir)
 
 
 def main():
@@ -43,16 +42,16 @@ def main():
     args = parse_cli_arguments()
     flags.configure_global_flags(args)
 
-    print("Smartbench runner")
-
     # Run analysis mode
     if args.sub_command == "analyze":
+        print("Smartbench runner: run analysis mode...")
         analyze_smart_contracts(args)
     # Run result parsing mode
-    elif args.sub_command == "result":
+    elif args.sub_command == "parse-result":
+        print("Smartbench runner: parse existing results...")
         parse_existing_results(args)
     else:
-        print("No task is specified!")
+        print("Smartbench runner: no sub-command is specified!")
 
     # Finish
     sys.exit(0)

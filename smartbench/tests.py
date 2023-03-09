@@ -27,7 +27,7 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
     files = []
     path = pathlib.Path(directory)
     for file_path in path.rglob("*"):
-        file_name = os.path.normpath(file_path)
+        file_name = os.path.normpath(os.path.abspath(file_path))
         if is_solidity_file(file_name):
             files.append(file_name)
     return files
@@ -43,6 +43,7 @@ def collect_test_cases(args) -> List[str]:
         if os.path.isdir(input_path):
             test_files += collect_test_cases_in_directory(input_path)
         elif os.path.isfile(input_path):
+            input_path = os.path.abspath(input_path)
             if is_solidity_file(input_path):
                 test_files.append(input_path)
 

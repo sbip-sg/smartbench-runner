@@ -43,6 +43,18 @@ ALL_RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
 class Tool:
     """Configuration of an analysis tool."""
 
+    # Attributes of a tool
+    id: str
+    name: str
+    homepage: str
+    category: str
+    path: str
+    default_arguments: str
+    additional_arguments: str
+    output_file: str
+    log_file: str
+    timeout: int
+
     def __init__(
         self,
         id,
@@ -56,6 +68,7 @@ class Tool:
         additional_arguments=None,
         timeout=None,
     ):
+        """Constructor"""
         self.id = id
         self.name = name
         self.homepage = homepage
@@ -68,6 +81,7 @@ class Tool:
         self.timeout = timeout
 
     def __str__(self):
+        """Printing to string."""
         return (
             '{ Tool: "'
             + self.name
@@ -109,21 +123,22 @@ class Tool:
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
+        output_file = configure_output_file(self, test_file, result_dir)
+
         return make_command(
-            self.id,
             self.path,
             arguments,
             test_file,
-            result_dir,
-            self.output_file,
+            output_file,
         )
 
 
-def parse_tool_configuration(tool) -> Union[Tool, None]:
+def parse_tool_configuration(tool_name: str) -> Union[Tool, None]:
     """Parse configuration of an analysis tool"""
-    # Get path of the confiuration file
-    config_file_name = tool + ".toml"
-    config_file_path = os.path.join(ALL_TOOLS_DIR, tool, config_file_name)
+    # Get path of the configuration file
+    tool_name = tool_name.casefold()
+    config_file_name = tool_name + ".toml"
+    config_file_path = os.path.join(ALL_TOOLS_DIR, tool_name, config_file_name)
 
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
@@ -162,22 +177,55 @@ def parse_tool_configuration(tool) -> Union[Tool, None]:
                 log_file,
             )
         except AttributeError:
-            debug.warning("Error in configuration of tool: " + str(tool))
+            debug.warning("Error in configuration of tool: " + str(tool_name))
             return None
+
+
+def configure_output_file(tool: Tool, test_file: str, result_dir: str) -> str:
+    """
+    Configure output file of a tool for a test file.
+    """
+
+    # Prepare output directory
+    test_name = os.path.basename(test_file)
+    output_dir = os.path.join(result_dir, tool.id, test_name)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Configure output file
+    output_file = os.path.join(output_dir, tool.output_file)
+
+    return output_file
+
+
+def configure_log_file(tool: Tool, test_file: str, result_dir: str) -> str:
+    """
+    Configure log file of a tool for a test file.
+    """
+
+    # Prepare output directory
+    test_name = os.path.basename(test_file)
+    output_dir = os.path.join(result_dir, tool.id, test_name)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Configure output file
+    output_file = os.path.join(output_dir, tool.log_file)
+
+    return output_file
 
 
 def configure_analysis_tools(args) -> List[Tool]:
     """Configure all analysis tools."""
-    tools = args.tools
-    if tools is None or len(tools) == 0:
+    tool_names = args.tools
+    if tool_names is None or len(tool_names) == 0:
         sys.exit("No analysis tool is selected!")
 
     all_tool_configs = []
-    for tool in tools:
-        tool = tool.casefold()
-        config = parse_tool_configuration(tool)
+    for tool_name in tool_names:
+        config = parse_tool_configuration(tool_name)
         if config is None:
-            debug.warning("Failed to read configuration of: " + tool)
+            debug.warning("Failed to read configuration of: " + tool_name)
         else:
             all_tool_configs.append(config)
 

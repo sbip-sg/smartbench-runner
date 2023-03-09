@@ -18,8 +18,9 @@ def parse_cli_arguments():
     # Create sub-parser
     sub_parsers = arg_parser.add_subparsers(
         dest="sub_command",
+        metavar=None,
         title="List of sub-commands",
-        help="",
+        help=None,
     )
 
     ################################
@@ -81,18 +82,18 @@ def parse_cli_arguments():
 
     # create the parser for the `analyze` sub-command
     result_parser = sub_parsers.add_parser(
-        "result",
+        "parse-result",
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to read existing analysis results.",
     )
 
-    # Parse results
+    # Input result directories
     result_parser.add_argument(
-        "-r",
-        "--results",
+        "result_directories",
+        nargs="+",  # Accept multiple input files or directories
         type=str,
-        help="Directory containing results",
+        help="Input result directories.",
     )
 
     ################################

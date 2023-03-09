@@ -12,7 +12,6 @@ from typing import List, Union
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.location import Location
-from smartbench.tools.util import get_output_directory
 
 
 # Tool name
@@ -20,11 +19,9 @@ TOOL_NAME = "slither"
 
 
 def make_slither_analysis_command(
-    tool_id: str,
     executable_file: str,
     arguments: str,
     test_file: str,
-    result_dir: str,
     output_file: str,
 ):
     """
@@ -36,12 +33,7 @@ def make_slither_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " " + test_file
-
-    if output_file:
-        output_dir = get_output_directory(tool_id, test_file, result_dir)
-        output_file = os.path.join(output_dir, output_file)
-        command = command + " --json " + output_file
+    command = command + " " + test_file + " --json " + output_file
 
     return command
 
@@ -158,14 +150,9 @@ def parse_issue_kind(description: str) -> IssueKind:
 
 
 def parse_slither_json_output(
-    tool_id: str,
-    test_file: str,
-    result_dir: str,
     output_file: str,
 ) -> List[Issue]:
     """Parse output of Slither"""
-    output_dir = get_output_directory(tool_id, test_file, result_dir)
-    output_file = os.path.join(output_dir, output_file)
     output = None
 
     debug("Slither parse file: ", output_file)
