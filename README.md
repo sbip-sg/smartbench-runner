@@ -11,7 +11,7 @@
 
 # Usage
 
-- Run `analyze` sub-command:
+- Run `analyze` sub-command for new analyses.
 
   ```sh
   # Input a single file
@@ -22,6 +22,12 @@
 
   # Input a directory
   ./smartbench.sh analyze examples -t slither
+  ```
+
+- Run `parse-result` sub-command to reload existing results.
+
+  ```sh
+  ./smartbench.sh parse-result results/<path_to_result_set>/
   ```
 
 # Development
