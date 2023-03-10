@@ -44,7 +44,7 @@ def main():
 
     # Run analysis mode
     if args.sub_command == "analyze":
-        print("Smartbench runner: run analysis mode...")
+        print("Running Smartbench...\n")
         analyze_smart_contracts(args)
     # Run result parsing mode
     elif args.sub_command == "parse-result":

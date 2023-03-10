@@ -4,6 +4,11 @@
 import sys
 import warnings
 
+from typing import List
+
+# Library
+from smartbench.debug import warning
+
 
 # SmartBugs labels
 YES_TAG = "<yes>"
@@ -36,7 +41,7 @@ class BugLabel:
 # // <yes> <report> <bug3>
 # ... some Solidity source code
 # ```
-def parse_smartbugs_labels(filename: str) -> [BugLabel]:
+def parse_smartbugs_labels(filename: str) -> List[BugLabel]:
     """Parse bug labels written in SmartBugs format in a smart contract.
 
     SmartBugs format: // <yes/no> <report> <bug type>
@@ -63,7 +68,7 @@ def parse_smartbugs_labels(filename: str) -> [BugLabel]:
     return bug_labels
 
 
-def parse_smartbench_labels(filename: str) -> [BugLabel]:
+def parse_smartbench_labels(filename: str) -> List[BugLabel]:
     """Parse bug labels written in SmartBench format in a smart contract.
 
     SmartBench format is in HTML-like format.
@@ -75,7 +80,7 @@ def parse_smartbench_labels(filename: str) -> [BugLabel]:
     return []
 
 
-def guess_and_parse_labels(filename: str) -> [BugLabel]:
+def guess_and_parse_labels(filename: str) -> List[BugLabel]:
     """Guess bug format and parse bug labels."""
     has_smartbugs_labels = False
     has_smartbench_labels = False
@@ -95,30 +100,30 @@ def guess_and_parse_labels(filename: str) -> [BugLabel]:
         return parse_smartbugs_labels(filename)
 
     if has_smartbugs_labels and has_smartbench_labels:
-        warnings.warn(
+        warning(
             "Found both SmartBench and SmartBugs label format in file:",
             filename,
         )
-        warnings.warn("Quit parsing labels...")
+        warning("Quit parsing labels...")
         return []
 
     # No label formats are found
     return []
 
 
-def parse_bug_labels(filename: str, label_format="SmartBugs") -> [BugLabel]:
-    """Parse bug labels from a smat contracts.
+def parse_bug_labels(filename: str, label_format=None) -> List[BugLabel]:
+    """Parse bug labels from a smart contracts.
 
     Bug label format can be `smartbugs`, `smartbench`, or `auto` formats.
     """
+    if label_format is None:
+        return guess_and_parse_labels(filename)
+
     if label_format.lower() == "smartbugs":
         return parse_smartbugs_labels(filename)
 
     if label_format.lower() == "smartbench":
         return parse_smartbench_labels(filename)
-
-    if label_format.lower() == "auto":
-        return guess_and_parse_labels(filename)
 
     warnings.warn("Invalid bug formmat:", label_format)
     return []

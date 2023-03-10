@@ -213,6 +213,8 @@ def configure_log_file(tool: Tool, result_dir: str) -> str:
 
 def configure_analysis_tools(args) -> List[Tool]:
     """Configure all analysis tools."""
+    print("Configure analysis tools...\n")
+
     tool_names = args.tools
     if tool_names is None or len(tool_names) == 0:
         sys.exit("No analysis tool is selected!")

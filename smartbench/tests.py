@@ -12,6 +12,8 @@ from typing import List
 
 # Library
 from smartbench import buglabel
+from smartbench.buglabel import BugLabel
+from smartbench.debug import debug
 
 
 def is_solidity_file(filename) -> bool:
@@ -33,10 +35,40 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
     return files
 
 
+def parse_bug_labels(test_files: List[str]) -> List[BugLabel]:
+    """Parsing bug labels from test files"""
+    print("Parsing bug labels...\n")
+
+    bug_labels = []
+
+    for test_file in test_files:
+        print("- Test case: " + test_file)
+        labels = buglabel.parse_bug_labels(test_file)
+
+        if len(labels) == 0:
+            print("  No bug labels are found!")
+            continue
+
+        for lbl in labels:
+            linum = str(lbl.start_line)
+            if lbl.start_line != lbl.end_line:
+                linum = linum + "-" + str(lbl.end_line)
+                print("  Line " + str(linum) + ": " + lbl.bug_category)
+            else:
+                print("  Line " + str(linum) + ": " + lbl.bug_category)
+
+        bug_labels += labels
+
+        print("")
+
+    return labels
+
+
 def collect_test_cases(args) -> List[str]:
     """
     Collect test cases for the analysis.
     """
+    print("Collecting test cases...\n")
     test_files = []
 
     for input_path in args.input_files_directories:
@@ -47,17 +79,9 @@ def collect_test_cases(args) -> List[str]:
             if is_solidity_file(input_path):
                 test_files.append(input_path)
 
-    # Printing for debugging
-    for test_file in test_files:
-        print("\nFile: " + test_file)
-        labels = buglabel.parse_bug_labels(test_file, "auto")
-        for lbl in labels:
-            linum = str(lbl.start_line)
-            if lbl.start_line != lbl.end_line:
-                linum = linum + "-" + str(lbl.end_line)
-                print("  Line " + str(linum) + ": " + lbl.bug_category)
-
     if len(test_files) == 0:
         sys.exit("No input smart contract is given!")
+
+    parse_bug_labels(test_files)
 
     return test_files
