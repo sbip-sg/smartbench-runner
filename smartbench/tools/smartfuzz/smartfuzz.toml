@@ -1,0 +1,13 @@
+[info]
+id = "smartfuzz"
+name = "SmartFuzz"
+homepage = "https://github.com/sbip-sg/smart-fuzz"
+category = "Fuzzing"
+
+[command]
+path = "..."
+default_arguments = ""
+
+[output]
+result_file = "smartfuzz_result.json"
+log_file = "smartfuzz_log.toml"

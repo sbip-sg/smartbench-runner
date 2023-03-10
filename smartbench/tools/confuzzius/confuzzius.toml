@@ -1,0 +1,13 @@
+[info]
+id = "confuzzius"
+name = "ConFuzzius"
+homepage = "https://github.com/christoftorres/ConFuzzius"
+category = "Fuzzing"
+
+[command]
+path = "..."
+default_arguments = ""
+
+[output]
+result_file = "confuzzius_result.json"
+log_file = "confuzzius_log.toml"
