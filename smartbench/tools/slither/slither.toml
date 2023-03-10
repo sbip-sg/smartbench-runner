@@ -10,4 +10,4 @@ default_arguments = ""
 
 [output]
 result_file = "slither_result.json"
-log_file = "slither_execution.log"
+log_file = "slither_log.toml"

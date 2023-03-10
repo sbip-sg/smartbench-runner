@@ -22,15 +22,15 @@ from smartbench.tools.tool import (
 
 
 def record_analysis_log(input_file: str, command: str, log_data, log_file):
+    """Write analysis log to `toml` file format"""
     with open(log_file, "w", encoding="utf-8") as file:
-        file.write("============== Input file ==============\n\n")
-        file.write(f"{input_file}\n\n")
-        file.write("=============== Command ================\n\n")
-        file.write(f"{command}\n\n")
-        file.write("============== Output Log ==============\n\n")
-        file.write(f"{log_data.stdout.decode('utf-8')}\n\n")
-        file.write("============== Errors Log ==============\n\n")
-        file.write(f"{log_data.stderr.decode('utf-8')}")
+        file.write("[input]\n")
+        file.write(f"contract = \"\"\"{input_file}\"\"\"\n\n")
+        file.write("[command]\n")
+        file.write(f"command = \"\"\"{command}\"\"\"\n\n")
+        file.write("[output]\n")
+        file.write(f"stdout = \"\"\"{log_data.stdout.decode('utf-8')}\"\"\"\n\n")
+        file.write(f"stderr = \"\"\"{log_data.stderr.decode('utf-8')}\"\"\"")
 
 
 def analyze_test_file(
