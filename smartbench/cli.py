@@ -38,7 +38,7 @@ def parse_cli_arguments():
     ################################
     # Parser for sub-command `analyze`
 
-    # create the parser for the `analyze` sub-command
+    # Create a parser for the `analyze` sub-command
     analyze_parser = sub_parsers.add_parser(
         "analyze",
         parents=[parent_parser],
@@ -80,12 +80,12 @@ def parse_cli_arguments():
     ################################
     # Parser for sub-command `parse-result`
 
-    # create the parser for the `analyze` sub-command
+    # Create a parser for the `parse-result` sub-command
     result_parser = sub_parsers.add_parser(
         "parse-result",
         parents=[parent_parser],
         add_help=False,
-        help="Sub-command to read existing analysis results.",
+        help="Sub-command to parse existing analysis results.",
     )
 
     # Input result directories
@@ -94,6 +94,25 @@ def parse_cli_arguments():
         nargs="+",  # Accept multiple input files or directories
         type=str,
         help="Input result directories.",
+    )
+
+    ################################
+    # Parser for sub-command `parse-annotation`
+
+    # Create a parser for the `parse-annotation` sub-command
+    annotation_parser = sub_parsers.add_parser(
+        "parse-annotation",
+        parents=[parent_parser],
+        add_help=False,
+        help="Sub-command to parse bug annotations in source code.",
+    )
+
+    # Input result directories
+    annotation_parser.add_argument(
+        "input_files_directories",
+        nargs="+",  # Accept multiple input files or directories
+        type=str,
+        help="Input files or directories (accepts wildcard characters).",
     )
 
     ################################

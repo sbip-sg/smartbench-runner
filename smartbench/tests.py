@@ -11,8 +11,8 @@ import sys
 from typing import List
 
 # Library
-from smartbench import buglabel
-from smartbench.buglabel import BugLabel
+from smartbench import bug_annot
+from smartbench.bug_annot import BugAnnot
 from smartbench.debug import debug
 
 
@@ -35,21 +35,21 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
     return files
 
 
-def parse_bug_labels(test_files: List[str]) -> List[BugLabel]:
-    """Parsing bug labels from test files"""
-    print("Parsing bug labels...\n")
+def parse_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
+    """Parsing bug annotations from test files"""
+    print("Parsing bug annotations...\n")
 
-    bug_labels = []
+    bug_annots = []
 
     for test_file in test_files:
         print("- Test case: " + test_file)
-        labels = buglabel.parse_bug_labels(test_file)
+        annot = bug_annot.parse_bug_annotations(test_file)
 
-        if len(labels) == 0:
-            print("  No bug labels are found!")
+        if len(annot) == 0:
+            print("  No bug annotations are found!")
             continue
 
-        for lbl in labels:
+        for lbl in annot:
             linum = str(lbl.start_line)
             if lbl.start_line != lbl.end_line:
                 linum = linum + "-" + str(lbl.end_line)
@@ -57,11 +57,11 @@ def parse_bug_labels(test_files: List[str]) -> List[BugLabel]:
             else:
                 print("  Line " + str(linum) + ": " + lbl.bug_category)
 
-        bug_labels += labels
+        bug_annots += annot
 
         print("")
 
-    return labels
+    return annot
 
 
 def collect_test_cases(args) -> List[str]:
@@ -82,6 +82,6 @@ def collect_test_cases(args) -> List[str]:
     if len(test_files) == 0:
         sys.exit("No input smart contract is given!")
 
-    parse_bug_labels(test_files)
+    parse_bug_annotations(test_files)
 
     return test_files

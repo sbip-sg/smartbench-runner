@@ -7,7 +7,7 @@ import signal
 import sys
 
 # Library
-from smartbench import analyze, buglabel, flags, result, tests
+from smartbench import analyze, flags, result, tests
 from smartbench.cli import parse_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
