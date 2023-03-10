@@ -23,9 +23,9 @@ from smartbench.tools.tool import (
 )
 
 
-def print_summary(test_file: str, issues: List[Issue]):
-    """Print statistic summary of detected issues"""
-    print(f"Summary for {test_file}:")
+def print_summary(test_file_name: str, issues: List[Issue]):
+    """Print statistic summary of detected issues for a test file"""
+    print(f"Summary for {test_file_name}:")
     print(f"- Number of issues: {len(issues)}")
 
     severities: Dict[Severity, int] = {}
@@ -35,7 +35,7 @@ def print_summary(test_file: str, issues: List[Issue]):
         else:
             severities[issue.severity] = 1
     severity = ", ".join([f"{s}: {severities[s]}" for s in severities])
-    print(f"- Severity: {severity}")
+    print(f"- Severity: {severity}\n")
 
 
 def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
@@ -130,7 +130,7 @@ def parse_result_directory(result_dir: str) -> List[Issue]:
         test_dirs = [p[0] for p in os.walk(tool_dir)]
         test_dirs = sorted(test_dirs)
         for test_dir in test_dirs:
-            test_name = os.path.basename(test_dir)
+            test_file_name = os.path.basename(test_dir)
 
             if not is_test_result_directory(tool, test_dir):
                 continue
@@ -139,7 +139,7 @@ def parse_result_directory(result_dir: str) -> List[Issue]:
             for issue in issues:
                 print(f"- {issue}")
 
-            print_summary(test_name, issues)
+            print_summary(test_file_name, issues)
 
             all_issues = all_issues + issues
 

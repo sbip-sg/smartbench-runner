@@ -73,6 +73,7 @@ def analyze_test_file(
     solc.configure_solc_compiler(test_file)
     try:
         # Run the analysis
+        print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(test_file, result_dir)
@@ -92,6 +93,9 @@ def analyze_test_file(
     for issue in issues:
         print("- " + str(issue))
 
+    test_file_name = os.path.basename(test_file)
+    result.print_summary(test_file_name, issues)
+
     return issues
 
 
@@ -101,7 +105,8 @@ def run_analysis_tool(tool, test_files, result_dir):
     The input `result_dir` is the directory containing results of all tools in
     the current run.
     """
-    debug("Running tool:", tool.name)
+    print(f"{'=' * 55}\n")
+    print(f"Running analysis tool: {tool.name}\n")
     common_path = os.path.commonpath(test_files)
     parent_path = os.path.dirname(common_path)
 
