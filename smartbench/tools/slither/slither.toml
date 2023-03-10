@@ -2,7 +2,7 @@
 id = "slither"
 name = "Slither"
 homepage = "https://github.com/crytic/slither"
-category = "Static analyzer"
+category = "Static analysis"
 
 [command]
 path = "slither"

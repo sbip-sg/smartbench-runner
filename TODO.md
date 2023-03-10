@@ -2,11 +2,11 @@
 
 ## Bug annotation
 
-- [ ] Support bug labels in range
+- [ ] Parse `SmartBench` annotations:
 
   ```solidity
   // In the same line:
-  // <bug type="Randomnes"> ... </bug>
+  // <bug type="Randomness"> ... </bug>
 
   // On multiple lines:
   // <bug type="Arithmetic">
@@ -14,12 +14,21 @@
   // </bug>
   ```
 
-## Supporting different analyzers
+## Analysis
+
+- [ ] Validate analysis results with bug annotations.
+
+## Supporting analyzers
 
 - [ ] Slither
-  + [ ] Running from command line
-  + [ ] Running from Docker
+
+  - [ ] Running from command line
+  - [ ] Running from Docker
 
 - [ ] Confuzzius
-  + [ ] Running from command line
-  + [ ] Running from Docker
+  - [ ] Running from command line
+  - [ ] Running from Docker
+
+- [ ] SmartFuzz
+  - [ ] Running from command line
+  - [ ] Running from Docker

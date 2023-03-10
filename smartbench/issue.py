@@ -3,9 +3,10 @@
 
 # Standard Library
 from enum import Enum, auto
-from typing import Union
+from typing import List, Union
 
 # Library
+from smartbench.bug_annot import BugAnnot
 from smartbench.location import Location
 
 
@@ -169,3 +170,8 @@ class Issue:
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )
+
+    def validate(self, bug_annots: List[BugAnnot]) -> bool:
+        """Validate if the issue matches one of the bug annotations."""
+        # TODO: implement
+        return False

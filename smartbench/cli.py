@@ -105,6 +105,13 @@ def parse_cli_arguments():
         help="Input result directories.",
     )
 
+    # Validate analysis result
+    result_parser.add_argument(
+        "--validate-results",
+        action="store_true",
+        help="Validate analysis results with bug annotations.",
+    )
+
     ################################
     # Parser for sub-command `parse-annotation`
 

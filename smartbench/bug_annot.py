@@ -3,7 +3,6 @@
 "Module representing a bug annotation."
 
 # Standard Library
-import sys
 import warnings
 
 from typing import List, Union
@@ -45,20 +44,24 @@ class BugAnnot:
         return res
 
 
-# Bug line number in SmartBug format can be imprecise: if there are two
-# consecutive lines specifying the bug, then the line number of
-# the first bug might not be correctly decided.
-#
-# ```solidity
-# // <yes> <report> <bug1>
-# // <yes> <report> <bug2>
-# // <yes> <report> <bug3>
-# ... some Solidity source code
-# ```
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
-    """Parse bug annotations written in SmartBugs format in a smart contract.
+    """Parse bug annotations written in `SmartBugs` format in a smart contract.
 
-    SmartBugs format: // <yes/no> <report> <bug type>
+    `SmartBugs` format: // <yes/no> <report> <bug type>
+
+    Note: this annotation format can be imprecise if there multiple
+    consecutive lines specifying the bug, then the line number of the
+    first bug might not be correctly decided.
+
+    In the following example, line number of the first 2 bugs can be
+    difficult to determined:
+
+    # ```solidity
+    # // <yes> <report> <bug1>
+    # // <yes> <report> <bug2>
+    # // <yes> <report> <bug3>
+    # ... some Solidity source code
+    # ```
     """
     bug_annots = []
     with open(filename, "r", encoding="utf-8") as file:
@@ -83,7 +86,7 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
 
 
 def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
-    """Parse bug annotations written in SmartBench format in a smart contract.
+    """Parse bug annotations written in `SmartBench` format in a smart contract.
 
     SmartBench format is in HTML-like format.
     // <bug type='bug-type' severity='high'>
