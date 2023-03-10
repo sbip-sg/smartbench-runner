@@ -113,7 +113,7 @@ class Tool:
         if self.is_slither():
             make_command = slither.make_slither_analysis_command
         elif self.is_confuzzius():
-            confuzzius.make_confuzzius_analysis_command
+            make_command = confuzzius.make_confuzzius_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
 

@@ -1,5 +1,11 @@
 colored-traceback == 0.3.0
 toml == 0.10.2
-solc-select = 1.0.2
+solc-select == 1.0.2
+# ConFuzzius
+web3==4.8.3
+py-evm==0.3.0a1
+py-solc-x==1.1.1
+z3-solver==4.8.5.0
+psutil==5.7.2
 
 git+https://github.com/taquangtrung/solc-detect.git@main#egg=solc_detect

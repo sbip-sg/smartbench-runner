@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# python3 ~/workspace/ConFuzzius/fuzzer/main.py -s ConFuzzius/examples/TokenSale/contracts/TokenSale.sol --evm byzantium -t 10
 """Module handling Confuzzius"""
 
 # Standard Library
@@ -15,7 +16,7 @@ from smartbench.location import Location
 
 
 # Tool name
-TOOL_NAME = "confuzzius"
+TOOL_NAME = "ConFuzzius"
 
 
 def make_confuzzius_analysis_command(
@@ -28,6 +29,7 @@ def make_confuzzius_analysis_command(
     Function to make analysis command for Confuzzius.
     This function should have the same signature with other tools.
     """
+    print("Making confuzzius command")
     command = executable_file
 
     if arguments:
