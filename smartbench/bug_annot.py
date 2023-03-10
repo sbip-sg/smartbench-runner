@@ -26,11 +26,23 @@ BUG_CLOSE_TAG = "</bug>"
 class BugAnnot:
     """Class representing a bug annotation in smart contracts."""
 
+    filename: str
+    start_line: int
+    end_line: int
+    bug_category: str
+
     def __init__(self, filename, start_line, end_line, bug_category):
         self.filename = filename
         self.start_line = start_line
         self.end_line = end_line
         self.bug_category = bug_category
+
+    def print_by_line(self) -> str:
+        res = f"Line {self.start_line}"
+        if self.start_line != self.end_line:
+            res = res + "-" + str(self.end_line)
+        res = res + ": " + self.bug_category
+        return res
 
 
 # Bug line number in SmartBug format can be imprecise: if there are two
@@ -113,21 +125,49 @@ def guess_annotation_type(filename: str) -> Union[str, None]:
     return None
 
 
-def parse_bug_annotations(filename: str, annot_format=None) -> List[BugAnnot]:
+def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
     """Parse bug annotation in a smart contract.
 
     The input `annot_format` can take value `smartbugs`, `smartbench`, or None.
     """
+    annot_format = (
+        annot_format
+        if annot_format is not None
+        else guess_annotation_type(test_file)
+    )
+
     if annot_format is None:
-        annot_format = guess_annotation_type(filename)
-        if annot_format is None:
-            return []
+        return []
 
     if annot_format.lower() == "smartbugs":
-        return parse_smartbugs_annotations(filename)
+        return parse_smartbugs_annotations(test_file)
 
     if annot_format.lower() == "smartbench":
-        return parse_smartbench_annotations(filename)
+        return parse_smartbench_annotations(test_file)
 
-    warnings.warn("Invalid bug formmat:", annot_format)
+    warnings.warn("Unknown bug annotation formmat:", annot_format)
     return []
+
+
+def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
+    """Parsing bug annotations from test files"""
+    print("\nParsing bug annotations...\n")
+
+    bug_annots = []
+
+    for test_file in test_files:
+        print("- Test file: " + test_file)
+        annots = parse_bug_annotations(test_file)
+
+        if len(annots) == 0:
+            print("  No bug annotations are found!")
+            continue
+
+        for annot in annots:
+            print(f"  {annot.print_by_line()}")
+
+        bug_annots += annots
+
+        print("")
+
+    return bug_annots

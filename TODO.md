@@ -1,6 +1,8 @@
 # List of tasks
 
-- Support bug labels in range
+## Bug annotation
+
+- [ ] Support bug labels in range
 
   ```solidity
   // In the same line:
@@ -11,3 +13,13 @@
   // ...
   // </bug>
   ```
+
+## Supporting different analyzers
+
+- [ ] Slither
+  + [ ] Running from command line
+  + [ ] Running from Docker
+
+- [ ] Confuzzius
+  + [ ] Running from command line
+  + [ ] Running from Docker

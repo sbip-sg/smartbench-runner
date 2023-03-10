@@ -63,6 +63,14 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
+    # Validate analysis result
+    analyze_parser.add_argument(
+        "--validate-results",
+        action="store_true",
+        help="Validate analysis results with bug annotations.",
+    )
+
+    # Additional arguments of Slither
     analyze_parser.add_argument(
         "--slither-args",
         metavar="ARGUMENTS",
@@ -70,6 +78,7 @@ def parse_cli_arguments():
         help="Additional arguments of Slither",
     )
 
+    # Additional arguments of Confuzzius
     analyze_parser.add_argument(
         "--confuzzius-args",
         metavar="ARGUMENTS",
@@ -101,7 +110,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `parse-annotation` sub-command
     annotation_parser = sub_parsers.add_parser(
-        "parse-annotation",
+        "parse-annot",
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to parse bug annotations in source code.",

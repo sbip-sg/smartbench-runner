@@ -10,7 +10,7 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import result, solc
+from smartbench import bug_annot, result, solc
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue
 from smartbench.tools.slither import slither
@@ -65,9 +65,13 @@ def record_benchmarking_log(tools, test_files, result_dir: str):
 
 
 def analyze_test_file(
-    tool: Tool, test_file: str, result_dir: str
+    tool: Tool, test_file: str, result_dir: str, validate=False
 ) -> List[Issue]:
-    "Run the analysis on one test case."
+    """Run the analysis on one test case.
+
+    If `validate` is True, the detected issues will be validated with
+    bug annotations in the testing files.
+    """
     # Configure Solc compiler
     # TODO: check if tool doesn't need compiler, then don't configure
     solc.configure_solc_compiler(test_file)
@@ -93,31 +97,52 @@ def analyze_test_file(
     for issue in issues:
         print("- " + str(issue))
 
+    if validate:
+        annots = bug_annot.parse_bug_annotations(test_file)
+        for annot in annots:
+            print(annot.print_by_line())
+
     test_file_name = os.path.basename(test_file)
     result.print_summary(test_file_name, issues)
 
     return issues
 
 
-def run_analysis_tool(tool, test_files, result_dir):
+def run_analysis_tool(
+    tool: Tool, test_files: List[str], result_dir: str, validate=False
+) -> List[Issue]:
     """Run one analysis tool.
 
     The input `result_dir` is the directory containing results of all tools in
     the current run.
+
+    If `validate` is True, the detected issues will be validated with
+    bug annotations in the testing files.
     """
     print(f"{'=' * 55}\n")
     print(f"Running analysis tool: {tool.name}\n")
     common_path = os.path.commonpath(test_files)
     parent_path = os.path.dirname(common_path)
 
+    all_issues = []
+
     for test_file in test_files:
         rel_path = os.path.relpath(test_file, start=parent_path)
         output_dir = os.path.join(result_dir, tool.id, rel_path)
-        analyze_test_file(tool, test_file, output_dir)
+        issues = analyze_test_file(tool, test_file, output_dir, validate)
+        all_issues += issues
+
+    return all_issues
 
 
-def perform_analysis(tools, test_files):
-    """Function to run all tools to analyze all test files."""
+def perform_analysis(
+    tools: List[Tool], test_files: List[str], validate=False
+) -> List[Issue]:
+    """Function to run all tools to analyze all test files.
+
+    If `validate` is True, the detected issues will be validated with
+    bug annotations in the testing files.
+    """
     # Prepare output directory
     print("Start analyzing all test cases...\n")
     result_dir = os.path.join(
@@ -130,9 +155,14 @@ def perform_analysis(tools, test_files):
 
     record_benchmarking_log(tools, test_files, result_dir)
 
+    all_issues = []
+
     # Perform the analysis
     for tool in tools:
-        run_analysis_tool(tool, test_files, result_dir)
+        issues = run_analysis_tool(tool, test_files, result_dir, validate)
+        all_issues += issues
 
     print("Benchmarking completed!\n")
     print(f"Results are recorded at: {result_dir}")
+
+    return all_issues

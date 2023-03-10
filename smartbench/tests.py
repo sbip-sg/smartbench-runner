@@ -35,40 +35,11 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
     return files
 
 
-def parse_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
-    """Parsing bug annotations from test files"""
-    print("Parsing bug annotations...\n")
-
-    bug_annots = []
-
-    for test_file in test_files:
-        print("- Test case: " + test_file)
-        annot = bug_annot.parse_bug_annotations(test_file)
-
-        if len(annot) == 0:
-            print("  No bug annotations are found!")
-            continue
-
-        for lbl in annot:
-            linum = str(lbl.start_line)
-            if lbl.start_line != lbl.end_line:
-                linum = linum + "-" + str(lbl.end_line)
-                print("  Line " + str(linum) + ": " + lbl.bug_category)
-            else:
-                print("  Line " + str(linum) + ": " + lbl.bug_category)
-
-        bug_annots += annot
-
-        print("")
-
-    return annot
-
-
 def collect_test_cases(args) -> List[str]:
     """
     Collect test cases for the analysis.
     """
-    print("Collecting test cases...\n")
+    print("Collecting test cases...")
     test_files = []
 
     for input_path in args.input_files_directories:
@@ -80,8 +51,10 @@ def collect_test_cases(args) -> List[str]:
                 test_files.append(input_path)
 
     if len(test_files) == 0:
-        sys.exit("No input smart contract is given!")
+        sys.exit("No input smart contract is found!")
+    else:
+        print(f"Found {len(test_files)} test files!")
 
-    parse_bug_annotations(test_files)
+    test_files = sorted(test_files)
 
     return test_files

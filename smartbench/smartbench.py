@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import os
-import pathlib
 import signal
 import sys
 
 # Library
-from smartbench import analyze, flags, result, tests
+from smartbench import analyze, bug_annot, flags, result, tests
 from smartbench.cli import parse_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
@@ -25,14 +23,19 @@ def analyze_smart_contracts(args):
     tools = configure_analysis_tools(args)
 
     # Perform the analysis
-    analyze.perform_analysis(tools, test_files)
+    analyze.perform_analysis(tools, test_files, validate=True)
 
 
 def parse_existing_results(args):
     """Parse existing results obtained from previous analyses."""
-    # Configure tools
     for result_dir in args.result_directories:
         result.parse_result_directory(result_dir)
+
+
+def parse_bug_annotations(args):
+    """Parse bug annotation in smart contracts."""
+    test_files = tests.collect_test_cases(args)
+    bug_annot.collect_bug_annotations(test_files)
 
 
 def main():
@@ -42,14 +45,18 @@ def main():
     args = parse_cli_arguments()
     flags.configure_global_flags(args)
 
-    # Run analysis mode
+    # Run analysis tools
     if args.sub_command == "analyze":
-        print("Running Smartbench...\n")
+        print("Smartbench: running mode analyzing smart contracts...\n")
         analyze_smart_contracts(args)
-    # Run result parsing mode
+    # Parse analysis results
     elif args.sub_command == "parse-result":
-        print("Parsing existing benchmarking results...\n")
+        print("Smartbench: running mode parsing benchmarking results...\n")
         parse_existing_results(args)
+    # Parse bug annotations
+    elif args.sub_command == "parse-annot":
+        print("Smartbench: running mode parsing bug annotations...\n")
+        parse_bug_annotations(args)
     else:
         print("Smartbench runner: no sub-command is specified!")
 
