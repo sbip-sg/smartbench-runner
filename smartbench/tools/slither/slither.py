@@ -64,6 +64,9 @@ def parse_severity(severity: Union[str, None]) -> Severity:
 
     severity = severity.casefold()
 
+    if severity == "optimization":
+        return Severity.CODE_OPTIMIZATION
+
     if severity == "informational":
         return Severity.INFORMATIONAL
 
@@ -101,7 +104,7 @@ def parse_rule(rule: str) -> Checker:
     return Checker("Slither", rule)
 
 
-def parse_issue_kind(description: str) -> IssueKind:
+def parse_issue_kind(description: str, checker: str) -> IssueKind:
     """Parse issue kind from issue description reported by Slither"""
     if "Reentrancy" in description:
         return IssueKind.REENTRANCY
@@ -109,9 +112,29 @@ def parse_issue_kind(description: str) -> IssueKind:
     if "ignores return value by" in description:
         if "send" in description:
             return IssueKind.UNCHECKED_SEND
+        if checker == "unchecked-lowlevel":
+            return IssueKind.UNCHECKED_LOWLEVEL_CODE
+
+    if "Low level call" in description:
+        return IssueKind.LOW_LEVEL_CALL
+
+    if "incorrect ERC20 function interface" in description:
+        return IssueKind.INCORRECT_ERC20_FUNCTION_INTERFACE
 
     if "lacks a zero-check on" in description:
         return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
+
+    if "sends eth to arbitrary user" in description:
+        return IssueKind.SEND_ETH_TO_ARBITRARY_USER
+
+    if "uses a weak PRNG" in description:
+        return IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR
+
+    if "uses a dangerous strict equality" in description:
+        return IssueKind.DANGEROUS_STRICT_EQUALITY
+
+    if "uses timestamp for comparisons" in description:
+        return IssueKind.USE_BLOCK_TIMESTAMP
 
     if "should emit an event" in description:
         return IssueKind.SHOULD_EMIT_EVENT
@@ -129,6 +152,22 @@ def parse_issue_kind(description: str) -> IssueKind:
     if "is not recommended for deployment" in description:
         return IssueKind.COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT
 
+    if "is a storage variable never initialized" in description:
+        return IssueKind.UNINITIALIZED_STORAGE
+
+    if "Deprecated" in description:
+        if "THROW" in description:
+            return IssueKind.DEPRECATED_THROW
+        if 'Usage of "sha3()" should be replaced' in description:
+            return IssueKind.DEPRECATED_SHA3
+        if 'Usage of "block.blockhash()" should be replaced' in description:
+            return IssueKind.DEPRECATED_BLOCK_DOT_BLOCKHASH
+
+    if "compares to a boolean constant" in description:
+        return IssueKind.COMPARE_TO_BOOLEAN_CONSTANT
+
+    # Coding style
+
     if "not in mixedCase" in description:
         if "Parameter" in description:
             return IssueKind.PARAMETER_NAME_NOT_IN_MIXED_CASE
@@ -139,12 +178,38 @@ def parse_issue_kind(description: str) -> IssueKind:
         if "Function" in description:
             return IssueKind.FUNCTION_NAME_NOT_IN_MIXED_CASE
 
+    if "not in UPPER_CASE_WITH_UNDERSCORES" in description:
+        if "Constant" in description:
+            return IssueKind.CONSTANT_NAME_NOT_IN_UPPER_CASE
+
+    if "shadows:" in description and checker == "shadowing-local":
+        return IssueKind.SHADOWING_LOCAL_VARIABLE
+
+    # Code optimization
+
     if "does not always execute" in description:
         return IssueKind.POSIBLE_UNREACHABLE_CODE
 
-    if "Deprecated" in description:
-        if "THROW" in description:
-            return IssueKind.DEPRECATED_THROW
+    if (
+        "is never used and should be removed" in description
+        and checker == "dead-code"
+    ):
+        return IssueKind.UNUSED_FUNCTION
+
+    if "is never used in" in description and checker == "unused-state":
+        return IssueKind.UNUSED_VARIABLE
+
+    if "uses literals with too many digits" in description:
+        return IssueKind.USE_LITERALS_WITH_TOO_MANY_DIGITS
+
+    if "should be constant" in description:
+        return IssueKind.USE_CONSTANT_INSTEAD_OF_VARIABLE
+
+    if "should be declared external" in description:
+        return IssueKind.FUNCTION_SHOULD_BE_DECLARED_EXTERNAL
+
+    if "has costly operations inside a loop" in description:
+        return IssueKind.COSTLY_LOOP
 
     return IssueKind.UNKNOWN
 
@@ -181,9 +246,9 @@ def parse_slither_json_output(
 
         for detector in detectors:
             description = detector.get("description")
-            kind = parse_issue_kind(description)
-            location = parse_source_location(detector.get("elements"))
             checker = parse_rule(detector.get("check"))
+            kind = parse_issue_kind(description, checker.detector)
+            location = parse_source_location(detector.get("elements"))
             severity = parse_severity(detector.get("impact"))
             confidence = parse_confidence(detector.get("confidence"))
             issue = Issue(

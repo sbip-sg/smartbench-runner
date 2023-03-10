@@ -81,13 +81,17 @@ def process_result_directory(result_dir: str) -> List[Issue]:
 
     all_issues: List[Issue] = []
 
-    tool_dirs = list(os.listdir(result_dir))
-    for tool_dir in tool_dirs:
-        # Tool id is expected to be the same as tool_result_dir
-        tool_id = tool_dir
+    items = list(os.listdir(result_dir))
+    for item in items:
+        item_path = os.path.join(result_dir, item)
+        if not os.path.isdir(item_path):
+            continue
+
+        # Tool ID is assumed to be the same as tool_dir
+        tool_id = item
         print(f"Create tool configuration for: {tool_id}")
         tool = create_tool_configuration(tool_id)
-        tool_dir = os.path.join(result_dir, tool_dir)
+        tool_dir = os.path.join(result_dir, tool_id)
         test_dirs = list(os.listdir(tool_dir))
         if tool is None:
             warning(f"Unable to reconstruct tool configuration: {tool_id}")

@@ -21,10 +21,18 @@ class IssueKind(Enum):
 
     # Unchecked operations
     UNCHECKED_SEND = "Unchecked Send"
+    UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
+    SEND_ETH_TO_ARBITRARY_USER = "Arbitrary Send ETH"
+
+    # Low-level code
+    LOW_LEVEL_CALL = "Low-Level Call"
 
     # Event operations
     SHOULD_EMIT_EVENT = "Should Emit Event"
+
+    # Interface
+    INCORRECT_ERC20_FUNCTION_INTERFACE = "Incorrect ERC20 Function Interface"
 
     # Compiler
     OUTDATED_COMPILER_VERSION = "Outdated Compiler Version"
@@ -32,21 +40,44 @@ class IssueKind(Enum):
         "Compiler Not Recommended for Deployment"
     )
 
+    # Logic
+    WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR = "Weak Pseudo Random Number Generator"
+    DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
+
+    # Weak feature
+    USE_BLOCK_TIMESTAMP = "Use Block Timestamp"
+
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
+
+    # Initialization
+    UNINITIALIZED_STORAGE = "Uninitialized Storage"
 
     # Coding style
     PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
     VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
     FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
     MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
+    CONSTANT_NAME_NOT_IN_UPPER_CASE = "Constant Name Not in Upper Case"
+    SHADOWING_LOCAL_VARIABLE = "Shadowing Variable"
 
     # Code optimization
     MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
     POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
+    UNUSED_FUNCTION = "Unused Function"
+    UNUSED_VARIABLE = "Unused Variable"
+    USE_LITERALS_WITH_TOO_MANY_DIGITS = "Literal with Too Many Digits"
+    USE_CONSTANT_INSTEAD_OF_VARIABLE = "Use Constant Instead of Variable"
+    FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = (
+        "Function Should Be Declared External"
+    )
+    COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
+    COSTLY_LOOP = "Costly Loop"
 
     # Deprecated features
     DEPRECATED_THROW = "Deprecated Throw"
+    DEPRECATED_SHA3 = "Deprecated SHA3"
+    DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
     def __str__(self):
         return self.value
