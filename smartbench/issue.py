@@ -89,7 +89,7 @@ class Severity(Enum):
     # Severity level
     UNKNOWN = "Unknown Severity"
     CODING_STYLE = "Coding Style"
-    CODE_OPTIMIZATION = "Code Optimization"
+    CODE_OPTIMIZATION = "juOptimization"
     INFORMATIONAL = "Informational"
     LOW_RISK = "Low Risk"
     MEDIUM_RISK = "Medium Risk"

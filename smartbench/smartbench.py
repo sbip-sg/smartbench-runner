@@ -48,7 +48,7 @@ def main():
         analyze_smart_contracts(args)
     # Run result parsing mode
     elif args.sub_command == "parse-result":
-        print("Parsing existing benchmarking results...")
+        print("Parsing existing benchmarking results...\n")
         parse_existing_results(args)
     else:
         print("Smartbench runner: no sub-command is specified!")

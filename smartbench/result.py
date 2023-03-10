@@ -6,22 +6,36 @@
 # Standard Library
 import os
 import pathlib
-import warnings
 
-from typing import List
+from typing import Dict, List
 
 # Third Party
 import toml
 
 # Library
 from smartbench.debug import warning
-from smartbench.issue import Issue
+from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import (
     Tool,
     configure_output_file,
     load_tool_configuration,
 )
+
+
+def print_summary(test_file: str, issues: List[Issue]):
+    """Print statistic summary of detected issues"""
+    print(f"Summary for {test_file}:")
+    print(f"- Number of issues: {len(issues)}")
+
+    severities: Dict[Severity, int] = {}
+    for issue in issues:
+        if issue.severity in severities:
+            severities[issue.severity] += 1
+        else:
+            severities[issue.severity] = 1
+    severity = ", ".join([f"{s}: {severities[s]}" for s in severities])
+    print(f"- Severity: {severity}")
 
 
 def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
@@ -66,8 +80,8 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
             warning("Input information!")
         else:
             test_file = input_log.get("test_file")
-            print(f"Test file: {test_file}")
-            print(f"{'-' * 30}\n")
+            print(f"{'-' * 45}\n")
+            print(f"Test file: {test_file}\n")
 
     parse_result_fn = None
     if tool.is_slither():
@@ -109,19 +123,24 @@ def parse_result_directory(result_dir: str) -> List[Issue]:
             warning(f"Unable to load tool configuration: {tool_id}")
             continue
 
-        print(f"\nParsing analysis result of: {tool.id}")
-        print(f"{'=' * 45}\n")
+        print(f"{'=' * 55}\n")
+        print(f"Parsing analysis result of: {tool.id}\n")
 
         tool_dir = os.path.join(result_dir, tool_id)
         test_dirs = [p[0] for p in os.walk(tool_dir)]
         test_dirs = sorted(test_dirs)
         for test_dir in test_dirs:
+            test_name = os.path.basename(test_dir)
+
             if not is_test_result_directory(tool, test_dir):
                 continue
 
             issues = parse_existing_analysis_result(tool, test_dir)
             for issue in issues:
                 print(f"- {issue}")
+
+            print_summary(test_name, issues)
+
             all_issues = all_issues + issues
 
     return all_issues
