@@ -24,10 +24,23 @@
   ./smartbench.sh analyze examples -t slither
   ```
 
-- Run `parse-result` sub-command to reload existing results.
+- Run `parse-result` sub-command to read existing results.
 
   ```sh
   ./smartbench.sh parse-result results/<path_to_result_set>/
+  ```
+
+- Run `parse-annot` sub-command to collect bug annotations in smart contracts.
+
+  ```sh
+  # Input a single file
+  ./smartbench.sh parse-annot examples/Rubixi.sol
+
+  # Input a wild-card pattern
+  ./smartbench.sh parse-annot examples/*.sol
+
+  # Input a directory
+  ./smartbench.sh parse-annot examples
   ```
 
 # Development
