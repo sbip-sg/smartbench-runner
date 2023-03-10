@@ -37,7 +37,6 @@ def record_execution_log(
         # Log input
         file.write("[input]\n")
         file.write(f'test_file = """{input_file}"""\n\n')
-        file.write("[command]\n")
         file.write(f'command = """{command}"""\n\n')
 
         # Log output

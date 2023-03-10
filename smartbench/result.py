@@ -10,6 +10,9 @@ import warnings
 
 from typing import List
 
+# Third Party
+import toml
+
 # Library
 from smartbench.debug import warning
 from smartbench.issue import Issue
@@ -17,7 +20,7 @@ from smartbench.tools.slither import slither
 from smartbench.tools.tool import (
     Tool,
     configure_output_file,
-    create_tool_configuration,
+    load_tool_configuration,
 )
 
 
@@ -51,8 +54,22 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
     immediate result of an analysis tool.
     """
 
-    parse_result_fn = None
+    test_dir = os.path.abspath(test_dir)
+    output_file = os.path.join(test_dir, tool.output_file)
+    log_file = os.path.join(test_dir, tool.log_file)
 
+    with open(log_file, "r", encoding="utf-8") as file:
+        file_content = file.read()
+        log = toml.loads(file_content)
+        input_log = log.get("input")
+        if input_log is None:
+            warning("Input information!")
+        else:
+            test_file = input_log.get("test_file")
+            print(f"Test file: {test_file}")
+            print(f"{'-' * 30}\n")
+
+    parse_result_fn = None
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
 
@@ -60,20 +77,16 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
         warning(f"Does not support parsing result of tool: {tool.name}")
         return []
 
-    test_dir = os.path.abspath(test_dir)
-    output_file = os.path.join(test_dir, tool.output_file)
     return parse_result_fn(output_file)
 
 
-def process_result_directory(result_dir: str) -> List[Issue]:
-    """Function to process result directory of a tool.
+def parse_result_directory(result_dir: str) -> List[Issue]:
+    """Function to parse result directory of a tool.
 
     The input `result_dir` is the directory containing results of all
     tools.
-
     """
 
-    print("Result dir: " + result_dir)
     path = pathlib.Path(result_dir)
     if not path.is_dir():
         warning(f"Directory does not exists: {result_dir}")
@@ -81,6 +94,7 @@ def process_result_directory(result_dir: str) -> List[Issue]:
 
     all_issues: List[Issue] = []
 
+    # Parse results of each analysis tool
     items = list(os.listdir(result_dir))
     for item in items:
         item_path = os.path.join(result_dir, item)
@@ -89,22 +103,22 @@ def process_result_directory(result_dir: str) -> List[Issue]:
 
         # Tool ID is assumed to be the same as tool_dir
         tool_id = item
-        print(f"Create tool configuration for: {tool_id}")
-        tool = create_tool_configuration(tool_id)
-        tool_dir = os.path.join(result_dir, tool_id)
-        test_dirs = list(os.listdir(tool_dir))
-        if tool is None:
-            warning(f"Unable to reconstruct tool configuration: {tool_id}")
-            continue
-        print(f"  - {tool.id}")
+        tool = load_tool_configuration(tool_id)
 
+        if tool is None:
+            warning(f"Unable to load tool configuration: {tool_id}")
+            continue
+
+        print(f"\nParsing analysis result of: {tool.id}")
+        print(f"{'=' * 45}\n")
+
+        tool_dir = os.path.join(result_dir, tool_id)
         test_dirs = [p[0] for p in os.walk(tool_dir)]
         test_dirs = sorted(test_dirs)
         for test_dir in test_dirs:
             if not is_test_result_directory(tool, test_dir):
                 continue
 
-            print(f"=== Parsing results in test dir: {test_dir}\n")
             issues = parse_existing_analysis_result(tool, test_dir)
             for issue in issues:
                 print(f"- {issue}")

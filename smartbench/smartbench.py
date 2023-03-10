@@ -32,7 +32,7 @@ def parse_existing_results(args):
     """Parse existing results obtained from previous analyses."""
     # Configure tools
     for result_dir in args.result_directories:
-        result.process_result_directory(result_dir)
+        result.parse_result_directory(result_dir)
 
 
 def main():
@@ -48,7 +48,7 @@ def main():
         analyze_smart_contracts(args)
     # Run result parsing mode
     elif args.sub_command == "parse-result":
-        print("Smartbench runner: parse existing results...")
+        print("Parsing existing benchmarking results...")
         parse_existing_results(args)
     else:
         print("Smartbench runner: no sub-command is specified!")
