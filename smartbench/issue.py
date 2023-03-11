@@ -80,6 +80,13 @@ class IssueKind(Enum):
     DEPRECATED_SHA3 = "Deprecated SHA3"
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
+    # Assertion failure
+    ASSERTION_FAILURE = "Assertion Failure"
+
+    # Integer Overflow/Underflow
+    INTEGER_OVERFLOW = "Integer Overflow"
+    INTEGER_UNDERFLOW = "Integer Underflow"
+
     def __str__(self):
         return self.value
 
