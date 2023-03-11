@@ -16,6 +16,7 @@ import toml
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
+from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import (
     Tool,
     configure_output_file,
@@ -45,6 +46,9 @@ def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
     if tool.is_slither():
         process_result_fn = slither.parse_slither_json_output
 
+    if tool.is_confuzzius():
+        process_result_fn = confuzzius.parse_confuzzius_json_output
+
     if process_result_fn:
         output_file = configure_output_file(tool, result_dir)
         return process_result_fn(output_file)
@@ -70,22 +74,26 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
 
     test_dir = os.path.abspath(test_dir)
     output_file = os.path.join(test_dir, tool.output_file)
-    log_file = os.path.join(test_dir, tool.log_file)
+    # log_file = os.path.join(test_dir, tool.log_file)
 
-    with open(log_file, "r", encoding="utf-8") as file:
-        file_content = file.read()
-        log = toml.loads(file_content)
-        input_log = log.get("input")
-        if input_log is None:
-            warning("Input information!")
-        else:
-            test_file = input_log.get("test_file")
-            print(f"{'-' * 45}\n")
-            print(f"Test file: {test_file}\n")
+    # with open(log_file, "r", encoding="utf-8") as file:
+    #     file_content = file.read()
+    #     print(f"content: {log_file}")
+    #     log = toml.loads(file_content)
+    #     input_log = log.get("input")
+    #     if input_log is None:
+    #         warning("Input information!")
+    #     else:
+    #         test_file = input_log.get("test_file")
+    #         print(f"{'-' * 45}\n")
+    #         print(f"Test file: {test_file}\n")
 
     parse_result_fn = None
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
+
+    if tool.is_confuzzius():
+        parse_result_fn = confuzzius.parse_confuzzius_json_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")

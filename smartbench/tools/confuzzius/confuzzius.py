@@ -35,7 +35,7 @@ def make_confuzzius_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 100"
+    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 20"
     return command
 
 
@@ -64,12 +64,6 @@ def parse_severity(severity: Union[str, None]) -> Severity:
         return Severity.UNKNOWN
 
     severity = severity.casefold()
-
-    if severity == "optimization":
-        return Severity.CODE_OPTIMIZATION
-
-    if severity == "informational":
-        return Severity.INFORMATIONAL
 
     if severity == "low":
         return Severity.LOW_RISK
@@ -234,12 +228,6 @@ def parse_confuzzius_json_output(
         return []
 
     try:
-        success = output.get("success")
-        if not success:
-            warning("An error happened when running Confuzzius!")
-            warning("See output file for more details: " + output_file)
-            return []
-
         results = output.get("results")
         detectors = results.get("detectors")
 

@@ -5,7 +5,7 @@ homepage = "https://github.com/christoftorres/ConFuzzius"
 category = "Fuzzing"
 
 [command]
-path = "python ~/workspace/ConFuzzius/fuzzer/main.py"
+path = "python /home/thanhtoantnt/workspace/ConFuzzius/fuzzer/main.py"
 default_arguments = ""
 
 [output]
