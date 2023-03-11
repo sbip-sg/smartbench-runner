@@ -35,8 +35,7 @@ def make_confuzzius_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " " + test_file + " --json " + output_file
-
+    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 100"
     return command
 
 
