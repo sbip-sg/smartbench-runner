@@ -1,0 +1,7 @@
+# Smartbench benchmarking log 
+
+tools = ["confuzzius"]
+
+test_files = [
+  "/home/thanhtoantnt/workspace/smartbench-runner/examples/Rubixi.sol"
+]
