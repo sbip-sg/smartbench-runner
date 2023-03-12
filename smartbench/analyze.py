@@ -130,6 +130,7 @@ def analyze_test_file(
     test_file_name = os.path.basename(test_file)
     result.print_summary(test_file_name, issues)
 
+    print(f"validation: {validated_bugs}/{total_bugs}")
     return (issues, validated_bugs, total_bugs)
 
 
