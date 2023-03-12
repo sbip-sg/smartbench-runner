@@ -151,4 +151,6 @@ def parse_result_directory(result_dir: str) -> List[Issue]:
 
             all_issues = all_issues + issues
 
+        # TODO: summary the results of a tool
+        # print_summary(item_path, all_issues)
     return all_issues
