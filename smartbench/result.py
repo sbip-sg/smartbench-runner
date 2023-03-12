@@ -51,7 +51,11 @@ def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
 
     if process_result_fn:
         output_file = configure_output_file(tool, result_dir)
-        return process_result_fn(output_file)
+        try:
+            return process_result_fn(output_file)
+        except:
+            # When there is no results
+            return []
 
     return []
 

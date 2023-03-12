@@ -12,7 +12,8 @@ from typing import List
 # Library
 from smartbench import bug_annot, result, solc
 from smartbench.debug import debug, warning
-from smartbench.issue import Issue
+from smartbench.issue import Issue, IssueKind
+from smartbench.bug_annot import BugAnnot
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import (
     ALL_RESULTS_DIR,
@@ -64,9 +65,26 @@ def record_benchmarking_log(tools, test_files, result_dir: str):
             file.write(f"test_files = [\n  {tests_info}\n]\n")
 
 
+def check_detected_issue(annot: BugAnnot, issues: List[Issue]) -> bool:
+    category = annot.bug_category
+    line = annot.start_line + 1
+    for issue in issues:
+        if issue.location != None:
+            kind = issue.kind
+            location = issue.location.start_line
+            if location == line:
+                if category == "ARITHMETIC" and kind == IssueKind.INTEGER_OVERFLOW:
+                    return True;
+                if category == "ARITHMETIC" and kind == IssueKind.INTEGER_UNDERFLOW:
+                    return True;
+                if str(kind) == category:
+                    return True;
+    return False;
+
+
 def analyze_test_file(
     tool: Tool, test_file: str, result_dir: str, validate=False
-) -> List[Issue]:
+) -> (List[Issue], int, int):
     """Run the analysis on one test case.
 
     If `validate` is True, the detected issues will be validated with
@@ -91,22 +109,28 @@ def analyze_test_file(
         record_execution_log(tool, test_file, command, output, result_dir)
     except ValueError:
         print("Failed to run command: " + str(command))
-        return []
+        return ([],0,0)
 
     # Process results
     issues = result.process_analysis_result(tool, result_dir)
     for issue in issues:
         print("- " + str(issue))
 
+    total_bugs = 0
+    validated_bugs = 0
     if validate:
         annots = bug_annot.parse_bug_annotations(test_file)
+        total_bugs = len(annots)
         for annot in annots:
+            if check_detected_issue(annot, issues):
+                validated_bugs += 1
+
             print(annot.print_by_line())
 
     test_file_name = os.path.basename(test_file)
     result.print_summary(test_file_name, issues)
 
-    return issues
+    return (issues, validated_bugs, total_bugs)
 
 
 def run_analysis_tool(
@@ -127,12 +151,17 @@ def run_analysis_tool(
 
     all_issues = []
 
+    total_bugs = 0
+    validated_bugs = 0
     for test_file in test_files:
         rel_path = os.path.relpath(test_file, start=parent_path)
         output_dir = os.path.join(result_dir, tool.id, rel_path)
-        issues = analyze_test_file(tool, test_file, output_dir, validate)
+        issues, validated, total = analyze_test_file(tool, test_file, output_dir, validate)
         all_issues += issues
+        total_bugs += total
+        validated_bugs += validated
 
+    print(f"validation: {validated_bugs}/{total_bugs}")
     return all_issues
 
 

@@ -81,11 +81,11 @@ class IssueKind(Enum):
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
     # Assertion failure
-    ASSERTION_FAILURE = "Assertion Failure"
+    ASSERTION_FAILURE = "ASSERTION_FAILURE"
 
     # Integer Overflow/Underflow
-    INTEGER_OVERFLOW = "Integer Overflow"
-    INTEGER_UNDERFLOW = "Integer Underflow"
+    INTEGER_OVERFLOW = "INTEGER_OVERFLOW"
+    INTEGER_UNDERFLOW = "INTEGER_UNDERFLOW"
 
     def __str__(self):
         return self.value

@@ -35,7 +35,7 @@ def make_confuzzius_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 20"
+    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 15"
     return command
 
 
