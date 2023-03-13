@@ -29,7 +29,6 @@ def make_confuzzius_analysis_command(
     Function to make analysis command for Confuzzius.
     This function should have the same signature with other tools.
     """
-    print("Making confuzzius command")
     command = executable_file
 
     if arguments:
@@ -103,7 +102,7 @@ def parse_issue_kind(description: str) -> IssueKind:
         return IssueKind.INTEGER_UNDERFLOW
 
     if "Transaction Order Dependency" in description:
-        return IssueKind.TOD
+        return IssueKind.TRANSACTION_ORDER_DEPENDENCY
 
     if "Block Dependency" in description:
         return IssueKind.BLOCK_DEPENDENCY
