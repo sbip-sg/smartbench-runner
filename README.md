@@ -2,11 +2,11 @@
 
 # Installation
 
-- Install Python virtual environment:
+- Install Python virtual environment and required packages:
 
   ```sh
   cd smartbench-runner
-  ./install/setup-venv.sh
+  ./install.sh
   ```
 
 # Usage

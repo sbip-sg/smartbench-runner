@@ -2,7 +2,7 @@
 
 # Usage:
 #   cd smartbench-runner
-#   ./install/setup-venv.sh
+#   ./install.sh
 
 BASEDIR=$(dirname "$0")
 
