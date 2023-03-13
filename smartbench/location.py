@@ -1,19 +1,29 @@
 #!/usr/bin/env python3
 
 
+# Standard Library
 import os
+
+from typing import Union
+
+
 class Location:
     """Class representing a source code location."""
 
     # Attribute of the location
     file_path: str
-    start_line: int
-    start_colmum: int
-    end_line: int
-    end_column: int
+    start_line: Union[int, None]
+    start_colmum: Union[int, None]
+    end_line: Union[int, None]
+    end_column: Union[int, None]
 
     def __init__(
-        self, file_path, start_line, start_column, end_line, end_column
+        self,
+        file_path,
+        start_line=None,
+        start_column=None,
+        end_line=None,
+        end_column=None,
     ):
         """Constructor"""
         self.file_path = file_path

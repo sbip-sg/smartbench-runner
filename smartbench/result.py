@@ -9,18 +9,12 @@ import pathlib
 
 from typing import Dict, List
 
-# Third Party
-import toml
-
 # Library
+from smartbench import log
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
-from smartbench.tools.tool import (
-    Tool,
-    configure_output_file,
-    load_tool_configuration,
-)
+from smartbench.tools.tool import Tool, load_tool_configuration
 
 
 def print_summary(test_file_name: str, issues: List[Issue]):
@@ -38,7 +32,7 @@ def print_summary(test_file_name: str, issues: List[Issue]):
     print(f"- Severity: {severity}\n")
 
 
-def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
+def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     """Process analysis result of a tool."""
     process_result_fn = None
 
@@ -46,8 +40,9 @@ def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
         process_result_fn = slither.parse_slither_json_output
 
     if process_result_fn:
-        output_file = configure_output_file(tool, result_dir)
-        return process_result_fn(output_file)
+        output_file = os.path.join(output_dir, tool.output_file)
+        log_file = os.path.join(output_dir, tool.log_file)
+        return process_result_fn(output_file, log_file)
 
     return []
 
@@ -72,16 +67,9 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
     output_file = os.path.join(test_dir, tool.output_file)
     log_file = os.path.join(test_dir, tool.log_file)
 
-    with open(log_file, "r", encoding="utf-8") as file:
-        file_content = file.read()
-        log = toml.loads(file_content)
-        input_log = log.get("input")
-        if input_log is None:
-            warning("Input information!")
-        else:
-            test_file = input_log.get("test_file")
-            print(f"{'-' * 45}\n")
-            print(f"Test file: {test_file}\n")
+    test_file = log.get_input_test_file(log_file)
+    print(f"{'-' * 45}\n")
+    print(f"Test file: {test_file}\n")
 
     parse_result_fn = None
     if tool.is_slither():
@@ -91,7 +79,7 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
         warning(f"Does not support parsing result of tool: {tool.name}")
         return []
 
-    return parse_result_fn(output_file)
+    return parse_result_fn(output_file, log_file)
 
 
 def parse_result_directory(result_dir: str) -> List[Issue]:

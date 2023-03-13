@@ -37,6 +37,7 @@ class Validation:
 
 def validate_issue(issue: Issue, annots: List[BugAnnot]) -> IssueStatus:
     """Validate analysis results with bug annotations."""
+    issue.smartbug_classification
     for annot in annots:
         pass
 
