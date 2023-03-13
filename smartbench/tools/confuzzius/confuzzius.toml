@@ -5,7 +5,7 @@ homepage = "https://github.com/christoftorres/ConFuzzius"
 category = "Fuzzing"
 
 [command]
-path = "python /home/thanhtoantnt/workspace/smartbench-runner/ConFuzzius/fuzzer/main.py"
+path = "sh smartbench/tools/confuzzius/confuzzius.sh"
 default_arguments = ""
 
 [output]

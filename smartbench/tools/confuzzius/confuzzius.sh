@@ -4,4 +4,4 @@
 source confuzzius_venv/bin/activate
 
 # Run Smartbench
-python -m smartbench.smartbench $@
+python ConFuzzius/fuzzer/main.py $@
