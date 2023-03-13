@@ -96,38 +96,6 @@ class IssueKind(Enum):
     def __str__(self):
         return self.value
 
-    def to_smartbug_classification(self) -> Union[SmartBugsKind, None]:
-        """Convert issue kind to SmartBugs kind."""
-        if self in []:
-            return SmartBugsKind.ACCESS_CONTROL
-
-        if self in []:
-            return SmartBugsKind.ARITHMETIC
-
-        if self in []:
-            return SmartBugsKind.BAD_RANDOMNESS
-
-        if self in []:
-            return SmartBugsKind.DENIAL_OF_SERVICE
-
-        if self in []:
-            return SmartBugsKind.FRONT_RUNNING
-
-        if self in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-            return SmartBugsKind.REENTRANCY
-
-        if self in []:
-            return SmartBugsKind.SHORT_ADDRESSES
-
-        if self in [IssueKind.USE_BLOCK_TIMESTAMP]:
-            return SmartBugsKind.TIME_MANIPULATION
-
-        if self in [IssueKind.UNCHECKED_LOWLEVEL_CODE]:
-            return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
-
-        # Not matching any SmartBugsKind
-        return None
-
 
 class Severity(Enum):
     """Class representing severity level of an issue."""
@@ -183,24 +151,25 @@ class Issue:
     """Class representing an issue found in smart contracts."""
 
     # Attributes of an issue
-    kind: IssueKind
-    smartbug_classification: Union[SmartBugsKind, None]
+    issue_kind: IssueKind
     description: str
     severity: Severity
     confidence: Confidence
-    location: Union[Location, None]
+    location: Location
     checker: Checker
+    smartbugs_kind: SmartBugsKind
 
     def __init__(
-        self, kind, description, severity, confidence, location, checker
+        self, issue_kind, description, severity, confidence, location, checker
     ):
         """Constructor."""
-        self.issue_kind = kind
+        self.issue_kind = issue_kind
         self.description = description
         self.severity = severity
         self.confidence = confidence
         self.location = location
         self.checker = checker
+        self.smartbugs_kind = classify_issue_kind_to_smartbugs_kind(issue_kind)
 
     def __str__(self):
         location = (
@@ -217,7 +186,37 @@ class Issue:
             f"  + Location: {location}\n"
         )
 
-    def validate(self, bug_annots: List[BugAnnot]) -> bool:
-        """Validate if the issue matches one of the bug annotations."""
-        # TODO: implement
-        return False
+
+def classify_issue_kind_to_smartbugs_kind(
+    issue_kind: IssueKind,
+) -> Union[SmartBugsKind, None]:
+    """Classify an issue kind to a bug kind in SmartBugs classification."""
+    if issue_kind in []:
+        return SmartBugsKind.ACCESS_CONTROL
+
+    if issue_kind in []:
+        return SmartBugsKind.ARITHMETIC
+
+    if issue_kind in []:
+        return SmartBugsKind.BAD_RANDOMNESS
+
+    if issue_kind in []:
+        return SmartBugsKind.DENIAL_OF_SERVICE
+
+    if issue_kind in []:
+        return SmartBugsKind.FRONT_RUNNING
+
+    if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
+        return SmartBugsKind.REENTRANCY
+
+    if issue_kind in []:
+        return SmartBugsKind.SHORT_ADDRESSES
+
+    if issue_kind in [IssueKind.USE_BLOCK_TIMESTAMP]:
+        return SmartBugsKind.TIME_MANIPULATION
+
+    if issue_kind in [IssueKind.UNCHECKED_LOWLEVEL_CODE]:
+        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+
+    # Not matching any SmartBugsKind
+    return None

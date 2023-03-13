@@ -48,7 +48,7 @@ def record_execution_log(
         file.write(f'stderr = """{stderr}"""')
 
 
-def record_benchmarking_log(tools, test_files, result_dir: str):
+def record_analysis_log(tools, test_files, result_dir: str):
     log_file = os.path.join(result_dir, "smartbench_log.toml")
     with open(log_file, "w", encoding="utf-8") as file:
         file.write("# Smartbench benchmarking log \n\n")
@@ -66,7 +66,7 @@ def record_benchmarking_log(tools, test_files, result_dir: str):
 
 
 def analyze_test_file(
-    tool: Tool, test_file: str, result_dir: str, validate=False
+    tool: Tool, test_file: str, benchmark_output_dir: str, validate=False
 ) -> List[Issue]:
     """Run the analysis on one test case.
 
@@ -74,28 +74,30 @@ def analyze_test_file(
     bug annotations in the testing files.
     """
     # Configure Solc compiler
-    # TODO: check if tool doesn't need compiler, then don't configure
-    solc.configure_solc_compiler(test_file)
+    solc_path = solc.configure_solc_compiler(test_file)
     try:
         # Run the analysis
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        command = tool.make_analysis_command(test_file, result_dir)
-        print(f"Command: {command}\n")
+        command = tool.make_analysis_command(
+            test_file, benchmark_output_dir, solc_path
+        )
         output = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
         )
-        record_execution_log(tool, test_file, command, output, result_dir)
+        record_execution_log(
+            tool, test_file, command, output, benchmark_output_dir
+        )
     except ValueError:
         print("Failed to run command: " + str(command))
         return ([],0,0)
 
     # Process results
-    issues = result.process_analysis_result(tool, result_dir)
+    issues = result.process_analysis_result(tool, benchmark_output_dir)
     for issue in issues:
         print("- " + str(issue))
 
@@ -106,7 +108,7 @@ def analyze_test_file(
 
 
 def run_analysis_tool(
-    tool: Tool, test_files: List[str], result_dir: str, validate=False
+    tool: Tool, test_files: List[str], all_results_dir: str, validate=False
 ) -> List[Issue]:
     """Run one analysis tool.
 
@@ -127,9 +129,14 @@ def run_analysis_tool(
         confuzzius.install_virtual_env()
 
     for test_file in test_files:
+        # Prepare output directory for one test file
         rel_path = os.path.relpath(test_file, start=parent_path)
-        output_dir = os.path.join(result_dir, tool.id, rel_path)
-        issues = analyze_test_file(tool, test_file, output_dir, validate)
+        test_output_dir = os.path.join(all_results_dir, tool.id, rel_path)
+        if not os.path.exists(test_output_dir):
+            os.makedirs(test_output_dir)
+
+        # Analyze the test file
+        issues = analyze_test_file(tool, test_file, test_output_dir, validate)
         all_issues += issues
 
     return all_issues
@@ -143,26 +150,25 @@ def perform_analysis(
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files.
     """
-    # Prepare output directory
+    # Prepare output directory for all tests and all tools in this run
     print("Start analyzing all test cases...\n")
-    result_dir = os.path.join(
+    all_results_dir = os.path.join(
         ALL_RESULTS_DIR,
         datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
     )
+    if not os.path.exists(all_results_dir):
+        os.makedirs(all_results_dir)
 
-    if not os.path.exists(result_dir):
-        os.makedirs(result_dir)
-
-    record_benchmarking_log(tools, test_files, result_dir)
-
-    all_issues = []
+    # Record the analysis details to a log file
+    record_analysis_log(tools, test_files, all_results_dir)
 
     # Perform the analysis
+    all_issues = []
     for tool in tools:
-        issues = run_analysis_tool(tool, test_files, result_dir, validate)
+        issues = run_analysis_tool(tool, test_files, all_results_dir, validate)
         all_issues += issues
 
     print("Benchmarking completed!\n")
-    print(f"Results are recorded at: {result_dir}")
+    print(f"Results are recorded at: {all_results_dir}")
 
     return all_issues

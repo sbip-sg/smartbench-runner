@@ -39,6 +39,7 @@ def make_confuzzius_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
+    solc_path: str,
 ):
     """
     Function to make analysis command for Confuzzius.

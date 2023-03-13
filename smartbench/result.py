@@ -9,12 +9,10 @@ import pathlib
 
 from typing import Dict, List
 
-# Third Party
-import toml
-
 # Library
 from smartbench import bug_annot
 from smartbench.bug_annot import BugAnnot
+from smartbench import log
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity, IssueKind
 from smartbench.tools.slither import slither
@@ -41,7 +39,7 @@ def print_summary(test_file_name: str, issues: List[Issue]):
     print(f"- Severity: {severity}\n")
 
 
-def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
+def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     """Process analysis result of a tool."""
     process_result_fn = None
 
@@ -52,9 +50,10 @@ def process_analysis_result(tool: Tool, result_dir: str) -> List[Issue]:
         process_result_fn = confuzzius.parse_confuzzius_json_output
 
     if process_result_fn:
-        output_file = configure_output_file(tool, result_dir)
+        output_file = os.path.join(output_dir, tool.output_file)
+        log_file = os.path.join(output_dir, tool.log_file)
         try:
-            return process_result_fn(output_file)
+            return process_result_fn(output_file, log_file);
         except:
             # When there is no results
             return []
@@ -113,12 +112,11 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> (List[Issue], L
     with open(log_file, "r", encoding="utf-8") as file:
         file_content = file.read()
         print(f"content: {log_file}")
-        log = toml.loads(file_content)
         input_log = log.get("input")
         if input_log is None:
             warning("Input information!")
         else:
-            test_file = input_log.get("test_file")
+            test_file = log.get_input_test_file(log_file)
             print(f"{'-' * 45}\n")
             print(f"Test file: {test_file}\n")
             annots = bug_annot.parse_bug_annotations(test_file)
@@ -132,9 +130,9 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> (List[Issue], L
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
-        return ([], [])
+        return []
 
-    issues = parse_result_fn(output_file)
+    issues = parse_result_fn(output_file, log_file)
     return (issues, annots)
 
 def parse_result_directory(result_dir: str) -> List[Issue]:
