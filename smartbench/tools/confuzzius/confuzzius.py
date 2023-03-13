@@ -102,6 +102,27 @@ def parse_issue_kind(description: str) -> IssueKind:
     if "Integer Underflow" in description:
         return IssueKind.INTEGER_UNDERFLOW
 
+    if "Transaction Order Dependency" in description:
+        return IssueKind.TOD
+
+    if "Block Dependency" in description:
+        return IssueKind.BLOCK_DEPENDENCY
+
+    if "Leaking Ether" in description:
+        return IssueKind.LEAKING_ETHER
+
+    if "Locking Ether" in description:
+        return IssueKind.LOCKING_ETHER
+
+    if "Unchecked Return Value" in description:
+        return IssueKind.UNHANDLED_EXCEPTION
+
+    if "Unprotected Selfdestruct" in description:
+        return IssueKind.UNPROTECTED_SELFDESTRUCT
+
+    if "Unsafe Delegatecall" in description:
+        return IssueKind.UNSAFE_DELEGATECALL
+
     return IssueKind.UNKNOWN
 
 

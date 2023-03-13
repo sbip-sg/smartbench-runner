@@ -66,18 +66,28 @@ def record_benchmarking_log(tools, test_files, result_dir: str):
 
 
 def check_detected_issue(annot: BugAnnot, issues: List[Issue]) -> bool:
-    category = annot.bug_category
+    category = annot.bug_category.casefold()
     line = annot.start_line + 1
     for issue in issues:
         if issue.location != None:
             kind = issue.kind
             location = issue.location.start_line
-            if location == line:
-                if category == "ARITHMETIC" and kind == IssueKind.INTEGER_OVERFLOW:
+            if line <= location and location <= line + 5:
+                if category == "arithmetic" and kind == IssueKind.INTEGER_OVERFLOW:
                     return True;
-                if category == "ARITHMETIC" and kind == IssueKind.INTEGER_UNDERFLOW:
+                if category == "arithmetic" and kind == IssueKind.INTEGER_UNDERFLOW:
                     return True;
-                if str(kind) == category:
+                if category == "bad_randomness" and kind == IssueKind.BLOCK_DEPENDENCY:
+                    return True;
+                if category == "time_manipulation" and kind == IssueKind.BLOCK_DEPENDENCY:
+                    return True;
+                if category == "front_running" and kind == IssueKind.TOD:
+                    return True;
+                if category == "transaction_order_dependency" and kind == IssueKind.TOD:
+                    return True;
+                if category == "unchecked_ll_calls" and kind == IssueKind.UNHANDLED_EXCEPTION:
+                    return True;
+                if str(kind).casefold() == category:
                     return True;
     return False;
 
@@ -162,7 +172,7 @@ def run_analysis_tool(
         total_bugs += total
         validated_bugs += validated
 
-    print(f"validation: {validated_bugs}/{total_bugs}")
+    print(f"benchmark validation: {validated_bugs}/{total_bugs}")
     return all_issues
 
 
