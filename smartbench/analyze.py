@@ -73,14 +73,15 @@ def analyze_test_file(
     bug annotations in the testing files.
     """
     # Configure Solc compiler
-    # TODO: check if tool doesn't need compiler, then don't configure
-    solc.configure_solc_compiler(test_file)
+    solc_path = solc.configure_solc_compiler(test_file)
     try:
         # Run the analysis
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        command = tool.make_analysis_command(test_file, benchmark_output_dir)
+        command = tool.make_analysis_command(
+            test_file, benchmark_output_dir, solc_path
+        )
         output = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,

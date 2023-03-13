@@ -27,6 +27,7 @@ def make_slither_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
+    solc_path: str,
 ):
     """
     Function to make analysis command for Slither.
@@ -37,7 +38,15 @@ def make_slither_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " " + test_file + " --json " + output_file
+    command = (
+        command
+        + " "
+        + test_file
+        + " --solc "
+        + solc_path
+        + " --json "
+        + output_file
+    )
 
     return command
 

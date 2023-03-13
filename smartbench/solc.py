@@ -6,6 +6,7 @@ Module handling Solc
 
 
 # Standard Library
+import os
 import subprocess
 import sys
 
@@ -13,11 +14,9 @@ import sys
 import solc_detect
 
 
-def install_solc_maybe(version):
-    """Install a new Solc compiler for a given version using solc-select.
+def install_solc_maybe(version) -> str:
+    """Install a new Solc compiler for a given version using `solc-select`."""
 
-    The $HOME folder of  solc-select is `smartbugs/venv`.
-    """
     # Check current Solc version
     version = str(version).strip()
     result = subprocess.run(
@@ -76,7 +75,19 @@ def detect_required_solc_version(test_file: str) -> str:
     return best_version
 
 
-def configure_solc_compiler(test_file: str):
-    """Configure Solc compiler for a test file."""
-    best_version = detect_required_solc_version(test_file)
-    install_solc_maybe(best_version)
+def configure_solc_compiler(test_file: str) -> str:
+    """Configure Solc compiler for a test file.
+
+    Return path to the required Solc compiler."""
+    version = detect_required_solc_version(test_file)
+    install_solc_maybe(version)
+
+    # Find path to the Solc compiler installed by solc-select
+    pyenv_dir = os.getenv("VIRTUAL_ENV")
+    if pyenv_dir is None:
+        pyenv_dir = os.getenv("HOME")
+    solc_name = f"solc-{version}"
+    solc_dir = os.path.join(pyenv_dir, ".solc-select/artifacts", solc_name)
+    solc_path = os.path.join(solc_dir, solc_name)
+    print(f"Using Solc: {solc_path}")
+    return solc_path

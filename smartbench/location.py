@@ -8,7 +8,11 @@ from typing import Union
 
 
 class Location:
-    """Class representing a source code location."""
+    """Class representing a source code location.
+
+    When `start_line`, `start_colmum`, `end_line`, `end_column` are None,
+    this bug location indicate to the whole file.
+    """
 
     # Attribute of the location
     file_path: str

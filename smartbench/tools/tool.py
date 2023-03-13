@@ -104,7 +104,7 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
 
-    def make_analysis_command(self, test_file, result_dir):
+    def make_analysis_command(self, test_file, result_dir, solc_path):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
@@ -126,10 +126,7 @@ class Tool:
         output_file = configure_output_file(self, result_dir)
 
         return make_command(
-            self.path,
-            arguments,
-            test_file,
-            output_file,
+            self.path, arguments, test_file, output_file, solc_path
         )
 
 
