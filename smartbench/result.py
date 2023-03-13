@@ -78,19 +78,19 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
 
     test_dir = os.path.abspath(test_dir)
     output_file = os.path.join(test_dir, tool.output_file)
-    # log_file = os.path.join(test_dir, tool.log_file)
+    log_file = os.path.join(test_dir, tool.log_file)
 
-    # with open(log_file, "r", encoding="utf-8") as file:
-    #     file_content = file.read()
-    #     print(f"content: {log_file}")
-    #     log = toml.loads(file_content)
-    #     input_log = log.get("input")
-    #     if input_log is None:
-    #         warning("Input information!")
-    #     else:
-    #         test_file = input_log.get("test_file")
-    #         print(f"{'-' * 45}\n")
-    #         print(f"Test file: {test_file}\n")
+    with open(log_file, "r", encoding="utf-8") as file:
+        file_content = file.read()
+        print(f"content: {log_file}")
+        log = toml.loads(file_content)
+        input_log = log.get("input")
+        if input_log is None:
+            warning("Input information!")
+        else:
+            test_file = input_log.get("test_file")
+            print(f"{'-' * 45}\n")
+            print(f"Test file: {test_file}\n")
 
     parse_result_fn = None
     if tool.is_slither():

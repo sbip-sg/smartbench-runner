@@ -70,7 +70,7 @@ def check_detected_issue(annot: BugAnnot, issues: List[Issue]) -> bool:
     line = annot.start_line + 1
     for issue in issues:
         if issue.location != None:
-            kind = issue.kind
+            kind = issue.issue_kind
             location = issue.location.start_line
             if line <= location and location <= line + 5:
                 if category == "arithmetic" and kind == IssueKind.INTEGER_OVERFLOW:
