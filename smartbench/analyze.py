@@ -81,9 +81,9 @@ def check_detected_issue(annot: BugAnnot, issues: List[Issue]) -> bool:
                     return True;
                 if category == "time_manipulation" and kind == IssueKind.BLOCK_DEPENDENCY:
                     return True;
-                if category == "front_running" and kind == IssueKind.TOD:
+                if category == "front_running" and kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
                     return True;
-                if category == "transaction_order_dependency" and kind == IssueKind.TOD:
+                if category == "transaction_order_dependency" and kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
                     return True;
                 if category == "unchecked_ll_calls" and kind == IssueKind.UNHANDLED_EXCEPTION:
                     return True;
