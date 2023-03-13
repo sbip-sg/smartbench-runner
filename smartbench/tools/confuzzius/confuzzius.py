@@ -6,6 +6,8 @@
 # Standard Library
 import json
 import os
+import shlex
+import subprocess
 
 from typing import List, Union
 
@@ -18,6 +20,19 @@ from smartbench.location import Location
 # Tool name
 TOOL_NAME = "ConFuzzius"
 
+
+def install_virtual_env():
+    print("install_virtual_env for confuzzius")
+    command = "sh ../../../install_confuzzius.sh"
+    print("command: ", command)
+    try: subprocess.run(
+            shlex.split(command),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+            )
+    except ValueError:
+        print("Fail to run command: ", str(command))
 
 def make_confuzzius_analysis_command(
     executable_file: str,

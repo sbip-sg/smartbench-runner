@@ -10,11 +10,11 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import bug_annot, result, solc
+from smartbench import result, solc
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue, IssueKind
-from smartbench.bug_annot import BugAnnot
 from smartbench.tools.slither import slither
+from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import (
     ALL_RESULTS_DIR,
     Tool,
@@ -122,6 +122,9 @@ def run_analysis_tool(
     parent_path = os.path.dirname(common_path)
 
     all_issues = []
+
+    if (tool.name.casefold() == confuzzius.TOOL_NAME.casefold()):
+        confuzzius.install_virtual_env()
 
     for test_file in test_files:
         rel_path = os.path.relpath(test_file, start=parent_path)

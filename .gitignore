@@ -7,3 +7,6 @@ flycheck_*.py
 
 # Temporary files
 results
+
+# Tools
+ConFuzzius
