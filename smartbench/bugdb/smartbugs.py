@@ -9,16 +9,15 @@ SmartBug curated database: <https://github.com/smartbugs/smartbugs-curated>
 from enum import Enum
 
 
-class SBC(Enum):
-    """Class representing SmartBugs Curated Classification for smart
-    contract bugs."""
+class SmartBugsKind(Enum):
+    """Class representing bug kind in SmartBugs classification."""
 
-    REENTRANCY = "Reentrancy"
     ACCESS_CONTROL = "Access Control"
     ARITHMETIC = "Arithmetic"
-    UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low Level Calls"
-    DENIAL_OF_SERVICE = "Denial Of Service"
     BAD_RANDOMNESS = "Bad Randomness"
+    DENIAL_OF_SERVICE = "Denial Of Service"
     FRONT_RUNNING = "Front Running"
-    TIME_MANIPULATION = "Time Manipulation"
+    REENTRANCY = "Reentrancy"
     SHORT_ADDRESSES = "Short Addresses"
+    TIME_MANIPULATION = "Time Manipulation"
+    UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low Level Calls"

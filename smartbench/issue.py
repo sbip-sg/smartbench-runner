@@ -7,6 +7,7 @@ from typing import List, Union
 
 # Library
 from smartbench.bug_annot import BugAnnot
+from smartbench.bugdb.smartbugs import SmartBugsKind
 from smartbench.location import Location
 
 
@@ -83,6 +84,38 @@ class IssueKind(Enum):
     def __str__(self):
         return self.value
 
+    def to_smartbug_classification(self) -> Union[SmartBugsKind, None]:
+        """Convert issue kind to SmartBugs kind."""
+        if self in []:
+            return SmartBugsKind.ACCESS_CONTROL
+
+        if self in []:
+            return SmartBugsKind.ARITHMETIC
+
+        if self in []:
+            return SmartBugsKind.BAD_RANDOMNESS
+
+        if self in []:
+            return SmartBugsKind.DENIAL_OF_SERVICE
+
+        if self in []:
+            return SmartBugsKind.FRONT_RUNNING
+
+        if self in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
+            return SmartBugsKind.REENTRANCY
+
+        if self in []:
+            return SmartBugsKind.SHORT_ADDRESSES
+
+        if self in [IssueKind.USE_BLOCK_TIMESTAMP]:
+            return SmartBugsKind.TIME_MANIPULATION
+
+        if self in [IssueKind.UNCHECKED_LOWLEVEL_CODE]:
+            return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+
+        # Not matching any SmartBugsKind
+        return None
+
 
 class Severity(Enum):
     """Class representing severity level of an issue."""
@@ -139,6 +172,7 @@ class Issue:
 
     # Attributes of an issue
     kind: IssueKind
+    smartbug_classification: Union[SmartBugsKind, None]
     description: str
     severity: Severity
     confidence: Confidence
@@ -149,7 +183,7 @@ class Issue:
         self, kind, description, severity, confidence, location, checker
     ):
         """Constructor."""
-        self.kind = kind
+        self.issue_kind = kind
         self.description = description
         self.severity = severity
         self.confidence = confidence
@@ -165,7 +199,7 @@ class Issue:
         analyzer = self.checker.analyzer
         detector = self.checker.detector
         return (
-            f"Issue: {self.kind}\n"
+            f"Issue: {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
