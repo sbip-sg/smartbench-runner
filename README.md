@@ -10,6 +10,7 @@
   ```
 
 # Usage
+- Specify the location of the `ConFuzzius` tool at `smartbench/tools/confuzzius/confuzzius.toml`
 
 - Run `analyze` sub-command for new analyses.
 

@@ -109,7 +109,7 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(test_file, result_dir)
-        print(f"Command: {command}\n")
+        # print(f"Command: {command}\n")
         output = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,
