@@ -143,6 +143,7 @@ def parse_issue_kind(description: str) -> IssueKind:
 
 def parse_confuzzius_json_output(
     output_file: str,
+    log_file: str,
 ) -> List[Issue]:
     """Parse output of Confuzzius"""
     output = None
