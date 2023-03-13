@@ -5,9 +5,11 @@
 # Standard Library
 import warnings
 
+from enum import Enum
 from typing import List, Union
 
 # Library
+from smartbench.bugdb.smartbugs import SmartBugsKind
 from smartbench.debug import warning
 
 
@@ -22,26 +24,67 @@ BUG_OPEN_TAG = "<bug "
 BUG_CLOSE_TAG = "</bug>"
 
 
+class AnnotKind(Enum):
+    """Class representing kind of bug annotations."""
+
+    SMARTBUGS_FORMAT = "SmartBugs Format"
+    SMARTBENCH_FORMAT = "SmartBench Format"
+
+
 class BugAnnot:
     """Class representing a bug annotation in smart contracts."""
 
+    bug_type: str  # Bug type as annotated in source code.
+    annot_kind: AnnotKind
     filename: str
     start_line: int
     end_line: int
-    bug_category: str
 
-    def __init__(self, filename, start_line, end_line, bug_category):
+    def __init__(self, bug_type, annot_kind, filename, start_line, end_line):
+        self.bug_type = bug_type
+        self.annot_kind = annot_kind
         self.filename = filename
         self.start_line = start_line
         self.end_line = end_line
-        self.bug_category = bug_category
 
     def print_by_line(self) -> str:
         res = f"Line {self.start_line}"
         if self.start_line != self.end_line:
             res = res + "-" + str(self.end_line)
-        res = res + ": " + self.bug_category
+        res = res + ": " + self.bug_type
         return res
+
+    def get_smartbugs_kind(self) -> Union[SmartBugsKind, None]:
+        """Get the SmartBugs kind corresponding to this bug annotation."""
+        if self.bug_type == "ACCESS_CONTROL":
+            return SmartBugsKind.ACCESS_CONTROL
+
+        if self.bug_type == "ARITHMETIC":
+            return SmartBugsKind.ARITHMETIC
+
+        if self.bug_type == "BAD_RANDOMNESS":
+            return SmartBugsKind.BAD_RANDOMNESS
+
+        if self.bug_type == "DENIAL_OF_SERVICE":
+            return SmartBugsKind.DENIAL_OF_SERVICE
+
+        if self.bug_type == "FRONT_RUNNING":
+            return SmartBugsKind.FRONT_RUNNING
+
+        if self.bug_type == "REENTRANCY":
+            return SmartBugsKind.REENTRANCY
+
+        if self.bug_type == "SHORT_ADDRESSES":
+            return SmartBugsKind.SHORT_ADDRESSES
+
+        if self.bug_type == "TIME_MANIPULATION":
+            return SmartBugsKind.TIME_MANIPULATION
+
+        if self.bug_type == "UNCHECKED_LL_CALLS":
+            return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+
+        # Unable to match to a SmartBug issue kind
+        return None
 
 
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
@@ -74,12 +117,16 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
                 and YES_TAG in line
                 and REPORT_TAG in line
             ):
-                bug_category = line.replace(COMMENT_TAG, "")
-                bug_category = bug_category.replace(YES_TAG, "")
-                bug_category = bug_category.replace(REPORT_TAG, "")
-                bug_category = bug_category.strip()
+                bug_type = line.replace(COMMENT_TAG, "")
+                bug_type = bug_type.replace(YES_TAG, "")
+                bug_type = bug_type.replace(REPORT_TAG, "")
+                bug_type = bug_type.strip()
                 bug_annotation = BugAnnot(
-                    filename, start_line, end_line, bug_category
+                    bug_type,
+                    AnnotKind.SMARTBUGS_FORMAT,
+                    filename,
+                    start_line,
+                    end_line,
                 )
                 bug_annots.append(bug_annotation)
     return bug_annots
