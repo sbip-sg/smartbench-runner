@@ -71,7 +71,7 @@ def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
 
 
 def check_detected_issue(annot: BugAnnot, issues: List[Issue]) -> bool:
-    category = annot.bug_category.casefold()
+    category = annot.bug_name.casefold()
     line = annot.start_line + 1
     for issue in issues:
         if issue.location != None:
@@ -107,19 +107,10 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> (List[Issue], L
     test_dir = os.path.abspath(test_dir)
     output_file = os.path.join(test_dir, tool.output_file)
     log_file = os.path.join(test_dir, tool.log_file)
+    test_file = log.get_input_test_file(log_file)
     annots = []
-
-    with open(log_file, "r", encoding="utf-8") as file:
-        file_content = file.read()
-        print(f"content: {log_file}")
-        input_log = log.get("input")
-        if input_log is None:
-            warning("Input information!")
-        else:
-            test_file = log.get_input_test_file(log_file)
-            print(f"{'-' * 45}\n")
-            print(f"Test file: {test_file}\n")
-            annots = bug_annot.parse_bug_annotations(test_file)
+    print(f"Test file: {test_file}\n")
+    annots = bug_annot.parse_bug_annotations(test_file)
 
     parse_result_fn = None
     if tool.is_slither():
