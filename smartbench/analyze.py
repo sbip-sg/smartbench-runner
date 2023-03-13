@@ -65,36 +65,9 @@ def record_benchmarking_log(tools, test_files, result_dir: str):
             file.write(f"test_files = [\n  {tests_info}\n]\n")
 
 
-def check_detected_issue(annot: BugAnnot, issues: List[Issue]) -> bool:
-    category = annot.bug_category.casefold()
-    line = annot.start_line + 1
-    for issue in issues:
-        if issue.location != None:
-            kind = issue.issue_kind
-            location = issue.location.start_line
-            if line <= location and location <= line + 5:
-                if category == "arithmetic" and kind == IssueKind.INTEGER_OVERFLOW:
-                    return True;
-                if category == "arithmetic" and kind == IssueKind.INTEGER_UNDERFLOW:
-                    return True;
-                if category == "bad_randomness" and kind == IssueKind.BLOCK_DEPENDENCY:
-                    return True;
-                if category == "time_manipulation" and kind == IssueKind.BLOCK_DEPENDENCY:
-                    return True;
-                if category == "front_running" and kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
-                    return True;
-                if category == "transaction_order_dependency" and kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
-                    return True;
-                if category == "unchecked_ll_calls" and kind == IssueKind.UNHANDLED_EXCEPTION:
-                    return True;
-                if str(kind).casefold() == category:
-                    return True;
-    return False;
-
-
 def analyze_test_file(
     tool: Tool, test_file: str, result_dir: str, validate=False
-) -> (List[Issue], int, int):
+) -> List[Issue]:
     """Run the analysis on one test case.
 
     If `validate` is True, the detected issues will be validated with
@@ -126,22 +99,10 @@ def analyze_test_file(
     for issue in issues:
         print("- " + str(issue))
 
-    total_bugs = 0
-    validated_bugs = 0
-    if validate:
-        annots = bug_annot.parse_bug_annotations(test_file)
-        total_bugs = len(annots)
-        for annot in annots:
-            if check_detected_issue(annot, issues):
-                validated_bugs += 1
-
-            print(annot.print_by_line())
-
     test_file_name = os.path.basename(test_file)
     result.print_summary(test_file_name, issues)
 
-    print(f"validation: {validated_bugs}/{total_bugs}")
-    return (issues, validated_bugs, total_bugs)
+    return issues
 
 
 def run_analysis_tool(
@@ -162,17 +123,12 @@ def run_analysis_tool(
 
     all_issues = []
 
-    total_bugs = 0
-    validated_bugs = 0
     for test_file in test_files:
         rel_path = os.path.relpath(test_file, start=parent_path)
         output_dir = os.path.join(result_dir, tool.id, rel_path)
-        issues, validated, total = analyze_test_file(tool, test_file, output_dir, validate)
+        issues = analyze_test_file(tool, test_file, output_dir, validate)
         all_issues += issues
-        total_bugs += total
-        validated_bugs += validated
 
-    print(f"benchmark validation: {validated_bugs}/{total_bugs}")
     return all_issues
 
 
