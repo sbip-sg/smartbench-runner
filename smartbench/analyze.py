@@ -10,9 +10,9 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import result, solc
+from smartbench import bug_annot, result, solc
 from smartbench.debug import debug, warning
-from smartbench.issue import Issue, IssueKind
+from smartbench.issue import Issue
 from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import (
@@ -21,7 +21,6 @@ from smartbench.tools.tool import (
     configure_log_file,
     configure_output_file,
 )
-
 
 def record_execution_log(
     tool: Tool,
@@ -94,13 +93,18 @@ def analyze_test_file(
         )
     except ValueError:
         print("Failed to run command: " + str(command))
-        return ([],0,0)
+        return []
 
     # Process results
     issues = result.process_analysis_result(tool, benchmark_output_dir)
     for issue in issues:
         print("- " + str(issue))
 
+    if validate:
+        annots = bug_annot.parse_bug_annotations(test_file)
+        for annot in annots:
+            print(annot.print_by_line())
+            
     test_file_name = os.path.basename(test_file)
     result.print_summary(test_file_name, issues)
 
