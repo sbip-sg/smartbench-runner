@@ -7,6 +7,7 @@ import json
 import os
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import List
 
 
@@ -45,3 +46,7 @@ if __name__ == "__main__":
 
     if swcs is None:
         print("Failed to parse SWC file:", swc_file)
+
+
+class SWCKind(Enum):
+    """Class modelling a SWC Kind"""
