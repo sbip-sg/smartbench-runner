@@ -10,7 +10,7 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import bug_annot, result, solc
+from smartbench import bug_annot, result, solc, validate
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue
 from smartbench.tools.slither import slither
@@ -66,7 +66,10 @@ def record_analysis_log(tools, test_files, result_dir: str):
 
 
 def analyze_test_file(
-    tool: Tool, test_file: str, benchmark_output_dir: str, validate=False
+    tool: Tool,
+    test_file: str,
+    benchmark_output_dir: str,
+    validate_results=False,
 ) -> List[Issue]:
     """Run the analysis on one test case.
 
@@ -101,19 +104,26 @@ def analyze_test_file(
     for issue in issues:
         print("- " + str(issue))
 
-    if validate:
-        annots = bug_annot.parse_bug_annotations(test_file)
-        for annot in annots:
-            print(annot.print_by_line())
+    bug_annots = None
+    validation = None
+    test_name = os.path.basename(test_file)
+    if validate_results:
+        print("Bug annotations:")
+        bug_annots = bug_annot.parse_bug_annotations(test_file)
+        for annot in bug_annots:
+            print(f"- {annot.print_by_line()}")
+        print("")
+        validation = validate.validate_issues(test_file, issues)
 
-    test_file_name = os.path.basename(test_file)
-    result.print_summary(test_file_name, issues)
-
+    result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues
 
 
 def run_analysis_tool(
-    tool: Tool, test_files: List[str], all_results_dir: str, validate=False
+    tool: Tool,
+    test_files: List[str],
+    all_results_dir: str,
+    validate_results=False,
 ) -> List[Issue]:
     """Run one analysis tool.
 
@@ -141,14 +151,16 @@ def run_analysis_tool(
             os.makedirs(test_output_dir)
 
         # Analyze the test file
-        issues = analyze_test_file(tool, test_file, test_output_dir, validate)
+        issues = analyze_test_file(
+            tool, test_file, test_output_dir, validate_results
+        )
         all_issues += issues
 
     return all_issues
 
 
 def perform_analysis(
-    tools: List[Tool], test_files: List[str], validate=False
+    tools: List[Tool], test_files: List[str], validate_results=False
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -170,7 +182,9 @@ def perform_analysis(
     # Perform the analysis
     all_issues = []
     for tool in tools:
-        issues = run_analysis_tool(tool, test_files, all_results_dir, validate)
+        issues = run_analysis_tool(
+            tool, test_files, all_results_dir, validate_results
+        )
         all_issues += issues
 
     print("Benchmarking completed!\n")

@@ -23,13 +23,13 @@ def analyze_smart_contracts(args):
     tools = configure_analysis_tools(args)
 
     # Perform the analysis
-    analyze.perform_analysis(tools, test_files, validate=True)
+    analyze.perform_analysis(tools, test_files, args.validate_results)
 
 
 def parse_existing_results(args):
     """Parse existing results obtained from previous analyses."""
     for result_dir in args.result_directories:
-        result.parse_result_directory(result_dir)
+        result.parse_result_directory(result_dir, args.validate_results)
 
 
 def parse_bug_annotations(args):
