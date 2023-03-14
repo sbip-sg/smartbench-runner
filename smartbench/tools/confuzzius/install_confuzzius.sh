@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Usage:
-#   cd smartbench-runner
-#   ./install.sh
-
 BASEDIR=$(dirname "$0")
 
 # Set up virtual environment venv
