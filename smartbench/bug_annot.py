@@ -3,6 +3,7 @@
 "Module representing a bug annotation."
 
 # Standard Library
+import os
 import warnings
 
 from enum import Enum
@@ -60,10 +61,10 @@ class BugAnnot:
 
     def print_concise(self) -> str:
         """Print bug annotation in concise format."""
-        location = f"line {self.start_line}"
+        location = f"{os.path.basename(self.file_path)}:{self.start_line}"
         if self.start_line != self.end_line:
             location = location + "-" + str(self.end_line)
-        return f"Bug ({self.index}): {self.bug_name} ({location})"
+        return f"Bug ({self.index}): {self.bug_name} - {location}"
 
 
 def classify_bug_annot_to_sbc(
