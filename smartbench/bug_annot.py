@@ -36,15 +36,15 @@ class BugAnnot:
 
     bug_name: str  # Bug info as annotated in source code.
     annot_format: AnnotFormat
-    file_name: str
+    file_path: str
     start_line: int
     end_line: int
     smatbugs_kind: Union[SmartBugsKind, None]
 
-    def __init__(self, bug_name, annot_format, filename, start_line, end_line):
+    def __init__(self, bug_name, annot_format, file_path, start_line, end_line):
         self.bug_name = bug_name
         self.annot_format = annot_format
-        self.filename = filename
+        self.file_path = file_path
         self.start_line = start_line
         self.end_line = end_line
         self.smatbugs_kind = classify_bug_annot_to_smartbugs_kind(bug_name)

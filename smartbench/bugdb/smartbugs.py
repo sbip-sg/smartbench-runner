@@ -7,6 +7,7 @@ SmartBug curated database: <https://github.com/smartbugs/smartbugs-curated>
 
 # Standard Library
 from enum import Enum
+from typing import List
 
 
 class SmartBugsKind(Enum):
@@ -21,3 +22,8 @@ class SmartBugsKind(Enum):
     SHORT_ADDRESSES = "Short Addresses"
     TIME_MANIPULATION = "Time Manipulation"
     UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low Level Calls"
+
+    @staticmethod
+    def elements():
+        """Return all elements of SmartBugsKind enum"""
+        return [c.value for c in SmartBugsKind]
