@@ -59,13 +59,13 @@ def parse_confidence(confidence: Union[str, None]) -> Confidence:
     confidence = confidence.casefold()
 
     if confidence == "high":
-        return Confidence.HIGH
+        return Confidence.HIGH_CONFIDENCE
 
     if confidence == "low":
-        return Confidence.LOW
+        return Confidence.LOW_CONFIDENCE
 
     if confidence == "medium":
-        return Confidence.MEDIUM
+        return Confidence.MEDIUM_CONFIDENCE
 
     return Confidence.UNKNOWN
 

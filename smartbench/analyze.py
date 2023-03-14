@@ -110,7 +110,7 @@ def analyze_test_file(
         print("Bug annotations:")
         bug_annots = bug_annot.parse_bug_annotations(test_file)
         for annot in bug_annots:
-            print(f"- {annot.print_by_line()}")
+            print(f"- {annot.print_concise()}")
         print("")
         validation = validate.validate_issues(test_file, issues)
 

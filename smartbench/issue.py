@@ -2,11 +2,10 @@
 
 
 # Standard Library
-from enum import Enum, auto
-from typing import List, Union
+from enum import Enum
+from typing import Union
 
 # Library
-from smartbench.bug_annot import BugAnnot
 from smartbench.bugdb.smartbugs import SmartBugsKind
 from smartbench.location import Location
 
@@ -106,58 +105,48 @@ class Confidence(Enum):
     issue."""
 
     # Confidence level
-    UNKNOWN = auto()
-    LOW = auto()
-    MEDIUM = auto()
-    HIGH = auto()
+    UNKNOWN = "Unknown Confidence"
+    LOW_CONFIDENCE = "Low Confidence"
+    MEDIUM_CONFIDENCE = "Medium Confidence"
+    HIGH_CONFIDENCE = "High Confidence"
 
     def __str__(self) -> str:
-        if self == Confidence.LOW:
-            return "Low Confidence"
-
-        if self == Confidence.MEDIUM:
-            return "Medium Confidence"
-
-        if self == Confidence.HIGH:
-            return "High Confidence"
-
-        return "Unknown Confidence"
+        return self.value
 
 
 class Checker:
     """Class representing an analyzer and the checking rule that it uses."""
 
-    analyzer: str
-    detector: str
-
     def __init__(self, analyzer: str, detector: str):
-        self.analyzer = analyzer
-        self.detector = detector
+        self.analyzer: str = analyzer
+        self.detector: str = detector
 
 
 class Issue:
     """Class representing an issue found in smart contracts."""
 
-    # Attributes of an issue
-    issue_kind: IssueKind
-    description: str
-    severity: Severity
-    confidence: Confidence
-    location: Location
-    checker: Checker
-    smartbugs_kind: SmartBugsKind
+    index_counter: int  # Variable to capture index of issues
 
     def __init__(
-        self, issue_kind, description, severity, confidence, location, checker
+        self,
+        issue_kind: IssueKind,
+        description: str,
+        severity: Severity,
+        confidence: Confidence,
+        location: Location,
+        checker: Checker,
     ):
         """Constructor."""
-        self.issue_kind = issue_kind
-        self.description = description
-        self.severity = severity
-        self.confidence = confidence
-        self.location = location
-        self.checker = checker
-        self.smartbugs_kind = classify_issue_kind_to_smartbugs_kind(issue_kind)
+        # Initialize all instance variables
+        self.issue_kind: IssueKind = issue_kind
+        self.description: str = description
+        self.severity: Severity = severity
+        self.confidence: Confidence = confidence
+        self.location: Location = location
+        self.checker: Checker = checker
+        self.smartbugs_kind: Union[
+            SmartBugsKind, None
+        ] = classify_issue_kind_to_smartbugs_kind(issue_kind)
 
     def __str__(self):
         location = (

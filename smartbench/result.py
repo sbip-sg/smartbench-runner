@@ -167,7 +167,7 @@ def parse_result_directory(
                     print("Bug annotations:")
                     bug_annots = bug_annot.parse_bug_annotations(test_file)
                     for annot in bug_annots:
-                        print(f"- {annot.print_by_line()}")
+                        print(f"- {annot.print_concise()}")
                     validation = validate.validate_issues(test_file, issues)
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)

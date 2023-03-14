@@ -34,22 +34,25 @@ class AnnotFormat(Enum):
 class BugAnnot:
     """Class representing a bug annotation in smart contracts."""
 
-    bug_name: str  # Bug info as annotated in source code.
-    annot_format: AnnotFormat
-    file_path: str
-    start_line: int
-    end_line: int
-    smatbugs_kind: Union[SmartBugsKind, None]
+    def __init__(
+        self,
+        bug_name: str,
+        annot_format: AnnotFormat,
+        file_path: str,
+        start_line: int,
+        end_line: int,
+    ):
+        self.bug_name: str = bug_name
+        self.annot_format: AnnotFormat = annot_format
+        self.file_path: str = file_path
+        self.start_line: int = start_line
+        self.end_line: int = end_line
+        self.smatbugs_kind: Union[
+            SmartBugsKind, None
+        ] = classify_bug_annot_to_smartbugs_kind(bug_name)
 
-    def __init__(self, bug_name, annot_format, file_path, start_line, end_line):
-        self.bug_name = bug_name
-        self.annot_format = annot_format
-        self.file_path = file_path
-        self.start_line = start_line
-        self.end_line = end_line
-        self.smatbugs_kind = classify_bug_annot_to_smartbugs_kind(bug_name)
-
-    def print_by_line(self) -> str:
+    def print_concise(self) -> str:
+        """Print bug annotation in concise format."""
         res = f"Line {self.start_line}"
         if self.start_line != self.end_line:
             res = res + "-" + str(self.end_line)
@@ -219,7 +222,7 @@ def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
             continue
 
         for annot in annots:
-            print(f"  {annot.print_by_line()}")
+            print(f"  {annot.print_concise()}")
 
         bug_annots += annots
 
