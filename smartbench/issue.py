@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Union
 
 # Library
-from smartbench.bugdb.smartbugs import SmartBugsKind
+from smartbench.bugdb.sbc import SBC
 from smartbench.location import Location
 
 
@@ -144,9 +144,7 @@ class Issue:
         self.confidence: Confidence = confidence
         self.location: Location = location
         self.checker: Checker = checker
-        self.smartbugs_kind: Union[
-            SmartBugsKind, None
-        ] = classify_issue_kind_to_smartbugs_kind(issue_kind)
+        self.sbc: Union[SBC, None] = classify_issue_kind_to_sbc(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -164,41 +162,42 @@ class Issue:
         return (
             f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
+            f"  + SmartBugs Classification: {self.sbc}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )
 
 
-def classify_issue_kind_to_smartbugs_kind(
+def classify_issue_kind_to_sbc(
     issue_kind: IssueKind,
-) -> Union[SmartBugsKind, None]:
+) -> Union[SBC, None]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
     if issue_kind in []:
-        return SmartBugsKind.ACCESS_CONTROL
+        return SBC.ACCESS_CONTROL
 
     if issue_kind in []:
-        return SmartBugsKind.ARITHMETIC
+        return SBC.ARITHMETIC
 
     if issue_kind in []:
-        return SmartBugsKind.BAD_RANDOMNESS
+        return SBC.BAD_RANDOMNESS
 
     if issue_kind in []:
-        return SmartBugsKind.DENIAL_OF_SERVICE
+        return SBC.DENIAL_OF_SERVICE
 
     if issue_kind in []:
-        return SmartBugsKind.FRONT_RUNNING
+        return SBC.FRONT_RUNNING
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-        return SmartBugsKind.REENTRANCY
+        return SBC.REENTRANCY
 
     if issue_kind in []:
-        return SmartBugsKind.SHORT_ADDRESSES
+        return SBC.SHORT_ADDRESSES
 
     if issue_kind in [IssueKind.USE_BLOCK_TIMESTAMP]:
-        return SmartBugsKind.TIME_MANIPULATION
+        return SBC.TIME_MANIPULATION
 
     if issue_kind in [IssueKind.UNCHECKED_LOWLEVEL_CODE]:
-        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+        return SBC.UNCHECKED_LOW_LEVEL_CALLS
 
-    # Not matching any SmartBugsKind
+    # Not matching any SmartBugs Classification
     return None

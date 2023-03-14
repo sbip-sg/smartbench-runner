@@ -10,7 +10,7 @@ from typing import List
 # Library
 from smartbench import bug_annot
 from smartbench.bug_annot import AnnotFormat, BugAnnot
-from smartbench.bugdb.smartbugs import SmartBugsKind
+from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.location import Location
 
@@ -43,7 +43,7 @@ def match_issue_to_annotation(issue: Issue, annot: BugAnnot) -> bool:
     annotation."""
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
-        if annot.smatbugs_kind != annot.smatbugs_kind:
+        if annot.sbc != annot.sbc:
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
@@ -77,9 +77,9 @@ def validate_issues(test_file: str, issues: List[Issue]) -> Validation:
     annots = bug_annot.parse_bug_annotations(test_file)
     reported_annots: List[BugAnnot] = []
 
-    checked_smartbugs_kinds = []
+    target_sbcs = []
     if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
-        checked_smartbugs_kinds = SmartBugsKind.elements()
+        target_sbcs = SBC.elements()
 
     for issue in issues:
         # True-positive issue
@@ -92,7 +92,7 @@ def validate_issues(test_file: str, issues: List[Issue]) -> Validation:
                 break
 
         # False-positive issue
-        if not correct_bug and issue.smartbugs_kind in checked_smartbugs_kinds:
+        if not correct_bug and issue.sbc in target_sbcs:
             incorrect_issues.append(issue)
 
         # Unknown issue

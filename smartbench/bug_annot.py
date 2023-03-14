@@ -9,7 +9,7 @@ from enum import Enum
 from typing import List, Union
 
 # Library
-from smartbench.bugdb.smartbugs import SmartBugsKind
+from smartbench.bugdb.sbc import SBC
 from smartbench.debug import warning
 
 
@@ -47,9 +47,7 @@ class BugAnnot:
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
-        self.smatbugs_kind: Union[
-            SmartBugsKind, None
-        ] = classify_bug_annot_to_smartbugs_kind(bug_name)
+        self.sbc: Union[SBC, None] = classify_bug_annot_to_sbc(bug_name)
 
     def print_concise(self) -> str:
         """Print bug annotation in concise format."""
@@ -60,36 +58,36 @@ class BugAnnot:
         return res
 
 
-def classify_bug_annot_to_smartbugs_kind(
+def classify_bug_annot_to_sbc(
     bug_name: str,
-) -> Union[SmartBugsKind, None]:
-    """Function to classify bug annotation in SmartBug format."""
+) -> Union[SBC, None]:
+    """Function to classify bug annotation into SmartBug classification SBC."""
     if bug_name == "ACCESS_CONTROL":
-        return SmartBugsKind.ACCESS_CONTROL
+        return SBC.ACCESS_CONTROL
 
     if bug_name == "ARITHMETIC":
-        return SmartBugsKind.ARITHMETIC
+        return SBC.ARITHMETIC
 
     if bug_name == "BAD_RANDOMNESS":
-        return SmartBugsKind.BAD_RANDOMNESS
+        return SBC.BAD_RANDOMNESS
 
     if bug_name == "DENIAL_OF_SERVICE":
-        return SmartBugsKind.DENIAL_OF_SERVICE
+        return SBC.DENIAL_OF_SERVICE
 
     if bug_name == "FRONT_RUNNING":
-        return SmartBugsKind.FRONT_RUNNING
+        return SBC.FRONT_RUNNING
 
     if bug_name == "REENTRANCY":
-        return SmartBugsKind.REENTRANCY
+        return SBC.REENTRANCY
 
     if bug_name == "SHORT_ADDRESSES":
-        return SmartBugsKind.SHORT_ADDRESSES
+        return SBC.SHORT_ADDRESSES
 
     if bug_name == "TIME_MANIPULATION":
-        return SmartBugsKind.TIME_MANIPULATION
+        return SBC.TIME_MANIPULATION
 
     if bug_name == "UNCHECKED_LL_CALLS":
-        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+        return SBC.UNCHECKED_LOW_LEVEL_CALLS
 
     # Unable to match to a SmartBug issue kind
     return None
