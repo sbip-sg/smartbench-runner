@@ -9,6 +9,9 @@ import pathlib
 
 from typing import Dict, List, Union
 
+# Third Party
+import more_itertools as mit
+
 # Library
 from smartbench import bug_annot, log, validate
 from smartbench.bug_annot import BugAnnot
@@ -17,6 +20,15 @@ from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validate import Validation
+
+
+def print_indices(indices: List[int]) -> str:
+    index_groups = [list(group) for group in mit.consecutive_groups(indices)]
+    groups = [
+        f"{group[0]}-{group[-1]}" if len(group) > 1 else f"{group[0]}"
+        for group in index_groups
+    ]
+    return ", ".join(groups)
 
 
 def print_summary(
@@ -48,24 +60,29 @@ def print_summary(
     severity = "\n  + ".join([f"{s}: {severities[s]}" for s in severities])
     print(f"  + {severity}")
 
-    # Pritn validation results
+    # Print validation results
     if validation is not None:
         print("- Validation:")
 
         correct_issue_info = f"{len(validation.correct_issues)}"
-        correct_issue_idxs = [str(x.index) for x in validation.correct_issues]
-        if len(correct_issue_idxs) > 0:
-            correct_issue_info += f" [IDs: {', '.join(correct_issue_idxs)}]"
+        correct_idxs = [x.index for x in validation.correct_issues]
+        if len(correct_idxs) > 0:
+            correct_issue_info += f" [IDs: {print_indices(correct_idxs)}]"
         print(f"  + Correct issues: {correct_issue_info}")
 
         wrong_issue_info = f"{len(validation.incorrect_issues)}"
-        wrong_issue_idxs = [str(x.index) for x in validation.incorrect_issues]
-        if len(wrong_issue_idxs) > 0:
-            wrong_issue_info += f" [IDs: {', '.join(wrong_issue_idxs)}]"
+        wrong_idxs = [x.index for x in validation.incorrect_issues]
+        if len(wrong_idxs) > 0:
+            wrong_issue_info += f" [IDs: {print_indices(wrong_idxs)}]"
         print(f"  + Wrong issues: {wrong_issue_info}")
 
         print(f"  + Unknown issues: {len(validation.unknown_issues)}")
-        print(f"  + Missing bugs: {len(validation.missing_bugs)}")
+
+        missing_bug_info = f"{len(validation.missing_bugs)}"
+        missing_idxs = [x.index for x in validation.missing_bugs]
+        if len(missing_idxs) > 0:
+            missing_bug_info += f" [IDs: {print_indices(missing_idxs)}]"
+        print(f"  + Missing bugs: {missing_bug_info}")
 
     print("")
 

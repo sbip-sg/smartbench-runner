@@ -34,6 +34,10 @@ class AnnotFormat(Enum):
 class BugAnnot:
     """Class representing a bug annotation in smart contracts."""
 
+    # Shared index counter for all bug annotations.
+    # This counter needs to be reset for each test file.
+    index_counter: int = 1
+
     def __init__(
         self,
         bug_name: str,
@@ -49,13 +53,17 @@ class BugAnnot:
         self.end_line: int = end_line
         self.sbc: Union[SBC, None] = classify_bug_annot_to_sbc(bug_name)
 
+        # Assign an index to the issue. This index is unique for all issues in
+        # the same contract
+        self.index = BugAnnot.index_counter
+        BugAnnot.index_counter += 1
+
     def print_concise(self) -> str:
         """Print bug annotation in concise format."""
-        res = f"Line {self.start_line}"
+        location = f"line {self.start_line}"
         if self.start_line != self.end_line:
-            res = res + "-" + str(self.end_line)
-        res = res + ": " + self.bug_name
-        return res
+            location = location + "-" + str(self.end_line)
+        return f"Bug ({self.index}): {self.bug_name} ({location})"
 
 
 def classify_bug_annot_to_sbc(
@@ -194,6 +202,9 @@ def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
 
     if annot_format is None:
         return []
+
+    # Reset bug annotation counter
+    BugAnnot.index_counter = 1
 
     if annot_format.lower() == "smartbugs":
         return parse_smartbugs_annotations(test_file)

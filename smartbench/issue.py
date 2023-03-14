@@ -125,7 +125,9 @@ class Checker:
 class Issue:
     """Class representing an issue found in smart contracts."""
 
-    index_counter: int = 1  # Initialize an index counter to distinguish issues
+    # Shared index counter for all issues.
+    # This counter needs to be reset for each test file.
+    index_counter: int = 1
 
     def __init__(
         self,
