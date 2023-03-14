@@ -11,6 +11,8 @@
 
 # Usage
 
+## Analiss mode
+
 - Run `analyze` sub-command for new analyses.
 
   ```sh
@@ -22,16 +24,30 @@
 
   # Input a directory
   ./smartbench.sh analyze examples -t slither
+  ```
 
-  # Validate results
+- Run with `--validate-results` to validate all detected issues.
+
+  ```sh
+  # Validate analysis results
   ./smartbench.sh analyze examples -t slither --validate-results
   ```
+
+## Parsing results
 
 - Run `parse-result` sub-command to read existing results.
 
   ```sh
-  ./smartbench.sh parse-result results/<path_to_result_set>/
+  ./smartbench.sh parse-result results/<path_to_results>/
   ```
+
+- Run with `--validate-results` to validate all detected issues.
+
+  ```sh
+  ./smartbench.sh parse-result results/<path_to_results>/ --validate-resutls
+  ```
+
+## Parsing bug annotations
 
 - Run `parse-annot` sub-command to collect bug annotations in smart contracts.
 
