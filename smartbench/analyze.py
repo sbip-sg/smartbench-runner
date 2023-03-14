@@ -105,16 +105,16 @@ def analyze_test_file(
 
     bug_annots = None
     validation = None
-    test_file_name = os.path.basename(test_file)
+    test_name = os.path.basename(test_file)
     if validate_results:
         print("Bug annotations:")
         bug_annots = bug_annot.parse_bug_annotations(test_file)
         for annot in bug_annots:
             print(f"- {annot.print_by_line()}")
         print("")
-        validation = validate.validate_analysis_results(test_file, issues)
+        validation = validate.validate_issues(test_file, issues)
 
-    result.print_summary(test_file_name, issues, bug_annots, validation)
+    result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues
 
 

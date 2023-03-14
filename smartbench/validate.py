@@ -66,9 +66,7 @@ def match_issue_to_annotation(issue: Issue, annot: BugAnnot) -> bool:
     return True
 
 
-def validate_analysis_results(
-    test_file: str, issues: List[Issue]
-) -> Validation:
+def validate_issues(test_file: str, issues: List[Issue]) -> Validation:
     """Validate detected issues against bug annotations in an input file."""
     correct_issues: List[Issue] = []
     incorrect_issues: List[Issue] = []

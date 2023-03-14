@@ -20,7 +20,8 @@ from smartbench.validate import Validation
 
 
 def print_summary(
-    test_file_name: str,
+    tool: Tool,
+    test_name: str,
     issues: List[Issue],
     annots: Union[List[BugAnnot], None] = None,
     validation: Union[Validation, None] = None,
@@ -29,7 +30,8 @@ def print_summary(
     print("------------------")
     print("ANALYSIS SUMMARY")
     print("------------------")
-    print(f"- Contract:  {test_file_name}")
+    print(f"- Tool: {tool.name}")
+    print(f"- Contract: {test_name}")
 
     # Print bug annotations
     if annots is not None:
@@ -156,7 +158,7 @@ def parse_result_directory(
 
             bug_annots = None
             validation = None
-            test_file_name = os.path.basename(test_dir)
+            test_name = os.path.basename(test_dir)
             if validate_results:
                 if test_file is None:
                     print(f"Unable to read test file: {test_file}")
@@ -166,12 +168,11 @@ def parse_result_directory(
                     bug_annots = bug_annot.parse_bug_annotations(test_file)
                     for annot in bug_annots:
                         print(f"- {annot.print_by_line()}")
-                        print("")
-                    validation = validate.validate_analysis_results(
-                        test_file, issues
-                    )
-
-            print_summary(test_file_name, issues, bug_annots, validation)
+                    validation = validate.validate_issues(test_file, issues)
+                print("")
+            print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues
+
+    print("Parsing result completed!")
 
     return all_issues
