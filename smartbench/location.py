@@ -14,27 +14,20 @@ class Location:
     this bug location indicate to the whole file.
     """
 
-    # Attribute of the location
-    file_path: str
-    start_line: Union[int, None]
-    start_colmum: Union[int, None]
-    end_line: Union[int, None]
-    end_column: Union[int, None]
-
     def __init__(
         self,
-        file_path,
-        start_line=None,
-        start_column=None,
-        end_line=None,
-        end_column=None,
+        file_path: str,
+        start_line: Union[int, None] = None,
+        start_column: Union[int, None] = None,
+        end_line: Union[int, None] = None,
+        end_column: Union[int, None] = None,
     ):
         """Constructor"""
-        self.file_path = file_path
-        self.start_line = start_line
-        self.start_column = start_column
-        self.end_line = end_line
-        self.end_column = end_column
+        self.file_path: str = file_path
+        self.start_line: Union[int, None] = start_line
+        self.start_column: Union[int, None] = start_column
+        self.end_line: Union[int, None] = end_line
+        self.end_column: Union[int, None] = end_column
 
     def __str__(self):
         """Print to string"""

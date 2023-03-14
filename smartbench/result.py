@@ -9,6 +9,9 @@ import pathlib
 
 from typing import Dict, List, Union
 
+# Third Party
+import more_itertools as mit
+
 # Library
 from smartbench import bug_annot, log, validate
 from smartbench.bug_annot import BugAnnot
@@ -18,6 +21,15 @@ from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validate import Validation
+
+
+def print_indices(indices: List[int]) -> str:
+    index_groups = [list(group) for group in mit.consecutive_groups(indices)]
+    groups = [
+        f"{group[0]}-{group[-1]}" if len(group) > 1 else f"{group[0]}"
+        for group in index_groups
+    ]
+    return ", ".join(groups)
 
 
 def print_summary(
@@ -49,13 +61,29 @@ def print_summary(
     severity = "\n  + ".join([f"{s}: {severities[s]}" for s in severities])
     print(f"  + {severity}")
 
-    # Pritn validation results
+    # Print validation results
     if validation is not None:
         print("- Validation:")
-        print(f"  + Correct issues: {len(validation.correct_issues)}")
-        print(f"  + Wrong issues: {len(validation.incorrect_issues)}")
+
+        correct_issue_info = f"{len(validation.correct_issues)}"
+        correct_idxs = [x.index for x in validation.correct_issues]
+        if len(correct_idxs) > 0:
+            correct_issue_info += f" [Issue IDs: {print_indices(correct_idxs)}]"
+        print(f"  + Correct issues: {correct_issue_info}")
+
+        wrong_issue_info = f"{len(validation.incorrect_issues)}"
+        wrong_idxs = [x.index for x in validation.incorrect_issues]
+        if len(wrong_idxs) > 0:
+            wrong_issue_info += f" [Issue IDs: {print_indices(wrong_idxs)}]"
+        print(f"  + Wrong issues: {wrong_issue_info}")
+
         print(f"  + Unknown issues: {len(validation.unknown_issues)}")
-        print(f"  + Missing bugs: {len(validation.missing_bugs)}")
+
+        missing_bug_info = f"{len(validation.missing_bugs)}"
+        missing_idxs = [x.index for x in validation.missing_bugs]
+        if len(missing_idxs) > 0:
+            missing_bug_info += f" [Bug IDs: {print_indices(missing_idxs)}]"
+        print(f"  + Missing bugs: {missing_bug_info}")
 
     print("")
 
@@ -99,6 +127,9 @@ def parse_existing_analysis_result(
     The input `test_result_dir` is the directory containing the
     immediate result of an analysis tool.
     """
+
+    # Reset issue index counter for the current output file
+    Issue.index_counter = 1
 
     parse_result_fn = None
     if tool.is_slither():
@@ -178,7 +209,7 @@ def parse_result_directory(
                     print("Bug annotations:")
                     bug_annots = bug_annot.parse_bug_annotations(test_file)
                     for annot in bug_annots:
-                        print(f"- {annot.print_by_line()}")
+                        print(f"- {annot.print_concise()}")
                     validation = validate.validate_issues(test_file, issues)
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)

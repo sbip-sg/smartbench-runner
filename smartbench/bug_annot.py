@@ -3,13 +3,14 @@
 "Module representing a bug annotation."
 
 # Standard Library
+import os
 import warnings
 
 from enum import Enum
 from typing import List, Union
 
 # Library
-from smartbench.bugdb.smartbugs import SmartBugsKind
+from smartbench.bugdb.sbc import SBC
 from smartbench.debug import warning
 
 
@@ -34,59 +35,68 @@ class AnnotFormat(Enum):
 class BugAnnot:
     """Class representing a bug annotation in smart contracts."""
 
-    bug_name: str  # Bug info as annotated in source code.
-    annot_format: AnnotFormat
-    file_path: str
-    start_line: int
-    end_line: int
-    smatbugs_kind: Union[SmartBugsKind, None]
+    # Shared index counter for all bug annotations.
+    # This counter needs to be reset for each test file.
+    index_counter: int = 1
 
-    def __init__(self, bug_name, annot_format, file_path, start_line, end_line):
-        self.bug_name = bug_name
-        self.annot_format = annot_format
-        self.file_path = file_path
-        self.start_line = start_line
-        self.end_line = end_line
-        self.smatbugs_kind = classify_bug_annot_to_smartbugs_kind(bug_name)
+    def __init__(
+        self,
+        bug_name: str,
+        annot_format: AnnotFormat,
+        file_path: str,
+        start_line: int,
+        end_line: int,
+    ):
+        self.bug_name: str = bug_name
+        self.annot_format: AnnotFormat = annot_format
+        self.file_path: str = file_path
+        self.start_line: int = start_line
+        self.end_line: int = end_line
+        self.sbc: Union[SBC, None] = classify_bug_annot_to_sbc(bug_name)
 
-    def print_by_line(self) -> str:
-        res = f"Line {self.start_line}"
+        # Assign an index to the issue. This index is unique for all issues in
+        # the same contract
+        self.index = BugAnnot.index_counter
+        BugAnnot.index_counter += 1
+
+    def print_concise(self) -> str:
+        """Print bug annotation in concise format."""
+        location = f"{os.path.basename(self.file_path)}:{self.start_line}"
         if self.start_line != self.end_line:
-            res = res + "-" + str(self.end_line)
-        res = res + ": " + self.bug_name
-        return res
+            location = location + "-" + str(self.end_line)
+        return f"Bug ({self.index}): {self.bug_name} - {location}"
 
 
-def classify_bug_annot_to_smartbugs_kind(
+def classify_bug_annot_to_sbc(
     bug_name: str,
-) -> Union[SmartBugsKind, None]:
-    """Function to classify bug annotation in SmartBug format."""
+) -> Union[SBC, None]:
+    """Function to classify bug annotation into SmartBug classification SBC."""
     if bug_name == "ACCESS_CONTROL":
-        return SmartBugsKind.ACCESS_CONTROL
+        return SBC.ACCESS_CONTROL
 
     if bug_name == "ARITHMETIC":
-        return SmartBugsKind.ARITHMETIC
+        return SBC.ARITHMETIC
 
     if bug_name == "BAD_RANDOMNESS":
-        return SmartBugsKind.BAD_RANDOMNESS
+        return SBC.BAD_RANDOMNESS
 
     if bug_name == "DENIAL_OF_SERVICE":
-        return SmartBugsKind.DENIAL_OF_SERVICE
+        return SBC.DENIAL_OF_SERVICE
 
     if bug_name == "FRONT_RUNNING":
-        return SmartBugsKind.FRONT_RUNNING
+        return SBC.FRONT_RUNNING
 
     if bug_name == "REENTRANCY":
-        return SmartBugsKind.REENTRANCY
+        return SBC.REENTRANCY
 
     if bug_name == "SHORT_ADDRESSES":
-        return SmartBugsKind.SHORT_ADDRESSES
+        return SBC.SHORT_ADDRESSES
 
     if bug_name == "TIME_MANIPULATION":
-        return SmartBugsKind.TIME_MANIPULATION
+        return SBC.TIME_MANIPULATION
 
     if bug_name == "UNCHECKED_LL_CALLS":
-        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+        return SBC.UNCHECKED_LOW_LEVEL_CALLS
 
     # Unable to match to a SmartBug issue kind
     return None
@@ -194,6 +204,9 @@ def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
     if annot_format is None:
         return []
 
+    # Reset bug annotation counter
+    BugAnnot.index_counter = 1
+
     if annot_format.lower() == "smartbugs":
         return parse_smartbugs_annotations(test_file)
 
@@ -219,7 +232,7 @@ def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
             continue
 
         for annot in annots:
-            print(f"  {annot.print_by_line()}")
+            print(f"  {annot.print_concise()}")
 
         bug_annots += annots
 

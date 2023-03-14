@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """Module containing smart contract bug classification according to
-SmartBug curated database: <https://github.com/smartbugs/smartbugs-curated>
+SmartBug Curated database: <https://github.com/smartbugs/smartbugs-curated>
 """
 
 
@@ -10,8 +10,8 @@ from enum import Enum
 from typing import List
 
 
-class SmartBugsKind(Enum):
-    """Class representing bug kind in SmartBugs classification."""
+class SBC(Enum):
+    """Class representing bug kind in SmartBugs Classification."""
 
     ACCESS_CONTROL = "Access Control"
     ARITHMETIC = "Arithmetic"
@@ -25,5 +25,5 @@ class SmartBugsKind(Enum):
 
     @staticmethod
     def elements():
-        """Return all elements of SmartBugsKind enum"""
-        return [c.value for c in SmartBugsKind]
+        """Return all elements of SmartBugs Classification"""
+        return [c.value for c in SBC]

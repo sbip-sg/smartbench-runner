@@ -6,13 +6,15 @@ Module handling Solc
 
 
 # Standard Library
-from smartbench.debug import debug
 import os
 import subprocess
 import sys
 
 # Third Party
 import solc_detect
+
+# Library
+from smartbench.debug import debug
 
 
 def install_solc_maybe(version) -> str:

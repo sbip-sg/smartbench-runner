@@ -44,42 +44,30 @@ ALL_RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
 class Tool:
     """Configuration of an analysis tool."""
 
-    # Attributes of a tool
-    id: str
-    name: str
-    homepage: str
-    category: str
-    path: str
-    default_arguments: str
-    additional_arguments: str
-    output_file: str
-    log_file: str
-    timeout: int
-
     def __init__(
         self,
-        id,
-        name,
-        homepage,
-        category,
-        path,
-        default_arguments,
-        output_file,
-        log_file,
-        additional_arguments=None,
-        timeout=None,
+        id: str,
+        name: str,
+        homepage: str,
+        category: str,
+        path: str,
+        default_arguments: str,
+        output_file: str,
+        log_file: str,
+        additional_arguments: Union[str, None] = None,
+        timeout: Union[int, None] = None,
     ):
         """Constructor"""
-        self.id = id
-        self.name = name
-        self.homepage = homepage
-        self.category = category
-        self.path = path
-        self.default_arguments = default_arguments
-        self.additional_arguments = additional_arguments
-        self.output_file = output_file
-        self.log_file = log_file
-        self.timeout = timeout
+        self.id: str = id
+        self.name: str = name
+        self.homepage: str = homepage
+        self.category: str = category
+        self.path: str = path
+        self.default_arguments: str = default_arguments
+        self.output_file: str = output_file
+        self.log_file: str = log_file
+        self.additional_arguments: Union[str, None] = additional_arguments
+        self.timeout: Union[int, None] = timeout
 
     def __str__(self):
         """Printing to string."""
