@@ -7,3 +7,7 @@ flycheck_*.py
 
 # Temporary files
 results
+
+# smartfuzz
+smartfuzz/
+smartfuzz_venv/
