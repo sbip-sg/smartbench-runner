@@ -14,6 +14,7 @@ from smartbench import log
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool, load_tool_configuration
 
 
@@ -38,6 +39,9 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
 
     if tool.is_slither():
         process_result_fn = slither.parse_slither_json_output
+
+    if tool.is_smartfuzz():
+        process_result_fn = smartfuzz.parse_smartfuzz_json_output
 
     if process_result_fn:
         output_file = os.path.join(output_dir, tool.output_file)
@@ -74,6 +78,9 @@ def parse_existing_analysis_result(tool: Tool, test_dir: str) -> List[Issue]:
     parse_result_fn = None
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
+
+    if tool.is_smartfuzz():
+        parse_result_fn = smartfuzz.parse_smartfuzz_json_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
