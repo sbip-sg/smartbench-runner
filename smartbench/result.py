@@ -7,29 +7,54 @@
 import os
 import pathlib
 
-from typing import Dict, List
+from typing import Dict, List, Union
 
 # Library
 from smartbench import log
+from smartbench.bug_annot import BugAnnot
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import Tool, load_tool_configuration
+from smartbench.validate import Validation
 
 
-def print_summary(test_file_name: str, issues: List[Issue]):
+def print_summary(
+    test_file_name: str,
+    issues: List[Issue],
+    annots: Union[List[BugAnnot], None] = None,
+    validation: Union[Validation, None] = None,
+):
     """Print statistic summary of detected issues for a test file"""
-    print(f"Summary for {test_file_name}:")
-    print(f"- Number of issues: {len(issues)}")
+    print("------------------")
+    print("ANALYSIS SUMMARY")
+    print("------------------")
+    print(f"- Contract:  {test_file_name}")
 
+    # Print bug annotations
+    if annots is not None:
+        print(f"- Annotated bugs: {len(annots)}")
+
+    # Print issues details
+    print(f"- Detected issues: {len(issues)}")
     severities: Dict[Severity, int] = {}
     for issue in issues:
         if issue.severity in severities:
             severities[issue.severity] += 1
         else:
             severities[issue.severity] = 1
-    severity = ", ".join([f"{s}: {severities[s]}" for s in severities])
-    print(f"- Severity: {severity}\n")
+    severity = "\n  + ".join([f"{s}: {severities[s]}" for s in severities])
+    print(f"  + {severity}")
+
+    # Pritn validation results
+    if validation is not None:
+        print("- Validation:")
+        print(f"  + Correct issues: {len(validation.correct_issues)}")
+        print(f"  + Wrong issues: {len(validation.incorrect_issues)}")
+        print(f"  + Unknown issues: {len(validation.unknown_issues)}")
+        print(f"  + Missing bugs: {len(validation.missing_bugs)}")
+
+    print("")
 
 
 def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
