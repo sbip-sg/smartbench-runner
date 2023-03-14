@@ -77,6 +77,10 @@ def analyze_test_file(
     """
     # Configure Solc compiler
     solc_path = solc.configure_solc_compiler(test_file)
+
+    # Reset issue index counter for the current test file
+    Issue.index_counter = 1
+
     try:
         # Run the analysis
         print(f"{'-' * 45}\n")

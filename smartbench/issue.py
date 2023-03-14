@@ -125,7 +125,7 @@ class Checker:
 class Issue:
     """Class representing an issue found in smart contracts."""
 
-    index_counter: int  # Variable to capture index of issues
+    index_counter: int = 1  # Initialize an index counter to distinguish issues
 
     def __init__(
         self,
@@ -148,6 +148,11 @@ class Issue:
             SmartBugsKind, None
         ] = classify_issue_kind_to_smartbugs_kind(issue_kind)
 
+        # Assign an index to the issue. This index is unique for all issues in
+        # the same contract
+        self.index = Issue.index_counter
+        Issue.index_counter += 1
+
     def __str__(self):
         location = (
             f"{self.location.print_concise()}"
@@ -157,7 +162,7 @@ class Issue:
         analyzer = self.checker.analyzer
         detector = self.checker.detector
         return (
-            f"Issue: {self.issue_kind}\n"
+            f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"

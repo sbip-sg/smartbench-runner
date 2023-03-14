@@ -51,8 +51,19 @@ def print_summary(
     # Pritn validation results
     if validation is not None:
         print("- Validation:")
-        print(f"  + Correct issues: {len(validation.correct_issues)}")
-        print(f"  + Wrong issues: {len(validation.incorrect_issues)}")
+
+        correct_issue_info = f"{len(validation.correct_issues)}"
+        correct_issue_idxs = [str(x.index) for x in validation.correct_issues]
+        if len(correct_issue_idxs) > 0:
+            correct_issue_info += f" [IDs: {', '.join(correct_issue_idxs)}]"
+        print(f"  + Correct issues: {correct_issue_info}")
+
+        wrong_issue_info = f"{len(validation.incorrect_issues)}"
+        wrong_issue_idxs = [str(x.index) for x in validation.incorrect_issues]
+        if len(wrong_issue_idxs) > 0:
+            wrong_issue_info += f" [IDs: {', '.join(wrong_issue_idxs)}]"
+        print(f"  + Wrong issues: {wrong_issue_info}")
+
         print(f"  + Unknown issues: {len(validation.unknown_issues)}")
         print(f"  + Missing bugs: {len(validation.missing_bugs)}")
 
@@ -91,6 +102,9 @@ def parse_existing_analysis_result(
     The input `test_result_dir` is the directory containing the
     immediate result of an analysis tool.
     """
+
+    # Reset issue index counter for the current output file
+    Issue.index_counter = 1
 
     parse_result_fn = None
     if tool.is_slither():
