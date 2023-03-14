@@ -22,6 +22,9 @@
 
   # Input a directory
   ./smartbench.sh analyze examples -t slither
+
+  # Validate results
+  ./smartbench.sh analyze examples -t slither --validate-results
   ```
 
 - Run `parse-result` sub-command to read existing results.

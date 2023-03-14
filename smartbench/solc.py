@@ -6,6 +6,7 @@ Module handling Solc
 
 
 # Standard Library
+from smartbench.debug import debug
 import os
 import subprocess
 import sys
@@ -89,5 +90,5 @@ def configure_solc_compiler(test_file: str) -> str:
     solc_name = f"solc-{version}"
     solc_dir = os.path.join(pyenv_dir, ".solc-select/artifacts", solc_name)
     solc_path = os.path.join(solc_dir, solc_name)
-    print(f"Using Solc: {solc_path}")
+    debug(f"Using Solc: {solc_path}")
     return solc_path
