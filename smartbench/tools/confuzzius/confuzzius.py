@@ -21,6 +21,18 @@ TOOL_NAME = "ConFuzzius"
 
 
 def install_virtual_env():
+    if os.path.isdir("smartbench/tools/confuzzius/ConFuzzius"):
+        command = "git clone git@github.com:sbip-sg/ConFuzzius.git smartbench/tools/confuzzius/ConFuzzius"
+        try: subprocess.run(
+                shlex.split(command),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+        )
+        except ValueError:
+            print("Fail to run command: ", str(command))
+
+
     print("install_virtual_env for confuzzius")
     command = "sh smartbench/tools/confuzzius/install_confuzzius.sh"
     print("command: ", command)
@@ -29,7 +41,7 @@ def install_virtual_env():
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
-            )
+    )
     except ValueError:
         print("Fail to run command: ", str(command))
 
