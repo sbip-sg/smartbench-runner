@@ -2,6 +2,8 @@
 
 """Module handling sFuzz."""
 
+import os
+
 # Tool name
 TOOL_NAME = "sFuzz"
 
@@ -18,6 +20,19 @@ def make_sfuzz_analysis_command(
     """
     command = executable_file
 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print(dir_path)
+
+    normal_contract = "NormalAttacker_0_4.sol"
+    reentrancy_contract = "ReentrancyAttacker_0_4.sol"
+
+    if "0.5" in solc_path:
+        normal_contract = "NormalAttacker_0_5.sol"
+        reentrancy_contract = "ReentrancyAttacker_0_5.sol"
+
+
+    normal_contract = os.path.join(dir_path, normal_contract)
+    reentrancy_contract = os.path.join(dir_path, reentrancy_contract)
     if arguments:
         command = command + " " + arguments
 
@@ -25,7 +40,12 @@ def make_sfuzz_analysis_command(
         command
         + " "
         + test_file
+        + " "
+        + solc_path
+        + " "
+        + normal_contract
+        + " "
+        + reentrancy_contract
     )
-
     print(f"sfuzz command: {command}")
     return command

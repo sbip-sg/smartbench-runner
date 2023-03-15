@@ -1,8 +1,14 @@
 #!/bin/bash
 
 FILENAME="$1"
+BIN="$2"
+NORMAL="$3"
+REENTRANCY="$4"
 # TIMEOUT="$2"
 # MAIN="$3"
+
+export PATH="$BIN:$PATH"
+chmod +x "$BIN/solc"
 
 CONTRACT="${FILENAME%.sol}"
 CONTRACT="${CONTRACT##*/}"
@@ -21,6 +27,11 @@ COUNT=$(echo $CONTRACTS | wc -w)
 cd smartbench/tools/sfuzz/sFuzz/build/fuzzer/
 rm -rf contracts
 mkdir contracts
+
+rm -rf assets
+mkdir assets
+cp "$NORMAL" assets/NormalAttacker.sol
+cp "$REENTRANCY" assets/ReentrancyAttacker.sol
 
 for CONTRACT in $CONTRACTS; do
     echo "Extract contract $CONTRACT from $FILENAME"
