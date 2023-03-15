@@ -7,3 +7,7 @@ flycheck_*.py
 
 # Temporary files
 results
+
+# Tools
+ConFuzzius
+confuzzius_venv

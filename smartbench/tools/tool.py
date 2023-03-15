@@ -19,6 +19,7 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.slither import slither
+from smartbench.tools.confuzzius import confuzzius
 
 
 # List of keywords in configuration files
@@ -86,7 +87,7 @@ class Tool:
 
     def is_confuzzius(self):
         """Check if the current tool is Confuzzius."""
-        raise Exception("TODO: implement")
+        return self.id.casefold() == confuzzius.TOOL_NAME.casefold()
 
     def is_smartfuzz(self):
         """Check if the current tool is SmartFuzz."""
@@ -100,7 +101,7 @@ class Tool:
         if self.is_slither():
             make_command = slither.make_slither_analysis_command
         elif self.is_confuzzius():
-            raise Exception("TODO: implement")
+            make_command = confuzzius.make_confuzzius_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
 
