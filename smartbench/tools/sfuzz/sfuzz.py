@@ -5,7 +5,7 @@
 # Tool name
 TOOL_NAME = "sFuzz"
 
-def make_slither_analysis_command(
+def make_sfuzz_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
@@ -25,10 +25,7 @@ def make_slither_analysis_command(
         command
         + " "
         + test_file
-        + " --solc "
-        + solc_path
-        + " --json "
-        + output_file
     )
 
+    print(f"sfuzz command: {command}")
     return command

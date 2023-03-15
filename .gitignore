@@ -7,3 +7,6 @@ flycheck_*.py
 
 # Temporary files
 results
+
+#sFuzz
+smartbench/tools/sfuzz/sFuzz/

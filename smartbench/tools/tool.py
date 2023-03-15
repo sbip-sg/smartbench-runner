@@ -95,7 +95,7 @@ class Tool:
 
     def is_sfuzz(self):
         """Check if the current tool is sFuzz."""
-        return self.id.casefold() == slither.TOOL_NAME.casefold()
+        return self.id.casefold() == sfuzz.TOOL_NAME.casefold()
 
 
     def make_analysis_command(self, test_file, result_dir, solc_path):

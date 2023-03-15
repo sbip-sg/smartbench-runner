@@ -1,13 +1,13 @@
 [info]
-id = "slither"
-name = "Slither"
-homepage = "https://github.com/crytic/slither"
-category = "Static analysis"
+id = "sFuzz"
+name = "sFuzz"
+homepage = "https://github.com/duytai/sFuzz"
+category = "Fuzzing tool"
 
 [command]
-path = "slither"
+path = "sh smartbench/tools/sfuzz/sfuzz.sh"
 default_arguments = ""
 
 [output]
-result_file = "slither_result.json"
-log_file = "slither_log.toml"
+result_file = "sFuzz_result.json"
+log_file = "sFuzz_log.toml"
