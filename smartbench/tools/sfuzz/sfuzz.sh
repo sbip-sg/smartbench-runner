@@ -35,4 +35,4 @@ echo "Extracted $COUNT contract(s) from $FILENAME"
 #     TO=120
 # fi
 
-./fuzzer -g -r 1 -d 120 && chmod +x fuzzMe && ./fuzzMe
+./fuzzer -g -r 1 -d 20 && chmod +x fuzzMe && ./fuzzMe
