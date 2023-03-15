@@ -26,11 +26,6 @@ def make_sfuzz_analysis_command(
     normal_contract = "NormalAttacker_0_4.sol"
     reentrancy_contract = "ReentrancyAttacker_0_4.sol"
 
-    if "0.5" in solc_path:
-        normal_contract = "NormalAttacker_0_5.sol"
-        reentrancy_contract = "ReentrancyAttacker_0_5.sol"
-
-
     normal_contract = os.path.join(dir_path, normal_contract)
     reentrancy_contract = os.path.join(dir_path, reentrancy_contract)
     if arguments:
@@ -42,10 +37,6 @@ def make_sfuzz_analysis_command(
         + test_file
         + " "
         + solc_path
-        + " "
-        + normal_contract
-        + " "
-        + reentrancy_contract
     )
     print(f"sfuzz command: {command}")
     return command
