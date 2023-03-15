@@ -19,6 +19,7 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.slither import slither
+from smartbench.tools.sfuzz import sfuzz
 
 
 # List of keywords in configuration files
@@ -92,6 +93,11 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
 
+    def is_sfuzz(self):
+        """Check if the current tool is sFuzz."""
+        return self.id.casefold() == slither.TOOL_NAME.casefold()
+
+
     def make_analysis_command(self, test_file, result_dir, solc_path):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
@@ -99,10 +105,13 @@ class Tool:
 
         if self.is_slither():
             make_command = slither.make_slither_analysis_command
+        elif self.is_sfuzz():
+            make_command = sfuzz.make_sfuzz_analysis_command
         elif self.is_confuzzius():
             raise Exception("TODO: implement")
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
+
 
         if make_command is None:
             return None
