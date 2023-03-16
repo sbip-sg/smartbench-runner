@@ -37,21 +37,24 @@ def make_mythril_analysis_command(
     command = executable_file
 
     solc_version = os.path.basename(solc_path)
-    solc_version.removeprefix("solc-")
+    solc_version = solc_version.removeprefix("solc-")
 
     if arguments:
         command = command + " " + arguments
 
     command = (
         command
-        + " "
+        + " analyze "
         + test_file
-        + " --execution-timeout 10"
-        + " -solv "
+        + " --execution-timeout 20"
+        + " --solv "
         + solc_version
         + " -j "
         + output_file
     )
+
+    print(command)
+    return command;
 
 def parse_confidence(confidence: Union[str, None]) -> Confidence:
     """Parse confidence level of issue detected by Mythril."""
