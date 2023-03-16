@@ -1,15 +1,14 @@
 #!/usr/bin/env sh
 
-# Script to install sFuzz
+# Script to install tool
 # Usage:
-#    ./install-sfuzz.sh
+#    ./install-ilf.sh
 
 # Tool settings
-TOOL_NAME="sFuzz"
-TOOL_ID="sfuzz"
+TOOL_NAME="ILF"
+TOOL_ID="ilf"
 
 # Prepare repository directory
-echo "Preparing repository directory..."
 BASE_DIR=$(dirname "$0")
 REPO_DIR=$BASE_DIR"/repo"
 mkdir -p $REPO_DIR
@@ -18,20 +17,12 @@ mkdir -p $REPO_DIR
 echo "Preparing tool directory..."
 TOOL_DIR=$REPO_DIR/$TOOL_ID
 
+# Cloning tool source code:
 # Cloning tool source code
 echo "Cloning $TOOL_NAME source code to: $TOOL_DIR"
 if [ -d "$TOOL_DIR" ]; then
     echo "Repository $TOOL_DIR already exists!"
     echo "Skip cloning..."
 else
-    git clone --recursive https://github.com/duytai/sFuzz $TOOL_DIR
+    git clone https://github.com/eth-sri/ilf $TOOL_DIR
 fi
-
-# Installing tool
-echo "Compiling $TOOL_NAME..."
-cd $TOOL_DIR
-mkdir build
-cd build
-cmake ../
-cd fuzzer
-make

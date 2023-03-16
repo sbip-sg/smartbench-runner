@@ -1,0 +1,13 @@
+[info]
+id = "ilf"
+name = "ILF"
+homepage = "https://github.com/eth-sri/ilf"
+category = "Static analysis"
+
+[command]
+path = "..."
+default_arguments = ""
+
+[output]
+result_file = "ilf_result.json"
+log_file = "ilf_log.toml"
