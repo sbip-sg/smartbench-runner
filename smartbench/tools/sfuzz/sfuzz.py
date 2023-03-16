@@ -3,6 +3,8 @@
 """Module handling sFuzz."""
 
 import os
+import subprocess
+import shlex
 
 # Tool name
 TOOL_NAME = "sFuzz"
@@ -31,12 +33,36 @@ def make_sfuzz_analysis_command(
     if arguments:
         command = command + " " + arguments
 
+    solc_version = os.path.basename(solc_path)
+    solc_version.removeprefix("solc-")
+    solc_cmd = "solc-select install " + solc_version + "; solc-select use " + solc_version;
+    try:
+        subprocess.run(
+            shlex.split(solc_cmd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    except ValueError:
+        print("Failed to run command: " + str(solc_cmd))
+
+    print(f"path: {solc_path}")
+
+    output = subprocess.run(
+        shlex.split("solc --version"),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    print("solc version: ", output)
+
     command = (
         command
         + " "
         + test_file
-        + " "
-        + solc_path
+        # + " "
+        # + solc_path
     )
     print(f"sfuzz command: {command}")
     return command

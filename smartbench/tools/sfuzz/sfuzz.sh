@@ -1,12 +1,12 @@
 #!/bin/bash
 
 FILENAME="$1"
-BIN="$2"
+# BIN="$2"
 # TIMEOUT="$2"
 # MAIN="$3"
 
-export PATH="$BIN:$PATH"
-chmod +x "$BIN/solc"
+# export PATH="$BIN:$PATH"
+# chmod +x "$BIN"
 
 CONTRACT="${FILENAME%.sol}"
 CONTRACT="${CONTRACT##*/}"
