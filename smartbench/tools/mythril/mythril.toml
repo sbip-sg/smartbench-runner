@@ -9,5 +9,5 @@ path = "myth"
 default_arguments = ""
 
 [output]
-result_file = "toolname_result.json"
-log_file = "toolname_log.toml"
+result_file = "mythril_result.json"
+log_file = "mythril_log.toml"

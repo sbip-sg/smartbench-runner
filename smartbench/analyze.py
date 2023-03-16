@@ -4,6 +4,7 @@
 import os
 import shlex
 import subprocess
+import json
 
 from datetime import datetime
 from subprocess import CompletedProcess
@@ -98,6 +99,15 @@ def analyze_test_file(
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
         )
+
+        if tool.is_mythril():
+            output_file = configure_output_file(tool, benchmark_output_dir)
+            f = open(output_file, "w")
+            stdout = output.stdout.decode("utf-8")
+            json_data = json.loads(stdout)
+            json_formatted_str = json.dumps(json_data, indent=2)
+            f.write(f'{json_formatted_str}')
+
     except ValueError:
         print("Failed to run command: " + str(command))
         return []

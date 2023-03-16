@@ -49,8 +49,8 @@ def make_mythril_analysis_command(
         + " --execution-timeout 20"
         + " --solv "
         + solc_version
-        + " -j "
-        + output_file
+        + " -o json  "
+        # + output_file
     )
 
     print(command)
@@ -86,7 +86,7 @@ def parse_issue_kind(description: str, checker: str) -> IssueKind:
     pass
 
 
-def parse_toolname_json_output(
+def parse_mythril_json_output(
     output_file: str,
     log_file: str,
 ) -> List[Issue]:
