@@ -92,6 +92,9 @@ class IssueKind(Enum):
     UNPROTECTED_SELFDESTRUCT = "UNPROTECTED_SELFDESTRUCT"
     UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
 
+    # Mythril
+    INTEGER_ARITHMETIC = "INTEGER_ARITHMETIC"
+
     def __str__(self):
         return self.value
 
