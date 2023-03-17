@@ -102,6 +102,7 @@ def analyze_test_file(
         )
 
         if tool.is_mythril():
+            # the results of `mythril` is in `stdout`
             output_file = configure_output_file(tool, benchmark_output_dir)
             f = open(output_file, "w")
             stdout = output.stdout.decode("utf-8")
@@ -110,6 +111,7 @@ def analyze_test_file(
             f.write(f'{json_formatted_str}')
             f.close()
         else:
+            # post-process the raw JSON file.
             output_file = configure_output_file(tool, benchmark_output_dir)
             content = Path(output_file).read_text()
             f = open(output_file, "w")
