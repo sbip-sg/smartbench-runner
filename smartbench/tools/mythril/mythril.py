@@ -105,7 +105,7 @@ def parse_mythril_json_output(
 ) -> List[Issue]:
     """Parse output of Mythril"""
     output = None
-    debug("Slither parse file: ", output_file)
+    debug("Mythril parse file: ", output_file)
     with open(output_file, "r", encoding="utf-8") as file:
         try:
             output = json.load(file)

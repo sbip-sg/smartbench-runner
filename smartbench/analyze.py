@@ -107,13 +107,7 @@ def analyze_test_file(
             json_data = json.loads(stdout)
             json_formatted_str = json.dumps(json_data, indent=2)
             f.write(f'{json_formatted_str}')
-        else:
-            output_file = configure_output_file(tool, benchmark_output_dir)
-            f = open(output_file, "w")
-            content = f.read()
-            json_data = json.loads(content)
-            json_formatted_str = json.dumps(json_data, indent=2)
-            f.write(f'{json_formatted_str}')
+            f.close()
 
     except ValueError:
         print("Failed to run command: " + str(command))
