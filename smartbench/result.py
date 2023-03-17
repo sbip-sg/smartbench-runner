@@ -189,6 +189,8 @@ def parse_result_directory(
         tool_dir = os.path.join(result_dir, tool_id)
         test_dirs = [p[0] for p in os.walk(tool_dir)]
         test_dirs = sorted(test_dirs)
+        correct_bugs = 0
+        annotations = 0
         for test_dir in test_dirs:
             if not is_test_result_directory(tool, test_dir):
                 continue
@@ -215,13 +217,15 @@ def parse_result_directory(
                 else:
                     print("Bug annotations:")
                     bug_annots = bug_annot.parse_bug_annotations(test_file)
+                    annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
                     validation = validate.validate_issues(test_file, issues)
+                    correct_bugs += len(validation.correct_issues)
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues
+        print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     print("Parsing result completed!")
-
     return all_issues
