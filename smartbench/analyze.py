@@ -44,7 +44,9 @@ def record_execution_log(
         # Log output
         file.write("[output]\n")
         stdout = output.stdout.decode("utf-8")
-        file.write(f'stdout = """{stdout}"""\n\n')
+        json_data = json.loads(stdout)
+        json_formatted_str = json.dumps(json_data, indent=2)
+        file.write(f'stdout = """{json_formatted_str}"""\n\n')
         stderr = output.stderr.decode("utf-8")
         file.write(f'stderr = """{stderr}"""')
 
