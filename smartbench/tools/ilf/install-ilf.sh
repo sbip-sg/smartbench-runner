@@ -17,12 +17,16 @@ mkdir -p $REPO_DIR
 echo "Preparing tool directory..."
 TOOL_DIR=$REPO_DIR/$TOOL_ID
 
-# Cloning tool source code:
 # Cloning tool source code
 echo "Cloning $TOOL_NAME source code to: $TOOL_DIR"
 if [ -d "$TOOL_DIR" ]; then
     echo "Repository $TOOL_DIR already exists!"
     echo "Skip cloning..."
 else
-    git clone https://github.com/eth-sri/ilf $TOOL_DIR
+    git clone https://github.com/taquangtrung/ilf $TOOL_DIR
+    # git clone https://github.com/eth-sri/ilf $TOOL_DIR
 fi
+
+# Install ILF using Docker
+cd $TOOL_DIR
+docker build -t ilf .
