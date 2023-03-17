@@ -34,7 +34,7 @@ def install_virtual_env():
 
 
     print("install_virtual_env for confuzzius")
-    command = "sh smartbench/tools/confuzzius/install_confuzzius.sh"
+    command = "sh smartbench/tools/confuzzius/install-confuzzius.sh"
     print("command: ", command)
     try: subprocess.run(
             shlex.split(command),

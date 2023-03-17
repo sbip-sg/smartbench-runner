@@ -9,5 +9,5 @@ flycheck_*.py
 results
 
 # Tools
-ConFuzzius
+repo
 confuzzius_venv
