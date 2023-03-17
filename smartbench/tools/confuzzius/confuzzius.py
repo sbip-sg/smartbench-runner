@@ -96,12 +96,11 @@ def parse_rule(rule: str) -> Checker:
 
 def parse_issue_kind(description: str) -> IssueKind:
     """Parse issue kind from issue description reported by Confuzzius"""
+    if "Reentrancy" in description:
+        return IssueKind.REENTRANCY
 
     if "Assertion Failure" in description:
         return IssueKind.ASSERTION_FAILURE
-
-    if "Block Dependency" in description:
-        return IssueKind.BLOCK_DEPENDENCY
 
     if "Integer Overflow" in description:
         return IssueKind.INTEGER_OVERFLOW
@@ -109,17 +108,17 @@ def parse_issue_kind(description: str) -> IssueKind:
     if "Integer Underflow" in description:
         return IssueKind.INTEGER_UNDERFLOW
 
+    if "Transaction Order Dependency" in description:
+        return IssueKind.TRANSACTION_ORDER_DEPENDENCY
+
+    if "Block Dependency" in description:
+        return IssueKind.BLOCK_DEPENDENCY
+
     if "Leaking Ether" in description:
         return IssueKind.LEAKING_ETHER
 
     if "Locking Ether" in description:
         return IssueKind.LOCKING_ETHER
-
-    if "Reentrancy" in description:
-        return IssueKind.REENTRANCY
-
-    if "Transaction Order Dependency" in description:
-        return IssueKind.TRANSACTION_ORDER_DEPENDENCY
 
     if "Unchecked Return Value" in description:
         return IssueKind.UNHANDLED_EXCEPTION
