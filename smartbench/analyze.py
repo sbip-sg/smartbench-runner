@@ -5,6 +5,7 @@ import os
 import shlex
 import subprocess
 import json
+from pathlib import Path
 
 from datetime import datetime
 from subprocess import CompletedProcess
@@ -105,6 +106,14 @@ def analyze_test_file(
             f = open(output_file, "w")
             stdout = output.stdout.decode("utf-8")
             json_data = json.loads(stdout)
+            json_formatted_str = json.dumps(json_data, indent=2)
+            f.write(f'{json_formatted_str}')
+            f.close()
+        else:
+            output_file = configure_output_file(tool, benchmark_output_dir)
+            content = Path(output_file).read_text()
+            f = open(output_file, "w")
+            json_data = json.loads(content)
             json_formatted_str = json.dumps(json_data, indent=2)
             f.write(f'{json_formatted_str}')
             f.close()
