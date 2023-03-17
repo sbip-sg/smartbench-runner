@@ -85,17 +85,57 @@ def parse_rule(rule: str) -> Checker:
 
 def parse_issue_kind(description: str) -> IssueKind:
     """Parse issue kind from issue description reported by Mythril"""
+    # SWC 127
+    if "Jump to an arbitrary instruction" in description:
+        return IssueKind.ABITRARY_JUMP
+
+    # SWC 124
+    if "Write to an arbitrary storage location" in description:
+        return IssueKind.ABITRARY_WRITE
+
+    # SWC 112
+    if "Delegatecall to user-supplied address" in description:
+        return IssueKind.UNSAFE_DELEGATECALL
+
+    # SWC 115
+    if "Dependence on tx.origin" in description:
+        return IssueKind.TX_ORIGIN_DEPENDENCY
+
+    # SWC 116 + 120
+    if "Dependence on predictable environment variable" in description:
+        return IssueKind.BLOCK_DEPENDENCY
+
+    # SWC 105
+    if "Unprotected Ether Withdrawal" in description:
+        return IssueKind.LEAKING_ETHER
+
+    # SWC 110
+    if "Exception State" in description:
+        return IssueKind.ASSERTION_FAILURE
+
+    # SWC 107
+    if "External Call To User-Supplied Address" in description:
+        return IssueKind.REENTRANCY
+
+    # SWC 101
     if "Integer Arithmetic Bugs" in description:
         return IssueKind.INTEGER_ARITHMETIC
 
+    # SWC 113
+    if "Multiple Calls in a Single Transaction" in description:
+        return IssueKind.MULTIPLE_CALLS
+
+    # SWC 107
+    if "State access after external call" in description:
+        return IssueKind.REENTRANCY
+
+    # SWC 106
     if "Unprotected Selfdestruct" in description:
         return IssueKind.UNPROTECTED_SELFDESTRUCT
 
-    if "Delegatecall" in description:
-        return IssueKind.UNSAFE_DELEGATECALL
-
-    if "Exception State" in description:
-        return IssueKind.ASSERTION_FAILURE
+    # SWC 104
+    if "Unchecked return value from external call" in description:
+        return IssueKind.UNCHECKED_RETURN_VALUE
 
     return IssueKind.UNKNOWN
 

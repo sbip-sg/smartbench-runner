@@ -41,11 +41,11 @@ def record_execution_log(
         file.write(f'command = """{command}"""\n\n')
 
         # Log output
-        file.write("[output]\n")
-        stdout = output.stdout.decode("utf-8")
-        file.write(f'stdout = """{stdout}"""\n\n')
-        stderr = output.stderr.decode("utf-8")
-        file.write(f'stderr = """{stderr}"""')
+        # file.write("[output]\n")
+        # stdout = output.stdout.decode("utf-8")
+        # file.write(f'stdout = """{stdout}"""\n\n')
+        # stderr = output.stderr.decode("utf-8")
+        # file.write(f'stderr = """{stderr}"""')
 
 
 def record_analysis_log(tools, test_files, result_dir: str):
