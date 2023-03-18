@@ -9,7 +9,6 @@ import os
 from typing import List, Union
 
 # Third Party
-import toml
 
 # Library
 from smartbench import log

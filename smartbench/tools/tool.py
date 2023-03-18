@@ -12,7 +12,7 @@ import sys
 from typing import List, Union
 
 # Third Party
-import toml
+import tomli
 
 # Library
 import smartbench
@@ -136,7 +136,7 @@ def load_tool_configuration(tool_name: str) -> Union[Tool, None]:
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
         file_content = file.read()
-        config = toml.loads(file_content)
+        config = tomli.loads(file_content)
 
         try:
             # Parse tool info
