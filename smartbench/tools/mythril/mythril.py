@@ -55,7 +55,7 @@ def make_mythril_analysis_command(
         # + output_file
     )
 
-    print(command)
+    debug(f"mythril command: {command}")
     return command;
 
 def parse_severity(severity: Union[str, None]) -> Severity:
@@ -172,7 +172,6 @@ def parse_mythril_json_output(
                 end_line = start_line + code.count("\n")
 
             location = parse_source_location(log_file, start_line, end_line)
-            print(f"location: {location}")
             severity = parse_severity(issue.get("severity"))
             bug = Issue(
                 kind,
@@ -194,6 +193,9 @@ def check_issue_kind(kind: IssueKind, bug_name: str):
 
     if kind == IssueKind.INTEGER_ARITHMETIC:
         return bug_name == "ARITHMETIC";
+
+    if kind == IssueKind.UNCHECKED_RETURN_VALUE:
+        return bug_name == "UNCHECKED_LL_CALLS";
 
     if str(kind).casefold() != bug_name.casefold():
         return False;

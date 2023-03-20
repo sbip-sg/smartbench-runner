@@ -17,7 +17,6 @@ from smartbench.debug import warning
 
 def get_input_test_file(log_file: str) -> Union[str, None]:
     """Get input test file from a log file"""
-    print(f"log_file: {log_file}")
     with open(log_file, "r", encoding="utf-8") as file:
         file_content = file.read()
         try:
