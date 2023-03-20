@@ -66,3 +66,8 @@ def make_sfuzz_analysis_command(
     )
     print(f"sfuzz command: {command}")
     return command
+
+# IntegerBug: underflow, overflow
+# MishandledException
+# BlockstateDependency
+# Reentrancy
