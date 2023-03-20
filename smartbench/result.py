@@ -220,7 +220,7 @@ def parse_result_directory(
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
-                    validation = validate.validate_issues(test_file, issues)
+                    validation = validate.validate_issues(tool, test_file, issues)
                     correct_bugs += len(validation.correct_issues)
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)

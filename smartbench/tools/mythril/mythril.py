@@ -16,6 +16,8 @@ from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.location import Location
+from smartbench import bug_annot
+from smartbench.bug_annot import AnnotFormat, BugAnnot
 
 
 # Tool name
@@ -163,7 +165,12 @@ def parse_mythril_json_output(
             checker = parse_rule("symbolic execution")
             kind = parse_issue_kind(issue.get("title"))
             start_line = issue.get("lineno")
-            end_line = start_line + issue.get("code").count("\n")
+            code = issue.get("code")
+            if code is None:
+                end_line = start_line
+            else:
+                end_line = start_line + code.count("\n")
+
             location = parse_source_location(log_file, start_line, end_line)
             print(f"location: {location}")
             severity = parse_severity(issue.get("severity"))
@@ -180,5 +187,36 @@ def parse_mythril_json_output(
         return bugs
     except ValueError:
         return []
+
+def check_issue_kind(kind: IssueKind, bug_name: str):
+    if kind == IssueKind.BLOCK_DEPENDENCY:
+        return bug_name == "TIME_MANIPULATION" or bug_name == "BAD_RANDOMNESS"
+
+    if kind == IssueKind.INTEGER_ARITHMETIC:
+        return bug_name == "ARITHMETIC";
+
+    if str(kind).casefold() != bug_name.casefold():
+        return False;
+    return True
+
+def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
+    """Function to check whether an reported issue is related to a bug
+    annotation."""
+
+    # Check for issue kind
+    if not check_issue_kind(issue.issue_kind, annot.bug_name):
+        return False;
+
+    iloc: Location = issue.location
+    # Check whether the issue location is covered by the annotation location.
+    if iloc.start_line is None or iloc.end_line is None:
+        return False
+    if iloc.start_line > annot.start_line + 1:
+        return False
+    if iloc.end_line < annot.end_line + 1:
+        return False
+
+    # Pass all criteria to match an issue with a bug annotation
+    return True
 
 
