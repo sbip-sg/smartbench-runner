@@ -90,12 +90,12 @@ def parse_rule(rule: str) -> Checker:
 def parse_issue_kind(description: str) -> IssueKind:
     """Parse issue kind from issue description reported by Mythril"""
     # SWC 127
-    if "Jump to an arbitrary instruction" in description:
-        return IssueKind.ABITRARY_JUMP
+    # if "Jump to an arbitrary instruction" in description:
+    #     return IssueKind.ABITRARY_JUMP
 
     # SWC 124
     if "Write to an arbitrary storage location" in description:
-        return IssueKind.ABITRARY_WRITE
+        return IssueKind.ARBITRARY_WRITE
 
     # SWC 112
     if "Delegatecall to user-supplied address" in description:
@@ -103,7 +103,7 @@ def parse_issue_kind(description: str) -> IssueKind:
 
     # SWC 115
     if "Dependence on tx.origin" in description:
-        return IssueKind.TX_ORIGIN_DEPENDENCY
+        return IssueKind.TX_ORIGIN_USAGE
 
     # SWC 116 + 120
     if "Dependence on predictable environment variable" in description:
@@ -123,11 +123,11 @@ def parse_issue_kind(description: str) -> IssueKind:
 
     # SWC 101
     if "Integer Arithmetic Bugs" in description:
-        return IssueKind.INTEGER_ARITHMETIC
+        return IssueKind.INTEGER_BUG
 
-    # SWC 113
-    if "Multiple Calls in a Single Transaction" in description:
-        return IssueKind.MULTIPLE_CALLS
+    # # SWC 113
+    # if "Multiple Calls in a Single Transaction" in description:
+    #     return IssueKind.MULTIPLE_CALLS
 
     # SWC 107
     if "State access after external call" in description:
@@ -135,11 +135,11 @@ def parse_issue_kind(description: str) -> IssueKind:
 
     # SWC 106
     if "Unprotected Selfdestruct" in description:
-        return IssueKind.UNPROTECTED_SELFDESTRUCT
+        return IssueKind.UNSAFE_SELFDESTRUCT
 
     # SWC 104
     if "Unchecked return value from external call" in description:
-        return IssueKind.UNCHECKED_RETURN_VALUE
+        return IssueKind.UNHANDLED_EXCEPTION
 
     return IssueKind.UNKNOWN
 
@@ -192,10 +192,10 @@ def check_issue_kind(kind: IssueKind, bug_name: str):
     if kind == IssueKind.BLOCK_DEPENDENCY:
         return bug_name == "TIME_MANIPULATION" or bug_name == "BAD_RANDOMNESS"
 
-    if kind == IssueKind.INTEGER_ARITHMETIC:
+    if kind == IssueKind.INTEGER_BUG:
         return bug_name == "ARITHMETIC";
 
-    if kind == IssueKind.UNCHECKED_RETURN_VALUE:
+    if kind == IssueKind.UNHANDLED_EXCEPTION:
         return bug_name == "UNCHECKED_LL_CALLS";
 
     if str(kind).casefold() != bug_name.casefold():

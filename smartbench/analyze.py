@@ -15,9 +15,7 @@ from typing import List
 from smartbench import bug_annot, result, solc, validate
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue
-from smartbench.tools.slither import slither
 from smartbench.tools.mythril import mythril
-from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import (
     ALL_RESULTS_DIR,
     Tool,
@@ -155,9 +153,6 @@ def run_analysis_tool(
     parent_path = os.path.dirname(common_path)
 
     all_issues = []
-
-    if (tool.name.casefold() == confuzzius.TOOL_NAME.casefold()):
-        confuzzius.install_virtual_env()
 
     for test_file in test_files:
         # Prepare output directory for one test file

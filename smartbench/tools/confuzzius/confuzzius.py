@@ -16,37 +16,11 @@ from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.location import Location
 from smartbench import bug_annot
-from smartbench.bug_annot import AnnotFormat, BugAnnot
+from smartbench.bug_annot import BugAnnot
 
 
 # Tool name
 TOOL_NAME = "ConFuzzius"
-
-
-def install_virtual_env():
-    if os.path.isdir("smartbench/tools/confuzzius/ConFuzzius"):
-        command = "git clone git@github.com:sbip-sg/ConFuzzius.git smartbench/tools/confuzzius/ConFuzzius"
-        try: subprocess.run(
-                shlex.split(command),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=False,
-        )
-        except ValueError:
-            print("Fail to run command: ", str(command))
-
-
-    debug("install_virtual_env for confuzzius")
-    command = "sh smartbench/tools/confuzzius/install-confuzzius.sh"
-    debug("confuzzius command: ", command)
-    try: subprocess.run(
-            shlex.split(command),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-    )
-    except ValueError:
-        print("Fail to run command: ", str(command))
 
 def make_confuzzius_analysis_command(
     executable_file: str,
@@ -64,7 +38,7 @@ def make_confuzzius_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 15"
+    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 30"
     return command
 
 
@@ -107,10 +81,10 @@ def parse_issue_kind(description: str) -> IssueKind:
         return IssueKind.ASSERTION_FAILURE
 
     if "Integer Overflow" in description:
-        return IssueKind.INTEGER_OVERFLOW
+        return IssueKind.INTEGER_BUG
 
     if "Integer Underflow" in description:
-        return IssueKind.INTEGER_UNDERFLOW
+        return IssueKind.INTEGER_BUG
 
     if "Transaction Order Dependency" in description:
         return IssueKind.TRANSACTION_ORDER_DEPENDENCY
@@ -128,7 +102,7 @@ def parse_issue_kind(description: str) -> IssueKind:
         return IssueKind.UNHANDLED_EXCEPTION
 
     if "Unprotected Selfdestruct" in description:
-        return IssueKind.UNPROTECTED_SELFDESTRUCT
+        return IssueKind.UNSAFE_SELFDESTRUCT
 
     if "Unsafe Delegatecall" in description:
         return IssueKind.UNSAFE_DELEGATECALL
@@ -187,7 +161,7 @@ def check_issue_kind(kind: IssueKind, bug_name: str):
     if kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
         return bug_name == "FRONT_RUNNING"
 
-    if kind == IssueKind.INTEGER_OVERFLOW or kind == IssueKind.INTEGER_UNDERFLOW:
+    if kind == IssueKind.INTEGER_BUG:
         return bug_name == "ARITHMETIC";
 
     if kind == IssueKind.UNHANDLED_EXCEPTION:
