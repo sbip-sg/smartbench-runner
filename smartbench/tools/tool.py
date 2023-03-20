@@ -12,14 +12,18 @@ import sys
 from typing import List, Union
 
 # Third Party
-import toml
+import tomli
 
 # Library
 import smartbench
 
 from smartbench import debug
 from smartbench.tools.slither import slither
+<<<<<<< HEAD
 from smartbench.tools.sfuzz import sfuzz
+=======
+from smartbench.tools.confuzzius import confuzzius
+>>>>>>> main
 
 
 # List of keywords in configuration files
@@ -87,7 +91,7 @@ class Tool:
 
     def is_confuzzius(self):
         """Check if the current tool is Confuzzius."""
-        raise Exception("TODO: implement")
+        return self.id.casefold() == confuzzius.TOOL_NAME.casefold()
 
     def is_smartfuzz(self):
         """Check if the current tool is SmartFuzz."""
@@ -108,7 +112,7 @@ class Tool:
         elif self.is_sfuzz():
             make_command = sfuzz.make_sfuzz_analysis_command
         elif self.is_confuzzius():
-            raise Exception("TODO: implement")
+            make_command = confuzzius.make_confuzzius_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
 
@@ -137,7 +141,7 @@ def load_tool_configuration(tool_name: str) -> Union[Tool, None]:
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
         file_content = file.read()
-        config = toml.loads(file_content)
+        config = tomli.loads(file_content)
 
         try:
             # Parse tool info

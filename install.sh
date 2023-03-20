@@ -10,5 +10,8 @@ BASEDIR=$(dirname "$0")
 python3 -m venv venv
 source venv/bin/activate
 
+# Or run `source venv/bin/activate.fish` if using Fish shell.
+# source venv/bin/activate.fish
+
 # Install requirements
 pip install -r $BASEDIR/requirements.txt

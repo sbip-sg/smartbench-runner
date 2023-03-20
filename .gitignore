@@ -8,14 +8,6 @@ flycheck_*.py
 # Temporary files
 results
 
-#sFuzz
-smartbench/tools/sfuzz/sFuzz/
-
-# smarf-fuzz
-smartfuzz/
-smartfuzz_venv/
-
-# Confuzzius
-smartbench/tools/confuzzius/ConFuzzius/
-confuzzius_venv/
-
+# Tools
+repo
+confuzzius_venv

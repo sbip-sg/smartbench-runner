@@ -1,4 +1,5 @@
 [info]
+<<<<<<< HEAD
 id = "sFuzz"
 name = "sFuzz"
 homepage = "https://github.com/duytai/sFuzz"
@@ -11,3 +12,17 @@ default_arguments = ""
 [output]
 result_file = "sFuzz_result.json"
 log_file = "sFuzz_log.toml"
+=======
+id = "toolname"
+name = "ToolName"
+homepage = "https://github.com/tool/toolname"
+category = "Static analysis"
+
+[command]
+path = "..."
+default_arguments = ""
+
+[output]
+result_file = "toolname_result.json"
+log_file = "toolname_log.toml"
+>>>>>>> main

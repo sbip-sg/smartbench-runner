@@ -18,6 +18,7 @@ from smartbench.bug_annot import BugAnnot
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
+from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validate import Validation
 
@@ -94,10 +95,17 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     if tool.is_slither():
         process_result_fn = slither.parse_slither_json_output
 
+    if tool.is_confuzzius():
+        process_result_fn = confuzzius.parse_confuzzius_json_output
+
     if process_result_fn:
         output_file = os.path.join(output_dir, tool.output_file)
         log_file = os.path.join(output_dir, tool.log_file)
-        return process_result_fn(output_file, log_file)
+        try:
+            return process_result_fn(output_file, log_file);
+        except:
+            # When there is no results
+            return []
 
     return []
 
@@ -126,6 +134,9 @@ def parse_existing_analysis_result(
     parse_result_fn = None
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
+
+    if tool.is_confuzzius():
+        parse_result_fn = confuzzius.parse_confuzzius_json_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
