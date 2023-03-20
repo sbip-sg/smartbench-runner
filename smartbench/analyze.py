@@ -16,6 +16,7 @@ from smartbench import bug_annot, result, solc, validate
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue
 from smartbench.tools.slither import slither
+from smartbench.tools.mythril import mythril
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.tool import (
     ALL_RESULTS_DIR,
@@ -105,22 +106,10 @@ def analyze_test_file(
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
-            output_file = configure_output_file(tool, benchmark_output_dir)
-            f = open(output_file, "w")
-            stdout = output.stdout.decode("utf-8")
-            json_data = json.loads(stdout)
-            json_formatted_str = json.dumps(json_data, indent=2)
-            f.write(f'{json_formatted_str}')
-            f.close()
+            mythril.write_to_output_file(output, tool.output_file, benchmark_output_dir)
         else:
             # post-process the raw JSON file.
-            output_file = configure_output_file(tool, benchmark_output_dir)
-            content = Path(output_file).read_text()
-            f = open(output_file, "w")
-            json_data = json.loads(content)
-            json_formatted_str = json.dumps(json_data, indent=2)
-            f.write(f'{json_formatted_str}')
-            f.close()
+            postprocess_output_file(tool, benchmark_output_dir)
 
     except ValueError:
         print("Failed to run command: " + str(command))
@@ -218,3 +207,12 @@ def perform_analysis(
     print(f"Results are recorded at: {all_results_dir}")
 
     return all_issues
+
+def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
+    output_file = configure_output_file(tool, benchmark_output_dir)
+    content = Path(output_file).read_text()
+    f = open(output_file, "w")
+    json_data = json.loads(content)
+    json_formatted_str = json.dumps(json_data, indent=2)
+    f.write(f'{json_formatted_str}')
+    f.close()

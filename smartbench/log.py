@@ -22,7 +22,11 @@ def get_input_test_file(log_file: str) -> Union[str, None]:
         try:
             log = toml.loads(file_content)
         except:
-            log = tomli.loads(file_content)
+            try:
+                log = tomli.loads(file_content)
+            except:
+                warning("Cannot load the file using toml and tomli!")
+                return None
 
         input_log = log.get("input")
         if input_log is None:
