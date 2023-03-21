@@ -12,11 +12,8 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import bug_annot, result, solc, validate
+from smartbench import result, solc, validate
 from smartbench.debug import debug, warning
-from smartbench.issue import Issue
-from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.slither import slither
 from smartbench.tools.tool import (
     DEPLOY_DIR,
     Tool,
@@ -75,9 +72,6 @@ def deploy_one_contracts(
     """Deploy one test  for an analysis tool."""
     # Configure Solc compiler
     solc_path = solc.configure_solc_compiler(test_file)
-
-    # Reset issue index counter for the current test file
-    Issue.index_counter = 1
 
     try:
         # Run the analysis

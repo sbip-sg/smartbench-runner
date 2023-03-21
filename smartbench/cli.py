@@ -146,26 +146,28 @@ def parse_cli_arguments():
     # Parser for sub-command `deploy-contracts`
 
     # Create a parser for the `parse-result` sub-command
-    result_parser = sub_parsers.add_parser(
+    deploy_parser = sub_parsers.add_parser(
         Command.DEPLOY_CONTRACTS.value,
         parents=[parent_parser],
         add_help=False,
-        help="Sub-command to parse existing analysis results.",
+        help="Sub-command to deploy smart contracts for testing.",
     )
 
-    # Input result directories
-    result_parser.add_argument(
-        "result_directories",
+    # Input files
+    deploy_parser.add_argument(
+        "input_files_directories",
         nargs="+",  # Accept multiple input files or directories
         type=str,
-        help="Input result directories.",
+        help="Input files or directories (accepts wildcard characters).",
     )
 
-    # Validate analysis result
-    result_parser.add_argument(
-        "--validate-results",
-        action="store_true",
-        help="Validate analysis results with bug annotations.",
+    # Analysis tool
+    deploy_parser.add_argument(
+        "-t",
+        "--tools",
+        nargs="+",  # Accept multiple tools.
+        type=str,
+        help="Analysis tools to be evaluated.",
     )
 
     ################################
@@ -173,4 +175,4 @@ def parse_cli_arguments():
 
     args = arg_parser.parse_args()
 
-    return args
+    return (arg_parser, args)

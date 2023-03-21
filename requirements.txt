@@ -4,4 +4,4 @@ more_itertools == 9.1.0
 tomli == 2.0.1
 solc-select == 1.0.2
 
-git+https://github.com/taquangtrung/solc-detect.git@v0.0.2#egg=solc_detect
+git+https://github.com/taquangtrung/solc-detect.git@v0.0.3#egg=solc_detect

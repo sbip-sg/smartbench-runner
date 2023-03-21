@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 # Standard Library
+import argparse
 import signal
 import sys
 
 # Library
-from smartbench import analyze, bug_annot, flags, result, tests
+from smartbench import analyze, bug_annot, deploy, flags, result, tests
 from smartbench.cli import Command, parse_cli_arguments
 from smartbench.tools.tool import configure_analysis_tools
 
@@ -49,7 +50,14 @@ def main():
     """Main function"""
 
     # Parse CLI
-    args = parse_cli_arguments()
+    (parser, args) = parse_cli_arguments()
+
+    if args.sub_command is None:
+        print("Error: no sub-command is specified!\n")
+        print("Please try again!\n")
+        parser.print_help()
+        sys.exit(0)
+
     flags.configure_global_flags(args)
 
     # Run analysis tools
@@ -65,9 +73,9 @@ def main():
         print("Smartbench: running mode parsing bug annotations...\n")
         parse_bug_annotations(args)
     # Deploy contracts
-    elif args.sub_command == Command.PARSE_ANNOTS.value:
+    elif args.sub_command == Command.DEPLOY_CONTRACTS.value:
         print("Smartbench: running mode deploying contracts...\n")
-        parse_bug_annotations(args)
+        deploy_smart_contracts(args)
     else:
         print("Smartbench runner: no sub-command is specified!")
 
