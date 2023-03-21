@@ -10,7 +10,8 @@ TOOL_ID="sfuzz"
 
 # Prepare repository directory
 echo "Preparing repository directory..."
-BASE_DIR=$(dirname "$0")
+FILE_PATH=$(realpath "$0")
+BASE_DIR=$(dirname "$FILE_PATH")
 REPO_DIR=$BASE_DIR"/repo"
 mkdir -p $REPO_DIR
 
@@ -35,3 +36,12 @@ cd build
 cmake ../
 cd fuzzer
 make
+
+# Add
+rm -rf assets
+mkdir assets
+rm -rf output
+mkdir -p output
+cd assets
+cp $BASE_DIR"/NormalAttacker.sol" .
+cp $BASE_DIR"/ReentrancyAttacker.sol" .

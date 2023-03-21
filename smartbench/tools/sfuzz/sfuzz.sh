@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FILENAME="$1"
+OUTPUT_FILE="$2"
 # BIN="$2"
 # TIMEOUT="$2"
 # MAIN="$3"
@@ -22,9 +23,16 @@ COUNT=$(echo $CONTRACTS | wc -w)
 #     exit 127
 # fi
 
-cd smartbench/tools/sfuzz/sFuzz/build/fuzzer/
+TOOL_ID="sfuzz"
+BASE_DIR=$(dirname "$0")
+REPO_DIR=$BASE_DIR"/repo"
+TOOL_DIR=$REPO_DIR/$TOOL_ID
+
+cd $TOOL_DIR/build/fuzzer/
 rm -rf contracts
 mkdir contracts
+rm -rf output
+mkdir output
 
 for CONTRACT in $CONTRACTS; do
     echo "Extract contract $CONTRACT from $FILENAME"
@@ -40,3 +48,4 @@ echo "Extracted $COUNT contract(s) from $FILENAME"
 # fi
 
 ./fuzzer -g -r 1 -d 20 && chmod +x fuzzMe && ./fuzzMe
+cp output/log.txt $OUTPUT_FILE

@@ -151,6 +151,7 @@ def parse_confuzzius_json_output(
         warning("Failed to parse Confuzzius's output file:", output_file)
         return []
 
+    checker = parse_rule("fuzzing")
     try:
         issues = []
 
@@ -161,7 +162,6 @@ def parse_confuzzius_json_output(
 
         for error_desc in errors:
             error = error_desc[0]
-            checker = parse_rule("fuzzing")
             kind = parse_issue_kind(error.get("type"))
             location = parse_source_location(error.get("line"), error.get("column"))
             severity = parse_severity(error.get("severity"))

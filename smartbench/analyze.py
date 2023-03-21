@@ -94,12 +94,16 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
+            timeout=30
         )
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
         )
     except ValueError:
         print("Failed to run command: " + str(command))
+        return []
+    except subprocess.TimeoutExpired:
+        print("Timeout when running command: " + str(command))
         return []
 
     # Process results

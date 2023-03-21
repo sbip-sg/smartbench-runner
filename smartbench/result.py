@@ -19,6 +19,7 @@ from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validate import Validation
 
@@ -137,6 +138,9 @@ def parse_existing_analysis_result(
 
     if tool.is_confuzzius():
         parse_result_fn = confuzzius.parse_confuzzius_json_output
+
+    if tool.is_sfuzz():
+        parse_result_fn = sfuzz.parse_sfuzz_json_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
