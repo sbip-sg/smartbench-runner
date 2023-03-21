@@ -1,6 +1,7 @@
 colored-traceback == 0.3.0
 lark == 1.1.5
 more_itertools == 9.1.0
+toml == 0.10.2
 tomli == 2.0.1
 solc-select == 1.0.2
 

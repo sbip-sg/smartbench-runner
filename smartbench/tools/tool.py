@@ -12,6 +12,7 @@ import sys
 from typing import List, Union
 
 # Third Party
+import toml
 import tomli
 
 # Library
@@ -19,11 +20,8 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.slither import slither
-<<<<<<< HEAD
-from smartbench.tools.sfuzz import sfuzz
-=======
 from smartbench.tools.confuzzius import confuzzius
->>>>>>> main
+from smartbench.tools.sfuzz import sfuzz
 
 
 # List of keywords in configuration files
@@ -141,7 +139,7 @@ def load_tool_configuration(tool_name: str) -> Union[Tool, None]:
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
         file_content = file.read()
-        config = tomli.loads(file_content)
+        config = toml.loads(file_content)
 
         try:
             # Parse tool info
