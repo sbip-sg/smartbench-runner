@@ -47,5 +47,7 @@ echo "Extracted $COUNT contract(s) from $FILENAME"
 #     TO=120
 # fi
 
-./fuzzer -g -r 1 -d 20 && chmod +x fuzzMe && ./fuzzMe
+./fuzzer -g -r 1 -d 20 --attacker ReentrancyAttacker
+chmod +x fuzzMe
+./fuzzMe
 cp output/log.txt $OUTPUT_FILE

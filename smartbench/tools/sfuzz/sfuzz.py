@@ -59,7 +59,7 @@ def make_sfuzz_analysis_command(
         check=False
     )
 
-    print("solc version: ", output)
+    print("solc version: ", output.stdout)
 
     command = (
         command
