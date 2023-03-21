@@ -31,19 +31,14 @@ def make_sfuzz_analysis_command(
     """
     command = executable_file
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    print(dir_path)
+    print(f"test_file: {test_file}")
 
-    normal_contract = "NormalAttacker_0_4.sol"
-    reentrancy_contract = "ReentrancyAttacker_0_4.sol"
-
-    normal_contract = os.path.join(dir_path, normal_contract)
-    reentrancy_contract = os.path.join(dir_path, reentrancy_contract)
     if arguments:
         command = command + " " + arguments
 
     solc_version = os.path.basename(solc_path)
     solc_version.removeprefix("solc-")
+    print(f"solc: {solc_version}");
     solc_cmd = "solc-select install " + solc_version + "; solc-select use " + solc_version;
     try:
         subprocess.run(
@@ -55,7 +50,7 @@ def make_sfuzz_analysis_command(
     except ValueError:
         print("Failed to run command: " + str(solc_cmd))
 
-    print(f"path: {solc_path}")
+    # print(f"path: {solc_path}")
 
     output = subprocess.run(
         shlex.split("solc --version"),
@@ -98,6 +93,12 @@ def parse_issue_kind(description: str) -> IssueKind:
 
     if "IntegerBug" in description:
         return IssueKind.INTEGER_BUG
+
+    if "DeletegateCall" in description:
+        return IssueKind.UNSAFE_DELEGATECALL
+
+    if "LockEther" in description:
+        return IssueKind.LOCKING_ETHER
 
     if "BlockstateDependency" in description:
         return IssueKind.BLOCK_DEPENDENCY

@@ -25,7 +25,7 @@ if [ -d "$TOOL_DIR" ]; then
     echo "Repository $TOOL_DIR already exists!"
     echo "Skip cloning..."
 else
-    git clone --recursive https://github.com/thanhtoantnt/sFuzz $TOOL_DIR
+    git clone --recursive git@github.com:thanhtoantnt/sFuzz.git $TOOL_DIR
 fi
 
 # Installing tool
