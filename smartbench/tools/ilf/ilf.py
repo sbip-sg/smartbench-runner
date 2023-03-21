@@ -20,6 +20,8 @@ from smartbench.location import Location
 # Tool name
 TOOL_NAME = "ilf"
 
+# def prepare_testing_contract(test_file: str)
+
 
 def make_analysis_command(
     executable_file: str,
@@ -33,6 +35,7 @@ def make_analysis_command(
 
     """
     # TODO
+    print("MAKE ILF COMMAND!")
     pass
 
 

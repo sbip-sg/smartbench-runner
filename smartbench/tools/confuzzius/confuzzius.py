@@ -45,7 +45,7 @@ def install_virtual_env():
     except ValueError:
         print("Fail to run command: ", str(command))
 
-def make_confuzzius_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
