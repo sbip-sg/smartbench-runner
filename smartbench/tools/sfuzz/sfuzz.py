@@ -13,6 +13,7 @@ from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.location import Location
+from smartbench.bug_annot import BugAnnot
 
 # Tool name
 TOOL_NAME = "sFuzz"
@@ -95,8 +96,8 @@ def parse_issue_kind(description: str) -> IssueKind:
     if "Reentrancy" in description:
         return IssueKind.REENTRANCY
 
-    if "Reentrancy" in description:
-        return IssueKind.REENTRANCY
+    if "IntegerBug" in description:
+        return IssueKind.INTEGER_BUG
 
     if "BlockstateDependency" in description:
         return IssueKind.BLOCK_DEPENDENCY
@@ -112,17 +113,16 @@ def parse_sfuzz_json_output(output_file: str, log_file: str) -> List[Issue]:
         try:
             lines = [line.rstrip() for line in file]
         except ValueError:
-            warning("Failed to parse Confuzzius output file:", output_file)
+            warning("Failed to parse sFuzz output file:", output_file)
             return []
 
     if lines is None:
-        warning("Failed to parse Confuzzius's output file:", output_file)
+        warning("Failed to parse sFuzz's output file:", output_file)
         return []
 
     issues = []
     checker = parse_rule("fuzzing")
     for line in lines:
-        print(f"line: {line}")
         kind = parse_issue_kind(line)
         location = parse_source_location(log_file)
         issue = Issue(
@@ -136,4 +136,26 @@ def parse_sfuzz_json_output(output_file: str, log_file: str) -> List[Issue]:
         issues.append(issue)
     return issues;
 
+def check_issue_kind(kind: IssueKind, bug_name: str):
+    if kind == IssueKind.BLOCK_DEPENDENCY:
+        return bug_name == "TIME_MANIPULATION" or bug_name == "BAD_RANDOMNESS"
 
+    if kind == IssueKind.INTEGER_BUG:
+        return bug_name == "ARITHMETIC";
+
+    if kind == IssueKind.UNHANDLED_EXCEPTION:
+        return bug_name == "UNCHECKED_LL_CALLS";
+
+    if str(kind).casefold() != bug_name.casefold():
+        return False;
+    return True
+
+def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
+    """Function to check whether an reported issue is related to a bug
+    annotation."""
+
+    # Check for issue kind
+    if not check_issue_kind(issue.issue_kind, annot.bug_name):
+        return False
+
+    return True

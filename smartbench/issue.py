@@ -92,6 +92,9 @@ class IssueKind(Enum):
     UNPROTECTED_SELFDESTRUCT = "UNPROTECTED_SELFDESTRUCT"
     UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
 
+    # sFuzz
+    INTEGER_BUG = "INTEGER_BUG"
+
     def __str__(self):
         return self.value
 
