@@ -81,12 +81,18 @@ def deploy_one_contracts(
         command = tool.make_deployment_command(
             test_file, tool_deploy_dir, solc_path
         )
+
+        if command is None:
+            print(f"Unable to make deployment command for tool: {tool.name}\n")
+            return None
+
         output = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
         )
+
         log_deployment_result(tool, test_file, command, output, tool_deploy_dir)
     except ValueError:
         print("Failed to run command: " + str(command))

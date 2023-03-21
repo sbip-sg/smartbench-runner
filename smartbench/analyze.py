@@ -92,6 +92,11 @@ def analyze_test_file(
         command = tool.make_analysis_command(
             test_file, benchmark_output_dir, solc_path
         )
+
+        if command is None:
+            print(f"Unable to make analysis command for tool: {tool.name}\n")
+            return None
+
         output = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,
