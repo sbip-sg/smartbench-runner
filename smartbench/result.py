@@ -92,6 +92,7 @@ def print_summary(
 def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     """Process analysis result of a tool."""
     process_result_fn = None
+    parse_coverage_fn = None
 
     if tool.is_slither():
         process_result_fn = slither.parse_slither_json_output
@@ -101,6 +102,12 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
 
     if tool.is_sfuzz():
         process_result_fn = sfuzz.parse_sfuzz_json_output
+        parse_coverage_fn = sfuzz.parse_sfuzz_coverage
+
+    if parse_coverage_fn is not None:
+        log_file = os.path.join(output_dir, tool.log_file)
+        coverage = parse_coverage_fn(log_file)
+        print(f"Coverage: {coverage}")
 
     if process_result_fn:
         output_file = os.path.join(output_dir, tool.output_file)
@@ -136,6 +143,8 @@ def parse_existing_analysis_result(
     Issue.index_counter = 1
 
     parse_result_fn = None
+    parse_coverage_fn = None
+
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
 
@@ -144,10 +153,15 @@ def parse_existing_analysis_result(
 
     if tool.is_sfuzz():
         parse_result_fn = sfuzz.parse_sfuzz_json_output
+        parse_coverage_fn = sfuzz.parse_sfuzz_coverage
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
         return []
+
+    if parse_coverage_fn is not None:
+        coverage = parse_coverage_fn(log_file)
+        print(f"Coverage: {coverage}")
 
     return parse_result_fn(output_file, log_file)
 

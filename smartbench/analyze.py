@@ -94,7 +94,7 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
-            timeout=60
+            timeout=200
         )
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
@@ -120,7 +120,7 @@ def analyze_test_file(
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")
-        validation = validate.validate_issues(test_file, issues)
+        validation = validate.validate_issues(tool, test_file, issues)
 
     result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues

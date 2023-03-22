@@ -3,8 +3,10 @@
 """Module handling sFuzz."""
 
 import os
+import re
 import subprocess
 import shlex
+import matplotlib.pyplot as plt
 
 from typing import List, Union
 
@@ -30,7 +32,7 @@ def make_sfuzz_analysis_command(
     This function should have the same signature with other tools.
     """
     command = executable_file
-    timeout = str(50)
+    timeout = str(190)
 
     print(f"test_file: {test_file}")
 
@@ -106,11 +108,52 @@ def parse_issue_kind(description: str) -> IssueKind:
 
     return IssueKind.UNKNOWN
 
+def parse_sfuzz_coverage(log_file: str) -> int:
+    lines = None
+    with open(log_file, "r", encoding="utf-8") as file:
+        try:
+            lines = [line.rstrip() for line in file]
+        except ValueError:
+            warning("Failed to parse sFuzz log file:", log_file)
+            return 0
+
+    result = 0
+    x_axis = [0]
+    count = 1
+    y_axis = [0]
+    for line in lines:
+        match_str = re.search(r"coverage : [0-9]+", line)
+        if match_str:
+            coverage = match_str.group()
+            x_axis.append(count)
+            coverage = coverage.removeprefix("coverage : ")
+            y_axis.append(int(coverage))
+            count += 1
+            result = coverage
+
+    # plotting the points
+    plt.plot(x_axis, y_axis)
+
+    # naming the x axis
+    plt.xlabel('Time (s)')
+    # naming the y axis
+    plt.ylabel('Coverage')
+
+    # giving a title to my graph
+    plt.title('Code coverage graph!')
+
+    dir_path = os.path.dirname(os.path.realpath(log_file))
+    print("path: ", dir_path)
+    coverage_path = os.path.join(dir_path, "coverage.png")
+
+    # function to show the plot
+    plt.savefig(coverage_path)
+    return int(result);
 
 def parse_sfuzz_json_output(output_file: str, log_file: str) -> List[Issue]:
     """Parse output of sFuzz"""
     lines = None
-    debug("sFuzz parse file: ", output_file)
+    debug("sFuzz output_file: ", output_file)
     with open(output_file, "r", encoding="utf-8") as file:
         try:
             lines = [line.rstrip() for line in file]
