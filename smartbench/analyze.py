@@ -94,7 +94,7 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
-            timeout=30
+            timeout=60
         )
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir

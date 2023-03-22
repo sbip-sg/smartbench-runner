@@ -46,7 +46,7 @@
 - Run with `--validate-results` to validate all detected issues.
 
   ```sh
-  ./smartbench.sh parse-result results/<path_to_results>/ --validate-resutls
+  ./smartbench.sh parse-result results/<path_to_results>/ --validate-result
   ```
 
 ## Parsing bug annotations

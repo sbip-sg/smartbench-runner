@@ -3,7 +3,7 @@
 FILENAME="$1"
 OUTPUT_FILE="$2"
 # BIN="$2"
-# TIMEOUT="$2"
+TIMEOUT="$3"
 # MAIN="$3"
 
 # export PATH="$BIN:$PATH"
@@ -47,7 +47,7 @@ echo "Extracted $COUNT contract(s) from $FILENAME"
 #     TO=120
 # fi
 
-./fuzzer -g -r 1 -d 20 --attacker ReentrancyAttacker
+./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker
 chmod +x fuzzMe
 ./fuzzMe
 cp output/log.txt $OUTPUT_FILE

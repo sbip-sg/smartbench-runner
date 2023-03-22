@@ -30,6 +30,7 @@ def make_sfuzz_analysis_command(
     This function should have the same signature with other tools.
     """
     command = executable_file
+    timeout = str(50)
 
     print(f"test_file: {test_file}")
 
@@ -65,10 +66,10 @@ def make_sfuzz_analysis_command(
         command
         + " "
         + test_file
-        # + " "
-        # + solc_path
         + " "
         + output_file
+        + " "
+        + timeout
     )
     print(f"sfuzz command: {command}")
     return command
@@ -126,15 +127,16 @@ def parse_sfuzz_json_output(output_file: str, log_file: str) -> List[Issue]:
     for line in lines:
         kind = parse_issue_kind(line)
         location = parse_source_location(log_file)
-        issue = Issue(
-            kind,
-            "",
-            Severity.UNKNOWN,
-            Confidence.UNKNOWN,
-            location,
-            checker,
-        )
-        issues.append(issue)
+        if kind != IssueKind.UNKNOWN:
+            issue = Issue(
+                kind,
+                "",
+                Severity.UNKNOWN,
+                Confidence.UNKNOWN,
+                location,
+                checker,
+            )
+            issues.append(issue)
     return issues;
 
 def check_issue_kind(kind: IssueKind, bug_name: str):
