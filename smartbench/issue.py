@@ -16,80 +16,75 @@ class IssueKind(Enum):
     # Unknown
     UNKNOWN = "Unknown Issue"
 
-    # # Reentrancy
-    # REENTRANCY = "Reentrancy"
-    # REENTRANCY_READ_ONLY = "Reentrancy on Read-Only State"
+    # Reentrancy
+    REENTRANCY = "Reentrancy"
+    REENTRANCY_READ_ONLY = "Reentrancy on Read-Only State"
 
-    # # Unchecked operations
-    # UNCHECKED_SEND = "Unchecked Send"
-    # UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
-    # LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
-    # SEND_ETH_TO_ARBITRARY_USER = "Arbitrary Send ETH"
+    # Unchecked operations
+    UNCHECKED_SEND = "Unchecked Send"
+    UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
+    LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
+    SEND_ETH_TO_ARBITRARY_USER = "Arbitrary Send ETH"
 
-    # # Low-level code
-    # LOW_LEVEL_CALL = "Low-Level Call"
+    # Low-level code
+    LOW_LEVEL_CALL = "Low-Level Call"
 
-    # # Event operations
-    # SHOULD_EMIT_EVENT = "Should Emit Event"
+    # Event operations
+    SHOULD_EMIT_EVENT = "Should Emit Event"
 
-    # # Interface
-    # INCORRECT_ERC20_FUNCTION_INTERFACE = "Incorrect ERC20 Function Interface"
+    # Interface
+    INCORRECT_ERC20_FUNCTION_INTERFACE = "Incorrect ERC20 Function Interface"
 
-    # # Compiler
-    # OUTDATED_COMPILER_VERSION = "Outdated Compiler Version"
-    # COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT = (
-    #     "Compiler Not Recommended for Deployment"
-    # )
+    # Compiler
+    OUTDATED_COMPILER_VERSION = "Outdated Compiler Version"
+    COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT = (
+        "Compiler Not Recommended for Deployment"
+    )
 
-    # # Logic
-    # WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR = "Weak Pseudo Random Number Generator"
-    # DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
+    # Logic
+    WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR = "Weak Pseudo Random Number Generator"
+    DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
 
-    # # Weak feature
-    # USE_BLOCK_TIMESTAMP = "Use Block Timestamp"
+    # Weak feature
+    USE_BLOCK_TIMESTAMP = "Use Block Timestamp"
 
-    # # User input
-    # USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
+    # User input
+    USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
 
-    # # Initialization
-    # UNINITIALIZED_STORAGE = "Uninitialized Storage"
+    # Initialization
+    UNINITIALIZED_STORAGE = "Uninitialized Storage"
 
-    # # Coding style
-    # PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
-    # VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
-    # FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
-    # MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
-    # CONSTANT_NAME_NOT_IN_UPPER_CASE = "Constant Name Not in Upper Case"
-    # SHADOWING_LOCAL_VARIABLE = "Shadowing Variable"
+    # Coding style
+    PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
+    VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
+    FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
+    MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
+    CONSTANT_NAME_NOT_IN_UPPER_CASE = "Constant Name Not in Upper Case"
+    SHADOWING_LOCAL_VARIABLE = "Shadowing Variable"
 
-    # # Code optimization
-    # MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
-    # POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
-    # UNUSED_FUNCTION = "Unused Function"
-    # UNUSED_VARIABLE = "Unused Variable"
-    # USE_LITERALS_WITH_TOO_MANY_DIGITS = "Literal with Too Many Digits"
-    # USE_CONSTANT_INSTEAD_OF_VARIABLE = "Use Constant Instead of Variable"
-    # FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = (
-    #     "Function Should Be Declared External"
-    # )
-    # COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
-    # COSTLY_LOOP = "Costly Loop"
+    # Code optimization
+    MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
+    POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
+    UNUSED_FUNCTION = "Unused Function"
+    UNUSED_VARIABLE = "Unused Variable"
+    USE_LITERALS_WITH_TOO_MANY_DIGITS = "Literal with Too Many Digits"
+    USE_CONSTANT_INSTEAD_OF_VARIABLE = "Use Constant Instead of Variable"
+    FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = (
+        "Function Should Be Declared External"
+    )
+    COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
+    COSTLY_LOOP = "Costly Loop"
 
-    # # Deprecated features
-    # DEPRECATED_THROW = "Deprecated Throw"
-    # DEPRECATED_SHA3 = "Deprecated SHA3"
-    # DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
-
-    # # Mythril
-    # ABITRARY_JUMP = "ABITRARY_JUMP"
-    # MULTIPLE_CALLS = "MULTIPLE_CALLS"
+    # Deprecated features
+    DEPRECATED_THROW = "Deprecated Throw"
+    DEPRECATED_SHA3 = "Deprecated SHA3"
+    DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
     # All issue kinds
     ASSERTION_FAILURE = "ASSERTION_FAILURE"
     ARBITRARY_WRITE = "ARBITRARY_WRITE"
     BLOCK_DEPENDENCY = "BLOCK_DEPENDENCY"
     INTEGER_BUG = "ARITHMETIC_BUG"
-    REENTRANCY = "REENTRANCY"
     TRANSACTION_ORDER_DEPENDENCY = "TRANSACTION_ORDER_DEPENDENCY"
     UNHANDLED_EXCEPTION = "UNHANDLED_EXCEPTION"
     ACCESS_CONTROL = "ACCESS_CONTROL"
