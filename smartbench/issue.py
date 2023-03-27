@@ -202,16 +202,16 @@ def classify_issue_kind_to_sbc(
     if issue_kind in []:
         return SBC.FRONT_RUNNING
 
-    if issue_kind in [IssueKind.REENTRANCY]:
+    if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
         return SBC.REENTRANCY
 
     if issue_kind in []:
         return SBC.SHORT_ADDRESSES
 
-    if issue_kind in [IssueKind.BLOCK_DEPENDENCY]:
+    if issue_kind in [IssueKind.BLOCK_DEPENDENCY, IssueKind.USE_BLOCK_TIMESTAMP]:
         return SBC.TIME_MANIPULATION
 
-    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION]:
+    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION, IssueKind.UNCHECKED_LOWLEVEL_CODE]:
         return SBC.UNCHECKED_LOW_LEVEL_CALLS
 
     # Not matching any SmartBugs Classification
