@@ -7,6 +7,17 @@ Module for command line configuration.
 # Standard Library
 import argparse
 
+from enum import Enum
+
+
+class Command(Enum):
+    """Class define sub-commands of Smartbench."""
+
+    ANALYZE = "analyze"
+    PARSE_RESULTS = "parse-results"
+    PARSE_ANNOTS = "parse-annots"
+    DEPLOY_CONTRACTS = "deploy-contracts"
+
 
 def parse_cli_arguments():
     """Configure command arguments line."""
@@ -40,7 +51,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `analyze` sub-command
     analyze_parser = sub_parsers.add_parser(
-        "analyze",
+        Command.ANALYZE.value,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to analyze smart contracts",
@@ -91,7 +102,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `parse-result` sub-command
     result_parser = sub_parsers.add_parser(
-        "parse-result",
+        Command.PARSE_RESULTS.value,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to parse existing analysis results.",
@@ -117,7 +128,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `parse-annotation` sub-command
     annotation_parser = sub_parsers.add_parser(
-        "parse-annot",
+        Command.PARSE_ANNOTS.value,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to parse bug annotations in source code.",
@@ -132,8 +143,36 @@ def parse_cli_arguments():
     )
 
     ################################
+    # Parser for sub-command `deploy-contracts`
+
+    # Create a parser for the `parse-result` sub-command
+    deploy_parser = sub_parsers.add_parser(
+        Command.DEPLOY_CONTRACTS.value,
+        parents=[parent_parser],
+        add_help=False,
+        help="Sub-command to deploy smart contracts for testing.",
+    )
+
+    # Input files
+    deploy_parser.add_argument(
+        "input_files_directories",
+        nargs="+",  # Accept multiple input files or directories
+        type=str,
+        help="Input files or directories (accepts wildcard characters).",
+    )
+
+    # Analysis tool
+    deploy_parser.add_argument(
+        "-t",
+        "--tools",
+        nargs="+",  # Accept multiple tools.
+        type=str,
+        help="Analysis tools to be evaluated.",
+    )
+
+    ################################
     # Parse all arguments
 
     args = arg_parser.parse_args()
 
-    return args
+    return (arg_parser, args)

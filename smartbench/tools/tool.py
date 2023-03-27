@@ -18,10 +18,10 @@ import tomli
 import smartbench
 
 from smartbench import debug
-from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
-
+from smartbench.tools.ilf import ilf
+from smartbench.tools.slither import slither
 
 # List of keywords in configuration files
 INFO = "info"
@@ -37,9 +37,10 @@ RESULT_FILE = "result_file"
 LOG_FILE = "log_file"
 
 # Initiate some global varibles
-ALL_TOOLS_DIR = os.path.dirname(__file__)
+TOOLS_DIR = os.path.dirname(__file__)
 SMARTBENCH_ROOT_DIR = os.path.dirname(smartbench.__file__)
-ALL_RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
+RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
+DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "deploy")
 
 
 class Tool:
@@ -98,17 +99,23 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
 
+    def is_ilf(self):
+        """Check if the current tool is ILF."""
+        return self.id.casefold() == ilf.TOOL_NAME.casefold()
+
     def make_analysis_command(self, test_file, result_dir, solc_path):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
 
         if self.is_slither():
-            make_command = slither.make_slither_analysis_command
+            make_command = slither.make_analysis_command
         elif self.is_confuzzius():
             make_command = confuzzius.make_confuzzius_analysis_command
         elif self.is_mythril():
             make_command = mythril.make_mythril_analysis_command
+        elif self.is_ilf():
+            make_command = ilf.make_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
 
@@ -125,13 +132,17 @@ class Tool:
             self.path, arguments, test_file, output_file, solc_path
         )
 
+    def make_deployment_command(self, test_file, result_dir, solc_path):
+        # TODO: impleemnt
+        pass
+
 
 def load_tool_configuration(tool_name: str) -> Union[Tool, None]:
     """Parse configuration of an analysis tool"""
     # Get path of the configuration file
     tool_name = tool_name.casefold()
     config_file_name = tool_name + ".toml"
-    config_file_path = os.path.join(ALL_TOOLS_DIR, tool_name, config_file_name)
+    config_file_path = os.path.join(TOOLS_DIR, tool_name, config_file_name)
 
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
