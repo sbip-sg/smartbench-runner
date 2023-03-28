@@ -9,7 +9,7 @@ This is the shared interface for all tools.
 import os
 import sys
 
-from typing import List, Union
+from typing import List, Optional
 
 # Third Party
 import tomli
@@ -19,9 +19,10 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.mythril import mythril
 from smartbench.tools.ilf import ilf
+from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+
 
 # List of keywords in configuration files
 INFO = "info"
@@ -56,20 +57,20 @@ class Tool:
         default_arguments: str,
         output_file: str,
         log_file: str,
-        additional_arguments: Union[str, None] = None,
-        timeout: Union[int, None] = None,
+        additional_arguments: Optional[str] = None,
+        timeout: Optional[int] = None,
     ):
         """Constructor"""
-        self.id: str = id
-        self.name: str = name
-        self.homepage: str = homepage
-        self.category: str = category
-        self.path: str = path
+        self.id: str = str(id)
+        self.name: str = str(name)
+        self.homepage: str = str(homepage)
+        self.category: str = str(category)
+        self.path: str = str(path)
         self.default_arguments: str = default_arguments
         self.output_file: str = output_file
         self.log_file: str = log_file
-        self.additional_arguments: Union[str, None] = additional_arguments
-        self.timeout: Union[int, None] = timeout
+        self.additional_arguments: Optional[str] = additional_arguments
+        self.timeout: Optional[int] = None if timeout is None else int(timeout)
 
     def __str__(self):
         """Printing to string."""
@@ -126,7 +127,7 @@ class Tool:
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
-        output_file = configure_output_file(self, result_dir)
+        output_file = self.configure_output_file(result_dir)
 
         return make_command(
             self.path, arguments, test_file, output_file, solc_path
@@ -136,8 +137,28 @@ class Tool:
         # TODO: impleemnt
         pass
 
+    def configure_output_file(self, result_dir: str) -> str:
+        """
+        Configure output file of the tool for a test file.
+        """
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        return os.path.join(result_dir, self.output_file)
 
-def load_tool_configuration(tool_name: str) -> Union[Tool, None]:
+
+    def configure_log_file(self, result_dir: str) -> str:
+        """
+        Configure log file of a tool for a test file.
+        """
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        return os.path.join(result_dir, self.log_file)
+
+
+
+def load_tool_configuration(tool_name: str) -> Optional[Tool]:
     """Parse configuration of an analysis tool"""
     # Get path of the configuration file
     tool_name = tool_name.casefold()
@@ -183,37 +204,6 @@ def load_tool_configuration(tool_name: str) -> Union[Tool, None]:
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))
             return None
-
-
-def configure_output_file(tool: Tool, result_dir: str) -> str:
-    """
-    Configure output file of a tool for a test file.
-    """
-
-    # Prepare output directory
-    if not os.path.exists(result_dir):
-        os.makedirs(result_dir)
-
-    # Configure output file
-    output_file = os.path.join(result_dir, tool.output_file)
-
-    return output_file
-
-
-def configure_log_file(tool: Tool, result_dir: str) -> str:
-    """
-    Configure log file of a tool for a test file.
-    """
-
-    # Prepare output directory
-    if not os.path.exists(result_dir):
-        os.makedirs(result_dir)
-
-    # Configure output file
-    output_file = os.path.join(result_dir, tool.log_file)
-
-    return output_file
-
 
 def configure_analysis_tools(args) -> List[Tool]:
     """Configure all analysis tools."""

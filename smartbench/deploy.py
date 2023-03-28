@@ -12,14 +12,8 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import result, solc, validate
-from smartbench.debug import debug, warning
-from smartbench.tools.tool import (
-    DEPLOY_DIR,
-    Tool,
-    configure_log_file,
-    configure_output_file,
-)
+from smartbench import result, solc
+from smartbench.tools.tool import DEPLOY_DIR, Tool
 
 
 def log_deployment_result(
@@ -30,7 +24,7 @@ def log_deployment_result(
     result_dir: str,
 ):
     """Record execution log of an analysis tool in TOML format."""
-    log_file = configure_log_file(tool, result_dir)
+    log_file = tool.configure_log_file(result_dir)
     with open(log_file, "w", encoding="utf-8") as file:
         file.write(f"# Deployment log of {tool.name}:\n\n")
 

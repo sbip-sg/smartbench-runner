@@ -1,31 +1,26 @@
+import traceback
 #!/usr/bin/env python3
 
 """Module for running smart contract analyzers for testing contracts."""
 
 # Standard Library
+import json
 import os
 import shlex
 import subprocess
-import json
-from pathlib import Path
 
 from datetime import datetime
+from pathlib import Path
 from subprocess import CompletedProcess
 from typing import List
 
 # Library
 from smartbench import bug_annot, result, solc, validate
-from smartbench.debug import debug, warning
 from smartbench.issue import Issue
-from smartbench.tools.mythril import mythril
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
-from smartbench.tools.tool import (
-    RESULTS_DIR,
-    Tool,
-    configure_log_file,
-    configure_output_file,
-)
+from smartbench.tools.tool import RESULTS_DIR, Tool
 
 
 def record_execution_log(
@@ -34,9 +29,9 @@ def record_execution_log(
     command: str,
     output: CompletedProcess,
     result_dir: str,
-):
+) -> None:
     """Record execution log of an analysis tool in TOML format."""
-    log_file = configure_log_file(tool, result_dir)
+    log_file = tool.configure_log_file(result_dir)
     with open(log_file, "w", encoding="utf-8") as file:
         file.write(f"# Execution log of {tool.name}:\n\n")
 
@@ -48,14 +43,19 @@ def record_execution_log(
         # Log output
         file.write("[output]\n")
         stdout = output.stdout.decode("utf-8")
-        json_data = json.loads(stdout)
-        json_formatted_str = json.dumps(json_data, indent=2)
-        file.write(f'stdout = """{json_formatted_str}"""\n\n')
+        # REVIEW: why needs to load `stdout` to a JSON object?
+        # json_data = json.loads(stdout)
+        # json_formatted_str = json.dumps(json_data, indent=2)
+        # file.write(f'stdout = """{json_formatted_str}"""\n\n')
+        file.write(f'stdout = """{stdout}"""\n\n')
         stderr = output.stderr.decode("utf-8")
         file.write(f'stderr = """{stderr}"""')
 
 
-def log_analysis_info(tools, test_files, result_dir: str):
+def log_analysis_info(
+    tools: List[Tool], test_files: List[str], result_dir: str
+):
+    """Record analysis log of all tools."""
     log_file = os.path.join(result_dir, "smartbench_log.toml")
     with open(log_file, "w", encoding="utf-8") as file:
         file.write("# Smartbench benchmarking log \n\n")
@@ -114,13 +114,17 @@ def analyze_test_file(
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
-            mythril.write_to_output_file(output, tool.output_file, benchmark_output_dir)
+            mythril.write_to_output_file(
+                output, tool.output_file, benchmark_output_dir
+            )
         else:
             # post-process the raw JSON file.
             postprocess_output_file(tool, benchmark_output_dir)
 
-    except ValueError:
-        print("Failed to run command: " + str(command))
+    except ValueError as err:
+        print(f"Failed to run command: {command}\n")
+        print(f"** Error: {err}")
+        traceback.print_exc()
         return []
 
     # Process results
@@ -137,7 +141,7 @@ def analyze_test_file(
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")
-        validation = validate.validate_issues(test_file, issues)
+        validation = validate.validate_issues(tool, test_file, issues)
 
     result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues
@@ -213,11 +217,12 @@ def perform_analysis(
 
     return all_issues
 
+
 def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
-    output_file = configure_output_file(tool, benchmark_output_dir)
+    output_file = tool.configure_output_file(benchmark_output_dir)
     content = Path(output_file).read_text()
     f = open(output_file, "w")
     json_data = json.loads(content)
     json_formatted_str = json.dumps(json_data, indent=2)
-    f.write(f'{json_formatted_str}')
+    f.write(f"{json_formatted_str}")
     f.close()
