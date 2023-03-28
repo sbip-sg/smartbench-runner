@@ -19,6 +19,7 @@ from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.mythril import mythril
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validate import Validation
 
@@ -98,6 +99,9 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     if tool.is_confuzzius():
         process_result_fn = confuzzius.parse_confuzzius_json_output
 
+    if tool.is_mythril():
+        process_result_fn = mythril.parse_mythril_json_output
+
     if process_result_fn:
         output_file = os.path.join(output_dir, tool.output_file)
         log_file = os.path.join(output_dir, tool.log_file)
@@ -137,6 +141,9 @@ def parse_existing_analysis_result(
 
     if tool.is_confuzzius():
         parse_result_fn = confuzzius.parse_confuzzius_json_output
+
+    if tool.is_mythril():
+        parse_result_fn = mythril.parse_mythril_json_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
@@ -182,6 +189,8 @@ def parse_result_directory(
         tool_dir = os.path.join(result_dir, tool_id)
         test_dirs = [p[0] for p in os.walk(tool_dir)]
         test_dirs = sorted(test_dirs)
+        correct_bugs = 0
+        annotations = 0
         for test_dir in test_dirs:
             if not is_test_result_directory(tool, test_dir):
                 continue
@@ -208,13 +217,15 @@ def parse_result_directory(
                 else:
                     print("Bug annotations:")
                     bug_annots = bug_annot.parse_bug_annotations(test_file)
+                    annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
-                    validation = validate.validate_issues(test_file, issues)
+                    validation = validate.validate_issues(tool, test_file, issues)
+                    correct_bugs += len(validation.correct_issues)
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues
+        print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     print("Parsing result completed!")
-
     return all_issues

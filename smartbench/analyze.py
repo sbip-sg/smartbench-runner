@@ -6,6 +6,8 @@
 import os
 import shlex
 import subprocess
+import json
+from pathlib import Path
 
 from datetime import datetime
 from subprocess import CompletedProcess
@@ -15,6 +17,7 @@ from typing import List
 from smartbench import bug_annot, result, solc, validate
 from smartbench.debug import debug, warning
 from smartbench.issue import Issue
+from smartbench.tools.mythril import mythril
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import (
@@ -45,7 +48,9 @@ def record_execution_log(
         # Log output
         file.write("[output]\n")
         stdout = output.stdout.decode("utf-8")
-        file.write(f'stdout = """{stdout}"""\n\n')
+        json_data = json.loads(stdout)
+        json_formatted_str = json.dumps(json_data, indent=2)
+        file.write(f'stdout = """{json_formatted_str}"""\n\n')
         stderr = output.stderr.decode("utf-8")
         file.write(f'stderr = """{stderr}"""')
 
@@ -106,6 +111,14 @@ def analyze_test_file(
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
         )
+
+        if tool.is_mythril():
+            # the results of `mythril` is in `stdout`
+            mythril.write_to_output_file(output, tool.output_file, benchmark_output_dir)
+        else:
+            # post-process the raw JSON file.
+            postprocess_output_file(tool, benchmark_output_dir)
+
     except ValueError:
         print("Failed to run command: " + str(command))
         return []
@@ -150,12 +163,6 @@ def run_analysis_tool(
     parent_path = os.path.dirname(common_path)
 
     all_issues = []
-
-    # FIXME: move this code to an environment setup process. If keep it
-    # here, the installation script of Confuzzius is always ran whenever
-    # performing the benchmarking of Conffuzius.
-    if tool.name.casefold() == confuzzius.TOOL_NAME.casefold():
-        confuzzius.install_virtual_env()
 
     for test_file in test_files:
         # Prepare output directory for one test file
@@ -205,3 +212,12 @@ def perform_analysis(
     print(f"Results are recorded at: {results_dir}")
 
     return all_issues
+
+def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
+    output_file = configure_output_file(tool, benchmark_output_dir)
+    content = Path(output_file).read_text()
+    f = open(output_file, "w")
+    json_data = json.loads(content)
+    json_formatted_str = json.dumps(json_data, indent=2)
+    f.write(f'{json_formatted_str}')
+    f.close()

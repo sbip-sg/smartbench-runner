@@ -19,9 +19,9 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.mythril import mythril
 from smartbench.tools.ilf import ilf
 from smartbench.tools.slither import slither
-
 
 # List of keywords in configuration files
 INFO = "info"
@@ -91,6 +91,10 @@ class Tool:
         """Check if the current tool is Confuzzius."""
         return self.id.casefold() == confuzzius.TOOL_NAME.casefold()
 
+    def is_mythril(self):
+        """Check if the current tool is Mythril."""
+        return self.id.casefold() == mythril.TOOL_NAME.casefold()
+
     def is_smartfuzz(self):
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
@@ -107,7 +111,9 @@ class Tool:
         if self.is_slither():
             make_command = slither.make_analysis_command
         elif self.is_confuzzius():
-            make_command = confuzzius.make_analysis_command
+            make_command = confuzzius.make_confuzzius_analysis_command
+        elif self.is_mythril():
+            make_command = mythril.make_mythril_analysis_command
         elif self.is_ilf():
             make_command = ilf.make_analysis_command
         elif self.is_smartfuzz():
