@@ -1,4 +1,3 @@
-import traceback
 #!/usr/bin/env python3
 
 """Module for running smart contract analyzers for testing contracts."""
@@ -8,6 +7,7 @@ import json
 import os
 import shlex
 import subprocess
+import traceback
 
 from datetime import datetime
 from pathlib import Path
@@ -36,20 +36,27 @@ def record_execution_log(
         file.write(f"# Execution log of {tool.name}:\n\n")
 
         # Log input
-        file.write("[input]\n")
-        file.write(f'test_file = """{input_file}"""\n\n')
-        file.write(f'command = """{command}"""\n\n')
+        file.write("-------------------------------------------------------\n")
+        file.write("[input contract]\n")
+        file.write("-------------------------------------------------------\n")
+        file.write(f"{input_file}\n\n")
 
-        # Log output
+        file.write("-------------------------------------------------------\n")
+        file.write("[command]\n")
+        file.write("-------------------------------------------------------\n")
+        file.write(f"{command}\n\n")
+
+        file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
+        file.write("-------------------------------------------------------\n")
         stdout = output.stdout.decode("utf-8")
-        # REVIEW: why needs to load `stdout` to a JSON object?
-        # json_data = json.loads(stdout)
-        # json_formatted_str = json.dumps(json_data, indent=2)
-        # file.write(f'stdout = """{json_formatted_str}"""\n\n')
-        file.write(f'stdout = """{stdout}"""\n\n')
+        file.write(f"{stdout}\n\n")
+
+        file.write("-------------------------------------------------------\n")
+        file.write("[errors]\n")
+        file.write("-------------------------------------------------------\n")
         stderr = output.stderr.decode("utf-8")
-        file.write(f'stderr = """{stderr}"""')
+        file.write(f"{stderr}")
 
 
 def log_analysis_info(

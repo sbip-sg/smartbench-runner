@@ -33,9 +33,6 @@ CATEGORY = "category"
 COMMAND = "command"
 PATH = "path"
 DEFAULT_ARGUMENTS = "default_arguments"
-OUTPUT = "output"
-RESULT_FILE = "result_file"
-LOG_FILE = "log_file"
 
 # Initiate some global varibles
 TOOLS_DIR = os.path.dirname(__file__)
@@ -55,8 +52,6 @@ class Tool:
         category: str,
         path: str,
         default_arguments: str,
-        output_file: str,
-        log_file: str,
         additional_arguments: Optional[str] = None,
         timeout: Optional[int] = None,
     ):
@@ -67,10 +62,10 @@ class Tool:
         self.category: str = str(category)
         self.path: str = str(path)
         self.default_arguments: str = default_arguments
-        self.output_file: str = output_file
-        self.log_file: str = log_file
         self.additional_arguments: Optional[str] = additional_arguments
         self.timeout: Optional[int] = None if timeout is None else int(timeout)
+        self.output_file: str = f"{id}_result.json"
+        self.log_file: str = f"{id}_execution.log"
 
     def __str__(self):
         """Printing to string."""
@@ -185,12 +180,6 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 path = command.get(PATH)
                 default_arguments = command.get(DEFAULT_ARGUMENTS)
 
-            # Parse tool's output
-            output = config.get(OUTPUT)
-            if output:
-                result_file = output.get(RESULT_FILE)
-                log_file = output.get(LOG_FILE)
-
             return Tool(
                 tool_id,
                 tool_name,
@@ -198,8 +187,6 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 category,
                 path,
                 default_arguments,
-                result_file,
-                log_file,
             )
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))
