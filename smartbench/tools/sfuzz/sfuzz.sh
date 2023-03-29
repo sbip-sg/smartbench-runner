@@ -7,8 +7,6 @@ VERSION="$3"
 CONTRACT="${FILENAME%.sol}"
 CONTRACT="${CONTRACT##*/}"
 CONTRACTS=$(python3 smartbench/tools/sfuzz/printContractNames.py "$FILENAME")
-COUNT=$(echo $CONTRACTS | wc -w)
-[ "$COUNT" -gt 0 ] || COUNT=1
 
 TOOL_ID="sfuzz"
 BASE_DIR=$(dirname "$0")
