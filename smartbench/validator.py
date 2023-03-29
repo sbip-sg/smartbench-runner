@@ -8,14 +8,15 @@ from enum import Enum
 from typing import List
 
 # Library
-from smartbench import bug_annot
+from smartbench import bug_annot, issue
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.location import Location
-from smartbench.tools.tool import Tool
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.tool import Tool
+
 
 class IssueStatus(Enum):
     """Class representing status of a reported issue."""
@@ -26,21 +27,44 @@ class IssueStatus(Enum):
 
 
 @dataclass
-class Validation:
+class ValidationResult:
     """Class capturing the validation result between detected issues and
     bug annotations in a smart contract."""
 
-    # Attributes
-    test_file: str
-    issues: List[Issue]  # All reported issues that are validated.
-    bug_annotations: List[BugAnnot]  # All bug annotations considered.
-    correct_issues: List[Issue]  # Issues that are reported.
-    incorrect_issues: List[Issue]  # Issues that are reported incorrectly.
-    unknown_issues: List[Issue]  # Issues unrelated to bug annotations.
-    missing_bugs: List[BugAnnot]  # Bug annotations that are not reported.
+    def __init__(
+        self,
+        test_file: str,
+        issues: List[Issue],
+        bug_annotations: List[BugAnnot],
+        correct_issues: List[Issue],
+        incorrect_issues: List[Issue],
+        unknown_issues: List[Issue],
+        missing_bugs: List[BugAnnot],
+    ):
+        self.test_file = test_file
+
+        # All the issues that are reported
+        self.issues: List[Issue] = list(issues)
+
+        # Bug annotations specified for the test files.
+        self.bug_annotations: List[BugAnnot] = list(bug_annotations)
+
+        # Issues that are reported.
+        self.correct_issues: List[Issue] = list(correct_issues)
+
+        # Issues that are reported incorrectly.
+        self.incorrect_issues: List[Issue] = list(incorrect_issues)
+
+        # Issues unrelated to bug annotations.
+        self.unknown_issues: List[Issue] = list(unknown_issues)
+
+        # Bug annotations that are not reported.
+        self.missing_bugs: List[BugAnnot] = list(missing_bugs)
 
 
-def match_issue_to_annotation(tool: Tool, issue: Issue, annot: BugAnnot) -> bool:
+def match_issue_to_annotation(
+    tool: Tool, issue: Issue, annot: BugAnnot
+) -> bool:
     """Function to check whether an reported issue is related to a bug
     annotation."""
     # Check whether the issue kind and bug annotation kind are related
@@ -67,7 +91,7 @@ def match_issue_to_annotation(tool: Tool, issue: Issue, annot: BugAnnot) -> bool
         match_command = mythril.match_location_of_issue_to_annotation
 
     if match_command:
-        return match_command(issue, annot);
+        return match_command(issue, annot)
 
     # # Check whether the issue location is covered by the annotation location.
     if iloc.start_line is None or iloc.end_line is None:
@@ -81,7 +105,9 @@ def match_issue_to_annotation(tool: Tool, issue: Issue, annot: BugAnnot) -> bool
     return True
 
 
-def validate_issues(tool: Tool, test_file: str, issues: List[Issue]) -> Validation:
+def validate_issues(
+    tool: Tool, test_file: str, issues: List[Issue]
+) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
     correct_issues: List[Issue] = []
@@ -116,7 +142,7 @@ def validate_issues(tool: Tool, test_file: str, issues: List[Issue]) -> Validati
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
 
-    return Validation(
+    return ValidationResult(
         test_file,
         issues,
         annots,

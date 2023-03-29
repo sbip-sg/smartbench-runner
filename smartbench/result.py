@@ -21,7 +21,7 @@ from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
 from smartbench.tools.tool import Tool, load_tool_configuration
-from smartbench.validator import Validation
+from smartbench.validator import ValidationResult
 
 
 def print_indices(indices: List[int]) -> str:
@@ -38,7 +38,7 @@ def print_summary(
     test_name: str,
     issues: List[Issue],
     annots: Union[List[BugAnnot], None] = None,
-    validation: Union[Validation, None] = None,
+    validation: Union[ValidationResult, None] = None,
 ):
     """Print statistic summary of detected issues for a test file"""
     print("------------------")
