@@ -27,6 +27,6 @@ done
 solc-select install $VERSION
 solc-select use $VERSION
 
-./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker
+./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker > $4 2>&1
 chmod +x fuzzMe
 ./fuzzMe

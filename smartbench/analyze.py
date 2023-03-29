@@ -83,7 +83,7 @@ def analyze_test_file(
     tool: Tool,
     test_file: str,
     test_output_dir: str,
-    timeout: int,
+    timeout=None,
     validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -123,9 +123,6 @@ def analyze_test_file(
             mythril.write_to_output_file(
                 output, tool.output_file, test_output_dir
             )
-        else:
-            # post-process the raw JSON file.
-            postprocess_output_file(tool, test_output_dir)
 
     except ValueError as err:
         print(f"Failed to run command: {command}\n")
@@ -157,7 +154,7 @@ def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
     tool_output_dir: str,
-    timeout: int,
+    timeout=None,
     validate=False,
     jobs=1,
 ) -> List[Issue]:
@@ -224,15 +221,3 @@ def perform_analysis(
     print(f"Results are recorded at: {results_dir}")
 
     return all_issues
-
-def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
-    output_file = tool.configure_output_file(benchmark_output_dir)
-    if not os.path.exists(output_file):
-        return
-
-    content = Path(output_file).read_text()
-    f = open(output_file, "w")
-    json_data = json.loads(content)
-    json_formatted_str = json.dumps(json_data, indent=2)
-    f.write(f"{json_formatted_str}")
-    f.close()

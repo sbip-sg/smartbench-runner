@@ -21,7 +21,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
-    timeout,
+    timeout=None,
 ):
     """
     Function to make analysis command for Slither.
@@ -46,6 +46,8 @@ def make_analysis_command(
         + str(timeout)
         + " "
         + solc_version
+        + " "
+        + output_file
     )
     print(f"sfuzz command: {command}")
     return command

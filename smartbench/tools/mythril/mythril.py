@@ -30,7 +30,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
-    timeout,
+    timeout=None,
 ):
     """Function to make analysis command for `Mythril`. This function should
     have the same signature with other tools.
@@ -47,7 +47,7 @@ def make_analysis_command(
 
     if timeout is None:
         timeout = 60
-        
+
     command = (
         command
         + " analyze "

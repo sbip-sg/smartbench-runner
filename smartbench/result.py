@@ -226,7 +226,7 @@ def parse_result_directory(
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
-                        
+
                     validation = validator.validate_issues(
                         tool, test_file, issues
                     )
@@ -234,7 +234,9 @@ def parse_result_directory(
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues
-        print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
+
+        if validate_results:
+            print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     print("Parsing result completed!")
     return all_issues
