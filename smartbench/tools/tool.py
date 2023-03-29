@@ -104,7 +104,7 @@ class Tool:
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
 
-    def make_analysis_command(self, test_file, result_dir, solc_path):
+    def make_analysis_command(self, test_file, result_dir, solc_path, timeout):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
@@ -133,7 +133,7 @@ class Tool:
         output_file = self.configure_output_file(result_dir)
 
         return make_command(
-            self.path, arguments, test_file, output_file, solc_path
+            self.path, arguments, test_file, output_file, solc_path, timeout
         )
 
     def make_deployment_command(self, test_file, result_dir, solc_path):

@@ -28,6 +28,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout: int,
 ):
     """
     Function to make analysis command for Confuzzius.
@@ -38,7 +39,16 @@ def make_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    command = command + " -s " + test_file + " -r " + output_file + " --evm byzantium" + " -t 30"
+    command = (
+        command
+        + " -s "
+        + test_file
+        + " -r "
+        + output_file
+        + " --evm byzantium"
+        + " -t "
+        + str(timeout)
+    )
     return command
 
 

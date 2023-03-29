@@ -103,7 +103,7 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(
-            test_file, benchmark_output_dir, solc_path
+            test_file, benchmark_output_dir, solc_path, timeout
         )
 
         if command is None:
@@ -115,7 +115,6 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
-            timeout=timeout
         )
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir

@@ -31,6 +31,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout: int,
 ):
     """Function to make analysis command for `Mythril`. This function should
     have the same signature with other tools.
@@ -49,7 +50,8 @@ def make_analysis_command(
         command
         + " analyze "
         + test_file
-        + " --execution-timeout 20"
+        + " --execution-timeout "
+        + str(timeout)
         + " --solv "
         + solc_version
         + " -o json  "

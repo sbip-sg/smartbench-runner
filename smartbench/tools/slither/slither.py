@@ -27,6 +27,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout: int
 ):
     """
     Function to make analysis command for Slither.
