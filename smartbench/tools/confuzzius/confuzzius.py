@@ -27,7 +27,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
-    timeout=60,
+    timeout,
 ):
     """
     Function to make analysis command for Confuzzius.
@@ -37,6 +37,9 @@ def make_analysis_command(
 
     if arguments:
         command = command + " " + arguments
+
+    if timeout is None:
+        timeout = 60
 
     command = (
         command
