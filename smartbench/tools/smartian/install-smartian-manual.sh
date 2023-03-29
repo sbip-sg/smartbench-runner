@@ -24,7 +24,6 @@ if [ -d "$TOOL_DIR" ]; then
     echo "Skip cloning..."
 else
     git clone https://github.com/SoftSec-KAIST/Smartian $TOOL_DIR
-    # git clone https://github.com/eth-sri/ilf $TOOL_DIR
 fi
 
 # Compiling Smartian
@@ -46,4 +45,5 @@ sudo apt-get install -y dotnet-sdk-5.0
 # Install environment
 echo "\nCompiling Smartian"
 cd $TOOL_DIR
+git submodule update --init --recursive
 make
