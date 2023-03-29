@@ -74,9 +74,17 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
+    # Number of jobs per tool
+    analyze_parser.add_argument(
+        "-j",
+        "--jobs",
+        type=int,
+        help="Number of jobs to be run concurrently for each tool.",
+    )
+
     # Validate analysis result
     analyze_parser.add_argument(
-        "--validate-results",
+        "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
     )

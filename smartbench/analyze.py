@@ -15,7 +15,7 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import bug_annot, result, solc, validate
+from smartbench import bug_annot, printer, result, solc, validator
 from smartbench.issue import Issue
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
@@ -82,14 +82,14 @@ def log_analysis_info(
 def analyze_test_file(
     tool: Tool,
     test_file: str,
-    benchmark_output_dir: str,
-    validate_results=False,
+    test_output_dir: str,
+    validate=False,
 ) -> List[Issue]:
-    """Run the analysis on one test case.
+    """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
-    bug annotations in the testing files.
-    """
+    bug annotations in the testing files."""
+
     # Configure Solc compiler
     solc_path = solc.configure_solc_compiler(test_file)
 
@@ -102,12 +102,12 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(
-            test_file, benchmark_output_dir, solc_path
+            test_file, test_output_dir, solc_path
         )
 
         if command is None:
             print(f"Unable to make analysis command for tool: {tool.name}\n")
-            return None
+            return []
 
         output = subprocess.run(
             shlex.split(command),
@@ -115,18 +115,16 @@ def analyze_test_file(
             stderr=subprocess.PIPE,
             check=False,
         )
-        record_execution_log(
-            tool, test_file, command, output, benchmark_output_dir
-        )
+        record_execution_log(tool, test_file, command, output, test_output_dir)
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
             mythril.write_to_output_file(
-                output, tool.output_file, benchmark_output_dir
+                output, tool.output_file, test_output_dir
             )
         else:
             # post-process the raw JSON file.
-            postprocess_output_file(tool, benchmark_output_dir)
+            postprocess_output_file(tool, test_output_dir)
 
     except ValueError as err:
         print(f"Failed to run command: {command}\n")
@@ -135,20 +133,20 @@ def analyze_test_file(
         return []
 
     # Process results
-    issues = result.process_analysis_result(tool, benchmark_output_dir)
+    issues = result.process_analysis_result(tool, test_output_dir)
     for issue in issues:
         print("- " + str(issue))
 
     bug_annots = None
     validation = None
     test_name = os.path.basename(test_file)
-    if validate_results:
+    if validate:
         print("Bug annotations:")
         bug_annots = bug_annot.parse_bug_annotations(test_file)
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")
-        validation = validate.validate_issues(tool, test_file, issues)
+        validation = validator.validate_issues(tool, test_file, issues)
 
     result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues
@@ -157,18 +155,18 @@ def analyze_test_file(
 def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
-    results_dir: str,
-    validate_results=False,
+    tool_output_dir: str,
+    validate=False,
+    jobs=1,
 ) -> List[Issue]:
-    """Run one analysis tool.
-
-    The input `result_dir` is the directory containing results of all tools in
-    the current run.
+    """Run one analysis tool for all `test_files` and write all results
+    to `tool_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files.
+
     """
-    print(f"{'=' * 55}\n")
+    printer.print_long_double_horizontal_line()
     print(f"Running analysis tool: {tool.name}\n")
     common_path = os.path.commonpath(test_files)
     parent_path = os.path.dirname(common_path)
@@ -178,26 +176,26 @@ def run_analysis_tool(
     for test_file in test_files:
         # Prepare output directory for one test file
         rel_path = os.path.relpath(test_file, start=parent_path)
-        test_output_dir = os.path.join(results_dir, tool.id, rel_path)
+        test_output_dir = os.path.join(tool_output_dir, rel_path)
         if not os.path.exists(test_output_dir):
             os.makedirs(test_output_dir)
 
         # Analyze the test file
-        issues = analyze_test_file(
-            tool, test_file, test_output_dir, validate_results
-        )
+        issues = analyze_test_file(tool, test_file, test_output_dir, validate)
         all_issues += issues
 
     return all_issues
 
 
 def perform_analysis(
-    tools: List[Tool], test_files: List[str], validate_results=False
+    tools: List[Tool], test_files: List[str], validate=False, jobs=1
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files.
+
+    When `jobs` > 1, the analysis can be performed concurrently.
     """
     # Prepare output directory for all tests and all tools in this run
     print("Start analyzing all test cases...\n")
@@ -214,8 +212,9 @@ def perform_analysis(
     # Perform the analysis
     all_issues = []
     for tool in tools:
+        tool_output_dir = os.path.join(results_dir, tool.id)
         issues = run_analysis_tool(
-            tool, test_files, results_dir, validate_results
+            tool, test_files, tool_output_dir, validate, jobs
         )
         all_issues += issues
 

@@ -13,15 +13,15 @@ from typing import Dict, List, Union
 import more_itertools as mit
 
 # Library
-from smartbench import bug_annot, log, validate
+from smartbench import bug_annot, log, validator
 from smartbench.bug_annot import BugAnnot
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
-from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.slither import slither
 from smartbench.tools.tool import Tool, load_tool_configuration
-from smartbench.validate import Validation
+from smartbench.validator import Validation
 
 
 def print_indices(indices: List[int]) -> str:
@@ -106,7 +106,7 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
         output_file = os.path.join(output_dir, tool.output_file)
         log_file = os.path.join(output_dir, tool.log_file)
         try:
-            return process_result_fn(output_file, log_file);
+            return process_result_fn(output_file, log_file)
         except:
             # When there is no results
             return []
@@ -153,7 +153,7 @@ def parse_existing_analysis_result(
 
 
 def parse_result_directory(
-    result_dir: str, validate_results=False
+    results_dir: str, validate_results=False
 ) -> List[Issue]:
     """Function to parse result directory of a tool.
 
@@ -161,17 +161,17 @@ def parse_result_directory(
     tools.
     """
 
-    path = pathlib.Path(result_dir)
+    path = pathlib.Path(results_dir)
     if not path.is_dir():
-        warning(f"Directory does not exists: {result_dir}")
+        warning(f"Directory does not exists: {results_dir}")
         return []
 
     all_issues: List[Issue] = []
 
     # Parse results of each analysis tool
-    items = list(os.listdir(result_dir))
+    items = list(os.listdir(results_dir))
     for item in items:
-        item_path = os.path.join(result_dir, item)
+        item_path = os.path.join(results_dir, item)
         if not os.path.isdir(item_path):
             continue
 
@@ -186,18 +186,17 @@ def parse_result_directory(
         print(f"{'=' * 55}\n")
         print(f"Parsing analysis result of: {tool.id}\n")
 
-        tool_dir = os.path.join(result_dir, tool_id)
-        test_dirs = [p[0] for p in os.walk(tool_dir)]
-        test_dirs = sorted(test_dirs)
+        tool_output_dir = os.path.join(results_dir, tool_id)
+        test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
         correct_bugs = 0
         annotations = 0
-        for test_dir in test_dirs:
-            if not is_test_result_directory(tool, test_dir):
+        for test_output_dir in test_output_dirs:
+            if not is_test_result_directory(tool, test_output_dir):
                 continue
 
-            test_dir = os.path.abspath(test_dir)
-            output_file = os.path.join(test_dir, tool.output_file)
-            log_file = os.path.join(test_dir, tool.log_file)
+            test_output_dir = os.path.abspath(test_output_dir)
+            output_file = os.path.join(test_output_dir, tool.output_file)
+            log_file = os.path.join(test_output_dir, tool.log_file)
 
             test_file = log.get_input_test_file(log_file)
             print(f"{'-' * 45}\n")
@@ -209,7 +208,7 @@ def parse_result_directory(
 
             bug_annots = None
             validation = None
-            test_name = os.path.basename(test_dir)
+            test_name = os.path.basename(test_output_dir)
             if validate_results:
                 if test_file is None:
                     print(f"Unable to read test file: {test_file}")
@@ -220,7 +219,9 @@ def parse_result_directory(
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
-                    validation = validate.validate_issues(tool, test_file, issues)
+                    validation = validator.validate_issues(
+                        tool, test_file, issues
+                    )
                     correct_bugs += len(validation.correct_issues)
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
