@@ -11,7 +11,10 @@ from smartbench.location import Location
 
 
 class IssueKind(Enum):
-    """Class representing the kind of issue."""
+    """Class representing the kind of issue.
+        + Use for all annotation and bug parsing.
+        + Different bug names can map to the same issue
+    """
 
     # Unknown
     UNKNOWN = "Unknown Issue"
@@ -22,9 +25,14 @@ class IssueKind(Enum):
 
     # Unchecked operations
     UNCHECKED_SEND = "Unchecked Send"
+    LEAKING_ETHER = "Unchecked Send" # alias of the same bug type
+    SEND_ETH_TO_ARBITRARY_USER = "Unchecked Send" # alias of the same bug type
+
     UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
+    UNHANDLED_EXCEPTION = "Unchecked Low-Level Code" # alias of the same bug type
+
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
-    SEND_ETH_TO_ARBITRARY_USER = "Arbitrary Send ETH"
+
 
     # Low-level code
     LOW_LEVEL_CALL = "Low-Level Call"
@@ -46,7 +54,8 @@ class IssueKind(Enum):
     DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
 
     # Weak feature
-    USE_BLOCK_TIMESTAMP = "Use Block Timestamp"
+    BLOCK_DEPENDENCY = "Block values dependency"
+    USE_BLOCK_TIMESTAMP = "Block values dependency" # alias of the same bug type
 
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
@@ -83,16 +92,14 @@ class IssueKind(Enum):
     # All issue kinds
     ASSERTION_FAILURE = "ASSERTION_FAILURE"
     ARBITRARY_WRITE = "ARBITRARY_WRITE"
-    BLOCK_DEPENDENCY = "BLOCK_DEPENDENCY"
     INTEGER_BUG = "ARITHMETIC_BUG"
     TRANSACTION_ORDER_DEPENDENCY = "TRANSACTION_ORDER_DEPENDENCY"
-    UNHANDLED_EXCEPTION = "UNHANDLED_EXCEPTION"
     ACCESS_CONTROL = "ACCESS_CONTROL"
-    LEAKING_ETHER = "LEAKING_ETHER"
     LOCKING_ETHER = "LOCKING_ETHER"
     UNSAFE_SELFDESTRUCT = "UNSAFE_SELFDESTRUCT"
     UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
     TX_ORIGIN_USAGE = "TX_ORIGIN_USAGE"
+
     def __str__(self):
         return self.value
 

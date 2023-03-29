@@ -55,6 +55,7 @@ class Tool:
         default_arguments: str,
         additional_arguments: Optional[str] = None,
         timeout: Optional[int] = None,
+        seed: int = 0
     ):
         """Constructor"""
         self.id: str = str(id)
@@ -67,7 +68,7 @@ class Tool:
         self.timeout: Optional[int] = None if timeout is None else int(timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
-        self.seed: int = 0 # increasing random seed for reproducible results
+        self.seed: int = seed # increasing random seed for reproducible results
 
     def __str__(self):
         """Printing to string."""
@@ -105,6 +106,8 @@ class Tool:
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
+        self.seed += 1 # determinstically increase from seed. Reproducible randomness
+        # TODO add random seed for fuzzing tools if they support it
         arguments = self.default_arguments
         if self.is_slither():
             make_command = slither.make_analysis_command

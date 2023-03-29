@@ -13,6 +13,7 @@ from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.location import Location
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.tool import Tool
@@ -67,6 +68,7 @@ def match_issue_to_annotation(
 ) -> bool:
     """Function to check whether an reported issue is related to a bug
     annotation."""
+    # print ("match_issue_to_annotation ", issue, annot)
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
         if annot.sbc != annot.sbc:
@@ -76,11 +78,11 @@ def match_issue_to_annotation(
         return False
     else:
         return False
-
     # Check whether the issue and bug annotation are of the same file.
     iloc: Location = issue.location
-    if iloc.file_path != annot.file_path:
-        return False
+    # Remove unneccessary path information
+    # if iloc.file_path != annot.file_path:
+    #     return False
 
     match_command = None
 
@@ -89,6 +91,9 @@ def match_issue_to_annotation(
 
     if tool.is_mythril():
         match_command = mythril.match_location_of_issue_to_annotation
+
+    if tool.is_smartfuzz():
+        match_command = smartfuzz.match_location_of_issue_to_annotation
 
     if match_command:
         return match_command(issue, annot)
@@ -115,6 +120,7 @@ def validate_issues(
     unknown_issues: List[Issue] = []
 
     annots = bug_annot.parse_bug_annotations(test_file)
+    # print ("all annots", annots)
     reported_annots: List[BugAnnot] = []
 
     target_sbcs = []
@@ -126,6 +132,7 @@ def validate_issues(
         correct_bug = False
         for annot in annots:
             if match_issue_to_annotation(tool, issue, annot):
+                print("matched issue to annot", issue, annot)
                 correct_issues.append(issue)
                 reported_annots.append(annot)
                 correct_bug = True
@@ -141,7 +148,8 @@ def validate_issues(
 
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
-
+    for bug in missing_bugs:
+        print("missing bug", bug)
     return ValidationResult(
         test_file,
         issues,
