@@ -4,7 +4,7 @@
 # Standard Library
 import os
 
-from typing import Union
+from typing import Optional
 
 
 class Location:
@@ -17,17 +17,17 @@ class Location:
     def __init__(
         self,
         file_path: str,
-        start_line: Union[int, None] = None,
-        start_column: Union[int, None] = None,
-        end_line: Union[int, None] = None,
-        end_column: Union[int, None] = None,
+        start_line: Optional[int] = None,
+        start_column: Optional[int] = None,
+        end_line: Optional[int] = None,
+        end_column: Optional[int] = None,
     ):
         """Constructor"""
         self.file_path: str = file_path
-        self.start_line: Union[int, None] = start_line
-        self.start_column: Union[int, None] = start_column
-        self.end_line: Union[int, None] = end_line
-        self.end_column: Union[int, None] = end_column
+        self.start_line = int(start_line) if start_line else None
+        self.start_column = int(start_column) if start_column else None
+        self.end_line = int(end_line) if end_line else None
+        self.end_column = int(end_column) if end_column else None
 
     def __str__(self):
         """Print to string"""

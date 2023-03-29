@@ -6,9 +6,7 @@
 import json
 import os
 
-from typing import List, Union
-
-# Third Party
+from typing import List, Optional
 
 # Library
 from smartbench import log
@@ -37,13 +35,13 @@ def make_ifl_analysis_command(
     pass
 
 
-def parse_confidence(confidence: Union[str, None]) -> Confidence:
+def parse_confidence(confidence: Optional[str]) -> Confidence:
     """Parse confidence level of issue detected by TOOLNAME."""
     # TODO
     pass
 
 
-def parse_severity(severity: Union[str, None]) -> Severity:
+def parse_severity(severity: Optional[str]) -> Severity:
     """Parse severity level of issue detected by TOOLNAME."""
     # TODO
     pass

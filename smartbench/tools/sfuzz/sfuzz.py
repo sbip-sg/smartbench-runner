@@ -3,9 +3,6 @@
 """Module handling sFuzz."""
 
 import os
-import re
-import subprocess
-import shlex
 from typing import List, Union
 
 # Library
