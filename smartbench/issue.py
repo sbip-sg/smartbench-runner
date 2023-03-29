@@ -93,7 +93,6 @@ class IssueKind(Enum):
     UNSAFE_SELFDESTRUCT = "UNSAFE_SELFDESTRUCT"
     UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
     TX_ORIGIN_USAGE = "TX_ORIGIN_USAGE"
-
     def __str__(self):
         return self.value
 

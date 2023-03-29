@@ -132,9 +132,6 @@ def analyze_test_file(
         print(f"** Error: {err}")
         traceback.print_exc()
         return []
-    except subprocess.TimeoutExpired:
-        print("Timeout when running command: " + str(command))
-        return []
 
     # Process results
     issues = result.process_analysis_result(tool, test_output_dir)
