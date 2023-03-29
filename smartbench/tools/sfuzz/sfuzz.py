@@ -21,7 +21,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
-    timeout: int,
+    timeout=60,
 ):
     """
     Function to make analysis command for Slither.
@@ -34,9 +34,6 @@ def make_analysis_command(
 
     solc_version = os.path.basename(solc_path)
     solc_version = solc_version.removeprefix("solc-")
-
-    if timeout is None:
-        timeout = 60
 
     command = (
         command
