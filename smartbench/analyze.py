@@ -103,7 +103,7 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(
-            test_file, test_output_dir, timeout, solc_path
+            test_file, test_output_dir, solc_path, timeout
         )
 
         if command is None:
@@ -224,3 +224,15 @@ def perform_analysis(
     print(f"Results are recorded at: {results_dir}")
 
     return all_issues
+
+def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
+    output_file = tool.configure_output_file(benchmark_output_dir)
+    if not os.path.exists(output_file):
+        return
+
+    content = Path(output_file).read_text()
+    f = open(output_file, "w")
+    json_data = json.loads(content)
+    json_formatted_str = json.dumps(json_data, indent=2)
+    f.write(f"{json_formatted_str}")
+    f.close()

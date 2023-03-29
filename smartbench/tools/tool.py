@@ -12,7 +12,6 @@ import sys
 from typing import List, Optional
 
 # Third Party
-import toml
 import tomli
 
 # Library
@@ -171,7 +170,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
         file_content = file.read()
-        config = toml.loads(file_content)
+        config = tomli.loads(file_content)
 
         try:
             # Parse tool info
