@@ -12,7 +12,7 @@ from typing import List, Optional
 from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.location import Location
+from smartbench.loc import Location
 
 
 # Tool name
