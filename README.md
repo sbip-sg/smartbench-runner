@@ -9,7 +9,6 @@
   ./install.sh
   ```
 
-- Since install `sFuzz` takes time, it is required to install it inside `smartbench/tools/sfuzz` before analyzing test cases using `sFuzz`.
 
 # Usage
 
