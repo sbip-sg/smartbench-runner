@@ -69,24 +69,31 @@ def parse_analysis_output(
     log_file: str,
 ) -> List[Issue]:
     """Parse output of SMARTIAN"""
-    debug("sFuzz log_file: ", log_file)
-    log_file_data = open(log_file, "r", encoding="utf-8");
-    data = log_file_data.read()
+    debug("sFuzz output_file: ", output_file)
+    output_file_data = open(output_file, "r", encoding="utf-8");
+    data = output_file_data.read()
     kinds = []
 
     assert_failure_match = re.search(r"Assertion Failure: [0-9]+", data)
     if assert_failure_match:
         assert_failure = assert_failure_match.group()
-        assert_failure_num = removeprefix(assert_failure, "Assertion Failure: ")
+        assert_failure_num = assert_failure.removeprefix("Assertion Failure: ")
         if int(assert_failure_num) > 0:
             kinds.append(IssueKind.ASSERTION_FAILURE)
 
     blk_dep_match = re.search(r"Block state Dependency: [0-9]+", data)
     if blk_dep_match:
         blk_dep = blk_dep_match.group()
-        blk_dep_num = removeprefix(blk_dep, "Assertion Failure: ")
+        blk_dep_num = blk_dep.removeprefix("Block state Dependency: ")
         if int(blk_dep_num) > 0:
             kinds.append(IssueKind.BLOCK_DEPENDENCY)
+
+    reentrancy_match = re.search(r"Reentrancy: [0-9]+", data)
+    if reentrancy_match:
+        reentrancy_dep = reentrancy_match.group()
+        reentrancy_num = reentrancy_dep.removeprefix("Reentrancy: ")
+        if int(reentrancy_num) > 0:
+            kinds.append(IssueKind.REENTRANCY)
 
     checker = parse_rule("fuzzing")
     issues = []
