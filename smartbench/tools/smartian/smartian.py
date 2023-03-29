@@ -6,15 +6,13 @@
 import json
 import os
 
-from typing import List, Union
-
-# Third Party
+from typing import List, Optional
 
 # Library
 from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.location import Location
+from smartbench.loc import Location
 
 
 # Tool name
@@ -36,13 +34,13 @@ def make_analysis_command(
     pass
 
 
-def parse_confidence(confidence: Union[str, None]) -> Confidence:
+def parse_confidence(confidence: Optional[str]) -> Confidence:
     """Parse confidence level of issue detected by ILF."""
     # TODO
     pass
 
 
-def parse_severity(severity: Union[str, None]) -> Severity:
+def parse_severity(severity: Optional[str]) -> Severity:
     """Parse severity level of issue detected by ILF."""
     # TODO
     pass

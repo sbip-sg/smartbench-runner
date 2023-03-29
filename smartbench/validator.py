@@ -12,8 +12,8 @@ from smartbench import bug_annot, issue
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
-from smartbench.location import Location
 from smartbench.tools.smartfuzz import smartfuzz
+from smartbench.loc import Location
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.tool import Tool

@@ -7,7 +7,7 @@ import os
 import warnings
 
 from enum import Enum
-from typing import List, Union
+from typing import List, Optional
 
 # Library
 from smartbench.bugdb.sbc import SBC
@@ -53,7 +53,7 @@ class BugAnnot:
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
-        self.sbc: Union[SBC, None] = classify_bug_annot_to_sbc(bug_name)
+        self.sbc: Optional[SBC] = classify_bug_annot_to_sbc(bug_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -99,7 +99,7 @@ class BugAnnot:
 
 def classify_bug_annot_to_sbc(
     bug_name: str,
-) -> Union[SBC, None]:
+) -> Optional[SBC]:
     """Function to classify bug annotation into SmartBug classification SBC."""
     if bug_name == "ACCESS_CONTROL":
         return SBC.ACCESS_CONTROL
@@ -162,18 +162,18 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
                 and YES_TAG in line
                 and REPORT_TAG in line
             ):
-                bug_type = line.replace(COMMENT_TAG, "")
-                bug_type = bug_type.replace(YES_TAG, "")
-                bug_type = bug_type.replace(REPORT_TAG, "")
-                bug_type = bug_type.strip()
-                bug_annotation = BugAnnot(
-                    bug_type,
-                    AnnotFormat.SMARTBUGS_FORMAT,
-                    filename,
-                    start_line,
-                    end_line,
-                )
-                bug_annots.append(bug_annotation)
+                bug_info = line.replace(COMMENT_TAG, "")
+                bug_info = bug_info.replace(YES_TAG, "")
+                bug_info = bug_info.replace(REPORT_TAG, "")
+                for bug_type in bug_info.split(","):
+                    bug_annotation = BugAnnot(
+                        bug_type.strip(),
+                        AnnotFormat.SMARTBUGS_FORMAT,
+                        filename,
+                        start_line,
+                        end_line,
+                    )
+                    bug_annots.append(bug_annotation)
     return bug_annots
 
 
@@ -189,7 +189,7 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     return []
 
 
-def guess_annotation_type(filename: str) -> Union[str, None]:
+def guess_annotation_type(filename: str) -> Optional[str]:
     """Guess bug format and parse bug annotations."""
     has_smartbugs_annots = False
     has_smartbench_annots = False

@@ -7,7 +7,7 @@
 import os
 import pathlib
 
-from typing import Dict, List, Union
+from typing import Dict, List, Optional
 
 # Third Party
 import more_itertools as mit
@@ -38,8 +38,8 @@ def print_summary(
     tool: Tool,
     test_name: str,
     issues: List[Issue],
-    annots: Union[List[BugAnnot], None] = None,
-    validation: Union[ValidationResult, None] = None,
+    annots: Optional[List[BugAnnot]] = None,
+    validation: Optional[ValidationResult] = None,
 ):
     """Print statistic summary of detected issues for a test file"""
     print("------------------")
