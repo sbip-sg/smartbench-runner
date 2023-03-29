@@ -1,9 +1,9 @@
 [info]
 id = "smartian"
 name = "Smartian"
-homepage = "https://github.com/eth-sri/smartian"
+homepage = "https://github.com/SoftSec-KAIST/Smartian"
 category = "Fuzzing"
 
 [command]
-path = "..."
+path = "sh smartbench/tools/smartian/smartian.sh"
 default_arguments = ""
