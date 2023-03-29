@@ -20,6 +20,7 @@ from smartbench.issue import Issue, Severity
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.smartian import smartian
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validator import ValidationResult
 
@@ -119,7 +120,9 @@ def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
     a test file."""
 
     test_dir = os.path.abspath(test_dir)
+    print("tool output file: ", tool.output_file)
     output_file = os.path.join(test_dir, tool.output_file)
+    print(f"output file: {output_file}")
     return os.path.exists(output_file)
 
 
@@ -132,6 +135,7 @@ def parse_existing_analysis_result(
     immediate result of an analysis tool.
     """
 
+    print("parse_existing_analysis_result")
     # Reset issue index counter for the current output file
     Issue.index_counter = 1
 
@@ -144,6 +148,9 @@ def parse_existing_analysis_result(
 
     if tool.is_mythril():
         parse_result_fn = mythril.parse_mythril_json_output
+
+    if tool.is_smartian():
+        parse_result_fn = smartian.parse_analysis_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
@@ -186,11 +193,14 @@ def parse_result_directory(
         print(f"{'=' * 55}\n")
         print(f"Parsing analysis result of: {tool.id}\n")
 
+        print(f"result_dir: {results_dir}")
         tool_output_dir = os.path.join(results_dir, tool_id)
+        print(f"output_dir: {tool_output_dir}")
         test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
         correct_bugs = 0
         annotations = 0
         for test_output_dir in test_output_dirs:
+            print("log_file: ", tool.log_file)
             if not is_test_result_directory(tool, test_output_dir):
                 continue
 
