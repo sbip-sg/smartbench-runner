@@ -83,6 +83,7 @@ def analyze_test_file(
     tool: Tool,
     test_file: str,
     benchmark_output_dir: str,
+    timeout,
     validate_results=False,
 ) -> List[Issue]:
     """Run the analysis on one test case.
@@ -114,6 +115,7 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
+            timeout=timeout
         )
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
@@ -158,6 +160,7 @@ def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
     results_dir: str,
+    timeout: int,
     validate_results=False,
 ) -> List[Issue]:
     """Run one analysis tool.
@@ -184,7 +187,7 @@ def run_analysis_tool(
 
         # Analyze the test file
         issues = analyze_test_file(
-            tool, test_file, test_output_dir, validate_results
+            tool, test_file, test_output_dir, timeout, validate_results
         )
         all_issues += issues
 
@@ -192,7 +195,7 @@ def run_analysis_tool(
 
 
 def perform_analysis(
-    tools: List[Tool], test_files: List[str], validate_results=False
+    tools: List[Tool], test_files: List[str], timeout: int, validate_results=False
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -215,7 +218,7 @@ def perform_analysis(
     all_issues = []
     for tool in tools:
         issues = run_analysis_tool(
-            tool, test_files, results_dir, validate_results
+            tool, test_files, results_dir, timeout, validate_results
         )
         all_issues += issues
 
