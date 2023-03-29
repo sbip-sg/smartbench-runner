@@ -15,6 +15,7 @@ from smartbench.issue import Issue
 from smartbench.location import Location
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.smartian import smartian
 from smartbench.tools.tool import Tool
 
 
@@ -89,6 +90,9 @@ def match_issue_to_annotation(
 
     if tool.is_mythril():
         match_command = mythril.match_location_of_issue_to_annotation
+
+    if tool.is_smartian():
+        match_command = smartian.match_location_of_issue_to_annotation
 
     if match_command:
         return match_command(issue, annot)

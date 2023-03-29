@@ -13,7 +13,7 @@ from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.location import Location
-
+from smartbench.bug_annot import BugAnnot
 
 # Tool name
 TOOL_NAME = "Smartian"
@@ -81,6 +81,13 @@ def parse_analysis_output(
         if int(assert_failure_num) > 0:
             kinds.append(IssueKind.ASSERTION_FAILURE)
 
+    arbitrary_write_match = re.search(r"Suicidal Contract: [0-9]+", data)
+    if arbitrary_write_match:
+        arbitrary_write_dep = arbitrary_write_match.group()
+        arbitrary_write_num = arbitrary_write_dep.removeprefix("Suicidal Contract: ")
+        if int(arbitrary_write_num) > 0:
+            kinds.append(IssueKind.ARBITRARY_WRITE)
+
     blk_dep_match = re.search(r"Block state Dependency: [0-9]+", data)
     if blk_dep_match:
         blk_dep = blk_dep_match.group()
@@ -88,12 +95,70 @@ def parse_analysis_output(
         if int(blk_dep_num) > 0:
             kinds.append(IssueKind.BLOCK_DEPENDENCY)
 
+    delegatecall_match = re.search(r"Control Hijack: [0-9]+", data)
+    if delegatecall_match:
+        delegatecall_dep = delegatecall_match.group()
+        delegatecall_num = delegatecall_dep.removeprefix("Control Hijack: ")
+        if int(delegatecall_num) > 0:
+            kinds.append(IssueKind.UNSAFE_DELEGATECALL)
+
+    leaking_ether_match = re.search(r"Ether Leak: [0-9]+", data)
+    if leaking_ether_match:
+        leaking_ether_dep = leaking_ether_match.group()
+        leaking_ether_num = leaking_ether_dep.removeprefix("Ether Leak: ")
+        if int(leaking_ether_num) > 0:
+            kinds.append(IssueKind.LEAKING_ETHER)
+
+    integer_match = re.search(r"Integer Bug: [0-9]+", data)
+    if integer_match:
+        integer_dep = integer_match.group()
+        integer_num = integer_dep.removeprefix("Integer Bug: ")
+        print(f"integer_num: {integer_num}")
+        if int(integer_num) > 0:
+            kinds.append(IssueKind.INTEGER_BUG)
+
+    exception_match = re.search(r"Mishandled Exception: [0-9]+", data)
+    if exception_match:
+        exception_dep = exception_match.group()
+        exception_num = exception_dep.removeprefix("Mishandled Exception: ")
+        if int(exception_num) > 0:
+            kinds.append(IssueKind.UNHANDLED_EXCEPTION)
+
     reentrancy_match = re.search(r"Reentrancy: [0-9]+", data)
     if reentrancy_match:
         reentrancy_dep = reentrancy_match.group()
         reentrancy_num = reentrancy_dep.removeprefix("Reentrancy: ")
         if int(reentrancy_num) > 0:
             kinds.append(IssueKind.REENTRANCY)
+
+    selfdestruct_match = re.search(r"Suicidal Contract: [0-9]+", data)
+    if selfdestruct_match:
+        selfdestruct_dep = selfdestruct_match.group()
+        selfdestruct_num = selfdestruct_dep.removeprefix("Suicidal Contract: ")
+        if int(selfdestruct_num) > 0:
+            kinds.append(IssueKind.UNSAFE_SELFDESTRUCT)
+
+    tx_origin_match = re.search(r"Transaction Origin Use: [0-9]+", data)
+    if tx_origin_match:
+        tx_origin_dep = tx_origin_match.group()
+        tx_origin_num = tx_origin_dep.removeprefix("Transaction Origin Use: ")
+        if int(tx_origin_num) > 0:
+            kinds.append(IssueKind.TRANSACTION_ORDER_DEPENDENCY)
+
+    locking_ether_match = re.search(r"Freezing Ether: [0-9]+", data)
+    if locking_ether_match:
+        locking_ether_dep = locking_ether_match.group()
+        locking_ether_num = locking_ether_dep.removeprefix("Freezing Ether: ")
+        if int(locking_ether_num) > 0:
+            kinds.append(IssueKind.LOCKING_ETHER)
+
+    require_violation_match = re.search(r"Requirement Violation: [0-9]+", data)
+    if require_violation_match:
+        require_violation_dep = require_violation_match.group()
+        require_violation_num = require_violation_dep.removeprefix("Requirement Violation: ")
+        print(f"num: {require_violation_num}")
+        if int(require_violation_num) > 0:
+            kinds.append(IssueKind.REQUIREMENT_VIOLATION)
 
     checker = parse_rule("fuzzing")
     issues = []
@@ -110,3 +175,26 @@ def parse_analysis_output(
         issues.append(issue)
 
     return issues;
+
+def check_issue_kind(kind: IssueKind, bug_name: str):
+    if kind == IssueKind.BLOCK_DEPENDENCY:
+        return bug_name == "TIME_MANIPULATION" or bug_name == "BAD_RANDOMNESS"
+
+    if kind == IssueKind.INTEGER_BUG:
+        return bug_name == "ARITHMETIC";
+
+    if kind == IssueKind.UNHANDLED_EXCEPTION:
+        return bug_name == "UNCHECKED_LL_CALLS";
+
+    if str(kind).casefold() != bug_name.casefold():
+        return False;
+    return True
+
+def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
+    """Function to check whether an reported issue is related to a bug
+    annotation."""
+    # Check for issue kind
+    if not check_issue_kind(issue.issue_kind, annot.bug_name):
+        return False
+
+    return True
