@@ -49,6 +49,8 @@ def make_analysis_command(
         + str(timeout)
         + " "
         + solc_version
+        + " "
+        + output_file
     )
     print(f"smartian command: {command}")
     return command
