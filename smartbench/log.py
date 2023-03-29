@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 """Module handling log file generated during the analysis."""
-# Library
+
+# Standard Library
 from typing import Optional
 
 
