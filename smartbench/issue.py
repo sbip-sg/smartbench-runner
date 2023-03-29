@@ -3,7 +3,7 @@
 
 # Standard Library
 from enum import Enum
-from typing import Union
+from typing import Optional
 
 # Library
 from smartbench.bugdb.sbc import SBC
@@ -93,6 +93,7 @@ class IssueKind(Enum):
     UNSAFE_SELFDESTRUCT = "UNSAFE_SELFDESTRUCT"
     UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
     TX_ORIGIN_USAGE = "TX_ORIGIN_USAGE"
+
     def __str__(self):
         return self.value
 
@@ -159,7 +160,7 @@ class Issue:
         self.confidence: Confidence = confidence
         self.location: Location = location
         self.checker: Checker = checker
-        self.sbc: Union[SBC, None] = classify_issue_kind_to_sbc(issue_kind)
+        self.sbc: Optional[SBC] = classify_issue_kind_to_sbc(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -185,7 +186,7 @@ class Issue:
 
 def classify_issue_kind_to_sbc(
     issue_kind: IssueKind,
-) -> Union[SBC, None]:
+) -> Optional[SBC]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
     if issue_kind in []:
         return SBC.ACCESS_CONTROL
@@ -208,10 +209,16 @@ def classify_issue_kind_to_sbc(
     if issue_kind in []:
         return SBC.SHORT_ADDRESSES
 
-    if issue_kind in [IssueKind.BLOCK_DEPENDENCY, IssueKind.USE_BLOCK_TIMESTAMP]:
+    if issue_kind in [
+        IssueKind.BLOCK_DEPENDENCY,
+        IssueKind.USE_BLOCK_TIMESTAMP,
+    ]:
         return SBC.TIME_MANIPULATION
 
-    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION, IssueKind.UNCHECKED_LOWLEVEL_CODE]:
+    if issue_kind in [
+        IssueKind.UNHANDLED_EXCEPTION,
+        IssueKind.UNCHECKED_LOWLEVEL_CODE,
+    ]:
         return SBC.UNCHECKED_LOW_LEVEL_CALLS
 
     # Not matching any SmartBugs Classification
