@@ -7,7 +7,3 @@ category = "Fuzzing"
 [command]
 path = "sh smartbench/tools/smartfuzz/smartfuzz.sh"
 default_arguments = ""
-
-[output]
-result_file = "smartfuzz_result.json"
-log_file = "smartfuzz_log.toml"

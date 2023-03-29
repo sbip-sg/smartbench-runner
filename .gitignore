@@ -1,6 +1,7 @@
 # Python files
 __pycache__
 venv
+.ropeproject
 
 # Emacs files
 flycheck_*.py
@@ -8,6 +9,11 @@ flycheck_*.py
 # Temporary files
 results
 
+
+deploy
+
+# Tools
+repo
+confuzzius_venv
 # smartfuzz
-smartfuzz/
-smartfuzz_venv/
+smartfuzz_venv

@@ -9,7 +9,6 @@ import os
 from typing import List, Union
 
 # Third Party
-import toml
 
 # Library
 from smartbench import log
@@ -22,7 +21,7 @@ from smartbench.location import Location
 TOOL_NAME = "slither"
 
 
-def make_slither_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
@@ -59,13 +58,13 @@ def parse_confidence(confidence: Union[str, None]) -> Confidence:
     confidence = confidence.casefold()
 
     if confidence == "high":
-        return Confidence.HIGH
+        return Confidence.HIGH_CONFIDENCE
 
     if confidence == "low":
-        return Confidence.LOW
+        return Confidence.LOW_CONFIDENCE
 
     if confidence == "medium":
-        return Confidence.MEDIUM
+        return Confidence.MEDIUM_CONFIDENCE
 
     return Confidence.UNKNOWN
 

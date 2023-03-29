@@ -1,0 +1,9 @@
+[info]
+id = "smartian"
+name = "Smartian"
+homepage = "https://github.com/eth-sri/smartian"
+category = "Fuzzing"
+
+[command]
+path = "..."
+default_arguments = ""

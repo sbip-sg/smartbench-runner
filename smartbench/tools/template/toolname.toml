@@ -1,0 +1,9 @@
+[info]
+id = "toolname"
+name = "ToolName"
+homepage = "https://github.com/tool/toolname"
+category = "Static analysis"
+
+[command]
+path = "..."
+default_arguments = ""

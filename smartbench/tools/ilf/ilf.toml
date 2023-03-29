@@ -1,0 +1,9 @@
+[info]
+id = "ilf"
+name = "ILF"
+homepage = "https://github.com/eth-sri/ilf"
+category = "Fuzzing"
+
+[command]
+path = "..."
+default_arguments = ""

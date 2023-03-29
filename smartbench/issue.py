@@ -2,12 +2,11 @@
 
 
 # Standard Library
-from enum import Enum, auto
-from typing import List, Union
+from enum import Enum
+from typing import Union
 
 # Library
-from smartbench.bug_annot import BugAnnot
-from smartbench.bugdb.smartbugs import SmartBugsKind
+from smartbench.bugdb.sbc import SBC
 from smartbench.location import Location
 
 
@@ -81,23 +80,19 @@ class IssueKind(Enum):
     DEPRECATED_SHA3 = "Deprecated SHA3"
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
-    # Confuzzius detectors
+    # All issue kinds
     ASSERTION_FAILURE = "ASSERTION_FAILURE"
-    INTEGER_OVERFLOW = "INTEGER_OVERFLOW"
-    INTEGER_UNDERFLOW = "INTEGER_UNDERFLOW"
+    ARBITRARY_WRITE = "ARBITRARY_WRITE"
     BLOCK_DEPENDENCY = "BLOCK_DEPENDENCY"
+    INTEGER_BUG = "ARITHMETIC_BUG"
     TRANSACTION_ORDER_DEPENDENCY = "TRANSACTION_ORDER_DEPENDENCY"
+    UNHANDLED_EXCEPTION = "UNHANDLED_EXCEPTION"
+    ACCESS_CONTROL = "ACCESS_CONTROL"
     LEAKING_ETHER = "LEAKING_ETHER"
     LOCKING_ETHER = "LOCKING_ETHER"
-    UNHANDLED_EXCEPTION = "UNHANDLED_EXCEPTION"
-    UNPROTECTED_SELFDESTRUCT = "UNPROTECTED_SELFDESTRUCT"
+    UNSAFE_SELFDESTRUCT = "UNSAFE_SELFDESTRUCT"
     UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
-
-    # Smartfuzz detector
-    ADDRESS_VALIDATION = "ADDRESS_VALIDATION"
-    TX_ORIGIN_DEPENDENCY = "TX_ORIGIN_DEPENDENCY"
-    UNAUTHORIZED_SEND = "UNAUTHORIZED_SEND"
-
+    TX_ORIGIN_USAGE = "TX_ORIGIN_USAGE"
     def __str__(self):
         return self.value
 
@@ -123,58 +118,53 @@ class Confidence(Enum):
     issue."""
 
     # Confidence level
-    UNKNOWN = auto()
-    LOW = auto()
-    MEDIUM = auto()
-    HIGH = auto()
+    UNKNOWN = "Unknown Confidence"
+    LOW_CONFIDENCE = "Low Confidence"
+    MEDIUM_CONFIDENCE = "Medium Confidence"
+    HIGH_CONFIDENCE = "High Confidence"
 
     def __str__(self) -> str:
-        if self == Confidence.LOW:
-            return "Low Confidence"
-
-        if self == Confidence.MEDIUM:
-            return "Medium Confidence"
-
-        if self == Confidence.HIGH:
-            return "High Confidence"
-
-        return "Unknown Confidence"
+        return self.value
 
 
 class Checker:
     """Class representing an analyzer and the checking rule that it uses."""
 
-    analyzer: str
-    detector: str
-
     def __init__(self, analyzer: str, detector: str):
-        self.analyzer = analyzer
-        self.detector = detector
+        self.analyzer: str = analyzer
+        self.detector: str = detector
 
 
 class Issue:
     """Class representing an issue found in smart contracts."""
 
-    # Attributes of an issue
-    issue_kind: IssueKind
-    description: str
-    severity: Severity
-    confidence: Confidence
-    location: Location
-    checker: Checker
-    smartbugs_kind: SmartBugsKind
+    # Shared index counter for all issues.
+    # This counter needs to be reset for each test file.
+    index_counter: int = 1
 
     def __init__(
-        self, issue_kind, description, severity, confidence, location, checker
+        self,
+        issue_kind: IssueKind,
+        description: str,
+        severity: Severity,
+        confidence: Confidence,
+        location: Location,
+        checker: Checker,
     ):
         """Constructor."""
-        self.issue_kind = issue_kind
-        self.description = description
-        self.severity = severity
-        self.confidence = confidence
-        self.location = location
-        self.checker = checker
-        self.smartbugs_kind = classify_issue_kind_to_smartbugs_kind(issue_kind)
+        # Initialize all instance variables
+        self.issue_kind: IssueKind = issue_kind
+        self.description: str = description
+        self.severity: Severity = severity
+        self.confidence: Confidence = confidence
+        self.location: Location = location
+        self.checker: Checker = checker
+        self.sbc: Union[SBC, None] = classify_issue_kind_to_sbc(issue_kind)
+
+        # Assign an index to the issue. This index is unique for all issues in
+        # the same contract
+        self.index = Issue.index_counter
+        Issue.index_counter += 1
 
     def __str__(self):
         location = (
@@ -185,43 +175,44 @@ class Issue:
         analyzer = self.checker.analyzer
         detector = self.checker.detector
         return (
-            f"Issue: {self.issue_kind}\n"
+            f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
+            f"  + SmartBugs Classification: {self.sbc}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )
 
 
-def classify_issue_kind_to_smartbugs_kind(
+def classify_issue_kind_to_sbc(
     issue_kind: IssueKind,
-) -> Union[SmartBugsKind, None]:
+) -> Union[SBC, None]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
     if issue_kind in []:
-        return SmartBugsKind.ACCESS_CONTROL
+        return SBC.ACCESS_CONTROL
 
     if issue_kind in []:
-        return SmartBugsKind.ARITHMETIC
+        return SBC.ARITHMETIC
 
     if issue_kind in []:
-        return SmartBugsKind.BAD_RANDOMNESS
+        return SBC.BAD_RANDOMNESS
 
     if issue_kind in []:
-        return SmartBugsKind.DENIAL_OF_SERVICE
+        return SBC.DENIAL_OF_SERVICE
 
     if issue_kind in []:
-        return SmartBugsKind.FRONT_RUNNING
+        return SBC.FRONT_RUNNING
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-        return SmartBugsKind.REENTRANCY
+        return SBC.REENTRANCY
 
     if issue_kind in []:
-        return SmartBugsKind.SHORT_ADDRESSES
+        return SBC.SHORT_ADDRESSES
 
-    if issue_kind in [IssueKind.USE_BLOCK_TIMESTAMP]:
-        return SmartBugsKind.TIME_MANIPULATION
+    if issue_kind in [IssueKind.BLOCK_DEPENDENCY, IssueKind.USE_BLOCK_TIMESTAMP]:
+        return SBC.TIME_MANIPULATION
 
-    if issue_kind in [IssueKind.UNCHECKED_LOWLEVEL_CODE]:
-        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION, IssueKind.UNCHECKED_LOWLEVEL_CODE]:
+        return SBC.UNCHECKED_LOW_LEVEL_CALLS
 
-    # Not matching any SmartBugsKind
+    # Not matching any SmartBugs Classification
     return None
