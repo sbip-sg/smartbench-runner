@@ -9,7 +9,6 @@
   ./install.sh
   ```
 
-
 # Usage
 
 ## Analiss mode
