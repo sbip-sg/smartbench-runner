@@ -22,6 +22,7 @@ from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.smartian import smartian
 
 
 # List of keywords in configuration files
@@ -95,6 +96,10 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         raise Exception("TODO: implement")
 
+    def is_smartian(self):
+        """Check if the current tool is Smartian."""
+        return self.id.casefold() == smartian.TOOL_NAME.casefold()
+
     def is_ilf(self):
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
@@ -112,6 +117,8 @@ class Tool:
             make_command = mythril.make_mythril_analysis_command
         elif self.is_ilf():
             make_command = ilf.make_analysis_command
+        elif self.is_smartian():
+            make_command = smartian.make_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
 

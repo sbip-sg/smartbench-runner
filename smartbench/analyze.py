@@ -226,9 +226,10 @@ def perform_analysis(
 
 def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
     output_file = tool.configure_output_file(benchmark_output_dir)
-    content = Path(output_file).read_text()
-    f = open(output_file, "w")
-    json_data = json.loads(content)
-    json_formatted_str = json.dumps(json_data, indent=2)
-    f.write(f"{json_formatted_str}")
-    f.close()
+    if os.path.exists(output_file):
+        content = Path(output_file).read_text()
+        f = open(output_file, "w")
+        json_data = json.loads(content)
+        json_formatted_str = json.dumps(json_data, indent=2)
+        f.write(f"{json_formatted_str}")
+        f.close()

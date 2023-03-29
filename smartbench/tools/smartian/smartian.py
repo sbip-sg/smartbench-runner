@@ -25,7 +25,6 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
-    timeout: int,
 ):
     """Function to make analysis command for `Smartian`. This function should
     have the same signature with other tools.
@@ -37,21 +36,22 @@ def make_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    output_dir = os.path.basename(output_file)
+    solc_version = os.path.basename(solc_path)
+    solc_version = solc_version.removeprefix("solc-")
+    # TODO: To merge with the timeout from the `tool.py`
+    timeout = 30
+
     command = (
         command
-        + " fuzz "
-        + " -p "
-        # bytecode file
-        + " -a "
-        # abi file
-        + " -t "
+        + " "
+        + test_file
+        + " "
         + str(timeout)
-        + " -o "
-        + output_dir
+        + " "
+        + solc_version
     )
-
-
+    print(f"smartian command: {command}")
+    return command
 
 def parse_confidence(confidence: Optional[str]) -> Confidence:
     """Parse confidence level of issue detected by SMARTIAN."""
