@@ -20,7 +20,7 @@ from smartbench.bug_annot import BugAnnot
 # Tool name
 TOOL_NAME = "sFuzz"
 
-def make_sfuzz_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,

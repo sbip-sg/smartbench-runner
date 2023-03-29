@@ -21,7 +21,7 @@ from smartbench.location import Location
 TOOL_NAME = "slither"
 
 
-def make_slither_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,

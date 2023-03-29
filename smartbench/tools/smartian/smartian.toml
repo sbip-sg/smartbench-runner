@@ -7,7 +7,3 @@ category = "Fuzzing"
 [command]
 path = "..."
 default_arguments = ""
-
-[output]
-result_file = "smartian_result.json"
-log_file = "smartian_log.toml"

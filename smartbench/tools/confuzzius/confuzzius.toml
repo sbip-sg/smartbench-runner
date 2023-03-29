@@ -7,7 +7,3 @@ category = "Fuzzing"
 [command]
 path = "sh smartbench/tools/confuzzius/confuzzius.sh"
 default_arguments = ""
-
-[output]
-result_file = "confuzzius_result.json"
-log_file = "confuzzius_log.toml"

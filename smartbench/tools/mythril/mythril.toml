@@ -1,0 +1,13 @@
+[info]
+id = "mythril"
+name = "mythril"
+homepage = "https://github.com/ConsenSys/mythril"
+category = "Symbolic Execution"
+
+[command]
+path = "myth"
+default_arguments = ""
+
+[output]
+result_file = "mythril_result.json"
+log_file = "mythril_log.toml"

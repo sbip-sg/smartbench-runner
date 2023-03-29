@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
 
+"""Module for running smart contract analyzers for testing contracts."""
+
 # Standard Library
+import json
 import os
 import shlex
 import subprocess
+import traceback
 
 from datetime import datetime
+from pathlib import Path
 from subprocess import CompletedProcess
 from typing import List
 
 # Library
 from smartbench import bug_annot, result, solc, validate
-from smartbench.debug import debug, warning
 from smartbench.issue import Issue
-from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.tool import (
-    ALL_RESULTS_DIR,
-    Tool,
-    configure_log_file,
-    configure_output_file,
-)
+from smartbench.tools.mythril import mythril
+from smartbench.tools.slither import slither
+from smartbench.tools.tool import RESULTS_DIR, Tool
+
 
 def record_execution_log(
     tool: Tool,
@@ -28,26 +29,40 @@ def record_execution_log(
     command: str,
     output: CompletedProcess,
     result_dir: str,
-):
+) -> None:
     """Record execution log of an analysis tool in TOML format."""
-    log_file = configure_log_file(tool, result_dir)
+    log_file = tool.configure_log_file(result_dir)
     with open(log_file, "w", encoding="utf-8") as file:
         file.write(f"# Execution log of {tool.name}:\n\n")
 
         # Log input
-        file.write("[input]\n")
-        file.write(f'test_file = """{input_file}"""\n\n')
-        file.write(f'command = """{command}"""\n\n')
+        file.write("-------------------------------------------------------\n")
+        file.write("[input contract]\n")
+        file.write("-------------------------------------------------------\n")
+        file.write(f"{input_file}\n\n")
 
-        # Log output
+        file.write("-------------------------------------------------------\n")
+        file.write("[command]\n")
+        file.write("-------------------------------------------------------\n")
+        file.write(f"{command}\n\n")
+
+        file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
+        file.write("-------------------------------------------------------\n")
         stdout = output.stdout.decode("utf-8")
-        file.write(f'stdout = """{stdout}"""\n\n')
+        file.write(f"{stdout}\n\n")
+
+        file.write("-------------------------------------------------------\n")
+        file.write("[errors]\n")
+        file.write("-------------------------------------------------------\n")
         stderr = output.stderr.decode("utf-8")
-        file.write(f'stderr = """{stderr}"""')
+        file.write(f"{stderr}")
 
 
-def record_analysis_log(tools, test_files, result_dir: str):
+def log_analysis_info(
+    tools: List[Tool], test_files: List[str], result_dir: str
+):
+    """Record analysis log of all tools."""
     log_file = os.path.join(result_dir, "smartbench_log.toml")
     with open(log_file, "w", encoding="utf-8") as file:
         file.write("# Smartbench benchmarking log \n\n")
@@ -89,6 +104,11 @@ def analyze_test_file(
         command = tool.make_analysis_command(
             test_file, benchmark_output_dir, solc_path
         )
+
+        if command is None:
+            print(f"Unable to make analysis command for tool: {tool.name}\n")
+            return None
+
         output = subprocess.run(
             shlex.split(command),
             stdout=subprocess.PIPE,
@@ -99,8 +119,20 @@ def analyze_test_file(
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
         )
-    except ValueError:
-        print("Failed to run command: " + str(command))
+
+        if tool.is_mythril():
+            # the results of `mythril` is in `stdout`
+            mythril.write_to_output_file(
+                output, tool.output_file, benchmark_output_dir
+            )
+        else:
+            # post-process the raw JSON file.
+            postprocess_output_file(tool, benchmark_output_dir)
+
+    except ValueError as err:
+        print(f"Failed to run command: {command}\n")
+        print(f"** Error: {err}")
+        traceback.print_exc()
         return []
     except subprocess.TimeoutExpired:
         print("Timeout when running command: " + str(command))
@@ -129,7 +161,7 @@ def analyze_test_file(
 def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
-    all_results_dir: str,
+    results_dir: str,
     validate_results=False,
 ) -> List[Issue]:
     """Run one analysis tool.
@@ -147,13 +179,10 @@ def run_analysis_tool(
 
     all_issues = []
 
-    if (tool.name.casefold() == confuzzius.TOOL_NAME.casefold()):
-        confuzzius.install_virtual_env()
-
     for test_file in test_files:
         # Prepare output directory for one test file
         rel_path = os.path.relpath(test_file, start=parent_path)
-        test_output_dir = os.path.join(all_results_dir, tool.id, rel_path)
+        test_output_dir = os.path.join(results_dir, tool.id, rel_path)
         if not os.path.exists(test_output_dir):
             os.makedirs(test_output_dir)
 
@@ -176,25 +205,35 @@ def perform_analysis(
     """
     # Prepare output directory for all tests and all tools in this run
     print("Start analyzing all test cases...\n")
-    all_results_dir = os.path.join(
-        ALL_RESULTS_DIR,
+    results_dir = os.path.join(
+        RESULTS_DIR,
         datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
     )
-    if not os.path.exists(all_results_dir):
-        os.makedirs(all_results_dir)
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
 
     # Record the analysis details to a log file
-    record_analysis_log(tools, test_files, all_results_dir)
+    log_analysis_info(tools, test_files, results_dir)
 
     # Perform the analysis
     all_issues = []
     for tool in tools:
         issues = run_analysis_tool(
-            tool, test_files, all_results_dir, validate_results
+            tool, test_files, results_dir, validate_results
         )
         all_issues += issues
 
     print("Benchmarking completed!\n")
-    print(f"Results are recorded at: {all_results_dir}")
+    print(f"Results are recorded at: {results_dir}")
 
     return all_issues
+
+
+def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
+    output_file = tool.configure_output_file(benchmark_output_dir)
+    content = Path(output_file).read_text()
+    f = open(output_file, "w")
+    json_data = json.loads(content)
+    json_formatted_str = json.dumps(json_data, indent=2)
+    f.write(f"{json_formatted_str}")
+    f.close()

@@ -1,35 +1,18 @@
 #!/usr/bin/env python3
 
 """Module handling log file generated during the analysis."""
-
-
-# Standard Library
-from typing import Union
-
-# Third Party
-import toml
-import tomli
-
 # Library
-from smartbench.debug import warning
+from typing import Optional
 
 
-def get_input_test_file(log_file: str) -> Union[str, None]:
+def get_input_test_file(log_file: str) -> Optional[str]:
     """Get input test file from a log file"""
     with open(log_file, "r", encoding="utf-8") as file:
-        file_content = file.read()
         try:
-            log = toml.loads(file_content)
-        except:
-            try:
-                log = tomli.loads(file_content)
-            except:
-                warning(f"Cannot load the file {file}!")
-                return None
-
-        input_log = log.get("input")
-        if input_log is None:
-            warning("Invalid log file! No input information is found!")
+            while line := file.readline():
+                if line.rstrip() == "[input contract]":
+                    file.readline()  # skip next line
+                    return file.readline().rstrip()
             return None
-
-        return input_log.get("test_file")
+        except Exception:
+            return None

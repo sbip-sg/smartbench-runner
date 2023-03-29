@@ -7,7 +7,3 @@ category = "Static analysis"
 [command]
 path = "..."
 default_arguments = ""
-
-[output]
-result_file = "toolname_result.json"
-log_file = "toolname_log.toml"

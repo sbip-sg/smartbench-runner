@@ -7,7 +7,3 @@ category = "Fuzzing"
 [command]
 path = "..."
 default_arguments = ""
-
-[output]
-result_file = "ilf_result.json"
-log_file = "ilf_log.toml"

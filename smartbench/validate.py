@@ -15,6 +15,8 @@ from smartbench.issue import Issue
 from smartbench.location import Location
 from smartbench.tools.tool import Tool
 from smartbench.tools.sfuzz import sfuzz
+from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.mythril import mythril
 
 class IssueStatus(Enum):
     """Class representing status of a reported issue."""
@@ -62,15 +64,21 @@ def match_issue_to_annotation(tool: Tool, issue: Issue, annot: BugAnnot) -> bool
     if tool.is_sfuzz():
         match_command = sfuzz.match_location_of_issue_to_annotation
 
+    if tool.is_confuzzius():
+        match_command = confuzzius.match_location_of_issue_to_annotation
+
+    if tool.is_mythril():
+        match_command = mythril.match_location_of_issue_to_annotation
+
     if match_command:
         return match_command(issue, annot);
 
     # Check whether the issue location is covered by the annotation location.
     if iloc.start_line is None or iloc.end_line is None:
         return False
-    if iloc.start_line < annot.start_line:
+    if iloc.start_line < annot.start_line + 1:
         return False
-    if iloc.end_line > annot.end_line:
+    if iloc.end_line > annot.end_line + 1:
         return False
 
     # Pass all criteria to match an issue with a bug annotation
@@ -79,6 +87,7 @@ def match_issue_to_annotation(tool: Tool, issue: Issue, annot: BugAnnot) -> bool
 
 def validate_issues(tool: Tool, test_file: str, issues: List[Issue]) -> Validation:
     """Validate detected issues against bug annotations in an input file."""
+
     correct_issues: List[Issue] = []
     incorrect_issues: List[Issue] = []
     unknown_issues: List[Issue] = []
