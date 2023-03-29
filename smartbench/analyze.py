@@ -114,7 +114,6 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
-            timeout=200
         )
         record_execution_log(
             tool, test_file, command, output, benchmark_output_dir
@@ -125,9 +124,6 @@ def analyze_test_file(
             mythril.write_to_output_file(
                 output, tool.output_file, benchmark_output_dir
             )
-        else:
-            # post-process the raw JSON file.
-            postprocess_output_file(tool, benchmark_output_dir)
 
     except ValueError as err:
         print(f"Failed to run command: {command}\n")
@@ -227,13 +223,3 @@ def perform_analysis(
     print(f"Results are recorded at: {results_dir}")
 
     return all_issues
-
-
-def postprocess_output_file(tool: Tool, benchmark_output_dir: str):
-    output_file = tool.configure_output_file(benchmark_output_dir)
-    content = Path(output_file).read_text()
-    f = open(output_file, "w")
-    json_data = json.loads(content)
-    json_formatted_str = json.dumps(json_data, indent=2)
-    f.write(f"{json_formatted_str}")
-    f.close()

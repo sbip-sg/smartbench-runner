@@ -93,7 +93,6 @@ def print_summary(
 def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     """Process analysis result of a tool."""
     process_result_fn = None
-    parse_coverage_fn = None
 
     if tool.is_slither():
         process_result_fn = slither.parse_slither_json_output
@@ -103,12 +102,6 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
 
     if tool.is_sfuzz():
         process_result_fn = sfuzz.parse_sfuzz_json_output
-        parse_coverage_fn = sfuzz.parse_sfuzz_coverage
-
-    if parse_coverage_fn is not None:
-        log_file = os.path.join(output_dir, tool.log_file)
-        coverage = parse_coverage_fn(log_file)
-        print(f"Coverage: {coverage}")
 
     if tool.is_mythril():
         process_result_fn = mythril.parse_mythril_json_output
