@@ -33,7 +33,10 @@ def make_analysis_command(
         command = command + " " + arguments
 
     solc_version = os.path.basename(solc_path)
-    solc_version.removeprefix("solc-")
+    solc_version = solc_version.removeprefix("solc-")
+
+    if timeout is None:
+        timeout = 60
 
     command = (
         command
