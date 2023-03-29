@@ -22,7 +22,7 @@ def analyze_smart_contracts(args):
     tools = configure_analysis_tools(args)
     test_files = tests.collect_test_cases(args)
     # Perform the analysis
-    analyze.perform_analysis(tools, test_files, args.validate_results)
+    analyze.perform_analysis(tools, test_files, args.timeout, args.validate_results)
 
 
 def parse_existing_results(args):
