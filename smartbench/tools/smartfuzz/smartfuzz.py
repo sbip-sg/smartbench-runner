@@ -36,7 +36,7 @@ def install_virtual_env():
     except ValueError:
         print("Fail to run command: ", str(command))
 
-def make_smartfuzz_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
@@ -48,21 +48,17 @@ def make_smartfuzz_analysis_command(
     This function should have the same signature with other tools.
     """
     command = executable_file
-
-    if arguments:
-        command = command + " " + arguments
-
+    default_timeout = 10
     command = (
         command
-        + " --path "
-        + test_file
+        + " " + test_file
         + " -r "
-        + output_file
-        + " --rust-evm"
-        + " --trials 40000"
+        + output_file + " "
+        + f" --time {default_timeout} "
+        + arguments or ""
     )
 
-    print(f"command: {command}");
+    print(f"command: {command}")
     return command
 
 def parse_source_location(line) -> Union[Location, None]:
@@ -78,18 +74,18 @@ def parse_rule(rule: str) -> Checker:
 
 def parse_issue_kind(description: str) -> IssueKind:
     """Parse issue kind from issue description reported by Smartfuzz"""
-
+    print ("parse issue kind description: ", description)
     if "IntegerOverflow" in description:
-        return IssueKind.INTEGER_OVERFLOW
+        return IssueKind.INTEGER_BUG
 
     if "IntegerSubUnderflow" in description:
-        return IssueKind.INTEGER_UNDERFLOW
+        return IssueKind.INTEGER_BUG
 
     if "AddressValidation" in description:
-        return IssueKind.ADDRESS_VALIDATION
+        return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
 
     if "AssertionFailure" in description:
-        return IssueKind.ADDRESS_VALIDATION
+        return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
 
     if "TimestampDependency" in description:
         return IssueKind.BLOCK_DEPENDENCY
@@ -98,11 +94,14 @@ def parse_issue_kind(description: str) -> IssueKind:
         return IssueKind.BLOCK_DEPENDENCY
 
     if "TxOriginDependency" in description:
-        return IssueKind.TX_ORIGIN_DEPENDENCY
+        return IssueKind.TX_ORIGIN_USAGE
+
+    if "REENTRANCY" in description:
+        return IssueKind.UNCHECKED_SEND
 
     if "UnauthorizedSend" in description:
-        return IssueKind.UNAUTHORIZED_SEND
-
+        return IssueKind.UNCHECKED_SEND
+    print ("unknown issue kind: ", description)
     return IssueKind.UNKNOWN
 
 

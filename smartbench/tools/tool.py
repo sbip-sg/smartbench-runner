@@ -67,6 +67,7 @@ class Tool:
         self.timeout: Optional[int] = None if timeout is None else int(timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
+        self.seed: int = 0 # increasing random seed for reproducible results
 
     def __str__(self):
         """Printing to string."""
@@ -104,7 +105,7 @@ class Tool:
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
-
+        arguments = self.default_arguments
         if self.is_slither():
             make_command = slither.make_analysis_command
         elif self.is_confuzzius():
@@ -115,13 +116,13 @@ class Tool:
             make_command = ilf.make_analysis_command
         elif self.is_smartfuzz():
             make_command = smartfuzz.make_analysis_command
+            arguments += " --seed " + str(self.seed)
         elif self.is_confuzzius():
             raise Exception("TODO: implement")
 
         if make_command is None:
             return None
 
-        arguments = self.default_arguments
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
