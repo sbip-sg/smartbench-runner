@@ -32,49 +32,23 @@ def make_analysis_command(
     """
     command = executable_file
 
-    print(f"test_file: {test_file}")
-
     if arguments:
         command = command + " " + arguments
 
     solc_version = os.path.basename(solc_path)
     solc_version.removeprefix("solc-")
-    print(f"solc: {solc_version}");
-    solc_cmd = "solc-select install " + solc_version + "; solc-select use " + solc_version;
-    try:
-        subprocess.run(
-            shlex.split(solc_cmd),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False
-        )
-    except ValueError:
-        print("Failed to run command: " + str(solc_cmd))
-
-    # print(f"path: {solc_path}")
-
-    output = subprocess.run(
-        shlex.split("solc --version"),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False
-    )
-
-    print("solc version: ", output.stdout)
 
     command = (
         command
         + " "
         + test_file
         + " "
-        + output_file
+        + str(timeout)
         + " "
-        + timeout
+        + solc_version
     )
     print(f"sfuzz command: {command}")
     return command
-
-# BlockstateDependency
 
 def parse_rule(rule: str) -> Checker:
     """Parser checker of sFuzz"""
@@ -86,56 +60,68 @@ def parse_source_location(log_file) -> Union[Location, None]:
     return Location(file_path, 0, 0, 0, 0)
 
 def parse_issue_kind(description: str) -> IssueKind:
-    if "MishandledException" in description:
+    if "exception disorder : found" in description:
         return IssueKind.UNHANDLED_EXCEPTION;
 
-    if "Reentrancy" in description:
+    if "reentrancy : found" in description:
         return IssueKind.REENTRANCY
 
-    if "IntegerBug" in description:
+    if "integer overflow : found" in description:
         return IssueKind.INTEGER_BUG
 
-    if "DeletegateCall" in description:
+    if "integer underflow : found" in description:
+        return IssueKind.INTEGER_BUG
+
+    if "dangerous delegatecall : found" in description:
         return IssueKind.UNSAFE_DELEGATECALL
 
-    if "LockEther" in description:
+    if "freezing ether : found" in description:
         return IssueKind.LOCKING_ETHER
 
-    if "BlockstateDependency" in description:
+    if "block number dependency : found" in description:
+        return IssueKind.BLOCK_DEPENDENCY
+
+    if "timestamp dependency : found" in description:
         return IssueKind.BLOCK_DEPENDENCY
 
     return IssueKind.UNKNOWN
 
-def parse_sfuzz_json_output(output_file: str, log_file: str) -> List[Issue]:
+def parse_sfuzz_json_output(_output_file: str, log_file: str) -> List[Issue]:
     """Parse output of sFuzz"""
     lines = None
-    debug("sFuzz output_file: ", output_file)
-    with open(output_file, "r", encoding="utf-8") as file:
+    debug("sFuzz log_file: ", log_file)
+    with open(log_file, "r", encoding="utf-8") as file:
         try:
             lines = [line.rstrip() for line in file]
         except ValueError:
-            warning("Failed to parse sFuzz output file:", output_file)
+            warning("Failed to parse sFuzz log file:", log_file)
             return []
 
     if lines is None:
-        warning("Failed to parse sFuzz's output file:", output_file)
+        warning("Failed to parse sFuzz log file:", log_file)
         return []
 
-    issues = []
+    kinds = []
     checker = parse_rule("fuzzing")
     for line in lines:
         kind = parse_issue_kind(line)
-        location = parse_source_location(log_file)
         if kind != IssueKind.UNKNOWN:
-            issue = Issue(
-                kind,
-                "",
-                Severity.UNKNOWN,
-                Confidence.UNKNOWN,
-                location,
-                checker,
-            )
-            issues.append(issue)
+            if kind not in kinds:
+                kinds.append(kind)
+
+    issues = []
+    location = parse_source_location(log_file)
+    for kind in kinds:
+        issue = Issue(
+            kind,
+            "",
+            Severity.UNKNOWN,
+            Confidence.UNKNOWN,
+            location,
+            checker,
+        )
+        issues.append(issue)
+
     return issues;
 
 def check_issue_kind(kind: IssueKind, bug_name: str):

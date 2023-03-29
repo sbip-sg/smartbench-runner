@@ -140,7 +140,6 @@ def parse_existing_analysis_result(
     Issue.index_counter = 1
 
     parse_result_fn = None
-    parse_coverage_fn = None
 
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
@@ -150,7 +149,6 @@ def parse_existing_analysis_result(
 
     if tool.is_sfuzz():
         parse_result_fn = sfuzz.parse_sfuzz_json_output
-        parse_coverage_fn = sfuzz.parse_sfuzz_coverage
 
     if tool.is_mythril():
         parse_result_fn = mythril.parse_mythril_json_output
@@ -159,12 +157,7 @@ def parse_existing_analysis_result(
         warning(f"Does not support parsing result of tool: {tool.name}")
         return []
 
-    if parse_coverage_fn is not None:
-        coverage = parse_coverage_fn(log_file)
-        print(f"Coverage: {coverage}")
-
     return parse_result_fn(output_file, log_file)
-
 
 def parse_result_directory(
     result_dir: str, validate_results=False
