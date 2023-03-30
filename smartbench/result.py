@@ -103,6 +103,9 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     if tool.is_mythril():
         process_result_fn = mythril.parse_mythril_json_output
 
+    if tool.is_smartian():
+        process_result_fn = smartian.parse_analysis_output
+
     if process_result_fn:
         output_file = os.path.join(output_dir, tool.output_file)
         log_file = os.path.join(output_dir, tool.log_file)
