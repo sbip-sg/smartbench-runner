@@ -17,6 +17,7 @@ from smartbench.tools.sfuzz import sfuzz
 from smartbench.loc import Location
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 
 
@@ -69,6 +70,7 @@ def match_issue_to_annotation(
 ) -> bool:
     """Function to check whether an reported issue is related to a bug
     annotation."""
+    # print ("match_issue_to_annotation ", issue, annot)
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
         if annot.sbc != annot.sbc:
@@ -78,11 +80,11 @@ def match_issue_to_annotation(
         return False
     else:
         return False
-
     # Check whether the issue and bug annotation are of the same file.
     iloc: Location = issue.location
-    if iloc.file_path != annot.file_path:
-        return False
+    # Remove unneccessary path information
+    # if iloc.file_path != annot.file_path:
+    #     return False
 
     match_command = None
 
@@ -94,6 +96,9 @@ def match_issue_to_annotation(
 
     if tool.is_mythril():
         match_command = mythril.match_location_of_issue_to_annotation
+
+    if tool.is_smartfuzz():
+        match_command = smartfuzz.match_location_of_issue_to_annotation
 
     if match_command:
         return match_command(issue, annot)
@@ -146,7 +151,6 @@ def validate_issues(
 
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
-
     return ValidationResult(
         test_file,
         issues,

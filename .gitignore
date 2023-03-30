@@ -8,8 +8,12 @@ flycheck_*.py
 
 # Temporary files
 results
+
+
 deploy
 
 # Tools
 repo
 confuzzius_venv
+# smartfuzz
+smartfuzz_venv

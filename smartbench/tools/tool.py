@@ -23,6 +23,7 @@ from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.smartfuzz import smartfuzz
 
 # List of keywords in configuration files
 INFO = "info"
@@ -54,6 +55,7 @@ class Tool:
         default_arguments: str,
         additional_arguments: Optional[str] = None,
         timeout: Optional[int] = None,
+        seed: int = 0,
     ):
         """Constructor"""
         self.id: str = str(id)
@@ -66,6 +68,7 @@ class Tool:
         self.timeout: Optional[int] = None if timeout is None else int(timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
+        self.seed: int = seed  # increasing random seed for reproducible results
 
     def __str__(self):
         """Printing to string."""
@@ -93,7 +96,7 @@ class Tool:
 
     def is_smartfuzz(self):
         """Check if the current tool is SmartFuzz."""
-        raise Exception("TODO: implement")
+        return self.id.casefold() == smartfuzz.TOOL_NAME.casefold()
 
     def is_sfuzz(self):
         """Check if the current tool is sFuzz."""
@@ -107,7 +110,11 @@ class Tool:
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
-
+        self.seed += (
+            1  # determinstically increase from seed. Reproducible randomness
+        )
+        # TODO add random seed for fuzzing tools if they support it
+        arguments = self.default_arguments
         if self.is_slither():
             make_command = slither.make_analysis_command
         elif self.is_sfuzz():
@@ -119,13 +126,15 @@ class Tool:
         elif self.is_ilf():
             make_command = ilf.make_analysis_command
         elif self.is_smartfuzz():
+            make_command = smartfuzz.make_analysis_command
+            arguments += " --seed " + str(self.seed)
+        elif self.is_confuzzius():
             raise Exception("TODO: implement")
 
 
         if make_command is None:
             return None
 
-        arguments = self.default_arguments
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
@@ -148,7 +157,6 @@ class Tool:
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.output_file)
 
-
     def configure_log_file(self, result_dir: str) -> str:
         """
         Configure log file of a tool for a test file.
@@ -157,7 +165,6 @@ class Tool:
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
-
 
 
 def load_tool_configuration(tool_name: str) -> Optional[Tool]:
@@ -198,6 +205,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))
             return None
+
 
 def configure_analysis_tools(args) -> List[Tool]:
     """Configure all analysis tools."""
