@@ -12,8 +12,8 @@ from typing import List, Union
 from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.location import Location
 from smartbench.bug_annot import BugAnnot
+from smartbench.loc import Location
 
 # Tool name
 TOOL_NAME = "Smartian"
@@ -25,6 +25,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout=None,
 ):
     """Function to make analysis command for `Smartian`. This function should
     have the same signature with other tools.

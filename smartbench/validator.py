@@ -12,7 +12,9 @@ from smartbench import bug_annot, issue
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
-from smartbench.location import Location
+from smartbench.tools.tool import Tool
+from smartbench.tools.sfuzz import sfuzz
+from smartbench.loc import Location
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.smartian import smartian
@@ -85,6 +87,9 @@ def match_issue_to_annotation(
 
     match_command = None
 
+    if tool.is_sfuzz():
+        match_command = sfuzz.match_location_of_issue_to_annotation
+
     if tool.is_confuzzius():
         match_command = confuzzius.match_location_of_issue_to_annotation
 
@@ -97,7 +102,7 @@ def match_issue_to_annotation(
     if match_command:
         return match_command(issue, annot)
 
-    # # Check whether the issue location is covered by the annotation location.
+    # Check whether the issue location is covered by the annotation location.
     if iloc.start_line is None or iloc.end_line is None:
         return False
     if iloc.start_line < annot.start_line + 1:

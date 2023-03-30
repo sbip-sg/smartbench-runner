@@ -18,6 +18,7 @@ from smartbench.bug_annot import BugAnnot
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
 from smartbench.tools.smartian import smartian
@@ -100,6 +101,9 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     if tool.is_confuzzius():
         process_result_fn = confuzzius.parse_confuzzius_json_output
 
+    if tool.is_sfuzz():
+        process_result_fn = sfuzz.parse_sfuzz_json_output
+
     if tool.is_mythril():
         process_result_fn = mythril.parse_mythril_json_output
 
@@ -143,11 +147,15 @@ def parse_existing_analysis_result(
     Issue.index_counter = 1
 
     parse_result_fn = None
+
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
 
     if tool.is_confuzzius():
         parse_result_fn = confuzzius.parse_confuzzius_json_output
+
+    if tool.is_sfuzz():
+        parse_result_fn = sfuzz.parse_sfuzz_json_output
 
     if tool.is_mythril():
         parse_result_fn = mythril.parse_mythril_json_output
@@ -160,7 +168,6 @@ def parse_existing_analysis_result(
         return []
 
     return parse_result_fn(output_file, log_file)
-
 
 def parse_result_directory(
     results_dir: str, validate_results=False
@@ -232,6 +239,7 @@ def parse_result_directory(
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
+
                     validation = validator.validate_issues(
                         tool, test_file, issues
                     )
@@ -239,7 +247,9 @@ def parse_result_directory(
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues
-        print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
+
+        if validate_results:
+            print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     print("Parsing result completed!")
     return all_issues

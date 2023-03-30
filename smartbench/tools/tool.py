@@ -19,11 +19,11 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
 from smartbench.tools.smartian import smartian
-
 
 # List of keywords in configuration files
 INFO = "info"
@@ -100,27 +100,34 @@ class Tool:
         """Check if the current tool is Smartian."""
         return self.id.casefold() == smartian.TOOL_NAME.casefold()
 
+    def is_sfuzz(self):
+        """Check if the current tool is sFuzz."""
+        return self.id.casefold() == sfuzz.TOOL_NAME.casefold()
+
     def is_ilf(self):
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
 
-    def make_analysis_command(self, test_file, result_dir, solc_path):
+    def make_analysis_command(self, test_file, result_dir, solc_path, timeout=None):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
 
         if self.is_slither():
             make_command = slither.make_analysis_command
+        elif self.is_sfuzz():
+            make_command = sfuzz.make_analysis_command
         elif self.is_confuzzius():
-            make_command = confuzzius.make_confuzzius_analysis_command
+            make_command = confuzzius.make_analysis_command
         elif self.is_mythril():
-            make_command = mythril.make_mythril_analysis_command
+            make_command = mythril.make_analysis_command
         elif self.is_ilf():
             make_command = ilf.make_analysis_command
         elif self.is_smartian():
             make_command = smartian.make_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
+
 
         if make_command is None:
             return None
@@ -132,7 +139,7 @@ class Tool:
         output_file = self.configure_output_file(result_dir)
 
         return make_command(
-            self.path, arguments, test_file, output_file, solc_path
+            self.path, arguments, test_file, output_file, solc_path, timeout
         )
 
     def make_deployment_command(self, test_file, result_dir, solc_path):

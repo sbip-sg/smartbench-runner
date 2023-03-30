@@ -25,6 +25,6 @@ solc-select use $VERSION
 solc --bin --abi $1 -o input --overwrite
 
 for CONTRACT in $CONTRACTS; do
-    dotnet build/Smartian.dll fuzz --useothersoracle --verbose 1 --program input/$CONTRACT.bin --abifile input/$CONTRACT.abi -t $TIMEOUT -o output > $4 2>&1
+    dotnet build/Smartian.dll fuzz --useothersoracle --checkoptionalbugs --verbose 1 --program input/$CONTRACT.bin --abifile input/$CONTRACT.abi -t $TIMEOUT -o output > $4 2>&1
 done
 

@@ -84,6 +84,7 @@ def analyze_test_file(
     tool: Tool,
     test_file: str,
     test_output_dir: str,
+    timeout=None,
     validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -103,7 +104,7 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(
-            test_file, test_output_dir, solc_path
+            test_file, test_output_dir, solc_path, timeout
         )
 
         if command is None:
@@ -154,6 +155,7 @@ def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
     tool_output_dir: str,
+    timeout=None,
     validate=False,
     jobs=1,
 ) -> List[Issue]:
@@ -179,14 +181,14 @@ def run_analysis_tool(
             os.makedirs(test_output_dir)
 
         # Analyze the test file
-        issues = analyze_test_file(tool, test_file, test_output_dir, validate)
+        issues = analyze_test_file(tool, test_file, test_output_dir, timeout, validate)
         all_issues += issues
 
     return all_issues
 
 
 def perform_analysis(
-    tools: List[Tool], test_files: List[str], validate=False, jobs=1
+    tools: List[Tool], test_files: List[str], timeout: int, validate=False, jobs=1
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -212,7 +214,7 @@ def perform_analysis(
     for tool in tools:
         tool_output_dir = os.path.join(results_dir, tool.id)
         issues = run_analysis_tool(
-            tool, test_files, tool_output_dir, validate, jobs
+            tool, test_files, tool_output_dir, timeout, validate, jobs
         )
         all_issues += issues
 

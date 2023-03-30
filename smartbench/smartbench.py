@@ -23,7 +23,7 @@ def analyze_smart_contracts(args):
     test_files = tests.collect_test_cases(args)
     # Perform the analysis
     jobs = 1 if args is None else args.jobs
-    analyze.perform_analysis(tools, test_files, args.validate, jobs)
+    analyze.perform_analysis(tools, test_files, args.timeout, args.validate, jobs)
 
 
 def parse_existing_results(args):

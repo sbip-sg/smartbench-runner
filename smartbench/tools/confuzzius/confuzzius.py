@@ -15,19 +15,19 @@ from smartbench import bug_annot, log
 from smartbench.bug_annot import BugAnnot
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.location import Location
+from smartbench.loc import Location
 
 
 # Tool name
 TOOL_NAME = "ConFuzzius"
 
-
-def make_confuzzius_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout=None,
 ):
     """
     Function to make analysis command for Confuzzius.
@@ -38,6 +38,9 @@ def make_confuzzius_analysis_command(
     if arguments:
         command = command + " " + arguments
 
+    if timeout is None:
+        timeout = 60
+
     command = (
         command
         + " -s "
@@ -45,7 +48,8 @@ def make_confuzzius_analysis_command(
         + " -r "
         + output_file
         + " --evm byzantium"
-        + " -t 30"
+        + " -t "
+        + str(timeout)
     )
     return command
 
@@ -137,6 +141,7 @@ def parse_confuzzius_json_output(
         warning("Failed to parse Confuzzius's output file:", output_file)
         return []
 
+    checker = parse_rule("fuzzing")
     try:
         issues = []
 
@@ -147,7 +152,6 @@ def parse_confuzzius_json_output(
 
         for error_desc in errors:
             error = error_desc[0]
-            checker = parse_rule("fuzzing")
             kind = parse_issue_kind(error.get("type"))
             location = parse_source_location(
                 log_file, error.get("line"), error.get("column")

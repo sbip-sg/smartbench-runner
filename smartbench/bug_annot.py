@@ -132,18 +132,18 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
                 and YES_TAG in line
                 and REPORT_TAG in line
             ):
-                bug_type = line.replace(COMMENT_TAG, "")
-                bug_type = bug_type.replace(YES_TAG, "")
-                bug_type = bug_type.replace(REPORT_TAG, "")
-                bug_type = bug_type.strip()
-                bug_annotation = BugAnnot(
-                    bug_type,
-                    AnnotFormat.SMARTBUGS_FORMAT,
-                    filename,
-                    start_line,
-                    end_line,
-                )
-                bug_annots.append(bug_annotation)
+                bug_info = line.replace(COMMENT_TAG, "")
+                bug_info = bug_info.replace(YES_TAG, "")
+                bug_info = bug_info.replace(REPORT_TAG, "")
+                for bug_type in bug_info.split(","):
+                    bug_annotation = BugAnnot(
+                        bug_type.strip(),
+                        AnnotFormat.SMARTBUGS_FORMAT,
+                        filename,
+                        start_line,
+                        end_line,
+                    )
+                    bug_annots.append(bug_annotation)
     return bug_annots
 
 

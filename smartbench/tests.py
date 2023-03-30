@@ -33,8 +33,6 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
         if is_solidity_file(file_name):
             files.append(file_name)
 
-    if len(files) > 5:
-        return files[0:5]
     return files
 
 

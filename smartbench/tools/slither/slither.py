@@ -4,7 +4,6 @@
 
 # Standard Library
 import json
-import os
 
 from typing import List, Optional
 
@@ -12,7 +11,7 @@ from typing import List, Optional
 from smartbench import log
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.location import Location
+from smartbench.loc import Localizer, Location
 
 
 # Tool name
@@ -25,6 +24,7 @@ def make_analysis_command(
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout=None,
 ):
     """
     Function to make analysis command for Slither.
@@ -116,11 +116,14 @@ def parse_source_location(log_file, backtrace_elements) -> Location:
         start_column = source_mapping.get("starting_column")
         end_column = source_mapping.get("ending_column")
     else:
-        # If line, column
         # Read location from `start` and `end` properties in JSON format
-        print(f"===== File name: {file_name}")
-        start_loc = source_mapping.get("start")
+        start = source_mapping.get("start")
         length = source_mapping.get("length")
+        localizer = Localizer(file_name)
+        if start_loc := localizer.get_line_column_number(start):
+            (start_line, start_column) = start_loc
+        if end_loc := localizer.get_line_column_number(start + length):
+            (end_line, end_column) = end_loc
 
     return Location(file_name, start_line, start_column, end_line, end_column)
 
