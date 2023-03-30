@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 # Script to install ConFuzzius tool
 # Usage:
@@ -31,8 +31,11 @@ else
 fi
 
 # Set up virtual environment venv
-python3 -m venv $BASE_DIR/../../../confuzzius_venv
-source $BASE_DIR/../../../confuzzius_venv/bin/activate
+python3 -m venv $BASE_DIR/confuzzius_venv
+source $BASE_DIR/confuzzius_venv/bin/activate
 
 # Install requirements
 pip install -r $TOOL_DIR/fuzzer/requirements.txt
+
+# Install additional packages
+pip install 'py-solc-x==1.1.1' --force-reinstall

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 # This script is call inside `confuzzius.py` to run `ConFuzzius` with an input file.
 
@@ -11,7 +11,7 @@ REPO_DIR=$BASE_DIR"/repo"
 TOOL_DIR=$REPO_DIR/$TOOL_ID
 
 # Configure venv
-source $BASE_DIR/../../../confuzzius_venv/bin/activate
+source $BASE_DIR/confuzzius_venv/bin/activate
 
 # Run Smartbench
 python $TOOL_DIR/fuzzer/main.py $@
