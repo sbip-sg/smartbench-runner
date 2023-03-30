@@ -55,7 +55,7 @@ class Tool:
         default_arguments: str,
         additional_arguments: Optional[str] = None,
         timeout: Optional[int] = None,
-        seed: int = 0
+        seed: int = 0,
     ):
         """Constructor"""
         self.id: str = str(id)
@@ -68,7 +68,7 @@ class Tool:
         self.timeout: Optional[int] = None if timeout is None else int(timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
-        self.seed: int = seed # increasing random seed for reproducible results
+        self.seed: int = seed  # increasing random seed for reproducible results
 
     def __str__(self):
         """Printing to string."""
@@ -106,7 +106,9 @@ class Tool:
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
-        self.seed += 1 # determinstically increase from seed. Reproducible randomness
+        self.seed += (
+            1  # determinstically increase from seed. Reproducible randomness
+        )
         # TODO add random seed for fuzzing tools if they support it
         arguments = self.default_arguments
         if self.is_slither():
@@ -148,7 +150,6 @@ class Tool:
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.output_file)
 
-
     def configure_log_file(self, result_dir: str) -> str:
         """
         Configure log file of a tool for a test file.
@@ -157,7 +158,6 @@ class Tool:
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
-
 
 
 def load_tool_configuration(tool_name: str) -> Optional[Tool]:
@@ -198,6 +198,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))
             return None
+
 
 def configure_analysis_tools(args) -> List[Tool]:
     """Configure all analysis tools."""

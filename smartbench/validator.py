@@ -12,10 +12,10 @@ from smartbench import bug_annot, issue
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
-from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.loc import Location
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 
 
@@ -120,7 +120,6 @@ def validate_issues(
     unknown_issues: List[Issue] = []
 
     annots = bug_annot.parse_bug_annotations(test_file)
-    # print ("all annots", annots)
     reported_annots: List[BugAnnot] = []
 
     target_sbcs = []
@@ -132,7 +131,6 @@ def validate_issues(
         correct_bug = False
         for annot in annots:
             if match_issue_to_annotation(tool, issue, annot):
-                print("matched issue to annot", issue, annot)
                 correct_issues.append(issue)
                 reported_annots.append(annot)
                 correct_bug = True
@@ -148,8 +146,6 @@ def validate_issues(
 
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
-    for bug in missing_bugs:
-        print("missing bug", bug)
     return ValidationResult(
         test_file,
         issues,

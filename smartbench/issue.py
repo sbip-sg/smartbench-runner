@@ -12,8 +12,8 @@ from smartbench.loc import Location
 
 class IssueKind(Enum):
     """Class representing the kind of issue.
-        + Use for all annotation and bug parsing.
-        + Different bug names can map to the same issue
+    + Use for all annotation and bug parsing.
+    + Different bug names can map to the same issue
     """
 
     # Unknown
@@ -25,14 +25,15 @@ class IssueKind(Enum):
 
     # Unchecked operations
     UNCHECKED_SEND = "Unchecked Send"
-    LEAKING_ETHER = "Unchecked Send" # alias of the same bug type
-    SEND_ETH_TO_ARBITRARY_USER = "Unchecked Send" # alias of the same bug type
+    LEAKING_ETHER = "Unchecked Send"  # alias of the same bug type
+    SEND_ETH_TO_ARBITRARY_USER = "Unchecked Send"  # alias of the same bug type
 
     UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
-    UNHANDLED_EXCEPTION = "Unchecked Low-Level Code" # alias of the same bug type
+    UNHANDLED_EXCEPTION = (
+        "Unchecked Low-Level Code"  # alias of the same bug type
+    )
 
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
-
 
     # Low-level code
     LOW_LEVEL_CALL = "Low-Level Call"
@@ -55,7 +56,9 @@ class IssueKind(Enum):
 
     # Weak feature
     BLOCK_DEPENDENCY = "Block values dependency"
-    USE_BLOCK_TIMESTAMP = "Block values dependency" # alias of the same bug type
+    USE_BLOCK_TIMESTAMP = (
+        "Block values dependency"  # alias of the same bug type
+    )
 
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"

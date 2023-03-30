@@ -14,6 +14,7 @@ from smartbench.bugdb.sbc import SBC
 from smartbench.debug import warning
 from smartbench.issue import IssueKind
 
+
 # SmartBugs annotations
 YES_TAG = "<yes>"
 NO_TAG = "<no>"
@@ -48,7 +49,9 @@ class BugAnnot:
         end_line: int,
     ):
         self.bug_name: str = bug_name
-        self.annot_kind: IssueKind = self.map_bug_annot_to_kind(bug_name, annot_format)
+        self.annot_kind: IssueKind = self.map_bug_annot_to_kind(
+            bug_name, annot_format
+        )
         self.annot_format: AnnotFormat = annot_format
         self.file_path: str = file_path
         self.start_line: int = start_line
@@ -76,7 +79,7 @@ class BugAnnot:
             return IssueKind.ACCESS_CONTROL
         if bug_name == "ARITHMETIC_BUG":
             return IssueKind.INTEGER_BUG
-        if bug_name in ["LEAKING_ETHER","UNCHECKED_SEND"]:
+        if bug_name in ["LEAKING_ETHER", "UNCHECKED_SEND"]:
             return IssueKind.UNCHECKED_SEND
         if bug_name == "REENTRANCY":
             return IssueKind.REENTRANCY
@@ -96,6 +99,7 @@ class BugAnnot:
 
     def __str__(self):
         return self.print_concise()
+
 
 def classify_bug_annot_to_sbc(
     bug_name: str,
