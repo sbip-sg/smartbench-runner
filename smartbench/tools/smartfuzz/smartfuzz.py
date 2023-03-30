@@ -173,8 +173,6 @@ def parse_smartfuzz_json_output(
 
 def check_issue_kind(issue_kind: IssueKind, annotation_kind: IssueKind):
     """Function to check whether an reported issue is related to a bug"""
-    if issue_kind == annotation_kind:
-        debug("check issue kind: ", issue_kind, annotation_kind)
     return issue_kind == annotation_kind
 
 
