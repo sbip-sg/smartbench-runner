@@ -21,6 +21,7 @@ from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.smartian import smartian
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validator import ValidationResult
@@ -109,6 +110,9 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     if tool.is_mythril():
         process_result_fn = mythril.parse_mythril_json_output
 
+    if tool.is_smartian():
+        process_result_fn = smartian.parse_analysis_output
+
     if process_result_fn:
         output_file = os.path.join(output_dir, tool.output_file)
         log_file = os.path.join(output_dir, tool.log_file)
@@ -157,6 +161,9 @@ def parse_existing_analysis_result(
 
     if tool.is_mythril():
         parse_result_fn = mythril.parse_mythril_json_output
+
+    if tool.is_smartian():
+        parse_result_fn = smartian.parse_analysis_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")

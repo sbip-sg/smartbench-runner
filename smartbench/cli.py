@@ -74,11 +74,18 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
-    # Analysis tool
+    # Running tools in Docker
+    analyze_parser.add_argument(
+        "--docker",
+        action="store_true",
+        help="Running analysis tools in Docker.",
+    )
+
+    # Timeout for each test case
     analyze_parser.add_argument(
         "--timeout",
         type=int,
-        help="Timeout to run each tool.",
+        help="Timeout for each test case.",
     )
 
     # Number of jobs per tool
