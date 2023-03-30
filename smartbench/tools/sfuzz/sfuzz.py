@@ -3,6 +3,7 @@
 """Module handling sFuzz."""
 
 import os
+import re
 from typing import List, Union
 
 # Library
@@ -149,3 +150,25 @@ def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
         return False
 
     return True
+
+def parse_instruction_coverage(_output_file: str, log_file: str):
+    """Parse instruction coverage of sFuzz"""
+    lines = None
+    with open(log_file, "r", encoding="utf-8") as file:
+        try:
+            lines = [line.rstrip() for line in file]
+        except ValueError:
+            warning("Failed to parse sFuzz log file:", log_file)
+            return []
+
+    results = [(0,0)]
+    count = 1
+    for line in lines:
+        match_str = re.search(r"coverage : [0-9]+", line)
+        if match_str:
+            coverage = match_str.group()
+            coverage = coverage.removeprefix("coverage : ")
+            results.append((count, int(coverage)))
+            count += 1
+
+    return results

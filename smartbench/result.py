@@ -171,6 +171,32 @@ def parse_existing_analysis_result(
 
     return parse_result_fn(output_file, log_file)
 
+def parse_instruction_coverage_for_one_file(
+    tool: Tool, output_file: str, log_file: str
+) -> List[Issue]:
+    """Parse instruction coverage for a test result.
+
+    The input `test_result_dir` is the directory containing the
+    immediate result of an analysis tool.
+    """
+
+    parse_instr_coverage_fn = None
+
+    # if tool.is_confuzzius():
+    #     parse_result_fn = confuzzius.parse_instruction_coverage
+
+    if tool.is_sfuzz():
+        parse_instr_coverage_fn = sfuzz.parse_instruction_coverage
+
+    # if tool.is_smartian():
+    #     parse_result_fn = smartian.parse_analysis_output
+
+    if parse_instr_coverage_fn is None:
+        warning(f"Does not support parsing instruction coverage of tool: {tool.name}")
+        return []
+
+    return parse_instr_coverage_fn(output_file, log_file)
+
 def parse_result_directory(
     results_dir: str, validate_results=False
 ) -> List[Issue]:
@@ -252,3 +278,59 @@ def parse_result_directory(
 
     print("Parsing result completed!")
     return all_issues
+
+def parse_instruction_coverage(results_dir: str):
+    """Function to parse code coverage from analysis results of a tool.
+
+    The input `result_dir` is the directory containing results of all
+    tools.
+    """
+
+    print(f"results_dir: {results_dir}")
+
+    path = pathlib.Path(results_dir)
+    if not path.is_dir():
+        warning(f"Directory does not exists: {results_dir}")
+        return;
+
+    all_issues: List[Issue] = []
+
+    # Parse results of each analysis tool
+    items = list(os.listdir(results_dir))
+    for item in items:
+        item_path = os.path.join(results_dir, item)
+        if not os.path.isdir(item_path):
+            continue
+
+        # Tool ID is assumed to be the same as tool_dir
+        tool_id = item
+        tool = load_tool_configuration(tool_id)
+
+        if tool is None:
+            warning(f"Unable to load tool configuration: {tool_id}")
+            continue
+
+        print(f"{'=' * 55}\n")
+        print(f"Parsing analysis result of: {tool.id}\n")
+
+        tool_output_dir = os.path.join(results_dir, tool_id)
+        test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
+        for test_output_dir in test_output_dirs:
+            if not is_test_result_directory(tool, test_output_dir):
+                continue
+
+            test_output_dir = os.path.abspath(test_output_dir)
+            output_file = os.path.join(test_output_dir, tool.output_file)
+            log_file = os.path.join(test_output_dir, tool.log_file)
+
+            test_file = log.get_input_test_file(log_file)
+            print(f"{'-' * 45}\n")
+            print(f"Test file: {test_file}\n")
+
+            coverage = parse_instruction_coverage_for_one_file(tool, output_file, log_file)
+            print(f"coverage: {coverage}")
+
+    print("Parsing result completed!")
+    return all_issues
+
+
