@@ -20,6 +20,7 @@ from smartbench.issue import Issue
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import RESULTS_DIR, Tool
 
 
@@ -171,6 +172,9 @@ def run_analysis_tool(
     parent_path = os.path.dirname(common_path)
 
     all_issues = []
+
+    # if (tool.name.casefold() == smartfuzz.TOOL_NAME.casefold()):
+    #     smartfuzz.install_virtual_env()
 
     for test_file in test_files:
         # Prepare output directory for one test file

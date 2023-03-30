@@ -22,6 +22,7 @@ from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
 from smartbench.tools.smartian import smartian
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool, load_tool_configuration
 from smartbench.validator import ValidationResult
 
@@ -98,6 +99,8 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     if tool.is_slither():
         process_result_fn = slither.parse_slither_json_output
 
+    if tool.is_smartfuzz():
+        process_result_fn = smartfuzz.parse_smartfuzz_json_output
     if tool.is_confuzzius():
         process_result_fn = confuzzius.parse_confuzzius_json_output
 
@@ -148,6 +151,8 @@ def parse_existing_analysis_result(
     if tool.is_slither():
         parse_result_fn = slither.parse_slither_json_output
 
+    if tool.is_smartfuzz():
+        parse_result_fn = smartfuzz.parse_smartfuzz_json_output
     if tool.is_confuzzius():
         parse_result_fn = confuzzius.parse_confuzzius_json_output
 

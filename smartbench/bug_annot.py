@@ -12,6 +12,7 @@ from typing import List, Optional
 # Library
 from smartbench.bugdb.sbc import SBC
 from smartbench.debug import warning
+from smartbench.issue import IssueKind
 
 
 # SmartBugs annotations
@@ -48,6 +49,9 @@ class BugAnnot:
         end_line: int,
     ):
         self.bug_name: str = bug_name
+        self.annot_kind: IssueKind = self.map_bug_annot_to_kind(
+            bug_name, annot_format
+        )
         self.annot_format: AnnotFormat = annot_format
         self.file_path: str = file_path
         self.start_line: int = start_line
@@ -65,6 +69,36 @@ class BugAnnot:
         if self.start_line != self.end_line:
             location = location + "-" + str(self.end_line)
         return f"Bug ({self.index}): {self.bug_name} - {location}"
+
+    def map_bug_annot_to_kind(self, bug_name: str, annot_format: AnnotFormat):
+        """classify bug string in annotation to standard smartbench IssueKind and use annot_format"""
+        # TODO: add more bug types for different benchmarks here
+        if bug_name == "TRANSACTION_ORDER_DEPENDENCY":
+            return IssueKind.TRANSACTION_ORDER_DEPENDENCY
+        if bug_name == "ACCESS_CONTROL":
+            return IssueKind.ACCESS_CONTROL
+        if bug_name == "ARITHMETIC_BUG":
+            return IssueKind.INTEGER_BUG
+        if bug_name in ["LEAKING_ETHER", "UNCHECKED_SEND"]:
+            return IssueKind.UNCHECKED_SEND
+        if bug_name == "REENTRANCY":
+            return IssueKind.REENTRANCY
+        if bug_name == "ASSERTION_FAILURE":
+            return IssueKind.ASSERTION_FAILURE
+        if bug_name == "BLOCK_DEPENDENCY":
+            return IssueKind.BLOCK_DEPENDENCY
+        if bug_name == "UNHANDLED_EXCEPTION":
+            return IssueKind.UNHANDLED_EXCEPTION
+        if bug_name == "ADDRESS_VALIDATION":
+            return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
+        if bug_name == "UNSAFE_SELFDESTRUCT":
+            return IssueKind.UNSAFE_SELFDESTRUCT
+        if bug_name in ["TX_ORIGIN_USAGE", "tx.origin"]:
+            return IssueKind.TX_ORIGIN_USAGE
+        # March 29: Add SOLIDIFI
+
+    def __str__(self):
+        return self.print_concise()
 
 
 def classify_bug_annot_to_sbc(
@@ -125,7 +159,7 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
     with open(filename, "r", encoding="utf-8") as file:
         for index, line in enumerate(file.readlines()):
             start_line = index + 1
-            end_line = index + 1
+            end_line = index + 2
             line = line.strip()
             if (
                 line.startswith(COMMENT_TAG)
