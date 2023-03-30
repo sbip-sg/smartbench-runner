@@ -11,7 +11,7 @@ REPO_DIR=$BASE_DIR"/repo"
 TOOL_DIR=$REPO_DIR/$TOOL_ID
 
 # Configure venv
-source $BASE_DIR/confuzzius_venv/bin/activate
+. $BASE_DIR/confuzzius_venv/bin/activate
 
-# Run Smartbench
+# Run Confuzzius
 python $TOOL_DIR/fuzzer/main.py $@

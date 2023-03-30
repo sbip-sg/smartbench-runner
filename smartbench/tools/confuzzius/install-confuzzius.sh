@@ -1,10 +1,14 @@
 #!/bin/bash
 
 # Script to install ConFuzzius tool
+#
+# Requires Python3.9 to run Confuzzius.
+#    sudo add-apt-repository ppa:deadsnakes/ppa
+#    sudo apt update
+#    sudo apt install python3.9 python3.9-venv
+#
 # Usage:
 #    ./install-confuzzius.sh
-# This script is also used in `install_virtual_env` to install `ConFuzzius`
-# automatically in `smartbench`
 
 # Tool settings
 TOOL_NAME="confuzzius"
@@ -31,8 +35,8 @@ else
 fi
 
 # Set up virtual environment venv
-python3 -m venv $BASE_DIR/confuzzius_venv
-source $BASE_DIR/confuzzius_venv/bin/activate
+python -m venv $BASE_DIR/confuzzius_venv
+. $BASE_DIR/confuzzius_venv/bin/activate
 
 # Install requirements
 pip install -r $TOOL_DIR/fuzzer/requirements.txt
