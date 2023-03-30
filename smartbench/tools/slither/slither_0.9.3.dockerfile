@@ -7,11 +7,25 @@ WORKDIR /root/
 
 # Install Ubuntu packages
 RUN apt-get update
-RUN apt-get install -y python3 python-is-python3 python3-pip
+RUN apt-get install -y python3 python-is-python3 python3-pip git
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
 RUN echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install
 
+# Install Solc-detect
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.4
+
 # Install Slither 0.9.3
 RUN pip install solc-select slither-analyzer==0.9.3
+
+# Prepare testing environments
+RUN mkdir examples
+ADD examples/*.sol examples/
+
+# Prepare benchmarking environments
+RUN mkdir $HOME/benchmarks
+RUN mkdir $HOME/results
+
+# Entry point when running the container as an executable
+ENTRYPOINT [ "/bin/bash" ]
