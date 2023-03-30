@@ -32,7 +32,6 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
         file_name = os.path.normpath(os.path.abspath(file_path))
         if is_solidity_file(file_name):
             files.append(file_name)
-
     return files
 
 

@@ -32,7 +32,6 @@ def record_execution_log(
 ) -> None:
     """Record execution log of an analysis tool in TOML format."""
     log_file = tool.configure_log_file(result_dir)
-    print(f"log_file: {log_file}")
     with open(log_file, "w", encoding="utf-8") as file:
         file.write(f"# Execution log of {tool.name}:\n\n")
 

@@ -127,9 +127,7 @@ def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
     a test file."""
 
     test_dir = os.path.abspath(test_dir)
-    print("tool output file: ", tool.output_file)
     output_file = os.path.join(test_dir, tool.output_file)
-    print(f"output file: {output_file}")
     return os.path.exists(output_file)
 
 
@@ -142,7 +140,6 @@ def parse_existing_analysis_result(
     immediate result of an analysis tool.
     """
 
-    print("parse_existing_analysis_result")
     # Reset issue index counter for the current output file
     Issue.index_counter = 1
 
@@ -203,14 +200,11 @@ def parse_result_directory(
         print(f"{'=' * 55}\n")
         print(f"Parsing analysis result of: {tool.id}\n")
 
-        print(f"result_dir: {results_dir}")
         tool_output_dir = os.path.join(results_dir, tool_id)
-        print(f"output_dir: {tool_output_dir}")
         test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
         correct_bugs = 0
         annotations = 0
         for test_output_dir in test_output_dirs:
-            print("log_file: ", tool.log_file)
             if not is_test_result_directory(tool, test_output_dir):
                 continue
 
