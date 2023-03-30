@@ -12,6 +12,7 @@ from smartbench import log, solc
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
+from smartbench.tools.tool import Tool
 
 
 # Tool name
@@ -297,3 +298,64 @@ def parse_slither_json_output(
         return issues
     except ValueError:
         return []
+
+
+class Slither(Tool):
+    def __init__(
+        self,
+        id: str,
+        name: str,
+        homepage: str,
+        category: str,
+        path: str,
+        default_arguments: str,
+        default_timeout: int,
+        additional_arguments: Optional[str] = None,
+        random_seed: int = 0,
+    ):
+        Tool.__init__(
+            self,
+            id,
+            name,
+            homepage,
+            category,
+            path,
+            default_arguments,
+            default_timeout,
+            additional_arguments,
+        )
+
+    def make_analysis_command(
+        self,
+        test_file: str,
+        test_output_dir: str,
+        solc_path: str,
+        timeout=int,
+    ):
+        """
+        Function to make analysis command for Slither.
+        This function should have the same signature with other tools.
+        """
+        command = self.path
+
+        if self.default_arguments:
+            command = command + " " + self.default_arguments
+
+        if self.additional_arguments:
+            command = command + " " + self.additional_arguments
+
+        # Configure Solc for the test file
+        solc_path = solc.configure_local_solc_compiler(test_file)
+        output_file = self.configure_output_file(test_output_dir)
+
+        command = (
+            command
+            + " "
+            + test_file
+            + " --solc "
+            + solc_path
+            + " --json "
+            + output_file
+        )
+
+        return command

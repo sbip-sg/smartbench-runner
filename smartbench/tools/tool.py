@@ -22,27 +22,8 @@ from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.sfuzz import sfuzz
-from smartbench.tools.slither import slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian import smartian
-
-
-# List of keywords in configuration files
-INFO = "info"
-ID = "id"
-NAME = "name"
-HOMEPAGE = "homepage"
-CATEGORY = "category"
-COMMAND = "command"
-PATH = "path"
-DEFAULT_TIMEOUT = "default_timeout"
-DEFAULT_ARGUMENTS = "default_arguments"
-
-# Initiate some global varibles
-TOOLS_DIR = os.path.dirname(__file__)
-SMARTBENCH_ROOT_DIR = os.path.dirname(smartbench.__file__)
-RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
-DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "deploy")
 
 
 class Tool:
@@ -86,9 +67,9 @@ class Tool:
             + '"}'
         )
 
-    def is_slither(self):
-        """Check if the current tool is Slither."""
-        return self.id.casefold() == slither.TOOL_NAME.casefold()
+    # def is_slither(self):
+    #     """Check if the current tool is Slither."""
+    #     return self.id.casefold() == slither.TOOL_NAME.casefold()
 
     def is_confuzzius(self):
         """Check if the current tool is Confuzzius."""
@@ -117,6 +98,15 @@ class Tool:
     def make_analysis_command(
         self,
         test_file,
+        test_output_dir,
+        timeout=None,
+        use_docker=True,
+    ):
+        pass
+
+    def make_analysis_command(
+        self,
+        test_file,
         result_dir,
         timeout=None,
         use_docker=True,
@@ -130,9 +120,7 @@ class Tool:
         timeout = timeout if timeout is not None else self.default_timeout
 
         make_command = None
-        if self.is_slither():
-            make_command = slither.make_analysis_command
-        elif self.is_sfuzz():
+        if self.is_sfuzz():
             make_command = sfuzz.make_analysis_command
         elif self.is_confuzzius():
             make_command = confuzzius.make_analysis_command
@@ -178,89 +166,3 @@ class Tool:
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
-
-
-def load_tool_configuration(tool_name: str) -> Optional[Tool]:
-    """Parse configuration of an analysis tool"""
-
-    # Helper function to report configuraiton error
-    def report_config_error(config_key, config_file):
-        raise ValueError(
-            f"{tool_name}: '{config_key}' is not specified in: {config_file}"
-        )
-
-    # Get path of the configuration file
-    tool_name = tool_name.casefold()
-    cfg_fname = tool_name + ".toml"
-    cfg_fpath = os.path.join(TOOLS_DIR, tool_name, cfg_fname)
-
-    # Read configuration file
-    with open(cfg_fpath, "r", encoding="utf-8") as file:
-        file_content = file.read()
-        config = tomli.loads(file_content)
-
-        try:
-            # Parse tool info
-            if (info := config.get(INFO)) is None:
-                report_config_error(INFO, cfg_fpath)
-
-            assert info is not None
-
-            if (tool_id := info.get(ID)) is None:
-                report_config_error(ID, cfg_fpath)
-
-            if (tool_name := info.get(NAME)) is None:
-                report_config_error(NAME, cfg_fpath)
-
-            if (homepage := info.get(HOMEPAGE)) is None:
-                report_config_error(HOMEPAGE, cfg_fpath)
-
-            if (category := info.get(CATEGORY)) is None:
-                report_config_error(CATEGORY, cfg_fpath)
-
-            # Parse tool command
-            if (command := config.get(COMMAND)) is None:
-                report_config_error(COMMAND, cfg_fpath)
-
-            assert command is not None
-
-            if (path := command.get(PATH)) is None:
-                report_config_error(PATH, cfg_fpath)
-
-            if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
-                report_config_error(DEFAULT_ARGUMENTS, cfg_fpath)
-
-            if (default_timeout := command.get(DEFAULT_TIMEOUT)) is None:
-                report_config_error(DEFAULT_TIMEOUT, cfg_fpath)
-
-            return Tool(
-                tool_id,
-                tool_name,
-                homepage,
-                category,
-                path,
-                default_args,
-                default_timeout,
-            )
-        except AttributeError:
-            debug.warning("Error in configuration of tool: " + str(tool_name))
-            return None
-
-
-def configure_analysis_tools(args) -> List[Tool]:
-    """Configure all analysis tools."""
-    print("Configure analysis tools...\n")
-
-    tool_names = args.tools
-    if tool_names is None or len(tool_names) == 0:
-        sys.exit("No analysis tool is selected!")
-
-    all_tool_configs = []
-    for tool_name in tool_names:
-        config = load_tool_configuration(tool_name)
-        if config is None:
-            debug.warning("Failed to read configuration of: " + tool_name)
-        else:
-            all_tool_configs.append(config)
-
-    return all_tool_configs

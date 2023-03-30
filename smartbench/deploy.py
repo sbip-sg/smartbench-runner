@@ -13,7 +13,8 @@ from typing import List
 
 # Library
 from smartbench import result, solc
-from smartbench.tools.tool import DEPLOY_DIR, Tool
+from smartbench.tools.config import DEPLOY_DIR
+from smartbench.tools.tool import Tool
 
 
 def log_deployment_result(

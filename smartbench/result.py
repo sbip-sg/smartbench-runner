@@ -17,13 +17,15 @@ from smartbench import bug_annot, log, validator
 from smartbench.bug_annot import BugAnnot
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
+from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.mythril import mythril
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
-from smartbench.tools.smartian import smartian
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.tool import Tool, load_tool_configuration
+from smartbench.tools.smartian import smartian
+from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
 
 
@@ -94,13 +96,15 @@ def print_summary(
 
 def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
     """Process analysis result of a tool."""
+    # TODO: Make this function OOP
     process_result_fn = None
 
-    if tool.is_slither():
+    if isinstance(tool, Slither):
         process_result_fn = slither.parse_slither_json_output
 
     if tool.is_smartfuzz():
         process_result_fn = smartfuzz.parse_smartfuzz_json_output
+
     if tool.is_confuzzius():
         process_result_fn = confuzzius.parse_confuzzius_json_output
 
@@ -170,6 +174,7 @@ def parse_existing_analysis_result(
         return []
 
     return parse_result_fn(output_file, log_file)
+
 
 def parse_result_directory(
     results_dir: str, validate_results=False

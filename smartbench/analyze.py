@@ -17,11 +17,13 @@ from typing import List
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
 from smartbench.issue import Issue
+from smartbench.tools.config import RESULTS_DIR
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.tool import RESULTS_DIR, Tool
+from smartbench.tools.tool import Tool
 
 
 def record_execution_log(

@@ -8,7 +8,7 @@ import sys
 # Library
 from smartbench import analyze, bug_annot, deploy, flags, result, tests
 from smartbench.cli import Command, parse_cli_arguments
-from smartbench.tools.tool import configure_analysis_tools
+from smartbench.tools.config import configure_analysis_tools
 
 
 def signal_handler(_sig, _frame):
