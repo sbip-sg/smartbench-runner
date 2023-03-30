@@ -85,6 +85,7 @@ def analyze_test_file(
     test_output_dir: str,
     timeout=None,
     validate=False,
+    use_docker=True,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
@@ -92,7 +93,7 @@ def analyze_test_file(
     bug annotations in the testing files."""
 
     # Configure Solc compiler
-    solc_path = solc.configure_solc_compiler(test_file)
+    solc_path = solc.configure_local_solc_compiler(test_file)
 
     # Reset issue index counter for the current test file
     Issue.index_counter = 1
@@ -103,7 +104,11 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         command = tool.make_analysis_command(
-            test_file, test_output_dir, solc_path, timeout
+            test_file,
+            test_output_dir,
+            solc_path,
+            use_docker,
+            timeout,
         )
 
         if command is None:
@@ -157,6 +162,7 @@ def run_analysis_tool(
     timeout=None,
     validate=False,
     jobs=1,
+    use_docker=True,
 ) -> List[Issue]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -180,14 +186,21 @@ def run_analysis_tool(
             os.makedirs(test_output_dir)
 
         # Analyze the test file
-        issues = analyze_test_file(tool, test_file, test_output_dir, timeout, validate)
+        issues = analyze_test_file(
+            tool, test_file, test_output_dir, timeout, validate, use_docker
+        )
         all_issues += issues
 
     return all_issues
 
 
 def perform_analysis(
-    tools: List[Tool], test_files: List[str], timeout: int, validate=False, jobs=1
+    tools: List[Tool],
+    test_files: List[str],
+    timeout: int,
+    validate=False,
+    jobs=1,
+    use_docker=True,
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -213,7 +226,13 @@ def perform_analysis(
     for tool in tools:
         tool_output_dir = os.path.join(results_dir, tool.id)
         issues = run_analysis_tool(
-            tool, test_files, tool_output_dir, timeout, validate, jobs
+            tool,
+            test_files,
+            tool_output_dir,
+            timeout,
+            validate,
+            jobs,
+            use_docker,
         )
         all_issues += issues
 

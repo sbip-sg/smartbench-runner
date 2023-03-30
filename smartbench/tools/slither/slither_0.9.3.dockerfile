@@ -14,7 +14,7 @@ RUN pip install solc-select
 RUN echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install
 
 # Install Solc-detect
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.4
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
 
 # Install Slither 0.9.3
 RUN pip install solc-select slither-analyzer==0.9.3
@@ -24,8 +24,8 @@ RUN mkdir examples
 ADD examples/*.sol examples/
 
 # Prepare benchmarking environments
-RUN mkdir $HOME/benchmarks
-RUN mkdir $HOME/results
+RUN mkdir benchmarks
+RUN mkdir results
 
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]

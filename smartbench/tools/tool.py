@@ -19,10 +19,11 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
+
 
 # List of keywords in configuration files
 INFO = "info"
@@ -103,7 +104,14 @@ class Tool:
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
 
-    def make_analysis_command(self, test_file, result_dir, solc_path, timeout=None):
+    def make_analysis_command(
+        self,
+        test_file,
+        result_dir,
+        solc_path,
+        use_docker,
+        timeout=None,
+    ):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
@@ -120,7 +128,6 @@ class Tool:
             make_command = ilf.make_analysis_command
         elif self.is_smartfuzz():
             raise Exception("TODO: implement")
-
 
         if make_command is None:
             return None
@@ -148,7 +155,6 @@ class Tool:
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.output_file)
 
-
     def configure_log_file(self, result_dir: str) -> str:
         """
         Configure log file of a tool for a test file.
@@ -157,7 +163,6 @@ class Tool:
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
-
 
 
 def load_tool_configuration(tool_name: str) -> Optional[Tool]:
@@ -198,6 +203,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))
             return None
+
 
 def configure_analysis_tools(args) -> List[Tool]:
     """Configure all analysis tools."""
