@@ -54,7 +54,7 @@ def make_analysis_command(
         + " "
         + output_file
     )
-    print(f"smartian command: {command}")
+    debug(f"smartian command: {command}")
     return command
 
 def parse_source_location(log_file) -> Union[Location, None]:
@@ -115,7 +115,6 @@ def parse_analysis_output(
     if integer_match:
         integer_dep = integer_match.group()
         integer_num = integer_dep.removeprefix("Integer Bug: ")
-        print(f"integer_num: {integer_num}")
         if int(integer_num) > 0:
             kinds.append(IssueKind.INTEGER_BUG)
 
@@ -158,7 +157,6 @@ def parse_analysis_output(
     if require_violation_match:
         require_violation_dep = require_violation_match.group()
         require_violation_num = require_violation_dep.removeprefix("Requirement Violation: ")
-        print(f"num: {require_violation_num}")
         if int(require_violation_num) > 0:
             kinds.append(IssueKind.REQUIREMENT_VIOLATION)
 
@@ -178,25 +176,15 @@ def parse_analysis_output(
 
     return issues;
 
-def check_issue_kind(kind: IssueKind, bug_name: str):
-    if kind == IssueKind.BLOCK_DEPENDENCY:
-        return bug_name == "TIME_MANIPULATION" or bug_name == "BAD_RANDOMNESS"
-
-    if kind == IssueKind.INTEGER_BUG:
-        return bug_name == "ARITHMETIC";
-
-    if kind == IssueKind.UNHANDLED_EXCEPTION:
-        return bug_name == "UNCHECKED_LL_CALLS";
-
-    if str(kind).casefold() != bug_name.casefold():
-        return False;
-    return True
+def check_issue_kind(issue_kind: IssueKind, annotation_kind: IssueKind):
+    """Function to check whether an reported issue is related to a bug"""
+    return issue_kind == annotation_kind
 
 def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
     """Function to check whether an reported issue is related to a bug
     annotation."""
     # Check for issue kind
-    if not check_issue_kind(issue.issue_kind, annot.bug_name):
+    if not check_issue_kind(issue.issue_kind, annot.annot_kind):
         return False
 
     return True

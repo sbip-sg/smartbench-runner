@@ -49,17 +49,17 @@
 
 ## Parsing bug annotations
 
-- Run `parse-annot` sub-command to collect bug annotations in smart contracts.
+- Run `parse-annots` sub-command to collect bug annotations in smart contracts.
 
   ```sh
   # Input a single file
-  ./smartbench.sh parse-annot examples/Rubixi.sol
+  ./smartbench.sh parse-annots examples/Rubixi.sol
 
   # Input a wild-card pattern
-  ./smartbench.sh parse-annot examples/*.sol
+  ./smartbench.sh parse-annots examples/*.sol
 
   # Input a directory
-  ./smartbench.sh parse-annot examples
+  ./smartbench.sh parse-annots examples
   ```
 
 # Development

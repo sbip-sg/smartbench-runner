@@ -73,28 +73,32 @@ class BugAnnot:
     def map_bug_annot_to_kind(self, bug_name: str, annot_format: AnnotFormat):
         """classify bug string in annotation to standard smartbench IssueKind and use annot_format"""
         # TODO: add more bug types for different benchmarks here
-        if bug_name == "TRANSACTION_ORDER_DEPENDENCY":
+        if bug_name in ["FRONT_RUNNING", "TRANSACTION_ORDER_DEPENDENCY"]:
             return IssueKind.TRANSACTION_ORDER_DEPENDENCY
         if bug_name == "ACCESS_CONTROL":
             return IssueKind.ACCESS_CONTROL
-        if bug_name == "ARITHMETIC_BUG":
+        if bug_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
             return IssueKind.INTEGER_BUG
         if bug_name in ["LEAKING_ETHER", "UNCHECKED_SEND"]:
-            return IssueKind.UNCHECKED_SEND
+            return IssueKind.LEAKING_ETHER
+        if bug_name == "LOCKING_ETHER":
+            return IssueKind.LOCKING_ETHER
         if bug_name == "REENTRANCY":
             return IssueKind.REENTRANCY
         if bug_name == "ASSERTION_FAILURE":
             return IssueKind.ASSERTION_FAILURE
-        if bug_name == "BLOCK_DEPENDENCY":
+        if bug_name in ["BLOCK_DEPENDENCY", "TIME_MANIPULATION", "BAD_RANDOMNESS"]:
             return IssueKind.BLOCK_DEPENDENCY
-        if bug_name == "UNHANDLED_EXCEPTION":
+        if bug_name == ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
             return IssueKind.UNHANDLED_EXCEPTION
         if bug_name == "ADDRESS_VALIDATION":
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
-        if bug_name == "UNSAFE_SELFDESTRUCT":
+        if bug_name in ["UNPROTECTED_SELFDESTRUCT", "UNSAFE_SELFDESTRUCT"]:
             return IssueKind.UNSAFE_SELFDESTRUCT
         if bug_name in ["TX_ORIGIN_USAGE", "tx.origin"]:
             return IssueKind.TX_ORIGIN_USAGE
+        if bug_name == "UNSAFE_DELEGATECALL":
+            return IssueKind.UNSAFE_DELEGATECALL
         # March 29: Add SOLIDIFI
 
     def __str__(self):
