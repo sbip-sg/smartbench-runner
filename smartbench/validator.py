@@ -112,7 +112,7 @@ def match_issue_to_annotation(
         return False
     if iloc.start_line < annot.start_line + 1:
         return False
-    if iloc.end_line > annot.end_line + 1:
+    if iloc.end_line > annot.end_line - 1:
         return False
 
     # Pass all criteria to match an issue with a bug annotation
