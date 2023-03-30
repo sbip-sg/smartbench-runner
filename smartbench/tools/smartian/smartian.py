@@ -71,7 +71,7 @@ def parse_analysis_output(
     log_file: str,
 ) -> List[Issue]:
     """Parse output of SMARTIAN"""
-    debug("sFuzz output_file: ", output_file)
+    debug("Smartian output_file: ", output_file)
     output_file_data = open(output_file, "r", encoding="utf-8");
     data = output_file_data.read()
     kinds = []
@@ -188,3 +188,37 @@ def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
         return False
 
     return True
+
+def parse_instruction_coverage(
+    output_file: str,
+    log_file: str,
+) -> List[Issue]:
+    """Parse output of SMARTIAN"""
+    lines = None
+    with open(output_file, "r", encoding="utf-8") as file:
+        try:
+            lines = [line.rstrip() for line in file]
+        except ValueError:
+            warning("Failed to parse Smartian log file:", output_file)
+            return []
+
+    results = [(0,0)]
+    count = 1
+    current_time = 0
+    for line in lines:
+        match_str = re.search(r"Covered Instructions: [0-9]+", line)
+        time_str = re.search('(\d{2})[/.:](\d{2})[/.:](\d{2})[/.:](\d{2})', line)
+        if match_str and time_str:
+            time = time_str.group()
+            seconds = int(time[9:11])
+            minutes = int(time[6:8])
+            hours = int(time[3:5])
+            duration = hours * 3600 + minutes * 60 + seconds
+            if duration - current_time >= 1:
+                coverage = match_str.group()
+                coverage = coverage.removeprefix("Covered Instructions: ")
+                results.append((duration, int(coverage)))
+                current_time = duration
+            count += 1
+
+    return results

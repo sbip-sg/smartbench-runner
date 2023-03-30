@@ -188,9 +188,8 @@ def parse_instruction_coverage_for_one_file(
     if tool.is_confuzzius():
         parse_instr_coverage_fn = confuzzius.parse_instruction_coverage
 
-
-    # if tool.is_smartian():
-    #     parse_result_fn = smartian.parse_analysis_output
+    if tool.is_smartian():
+        parse_instr_coverage_fn = smartian.parse_instruction_coverage
 
     if parse_instr_coverage_fn is None:
         warning(f"Does not support parsing instruction coverage of tool: {tool.name}")
