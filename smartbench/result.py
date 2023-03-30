@@ -182,11 +182,12 @@ def parse_instruction_coverage_for_one_file(
 
     parse_instr_coverage_fn = None
 
-    # if tool.is_confuzzius():
-    #     parse_result_fn = confuzzius.parse_instruction_coverage
-
     if tool.is_sfuzz():
         parse_instr_coverage_fn = sfuzz.parse_instruction_coverage
+
+    if tool.is_confuzzius():
+        parse_instr_coverage_fn = confuzzius.parse_instruction_coverage
+
 
     # if tool.is_smartian():
     #     parse_result_fn = smartian.parse_analysis_output
