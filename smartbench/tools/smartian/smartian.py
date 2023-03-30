@@ -39,8 +39,9 @@ def make_analysis_command(
 
     solc_version = os.path.basename(solc_path)
     solc_version = solc_version.removeprefix("solc-")
-    # TODO: To merge with the timeout from the `tool.py`
-    timeout = 30
+
+    if timeout is None:
+        timeout = 60
 
     command = (
         command
