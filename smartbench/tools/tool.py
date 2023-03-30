@@ -23,8 +23,8 @@ from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
-from smartbench.tools.smartian import smartian
 from smartbench.tools.smartfuzz import smartfuzz
+from smartbench.tools.smartian import smartian
 
 
 # List of keywords in configuration files
@@ -35,6 +35,7 @@ HOMEPAGE = "homepage"
 CATEGORY = "category"
 COMMAND = "command"
 PATH = "path"
+DEFAULT_TIMEOUT = "default_timeout"
 DEFAULT_ARGUMENTS = "default_arguments"
 
 # Initiate some global varibles
@@ -55,9 +56,9 @@ class Tool:
         category: str,
         path: str,
         default_arguments: str,
+        default_timeout: int,
         additional_arguments: Optional[str] = None,
-        timeout: Optional[int] = None,
-        seed: int = 0,
+        random_seed: int = 0,
     ):
         """Constructor"""
         self.id: str = str(id)
@@ -67,10 +68,11 @@ class Tool:
         self.path: str = str(path)
         self.default_arguments: str = default_arguments
         self.additional_arguments: Optional[str] = additional_arguments
-        self.timeout: Optional[int] = None if timeout is None else int(timeout)
+        self.default_timeout = int(default_timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
-        self.seed: int = seed  # increasing random seed for reproducible results
+        # increasing random seed for reproducible results
+        self.random_seed: int = int(random_seed)
 
     def __str__(self):
         """Printing to string."""
@@ -117,17 +119,18 @@ class Tool:
         test_file,
         result_dir,
         solc_path,
-        use_docker,
         timeout=None,
+        use_docker=True,
     ):
         """Make an analysis command for a tool."""
-        # Prepare output directory for all results
-        make_command = None
-        self.seed += (
-            1  # determinstically increase from seed. Reproducible randomness
-        )
-        # TODO add random seed for fuzzing tools if they support it
+        # Deterministically increase from seed. Reproducible randomness
+        # TODO: add random seed for fuzzing tools if they support it.
+        self.random_seed += 1
+
         arguments = self.default_arguments
+        timeout = timeout if timeout is not None else self.default_timeout
+
+        make_command = None
         if self.is_slither():
             make_command = slither.make_analysis_command
         elif self.is_sfuzz():
@@ -142,12 +145,9 @@ class Tool:
             make_command = smartian.make_analysis_command
         elif self.is_smartfuzz():
             make_command = smartfuzz.make_analysis_command
-            arguments += " --seed " + str(self.seed)
-        elif self.is_confuzzius():
-            raise Exception("TODO: implement")
-
-        if make_command is None:
-            return None
+            arguments += " --seed " + str(self.random_seed)
+        else:
+            raise Exception(f"TODO: implement for tool: {self.id}")
 
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
@@ -183,30 +183,56 @@ class Tool:
 
 def load_tool_configuration(tool_name: str) -> Optional[Tool]:
     """Parse configuration of an analysis tool"""
+
+    # Helper function to report configuraiton error
+    def report_config_error(config_key, config_file):
+        raise ValueError(
+            f"{tool_name}: '{config_key}' is not specified in: {config_file}"
+        )
+
     # Get path of the configuration file
     tool_name = tool_name.casefold()
-    config_file_name = tool_name + ".toml"
-    config_file_path = os.path.join(TOOLS_DIR, tool_name, config_file_name)
+    cfg_fname = tool_name + ".toml"
+    cfg_fpath = os.path.join(TOOLS_DIR, tool_name, cfg_fname)
 
     # Read configuration file
-    with open(config_file_path, "r", encoding="utf-8") as file:
+    with open(cfg_fpath, "r", encoding="utf-8") as file:
         file_content = file.read()
         config = tomli.loads(file_content)
 
         try:
             # Parse tool info
-            info = config.get(INFO)
-            if info:
-                tool_id = info.get(ID)
-                tool_name = info.get(NAME)
-                homepage = info.get(HOMEPAGE)
-                category = info.get(CATEGORY)
+            if (info := config.get(INFO)) is None:
+                report_config_error(INFO, cfg_fpath)
+
+            assert info is not None
+
+            if (tool_id := info.get(ID)) is None:
+                report_config_error(ID, cfg_fpath)
+
+            if (tool_name := info.get(NAME)) is None:
+                report_config_error(NAME, cfg_fpath)
+
+            if (homepage := info.get(HOMEPAGE)) is None:
+                report_config_error(HOMEPAGE, cfg_fpath)
+
+            if (category := info.get(CATEGORY)) is None:
+                report_config_error(CATEGORY, cfg_fpath)
 
             # Parse tool command
-            command = config.get(COMMAND)
-            if command:
-                path = command.get(PATH)
-                default_arguments = command.get(DEFAULT_ARGUMENTS)
+            if (command := config.get(COMMAND)) is None:
+                report_config_error(COMMAND, cfg_fpath)
+
+            assert command is not None
+
+            if (path := command.get(PATH)) is None:
+                report_config_error(PATH, cfg_fpath)
+
+            if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
+                report_config_error(DEFAULT_ARGUMENTS, cfg_fpath)
+
+            if (default_timeout := command.get(DEFAULT_TIMEOUT)) is None:
+                report_config_error(DEFAULT_TIMEOUT, cfg_fpath)
 
             return Tool(
                 tool_id,
@@ -214,7 +240,8 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 homepage,
                 category,
                 path,
-                default_arguments,
+                default_args,
+                default_timeout,
             )
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))

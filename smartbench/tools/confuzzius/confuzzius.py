@@ -21,13 +21,14 @@ from smartbench.loc import Location
 # Tool name
 TOOL_NAME = "ConFuzzius"
 
+
 def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
     output_file: str,
     solc_path: str,
-    timeout=None,
+    timeout=int,
 ):
     """
     Function to make analysis command for Confuzzius.
@@ -37,9 +38,6 @@ def make_analysis_command(
 
     if arguments:
         command = command + " " + arguments
-
-    if timeout is None:
-        timeout = 60
 
     command = (
         command

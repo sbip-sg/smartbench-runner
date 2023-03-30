@@ -24,7 +24,12 @@ def analyze_smart_contracts(args):
     # Perform the analysis
     jobs = 1 if args is None else args.jobs
     analyze.perform_analysis(
-        tools, test_files, args.timeout, args.validate, jobs, args.docker
+        tools,
+        test_files,
+        args.timeout,
+        args.docker,
+        jobs,
+        args.validate,
     )
 
 

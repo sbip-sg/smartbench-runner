@@ -85,8 +85,8 @@ def analyze_test_file(
     test_file: str,
     test_output_dir: str,
     timeout=None,
-    validate=False,
     use_docker=True,
+    validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
@@ -108,8 +108,8 @@ def analyze_test_file(
             test_file,
             test_output_dir,
             solc_path,
-            use_docker,
             timeout,
+            use_docker,
         )
 
         if command is None:
@@ -161,9 +161,9 @@ def run_analysis_tool(
     test_files: List[str],
     tool_output_dir: str,
     timeout=None,
-    validate=False,
-    jobs=1,
     use_docker=True,
+    jobs=1,
+    validate=False,
 ) -> List[Issue]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -191,7 +191,12 @@ def run_analysis_tool(
 
         # Analyze the test file
         issues = analyze_test_file(
-            tool, test_file, test_output_dir, timeout, validate, use_docker
+            tool,
+            test_file,
+            test_output_dir,
+            timeout,
+            use_docker,
+            validate,
         )
         all_issues += issues
 
@@ -201,10 +206,10 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
-    timeout: int,
-    validate=False,
-    jobs=1,
+    timeout=None,
     use_docker=True,
+    jobs=1,
+    validate=False,
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -234,9 +239,9 @@ def perform_analysis(
             test_files,
             tool_output_dir,
             timeout,
-            validate,
-            jobs,
             use_docker,
+            jobs,
+            validate,
         )
         all_issues += issues
 
