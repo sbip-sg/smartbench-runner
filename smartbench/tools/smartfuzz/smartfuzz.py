@@ -123,6 +123,9 @@ def parse_issue_kind(description: str) -> IssueKind:
     if "EXCEPTION_DISORDER" in description:
         return IssueKind.UNHANDLED_EXCEPTION
 
+    if "PossibleIntegerTruncation" in description:
+        return IssueKind.INTEGER_BUG
+
     print("unknown issue kind: ", description)
     return IssueKind.UNKNOWN
 

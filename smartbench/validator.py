@@ -71,7 +71,7 @@ def match_issue_to_annotation(
 ) -> bool:
     """Function to check whether an reported issue is related to a bug
     annotation."""
-    # print ("match_issue_to_annotation ", issue, annot)
+
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
         if annot.sbc != annot.sbc:
@@ -79,8 +79,7 @@ def match_issue_to_annotation(
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
         return False
-    else:
-        return False
+
     # Check whether the issue and bug annotation are of the same file.
     iloc: Location = issue.location
     # Remove unneccessary path information
@@ -120,21 +119,18 @@ def match_issue_to_annotation(
 
 
 def validate_issues(
-    tool: Tool, test_file: str, issues: List[Issue]
+    tool: Tool, test_file: str, issues: List[Issue], annots: List[BugAnnot]
 ) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
     correct_issues: List[Issue] = []
     incorrect_issues: List[Issue] = []
     unknown_issues: List[Issue] = []
-
-    annots = bug_annot.parse_bug_annotations(test_file)
     reported_annots: List[BugAnnot] = []
 
     target_sbcs = []
     if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
         target_sbcs = SBC.elements()
-
     for issue in issues:
         # True-positive issue
         correct_bug = False

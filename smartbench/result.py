@@ -172,7 +172,7 @@ def parse_existing_analysis_result(
     return parse_result_fn(output_file, log_file)
 
 def parse_result_directory(
-    results_dir: str, validate_results=False
+    results_dir: str, validate_results=False, benchmark_name=None
 ) -> List[Issue]:
     """Function to parse result directory of a tool.
 
@@ -234,13 +234,13 @@ def parse_result_directory(
                     print("Skip validating results!")
                 else:
                     print("Bug annotations:")
-                    bug_annots = bug_annot.parse_bug_annotations(test_file)
+                    bug_annots = bug_annot.parse_bug_annotations(test_file, annot_format=benchmark_name)
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
 
                     validation = validator.validate_issues(
-                        tool, test_file, issues
+                        tool, test_file, issues, bug_annots
                     )
                     correct_bugs += len(validation.correct_issues)
                 print("")
