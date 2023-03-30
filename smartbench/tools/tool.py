@@ -23,6 +23,7 @@ from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
+from smartbench.tools.smartian import smartian
 from smartbench.tools.smartfuzz import smartfuzz
 
 
@@ -99,6 +100,10 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         return self.id.casefold() == smartfuzz.TOOL_NAME.casefold()
 
+    def is_smartian(self):
+        """Check if the current tool is Smartian."""
+        return self.id.casefold() == smartian.TOOL_NAME.casefold()
+
     def is_sfuzz(self):
         """Check if the current tool is sFuzz."""
         return self.id.casefold() == sfuzz.TOOL_NAME.casefold()
@@ -133,6 +138,8 @@ class Tool:
             make_command = mythril.make_analysis_command
         elif self.is_ilf():
             make_command = ilf.make_analysis_command
+        elif self.is_smartian():
+            make_command = smartian.make_analysis_command
         elif self.is_smartfuzz():
             make_command = smartfuzz.make_analysis_command
             arguments += " --seed " + str(self.seed)
