@@ -118,7 +118,6 @@ class Tool:
         self,
         test_file,
         result_dir,
-        solc_path,
         timeout=None,
         use_docker=True,
     ):
@@ -155,10 +154,10 @@ class Tool:
         output_file = self.configure_output_file(result_dir)
 
         return make_command(
-            self.path, arguments, test_file, output_file, solc_path, timeout
+            self.path, arguments, test_file, output_file, timeout
         )
 
-    def make_deployment_command(self, test_file, result_dir, solc_path):
+    def make_deployment_command(self, test_file, result_dir):
         # TODO: impleemnt
         pass
 

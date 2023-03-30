@@ -45,7 +45,6 @@ def make_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
-    solc_path: str,
     timeout: int,
 ):
     """

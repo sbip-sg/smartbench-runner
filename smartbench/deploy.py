@@ -64,6 +64,7 @@ def deploy_one_contracts(
     tool_deploy_dir: str,
 ) -> None:
     """Deploy one test  for an analysis tool."""
+
     # Configure Solc compiler
     solc_path = solc.configure_local_solc_compiler(test_file)
 

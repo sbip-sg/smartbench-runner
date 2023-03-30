@@ -13,7 +13,7 @@ from typing import List, Optional
 import toml
 
 # Library
-from smartbench import bug_annot, log
+from smartbench import bug_annot, log, solc
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
@@ -29,7 +29,6 @@ def make_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
-    solc_path: str,
     timeout=int,
 ):
     """Function to make analysis command for `Mythril`. This function should
@@ -39,8 +38,7 @@ def make_analysis_command(
 
     command = executable_file
 
-    solc_version = os.path.basename(solc_path)
-    solc_version = solc_version.removeprefix("solc-")
+    solc_version = solc.detect_required_solc_version(test_file)
 
     if arguments:
         command = command + " " + arguments

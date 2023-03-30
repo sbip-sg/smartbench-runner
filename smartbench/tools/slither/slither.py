@@ -8,7 +8,7 @@ import json
 from typing import List, Optional
 
 # Library
-from smartbench import log
+from smartbench import log, solc
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
@@ -34,6 +34,9 @@ def make_analysis_command(
 
     if arguments:
         command = command + " " + arguments
+
+    # Configure Solc for the test file
+    solc_path = solc.configure_local_solc_compiler(test_file)
 
     command = (
         command

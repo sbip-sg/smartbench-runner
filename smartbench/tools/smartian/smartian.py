@@ -9,7 +9,7 @@ import re
 from typing import List, Union
 
 # Library
-from smartbench import log
+from smartbench import log, solc
 from smartbench.bug_annot import BugAnnot
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
@@ -25,7 +25,6 @@ def make_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
-    solc_path: str,
     timeout=int,
 ):
     """Function to make analysis command for `Smartian`. This function should
@@ -38,8 +37,8 @@ def make_analysis_command(
     if arguments:
         command = command + " " + arguments
 
-    solc_version = os.path.basename(solc_path)
-    solc_version = solc_version.removeprefix("solc-")
+    # Configure Solc version the test file
+    solc_version = solc.detect_required_solc_version(test_file)
 
     command = (
         command

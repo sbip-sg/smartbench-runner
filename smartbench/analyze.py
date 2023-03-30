@@ -93,9 +93,6 @@ def analyze_test_file(
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files."""
 
-    # Configure Solc compiler
-    solc_path = solc.configure_local_solc_compiler(test_file)
-
     # Reset issue index counter for the current test file
     Issue.index_counter = 1
 
@@ -107,7 +104,6 @@ def analyze_test_file(
         command = tool.make_analysis_command(
             test_file,
             test_output_dir,
-            solc_path,
             timeout,
             use_docker,
         )
