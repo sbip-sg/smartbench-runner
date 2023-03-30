@@ -126,26 +126,17 @@ def parse_sfuzz_json_output(_output_file: str, log_file: str) -> List[Issue]:
 
     return issues;
 
-def check_issue_kind(kind: IssueKind, bug_name: str):
-    if kind == IssueKind.BLOCK_DEPENDENCY:
-        return bug_name == "TIME_MANIPULATION" or bug_name == "BAD_RANDOMNESS"
+def check_issue_kind(issue_kind: IssueKind, annotation_kind: IssueKind):
+    """Function to check whether an reported issue is related to a bug"""
+    return issue_kind == annotation_kind
 
-    if kind == IssueKind.INTEGER_BUG:
-        return bug_name == "ARITHMETIC";
-
-    if kind == IssueKind.UNHANDLED_EXCEPTION:
-        return bug_name == "UNCHECKED_LL_CALLS";
-
-    if str(kind).casefold() != bug_name.casefold():
-        return False;
-    return True
 
 def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
     """Function to check whether an reported issue is related to a bug
     annotation."""
 
     # Check for issue kind
-    if not check_issue_kind(issue.issue_kind, annot.bug_name):
+    if not check_issue_kind(issue.issue_kind, annot.annot_kind):
         return False
 
     return True
