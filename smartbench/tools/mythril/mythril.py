@@ -37,7 +37,6 @@ def make_analysis_command(
     """
 
     command = executable_file
-
     solc_version = solc.detect_required_solc_version(test_file)
 
     if arguments:

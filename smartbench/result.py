@@ -19,6 +19,7 @@ from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
@@ -100,14 +101,11 @@ def process_analysis_result(tool: Tool, test_output_dir: str) -> List[Issue]:
     # TODO: Make this function OOP
     process_result_fn = None
 
-    if isinstance(tool, Slither):
+    if isinstance(tool, Slither) or isinstance(tool, Confuzzius):
         return tool.process_analysis_result(test_output_dir)
 
     if tool.is_smartfuzz():
         process_result_fn = smartfuzz.parse_smartfuzz_json_output
-
-    if tool.is_confuzzius():
-        process_result_fn = confuzzius.parse_confuzzius_json_output
 
     if tool.is_sfuzz():
         process_result_fn = sfuzz.parse_sfuzz_json_output

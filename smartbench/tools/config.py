@@ -4,13 +4,14 @@
 import os
 import sys
 
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 # Third Party
 import tomli
 
 # Library
 from smartbench import debug
+from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.tool import Tool
 
@@ -87,27 +88,21 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
             if (default_timeout := command.get(DEFAULT_TIMEOUT)) is None:
                 report_config_error(DEFAULT_TIMEOUT, cfg_fpath)
 
+            ToolConstructor: Callable = Tool
             if tool_id == "slither":
-                return Slither(
-                    tool_id,
-                    tool_name,
-                    homepage,
-                    category,
-                    path,
-                    default_args,
-                    default_timeout,
-                )
+                ToolConstructor = Slither
+            elif tool_id == "confuzzius":
+                ToolConstructor = Confuzzius
 
-            else:
-                return Tool(
-                    tool_id,
-                    tool_name,
-                    homepage,
-                    category,
-                    path,
-                    default_args,
-                    default_timeout,
-                )
+            return ToolConstructor(
+                tool_id,
+                tool_name,
+                homepage,
+                category,
+                path,
+                default_args,
+                default_timeout,
+            )
         except AttributeError:
             debug.warning("Error in configuration of tool: " + str(tool_name))
             return None

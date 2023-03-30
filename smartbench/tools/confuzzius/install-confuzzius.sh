@@ -37,5 +37,9 @@ source $BASE_DIR/confuzzius_venv/bin/activate
 # Install requirements
 pip install -r $TOOL_DIR/fuzzer/requirements.txt
 
-# Install additional packages
-pip install 'py-solc-x==1.1.1' --force-reinstall
+# Install Solc packages
+pip install solc-select py-solc --force-reinstall
+pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
+
+# Install all Solc compiler by Solc-select
+echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install

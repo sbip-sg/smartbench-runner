@@ -9,7 +9,8 @@ This is the shared interface for all tools.
 import os
 import sys
 
-from typing import List, Optional
+from abc import abstractmethod
+from typing import List, Optional, Tuple
 
 # Third Party
 import tomli
@@ -18,8 +19,8 @@ import tomli
 import smartbench
 
 from smartbench import debug
-from smartbench.issue import Issue
-from smartbench.tools.confuzzius import confuzzius
+from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.loc import Location
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.sfuzz import sfuzz
@@ -86,10 +87,6 @@ class Tool:
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
 
-    def is_confuzzius(self):
-        """Check if the current tool is Confuzzius."""
-        return self.id.casefold() == confuzzius.TOOL_NAME.casefold()
-
     def is_mythril(self):
         """Check if the current tool is Mythril."""
         return self.id.casefold() == mythril.TOOL_NAME.casefold()
@@ -113,10 +110,10 @@ class Tool:
     def make_analysis_command(
         self,
         test_file,
-        result_dir,
+        test_output_dir,
         timeout=None,
         use_docker=True,
-    ):
+    ) -> Tuple[str, dict]:
         """Make an analysis command for a tool."""
         # Deterministically increase from seed. Reproducible randomness
         # TODO: add random seed for fuzzing tools if they support it.
@@ -128,8 +125,6 @@ class Tool:
         make_command = None
         if self.is_sfuzz():
             make_command = sfuzz.make_analysis_command
-        elif self.is_confuzzius():
-            make_command = confuzzius.make_analysis_command
         elif self.is_mythril():
             make_command = mythril.make_analysis_command
         elif self.is_ilf():
@@ -145,18 +140,18 @@ class Tool:
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
-        output_file = self.configure_output_file(result_dir)
+        output_file = self.configure_output_file(test_output_dir)
 
-        return make_command(
+        cmd = make_command(
             self.path, arguments, test_file, output_file, timeout
         )
 
-    def make_deployment_command(self, test_file, result_dir):
-        # TODO: impleemnt
-        pass
+        return (cmd, {})
 
+    @abstractmethod
+    def make_deployment_command(self, test_file, result_dir) -> str:
+        """Make deployment command for an analyzer."""
+
+    @abstractmethod
     def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
-        """Process analysis result of each tool.
-
-        The implementation of this function is done by each inherited tool."""
-        pass
+        """Process analysis result of each tool."""

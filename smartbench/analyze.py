@@ -26,11 +26,11 @@ from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 
 
-def record_execution_log(
+def log_analysis_command(
     tool: Tool,
     input_file: str,
     command: str,
-    output: CompletedProcess,
+    env_vars: dict,
     result_dir: str,
 ) -> None:
     """Record execution log of an analysis tool in TOML format."""
@@ -47,8 +47,20 @@ def record_execution_log(
         file.write("-------------------------------------------------------\n")
         file.write("[command]\n")
         file.write("-------------------------------------------------------\n")
+        env = " ".join([f"{v}={env_vars[v]}" for v in env_vars])
+        if env != "":
+            command = env + " " + command
         file.write(f"{command}\n\n")
 
+
+def log_analysis_output(
+    tool: Tool,
+    output: CompletedProcess,
+    result_dir: str,
+) -> None:
+    """Record execution log of an analysis tool in TOML format."""
+    log_file = tool.configure_log_file(result_dir)
+    with open(log_file, "a", encoding="utf-8") as file:
         file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
         file.write("-------------------------------------------------------\n")
@@ -103,7 +115,7 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        command = tool.make_analysis_command(
+        (command, env_vars) = tool.make_analysis_command(
             test_file,
             test_output_dir,
             timeout,
@@ -114,13 +126,18 @@ def analyze_test_file(
             print(f"Unable to make analysis command for tool: {tool.name}\n")
             return []
 
+        log_analysis_command(
+            tool, test_file, command, env_vars, test_output_dir
+        )
+
         output = subprocess.run(
             shlex.split(command),
+            env=env_vars,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
         )
-        record_execution_log(tool, test_file, command, output, test_output_dir)
+        log_analysis_output(tool, test_file, command, output, test_output_dir)
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
