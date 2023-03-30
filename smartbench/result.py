@@ -64,8 +64,9 @@ def print_summary(
             severities[issue.severity] += 1
         else:
             severities[issue.severity] = 1
-    severity = "\n  + ".join([f"{s}: {severities[s]}" for s in severities])
-    print(f"  + {severity}")
+    severities = [f"  + {s}: {severities[s]}" for s in severities]
+    if len(severities) > 0:
+        print("\n".join(severities))
 
     # Print validation results
     if validation is not None:
