@@ -19,11 +19,12 @@ import smartbench
 
 from smartbench import debug
 from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
 from smartbench.tools.smartfuzz import smartfuzz
+
 
 # List of keywords in configuration files
 INFO = "info"
@@ -106,7 +107,14 @@ class Tool:
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
 
-    def make_analysis_command(self, test_file, result_dir, solc_path, timeout=None):
+    def make_analysis_command(
+        self,
+        test_file,
+        result_dir,
+        solc_path,
+        use_docker,
+        timeout=None,
+    ):
         """Make an analysis command for a tool."""
         # Prepare output directory for all results
         make_command = None
@@ -130,7 +138,6 @@ class Tool:
             arguments += " --seed " + str(self.seed)
         elif self.is_confuzzius():
             raise Exception("TODO: implement")
-
 
         if make_command is None:
             return None
