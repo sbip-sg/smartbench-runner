@@ -6,7 +6,7 @@ VERSION="$3"
 
 CONTRACT="${FILENAME%.sol}"
 CONTRACT="${CONTRACT##*/}"
-CONTRACTS=$(python3 smartbench/tools/sfuzz/printContractNames.py "$FILENAME")
+CONTRACTS=$(python3 smartbench/tools/printContractNames.py "$FILENAME")
 
 TOOL_ID="sfuzz"
 BASE_DIR=$(dirname "$0")

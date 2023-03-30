@@ -11,7 +11,7 @@ TOOL_DIR=$REPO_DIR/$TOOL_ID
 
 CONTRACT="${FILENAME%.sol}"
 CONTRACT="${CONTRACT##*/}"
-CONTRACTS=$(python3 smartbench/tools/smartian/printContractNames.py "$FILENAME")
+CONTRACTS=$(python3 smartbench/tools/printContractNames.py "$FILENAME")
 COUNT=$(echo $CONTRACTS | wc -w)
 TIMEOUT=$((TOTAL_TIMEOUT / COUNT))
 
