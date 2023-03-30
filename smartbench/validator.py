@@ -15,6 +15,7 @@ from smartbench.issue import Issue
 from smartbench.tools.tool import Tool
 from smartbench.tools.sfuzz import sfuzz
 from smartbench.loc import Location
+from smartbench.tools.slither import slither
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.smartfuzz import smartfuzz
@@ -88,6 +89,9 @@ def match_issue_to_annotation(
 
     match_command = None
 
+    if tool.is_slither():
+        match_command = slither.match_location_of_issue_to_annotation
+
     if tool.is_sfuzz():
         match_command = sfuzz.match_location_of_issue_to_annotation
 
@@ -127,27 +131,27 @@ def validate_issues(
     annots = bug_annot.parse_bug_annotations(test_file)
     reported_annots: List[BugAnnot] = []
 
-    target_sbcs = []
-    if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
-        target_sbcs = SBC.elements()
+    # target_sbcs = []
+    # if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
+    #     target_sbcs = SBC.elements()
 
-    for issue in issues:
+    for annot in annots:
         # True-positive issue
-        correct_bug = False
-        for annot in annots:
+        # correct_bug = False
+        for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
                 correct_issues.append(issue)
                 reported_annots.append(annot)
-                correct_bug = True
+                # correct_bug = True
                 break
 
-        # False-positive issue
-        if not correct_bug and issue.sbc in target_sbcs:
-            incorrect_issues.append(issue)
+        # # False-positive issue
+        # if not correct_bug and issue.sbc in target_sbcs:
+        #     incorrect_issues.append(issue)
 
-        # Unknown issue
-        else:
-            unknown_issues.append(issue)
+        # # Unknown issue
+        # else:
+        #     unknown_issues.append(issue)
 
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
