@@ -18,6 +18,7 @@ import tomli
 import smartbench
 
 from smartbench import debug
+from smartbench.issue import Issue
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
@@ -67,9 +68,23 @@ class Tool:
             + '"}'
         )
 
-    # def is_slither(self):
-    #     """Check if the current tool is Slither."""
-    #     return self.id.casefold() == slither.TOOL_NAME.casefold()
+    def configure_output_file(self, result_dir: str) -> str:
+        """
+        Configure output file of the tool for a test file.
+        """
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        return os.path.join(result_dir, self.output_file)
+
+    def configure_log_file(self, result_dir: str) -> str:
+        """
+        Configure log file of a tool for a test file.
+        """
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        return os.path.join(result_dir, self.log_file)
 
     def is_confuzzius(self):
         """Check if the current tool is Confuzzius."""
@@ -94,15 +109,6 @@ class Tool:
     def is_ilf(self):
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
-
-    def make_analysis_command(
-        self,
-        test_file,
-        test_output_dir,
-        timeout=None,
-        use_docker=True,
-    ):
-        pass
 
     def make_analysis_command(
         self,
@@ -149,20 +155,8 @@ class Tool:
         # TODO: impleemnt
         pass
 
-    def configure_output_file(self, result_dir: str) -> str:
-        """
-        Configure output file of the tool for a test file.
-        """
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        return os.path.join(result_dir, self.output_file)
+    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
+        """Process analysis result of each tool.
 
-    def configure_log_file(self, result_dir: str) -> str:
-        """
-        Configure log file of a tool for a test file.
-        """
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        return os.path.join(result_dir, self.log_file)
+        The implementation of this function is done by each inherited tool."""
+        pass

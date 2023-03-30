@@ -94,13 +94,13 @@ def print_summary(
     print("")
 
 
-def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
-    """Process analysis result of a tool."""
+def process_analysis_result(tool: Tool, test_output_dir: str) -> List[Issue]:
+    """Process analysis result of a tool for a test file."""
     # TODO: Make this function OOP
     process_result_fn = None
 
     if isinstance(tool, Slither):
-        process_result_fn = slither.parse_slither_json_output
+        return tool.process_analysis_result(test_output_dir)
 
     if tool.is_smartfuzz():
         process_result_fn = smartfuzz.parse_smartfuzz_json_output
@@ -118,8 +118,8 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
         process_result_fn = smartian.parse_analysis_output
 
     if process_result_fn:
-        output_file = os.path.join(output_dir, tool.output_file)
-        log_file = os.path.join(output_dir, tool.log_file)
+        output_file = os.path.join(test_output_dir, tool.output_file)
+        log_file = os.path.join(test_output_dir, tool.log_file)
         try:
             return process_result_fn(output_file, log_file)
         except:
