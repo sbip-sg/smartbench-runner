@@ -10,7 +10,8 @@ TOOL_ID="sfuzz"
 
 # Prepare repository directory
 echo "Preparing repository directory..."
-BASE_DIR=$(dirname "$0")
+FILE_PATH=$(realpath "$0")
+BASE_DIR=$(dirname "$FILE_PATH")
 REPO_DIR=$BASE_DIR"/repo"
 mkdir -p $REPO_DIR
 
@@ -24,14 +25,23 @@ if [ -d "$TOOL_DIR" ]; then
     echo "Repository $TOOL_DIR already exists!"
     echo "Skip cloning..."
 else
-    git clone --recursive https://github.com/duytai/sFuzz $TOOL_DIR
+    git clone --recursive git@github.com:thanhtoantnt/sFuzz.git $TOOL_DIR
 fi
 
 # Installing tool
 echo "Compiling $TOOL_NAME..."
 cd $TOOL_DIR
-mkdir build
+mkdir -p build
 cd build
 cmake ../
 cd fuzzer
 make
+
+# Add
+rm -rf assets
+mkdir assets
+rm -rf output
+mkdir -p output
+cd assets
+cp $BASE_DIR"/NormalAttacker.sol" .
+cp $BASE_DIR"/ReentrancyAttacker.sol" .

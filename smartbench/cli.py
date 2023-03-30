@@ -74,6 +74,13 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
+    # Analysis tool
+    analyze_parser.add_argument(
+        "--timeout",
+        type=int,
+        help="Timeout to run each tool.",
+    )
+
     # Number of jobs per tool
     analyze_parser.add_argument(
         "-j",

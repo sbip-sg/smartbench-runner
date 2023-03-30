@@ -24,12 +24,13 @@ from smartbench.loc import Location
 TOOL_NAME = "mythril"
 
 
-def make_mythril_analysis_command(
+def make_analysis_command(
     executable_file: str,
     arguments: str,
     test_file: str,
     output_file: str,
     solc_path: str,
+    timeout=None,
 ):
     """Function to make analysis command for `Mythril`. This function should
     have the same signature with other tools.
@@ -44,11 +45,15 @@ def make_mythril_analysis_command(
     if arguments:
         command = command + " " + arguments
 
+    if timeout is None:
+        timeout = 60
+
     command = (
         command
         + " analyze "
         + test_file
-        + " --execution-timeout 20"
+        + " --execution-timeout "
+        + str(timeout)
         + " --solv "
         + solc_version
         + " -o json  "

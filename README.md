@@ -35,16 +35,16 @@
 
 ## Parsing results
 
-- Run `parse-result` sub-command to read existing results.
+- Run `parse-results` sub-command to read existing results.
 
   ```sh
-  ./smartbench.sh parse-result results/<path_to_results>/
+  ./smartbench.sh parse-results results/<path_to_results>/
   ```
 
 - Run with `--validate-results` to validate all detected issues.
 
   ```sh
-  ./smartbench.sh parse-result results/<path_to_results>/ --validate-results
+  ./smartbench.sh parse-results results/<path_to_results>/ --validate-results
   ```
 
 ## Parsing bug annotations

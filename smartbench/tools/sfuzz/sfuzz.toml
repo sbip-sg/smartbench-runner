@@ -1,9 +1,9 @@
 [info]
-id = "toolname"
-name = "ToolName"
-homepage = "https://github.com/tool/toolname"
-category = "Static analysis"
+id = "sFuzz"
+name = "sFuzz"
+homepage = "https://github.com/thanhtoantnt/sFuzz"
+category = "Fuzzing tool"
 
 [command]
-path = "..."
+path = "sh smartbench/tools/sfuzz/sfuzz.sh"
 default_arguments = ""
