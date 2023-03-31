@@ -140,7 +140,7 @@ def analyze_test_file(
         if isinstance(tool, Mythril):
             # the results of `mythril` is in `stdout`
             mythril.write_to_output_file(
-                output, tool.output_file, test_output_dir
+                output, test_output_dir
             )
 
     except ValueError as err:

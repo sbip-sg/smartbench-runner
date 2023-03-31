@@ -151,14 +151,9 @@ class Sfuzz(Tool):
 
         return issues
 
-
-    def check_issue_kind(self, issue_kind: IssueKind, annotation_kind: IssueKind):
-        """Function to check whether an reported issue is related to a bug"""
-        return issue_kind == annotation_kind
-
     def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
         """Function to check whether an reported issue is related to a bug
         annotation."""
 
         # Check for issue kind
-        return self.check_issue_kind(issue.issue_kind, annot.annot_kind);
+        return issue.issue_kind == annot.annot_kind;

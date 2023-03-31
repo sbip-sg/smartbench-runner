@@ -312,28 +312,3 @@ class Slither(Tool):
             return issues
         except ValueError:
             return []
-
-    def check_issue_kind(self, issue_kind: IssueKind, annotation_kind: IssueKind):
-        """Function to check whether an reported issue is related to a bug"""
-        return issue_kind == annotation_kind
-
-
-    def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
-        """Function to check whether an reported issue is related to a bug
-        annotation."""
-
-        # Check for issue kind
-        if not self.check_issue_kind(issue.issue_kind, annot.annot_kind):
-            return False
-
-        iloc: Location = issue.location
-        # Check whether the issue location is covered by the annotation location.
-        if iloc.start_line is None or iloc.end_line is None:
-            return False
-        if iloc.start_line > annot.start_line + 1:
-            return False
-        if iloc.end_line < annot.end_line - 1:
-            return False
-
-        # Pass all criteria to match an issue with a bug annotation
-        return True

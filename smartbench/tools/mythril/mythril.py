@@ -206,25 +206,10 @@ class Mythril(Tool):
         except ValueError:
             return []
 
-    def configure_output_file(self, output_file, result_dir: str) -> str:
-        """
-        Configure the output file.
-        """
-
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-
-        # Configure output file
-        output_file = os.path.join(result_dir, output_file)
-
-        return output_file
-
-
     def write_to_output_file(
-        self, output: CompletedProcess, file_name: str, benchmark_output_dir: str
+        self, output: CompletedProcess, benchmark_output_dir: str
     ):
-        output_file = self.configure_output_file(file_name, benchmark_output_dir)
+        output_file = self.configure_output_file(benchmark_output_dir)
         f = open(output_file, "w")
         stdout = output.stdout.decode("utf-8")
         json_data = json.loads(stdout)
