@@ -125,54 +125,14 @@ def parse_existing_analysis_result(
 
     parse_result_fn = None
 
-    if tool.is_slither():
-        parse_result_fn = slither.parse_slither_json_output
-
     if tool.is_smartfuzz():
         parse_result_fn = smartfuzz.parse_smartfuzz_json_output
-    if tool.is_confuzzius():
-        parse_result_fn = confuzzius.parse_confuzzius_json_output
-
-    if tool.is_sfuzz():
-        parse_result_fn = sfuzz.parse_sfuzz_json_output
-
-    if tool.is_mythril():
-        parse_result_fn = mythril.parse_mythril_json_output
-
-    if tool.is_smartian():
-        parse_result_fn = smartian.parse_analysis_output
 
     if parse_result_fn is None:
         warning(f"Does not support parsing result of tool: {tool.name}")
         return []
 
     return parse_result_fn(output_file, log_file)
-
-def parse_instruction_coverage_for_one_file(
-    tool: Tool, output_file: str, log_file: str
-) -> List[Issue]:
-    """Parse instruction coverage for a test result.
-
-    The input `test_result_dir` is the directory containing the
-    immediate result of an analysis tool.
-    """
-
-    parse_instr_coverage_fn = None
-
-    if tool.is_sfuzz():
-        parse_instr_coverage_fn = sfuzz.parse_instruction_coverage
-
-    if tool.is_confuzzius():
-        parse_instr_coverage_fn = confuzzius.parse_instruction_coverage
-
-    if tool.is_smartian():
-        parse_instr_coverage_fn = smartian.parse_instruction_coverage
-
-    if parse_instr_coverage_fn is None:
-        warning(f"Does not support parsing instruction coverage of tool: {tool.name}")
-        return []
-
-    return parse_instr_coverage_fn(output_file, log_file)
 
 def parse_result_directory(
     results_dir: str, validate_results=False, benchmark_name=None
@@ -224,7 +184,12 @@ def parse_result_directory(
             print(f"{'-' * 45}\n")
             print(f"Test file: {test_file}\n")
 
-            issues = parse_existing_analysis_result(tool, output_file, log_file)
+            issues = []
+            if isinstance(tool, Slither) or isinstance(tool, Confuzzius) or isinstance(tool, Sfuzz) or isinstance(tool, Mythril) or isinstance(tool, Smartian):
+                issues = tool.process_analysis_result(test_output_dir)
+            else:
+                issues = parse_existing_analysis_result(tool, output_file, log_file)
+
             for issue in issues:
                 print(f"- {issue}")
 
@@ -263,8 +228,6 @@ def parse_instruction_coverage(results_dir: str):
     tools.
     """
 
-    print(f"results_dir: {results_dir}")
-
     path = pathlib.Path(results_dir)
     if not path.is_dir():
         warning(f"Directory does not exists: {results_dir}")
@@ -287,6 +250,10 @@ def parse_instruction_coverage(results_dir: str):
             warning(f"Unable to load tool configuration: {tool_id}")
             continue
 
+        if not(isinstance(tool, Sfuzz) or isinstance(tool, Confuzzius) or isinstance(tool, Smartian)):
+            print(f"Parse coverage is not supported for: {tool.id}")
+            continue
+
         print(f"{'=' * 55}\n")
         print(f"Parsing analysis result of: {tool.id}\n")
 
@@ -296,16 +263,11 @@ def parse_instruction_coverage(results_dir: str):
             if not is_test_result_directory(tool, test_output_dir):
                 continue
 
-            test_output_dir = os.path.abspath(test_output_dir)
-            output_file = os.path.join(test_output_dir, tool.output_file)
-            log_file = os.path.join(test_output_dir, tool.log_file)
+            if isinstance(tool, Sfuzz) or isinstance(tool, Confuzzius) or isinstance(tool, Smartian):
+                coverage = tool.parse_instruction_coverage(test_output_dir)
+                print(f"test_output_dir: {test_output_dir}")
+                print(f"coverage: {coverage}")
 
-            test_file = log.get_input_test_file(log_file)
-            print(f"{'-' * 45}\n")
-            print(f"Test file: {test_file}\n")
-
-            coverage = parse_instruction_coverage_for_one_file(tool, output_file, log_file)
-            print(f"coverage: {coverage}")
 
     print("Parsing result completed!")
     return all_issues

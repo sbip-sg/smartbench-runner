@@ -143,6 +143,9 @@ class Confuzzius(Tool):
         output = None
 
         output_file = os.path.join(test_output_dir, self.output_file)
+        if not os.path.exists(output_file):
+            return []
+
         log_file = os.path.join(test_output_dir, self.log_file)
 
         debug("Confuzzius parse file: ", output_file)
