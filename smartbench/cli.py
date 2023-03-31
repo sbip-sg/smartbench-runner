@@ -146,6 +146,13 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
+    # Specify benchmark name for special cases without standard annotation and validation
+    result_parser.add_argument(
+        "--benchmark-name",
+        type=str,
+        help="Specify benchmark name for special cases without standard annotation and validation e.g. SOLIDIFI",
+    )
+
     ################################
     # Parser for sub-command `parse-coverage`
 

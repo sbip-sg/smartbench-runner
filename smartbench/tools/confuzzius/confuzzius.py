@@ -69,7 +69,7 @@ class Confuzzius(Tool):
         timeout = timeout if timeout is not None else self.default_timeout
 
         # Configure Solc version by environment variable.
-        cmd = f"{cmd} -s {test_file} -r {out_file} --evm byzantium -t {timeout}"
+        cmd = f"{cmd} -s {test_file} -r {out_file} -t {timeout}"
         env_vars = {"SOLC_VERSION": solc_version}
 
         return (cmd, env_vars)
@@ -187,77 +187,42 @@ class Confuzzius(Tool):
         except ValueError:
             return []
 
+    def parse_instruction_coverage(
+        self,
+        output_file: str,
+        log_file: str,
+    ):
+        """Parse code coverage of Confuzzius"""
+        output = None
 
-def check_issue_kind(kind: IssueKind, bug_name: str):
-    if kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
-        return bug_name == "FRONT_RUNNING"
+        debug("Confuzzius parse file: ", output_file)
+        with open(output_file, "r", encoding="utf-8") as file:
+            try:
+                output = json.load(file)
+            except ValueError:
+                warning("Failed to parse Confuzzius output file:", output_file)
+                return []
 
-    if kind == IssueKind.INTEGER_BUG:
-        return bug_name == "ARITHMETIC"
-
-    if kind == IssueKind.UNHANDLED_EXCEPTION:
-        return bug_name == "UNCHECKED_LL_CALLS"
-
-    if str(kind).casefold() != bug_name.casefold():
-        return False
-    return True
-
-
-def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
-    """Function to check whether an reported issue is related to a bug
-    annotation."""
-
-    # Check for issue kind
-    if not check_issue_kind(issue.issue_kind, annot.bug_name):
-        return False
-
-    iloc: Location = issue.location
-    # Check whether the issue location is covered by the annotation location.
-    if iloc.start_line is None or iloc.end_line is None:
-        return False
-    if iloc.start_line < annot.start_line + 1:
-        return False
-    if iloc.end_line > annot.end_line + 1:
-        return False
-
-    # Pass all criteria to match an issue with a bug annotation
-    return True
-
-def parse_instruction_coverage(
-    output_file: str,
-    log_file: str,
-) -> List[Issue]:
-    """Parse code coverage of Confuzzius"""
-    output = None
-
-    debug("Confuzzius parse file: ", output_file)
-    with open(output_file, "r", encoding="utf-8") as file:
-        try:
-            output = json.load(file)
-        except ValueError:
-            warning("Failed to parse Confuzzius output file:", output_file)
+        if output is None:
+            warning("Failed to parse Confuzzius's output file:", output_file)
             return []
 
-    if output is None:
-        warning("Failed to parse Confuzzius's output file:", output_file)
-        return []
+        try:
+            coverages = [(0,0)]
+            current_time = 0
 
-    try:
-        coverages = [(0,0)]
-        current_time = 0
+            all_results = list(output.values())
+            results = all_results[0]
+            generations = results.get("generations")
+            # generations = list(generations.values())
 
-        all_results = list(output.values())
-        results = all_results[0]
-        generations = results.get("generations")
-        # generations = list(generations.values())
+            for generation in generations:
+                time = float("{:.1f}".format(generation.get("time")))
+                coverage = float("{:.1f}".format(generation.get("code_coverage")))
+                if time - current_time >= 1:
+                    coverages.append((time, coverage))
+                    current_time = time
+            return coverages;
 
-        for generation in generations:
-            time = float("{:.1f}".format(generation.get("time")))
-            coverage = float("{:.1f}".format(generation.get("code_coverage")))
-            if time - current_time >= 1:
-                coverages.append((time, coverage))
-                current_time = time
-        return coverages;
-
-    except ValueError:
-        return []
+        except ValueError:
+            return []

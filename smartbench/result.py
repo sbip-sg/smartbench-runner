@@ -71,27 +71,7 @@ def print_summary(
 
     # Print validation results
     if validation is not None:
-        print("- Validation:")
-
-        correct_issue_info = f"{len(validation.correct_issues)}"
-        correct_idxs = [x.index for x in validation.correct_issues]
-        if len(correct_idxs) > 0:
-            correct_issue_info += f" [Issue IDs: {print_indices(correct_idxs)}]"
-        print(f"  + Correct issues: {correct_issue_info}")
-
-        wrong_issue_info = f"{len(validation.incorrect_issues)}"
-        wrong_idxs = [x.index for x in validation.incorrect_issues]
-        if len(wrong_idxs) > 0:
-            wrong_issue_info += f" [Issue IDs: {print_indices(wrong_idxs)}]"
-        print(f"  + Wrong issues: {wrong_issue_info}")
-
-        print(f"  + Unknown issues: {len(validation.unknown_issues)}")
-
-        missing_bug_info = f"{len(validation.missing_bugs)}"
-        missing_idxs = [x.index for x in validation.missing_bugs]
-        if len(missing_idxs) > 0:
-            missing_bug_info += f" [Bug IDs: {print_indices(missing_idxs)}]"
-        print(f"  + Missing bugs: {missing_bug_info}")
+        validation.print_summary()
 
     print("")
 
@@ -201,7 +181,7 @@ def parse_instruction_coverage_for_one_file(
     return parse_instr_coverage_fn(output_file, log_file)
 
 def parse_result_directory(
-    results_dir: str, validate_results=False
+    results_dir: str, validate_results=False, benchmark_name=None
 ) -> List[Issue]:
     """Function to parse result directory of a tool.
 
@@ -263,15 +243,15 @@ def parse_result_directory(
                     print("Skip validating results!")
                 else:
                     print("Bug annotations:")
-                    bug_annots = bug_annot.parse_bug_annotations(test_file)
+                    bug_annots = bug_annot.parse_bug_annotations(test_file, annot_format=benchmark_name)
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
 
                     validation = validator.validate_issues(
-                        tool, test_file, issues
+                        tool, test_file, issues, bug_annots, benchmark_name=benchmark_name or ""
                     )
-                    correct_bugs += len(validation.correct_issues)
+                    correct_bugs += validation.num_correct_issues()
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues

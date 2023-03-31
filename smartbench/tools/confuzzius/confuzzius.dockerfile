@@ -7,17 +7,26 @@ WORKDIR /root/
 
 # Install Ubuntu packages
 RUN apt-get update
-RUN apt-get install -y git python3 python-is-python3 python3-pip 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Asia/Singapore apt-get -y install git tzdata
+
+# Install Python3
+RUN apt-get install -y python3 python-is-python3 python3-pip
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
 RUN echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install
 
-# Install Solc-detect
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
+# Set default Solc to 0.8.19
+RUN solc-select use 0.8.19
 
-# Install Slither 0.9.3
-RUN pip install solc-select slither-analyzer==0.9.3
+# Install Confuzzius
+ENV CONFUZZIUS_DIR=confuzzius
+RUN git clone https://github.com/christoftorres/ConFuzzius $CONFUZZIUS_DIR
+RUN pip install -r $CONFUZZIUS_DIR/fuzzer/requirements.txt
+
+# Install Solc
+RUN pip install py-solc --force-reinstall
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
 
 # Prepare testing environments
 RUN mkdir examples
