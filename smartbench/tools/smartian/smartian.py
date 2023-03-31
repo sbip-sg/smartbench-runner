@@ -199,19 +199,13 @@ class Smartian(Tool):
 
         return issues
 
-
-    def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
-        """Function to check whether an reported issue is related to a bug
-        annotation."""
-        return issue.issue_kind == annot.annot_kind
-
-
-    def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
-        """Function to check whether an reported issue is related to a bug
-        annotation."""
-        return issue.issue_kind == annot.annot_kind
-
     
+    def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
+        """Function to check whether an reported issue is related to a bug
+        annotation."""
+        return issue.issue_kind == annot.annot_kind
+
+
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
         output_file = os.path.join(test_output_dir, self.output_file)
