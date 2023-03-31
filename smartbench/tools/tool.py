@@ -24,7 +24,6 @@ from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian import smartian
 
@@ -100,10 +99,6 @@ class Tool:
         """Check if the current tool is Smartian."""
         return self.id.casefold() == smartian.TOOL_NAME.casefold()
 
-    def is_sfuzz(self):
-        """Check if the current tool is sFuzz."""
-        return self.id.casefold() == sfuzz.TOOL_NAME.casefold()
-
     def is_ilf(self):
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
@@ -124,9 +119,7 @@ class Tool:
         timeout = timeout if timeout is not None else self.default_timeout
 
         make_command = None
-        if self.is_sfuzz():
-            make_command = sfuzz.make_analysis_command
-        elif self.is_mythril():
+        if self.is_mythril():
             make_command = mythril.make_analysis_command
         elif self.is_ilf():
             make_command = ilf.make_analysis_command
