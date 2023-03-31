@@ -6,7 +6,7 @@
 import os
 import re
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 
 # Library
 from smartbench import log, solc
@@ -46,27 +46,27 @@ class Smartian(Tool):
 
     def make_analysis_command(
         self,
-        executable_file: str,
-        arguments: str,
         test_file: str,
-        output_file: str,
+        test_output_dir: str,
         timeout=int,
-    ):
+        use_docker=False,
+    ) -> Tuple[str, Optional[dict]]:
         """Function to make analysis command for `Smartian`. This function should
         have the same signature with other tools.
 
         """
 
-        command = executable_file
-
-        if arguments:
-            command = command + " " + arguments
-
-        # Configure Solc version the test file
+        cmd = self.path
         solc_version = solc.detect_required_solc_version(test_file)
+        output_file = self.configure_output_file(test_output_dir)
 
-        command = (
-            command
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_arguments:
+            cmd = cmd + " " + self.additional_arguments
+
+        cmd = (
+            cmd
             + " "
             + test_file
             + " "
@@ -76,8 +76,8 @@ class Smartian(Tool):
             + " "
             + output_file
         )
-        debug(f"smartian command: {command}")
-        return command
+
+        return (cmd, None)
 
 
     def parse_issue_location(self, log_file) -> Union[Location, None]:
@@ -86,12 +86,10 @@ class Smartian(Tool):
         return Location(file_path, 0, 0, 0, 0)
 
 
-    def parse_analysis_output(
-        self,
-        output_file: str,
-        log_file: str,
-    ) -> List[Issue]:
+    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
         """Parse output of Smartian"""
+        output_file = os.path.join(test_output_dir, self.output_file)
+        log_file = os.path.join(test_output_dir, self.log_file)
         debug("Smartian output_file: ", output_file)
         output_file_data = open(output_file, "r", encoding="utf-8")
         data = output_file_data.read()
@@ -201,14 +199,7 @@ class Smartian(Tool):
 
         return issues
 
-
-    def check_issue_kind(self, issue_kind: IssueKind, annotation_kind: IssueKind):
-        """Function to check whether an reported issue is related to a bug"""
-        return issue_kind == annotation_kind
-
-
     def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
         """Function to check whether an reported issue is related to a bug
         annotation."""
-        # Check for issue kind
-        return self.check_issue_kind(issue.issue_kind, annot.annot_kind);
+        return issue.issue_kind == annot.annot_kind

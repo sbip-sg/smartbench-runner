@@ -160,13 +160,11 @@ class Mythril(Tool):
         return IssueKind.UNKNOWN
 
 
-    def parse_mythril_json_output(
-        self,
-        output_file: str,
-        log_file: str,
-    ) -> List[Issue]:
+    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
         """Parse output of Mythril"""
         output = None
+        output_file = os.path.join(test_output_dir, self.output_file)
+        log_file = os.path.join(test_output_dir, self.log_file)
         debug("Mythril parse file: ", output_file)
         with open(output_file, "r", encoding="utf-8") as file:
             try:

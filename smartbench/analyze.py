@@ -139,7 +139,7 @@ def analyze_test_file(
         log_analysis_output(tool, output, test_output_dir)
         if isinstance(tool, Mythril):
             # the results of `mythril` is in `stdout`
-            mythril.write_to_output_file(
+            tool.write_to_output_file(
                 output, test_output_dir
             )
 

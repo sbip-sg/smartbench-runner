@@ -5,7 +5,7 @@
 # Standard Library
 import os
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 
 # Library
 from smartbench import log, solc
@@ -46,7 +46,7 @@ class Sfuzz(Tool):
             test_output_dir: str,
             timeout=int,
             use_docker=False,
-    ):
+    ) -> Tuple[str, Optional[dict]]:
         """
         Function to make analysis command for Slither.
         This function should have the same signature with other tools.
@@ -112,9 +112,10 @@ class Sfuzz(Tool):
         return IssueKind.UNKNOWN
 
 
-    def parse_sfuzz_json_output(self, output_file: str, log_file: str) -> List[Issue]:
+    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
         """Parse output of sFuzz"""
         lines = None
+        log_file = os.path.join(test_output_dir, self.log_file)
         debug("sFuzz log_file: ", log_file)
         with open(log_file, "r", encoding="utf-8") as file:
             try:

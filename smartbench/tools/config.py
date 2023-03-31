@@ -15,6 +15,7 @@ from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.mythril.mythril import Mythril
+from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
 
@@ -99,6 +100,8 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 ToolConstructor = Mythril
             elif tool_id == "sFuzz":
                 ToolConstructor = Sfuzz
+            elif tool_id == "smartian":
+                ToolConstructor = Smartian
 
             return ToolConstructor(
                 tool_id,
