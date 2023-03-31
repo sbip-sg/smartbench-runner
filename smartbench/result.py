@@ -17,13 +17,16 @@ from smartbench import bug_annot, log, validator
 from smartbench.bug_annot import BugAnnot
 from smartbench.debug import warning
 from smartbench.issue import Issue, Severity
+from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.sfuzz import sfuzz
+from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.slither import slither
-from smartbench.tools.smartian import smartian
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.tool import Tool, load_tool_configuration
+from smartbench.tools.smartian import smartian
+from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
 
 
@@ -62,8 +65,9 @@ def print_summary(
             severities[issue.severity] += 1
         else:
             severities[issue.severity] = 1
-    severity = "\n  + ".join([f"{s}: {severities[s]}" for s in severities])
-    print(f"  + {severity}")
+    severities = [f"  + {s}: {severities[s]}" for s in severities]
+    if len(severities) > 0:
+        print("\n".join(severities))
 
     # Print validation results
     if validation is not None:
@@ -92,17 +96,16 @@ def print_summary(
     print("")
 
 
-def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
-    """Process analysis result of a tool."""
+def process_analysis_result(tool: Tool, test_output_dir: str) -> List[Issue]:
+    """Process analysis result of a tool for a test file."""
+    # TODO: Make this function OOP
     process_result_fn = None
 
-    if tool.is_slither():
-        process_result_fn = slither.parse_slither_json_output
+    if isinstance(tool, Slither) or isinstance(tool, Confuzzius):
+        return tool.process_analysis_result(test_output_dir)
 
     if tool.is_smartfuzz():
         process_result_fn = smartfuzz.parse_smartfuzz_json_output
-    if tool.is_confuzzius():
-        process_result_fn = confuzzius.parse_confuzzius_json_output
 
     if tool.is_sfuzz():
         process_result_fn = sfuzz.parse_sfuzz_json_output
@@ -114,8 +117,8 @@ def process_analysis_result(tool: Tool, output_dir: str) -> List[Issue]:
         process_result_fn = smartian.parse_analysis_output
 
     if process_result_fn:
-        output_file = os.path.join(output_dir, tool.output_file)
-        log_file = os.path.join(output_dir, tool.log_file)
+        output_file = os.path.join(test_output_dir, tool.output_file)
+        log_file = os.path.join(test_output_dir, tool.log_file)
         try:
             return process_result_fn(output_file, log_file)
         except:

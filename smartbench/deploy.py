@@ -13,7 +13,8 @@ from typing import List
 
 # Library
 from smartbench import result, solc
-from smartbench.tools.tool import DEPLOY_DIR, Tool
+from smartbench.tools.config import DEPLOY_DIR
+from smartbench.tools.tool import Tool
 
 
 def log_deployment_result(
@@ -64,8 +65,9 @@ def deploy_one_contracts(
     tool_deploy_dir: str,
 ) -> None:
     """Deploy one test  for an analysis tool."""
+
     # Configure Solc compiler
-    solc_path = solc.configure_local_solc_compiler(test_file)
+    solc_path = solc.configure_local_solc_path(test_file)
 
     try:
         # Run the analysis
