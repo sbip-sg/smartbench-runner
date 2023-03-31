@@ -3,6 +3,7 @@
 "Module representing a bug annotation."
 
 # Standard Library
+import csv
 import os
 import warnings
 
@@ -31,6 +32,7 @@ class AnnotFormat(Enum):
 
     SMARTBUGS_FORMAT = "SmartBugs Format"
     SMARTBENCH_FORMAT = "SmartBench Format"
+    SOLIDIFI_FORMAT = "SolidiFI Format"
 
 
 class BugAnnot:
@@ -100,7 +102,18 @@ class BugAnnot:
         if bug_name == "UNSAFE_DELEGATECALL":
             return IssueKind.UNSAFE_DELEGATECALL
         # March 29: Add SOLIDIFI
-
+        if bug_name == "Overflow-Underflow":
+            return IssueKind.INTEGER_BUG
+        if bug_name == "Unchecked-Send":
+            return IssueKind.LEAKING_ETHER
+        if bug_name == "Unhandled-Exceptions":
+            return IssueKind.UNHANDLED_EXCEPTION
+        if bug_name == "Re-erntrancy":
+            return IssueKind.REENTRANCY
+        if bug_name == "tx.origin":
+            return IssueKind.TX_ORIGIN_USAGE
+        if bug_name == "Timestamp-Dependency":
+            return IssueKind.BLOCK_DEPENDENCY
     def __str__(self):
         return self.print_concise()
 
@@ -196,6 +209,29 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     warnings.warn("TODO: implement `parse_smartbench_annotations`")
     return []
 
+def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
+    """Parse bug annotations written in `Solidifi` format benchmark."""
+    dir_name = os.path.dirname(filename)
+    file_name = os.path.basename(filename)
+    file_index = int(''.join(filter(str.isdigit, file_name)))
+    # format buggy_48.sol, only 1 number
+    # format annotation BugLog_48.csv
+    annotation_file = os.path.join(dir_name, f"BugLog_{file_index}.csv")
+    #Read the injected bug logs
+    bug_annots = []
+    with open(annotation_file, 'r') as f:
+        reader = csv.reader(f)
+        bug_log_list = list(reader)
+        for ibug in bug_log_list[1:len(bug_log_list)]:
+            bug_annotation = BugAnnot(
+                    ibug[2].strip(),
+                    AnnotFormat.SOLIDIFI_FORMAT,
+                    filename,
+                    int(ibug[0]),
+                    int(ibug[0])+int(ibug[1]),
+                )
+            bug_annots.append(bug_annotation)
+    return bug_annots
 
 def guess_annotation_type(filename: str) -> Optional[str]:
     """Guess bug format and parse bug annotations."""
@@ -231,7 +267,7 @@ def guess_annotation_type(filename: str) -> Optional[str]:
 def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
     """Parse bug annotation in a smart contract.
 
-    The input `annot_format` can take value `smartbugs`, `smartbench`, or None.
+    The input `annot_format` can take value `smartbugs`, `smartbench`, `solidifi`, or None.
     """
     annot_format = (
         annot_format
@@ -250,6 +286,9 @@ def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
 
     if annot_format.lower() == "smartbench":
         return parse_smartbench_annotations(test_file)
+
+    if annot_format.lower() == "solidifi":
+        return parse_solidifi_annotations(test_file)
 
     warnings.warn("Unknown bug annotation formmat:", annot_format)
     return []

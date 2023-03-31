@@ -8,7 +8,7 @@ from enum import Enum
 from typing import List
 
 # Library
-from smartbench import bug_annot, issue
+from smartbench import bug_annot, issue, result
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
@@ -65,13 +65,64 @@ class ValidationResult:
         # Bug annotations that are not reported.
         self.missing_bugs: List[BugAnnot] = list(missing_bugs)
 
+    def num_correct_issues(self) -> int:
+        return len(self.correct_issues)
+
+    def print_summary(self) -> None:
+        print("- Validation:")
+
+        correct_issue_info = f"{len(self.correct_issues)}"
+        correct_idxs = [x.index for x in self.correct_issues]
+        if len(correct_idxs) > 0:
+            correct_issue_info += f" [Issue IDs: {result.print_indices(correct_idxs)}]"
+        print(f"  + Correct issues: {correct_issue_info}")
+
+        wrong_issue_info = f"{len(self.incorrect_issues)}"
+        wrong_idxs = [x.index for x in self.incorrect_issues]
+        if len(wrong_idxs) > 0:
+            wrong_issue_info += f" [Issue IDs: {result.print_indices(wrong_idxs)}]"
+        print(f"  + Wrong issues: {wrong_issue_info}")
+
+        print(f"  + Unknown issues: {len(self.unknown_issues)}")
+
+        missing_bug_info = f"{len(self.missing_bugs)}"
+        missing_idxs = [x.index for x in self.missing_bugs]
+        if len(missing_idxs) > 0:
+            missing_bug_info += f" [Bug IDs: {result.print_indices(missing_idxs)}]"
+        print(f"  + Missing bugs: {missing_bug_info}")
+
+@dataclass
+class SolidifiValidationResult:
+    test_file: str
+    issues: List[Issue]
+    bug_annotations: List[BugAnnot]
+    correct_bugs: List[BugAnnot]
+    missing_bugs: List[BugAnnot]
+    unlabelled_issues: List[Issue]
+    def num_correct_issues(self) -> int:
+        return len(self.correct_bugs)
+
+    def print_summary(self) -> None:
+        print("- SOLIDIFI Validation:")
+        correct_issue_info = f"{len(self.correct_bugs)}"
+        correct_idxs = [x.index for x in self.correct_bugs]
+        if len(correct_idxs) > 0:
+            correct_issue_info += f" [Issue IDs: {result.print_indices(correct_idxs)}]"
+        print(f"  + Correct injected bugs: {correct_issue_info}")
+        print(f"  + Unlabelled detected bugs: {len(self.unlabelled_issues)}")
+        missing_bug_info = f"{len(self.missing_bugs)}"
+        missing_idxs = [x.index for x in self.missing_bugs]
+        if len(missing_idxs) > 0:
+            missing_bug_info += f" [Bug IDs: {result.print_indices(missing_idxs)}]"
+        print(f"  + Missing injected bugs: {missing_bug_info}")
+
 
 def match_issue_to_annotation(
     tool: Tool, issue: Issue, annot: BugAnnot
 ) -> bool:
     """Function to check whether an reported issue is related to a bug
     annotation."""
-    # print ("match_issue_to_annotation ", issue, annot)
+
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
         if annot.sbc != annot.sbc:
@@ -79,8 +130,7 @@ def match_issue_to_annotation(
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
         return False
-    else:
-        return False
+
     # Check whether the issue and bug annotation are of the same file.
     iloc: Location = issue.location
     # Remove unneccessary path information
@@ -120,21 +170,48 @@ def match_issue_to_annotation(
 
 
 def validate_issues(
-    tool: Tool, test_file: str, issues: List[Issue]
+    tool: Tool, test_file: str, issues: List[Issue], annots: List[BugAnnot], benchmark_name: str=""
 ) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
+    # not used in solidifi
     correct_issues: List[Issue] = []
     incorrect_issues: List[Issue] = []
-    unknown_issues: List[Issue] = []
-
-    annots = bug_annot.parse_bug_annotations(test_file)
+    # solidifi without missclassified bugs.
+    unlabelled_issues: List[Issue] = []
     reported_annots: List[BugAnnot] = []
+    missing_annots: List[BugAnnot] = []
+    if  benchmark_name.lower() == "solidifi":
+        # special case for solidifi, other benchmarks may copy :
+        # two-loop to deal with dupplicated bugs annotation & multiple issues reported the same annotation
+        # first loop detect missing bug. Simply checks if any annot is not reported
+        for annot in annots:
+        # True-positive issues
+            detected = False
+            for issue in issues:
+                if match_issue_to_annotation(tool, issue, annot):
+                    detected = True
+                    break
+            if detected:
+                reported_annots.append(annot)
+            else:
+                missing_annots.append(annot)
+        # second loop detect unlabelled_issues
+        for issue in issues:
+            # True-positive issue
+            matched_bug = False
+            for annot in annots:
+                if match_issue_to_annotation(tool, issue, annot):
+                    matched_bug = True
+                    break
+            # Unknown issue
+            if not matched_bug:
+                unlabelled_issues.append(issue)
+        return SolidifiValidationResult(test_file,issues, annots, reported_annots, missing_annots, unlabelled_issues)
 
     target_sbcs = []
     if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
         target_sbcs = SBC.elements()
-
     for issue in issues:
         # True-positive issue
         correct_bug = False
@@ -151,7 +228,7 @@ def validate_issues(
 
         # Unknown issue
         else:
-            unknown_issues.append(issue)
+            unlabelled_issues.append(issue)
 
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
@@ -161,6 +238,6 @@ def validate_issues(
         annots,
         correct_issues,
         incorrect_issues,
-        unknown_issues,
+        unlabelled_issues,
         missing_bugs,
     )
