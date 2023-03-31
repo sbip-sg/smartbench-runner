@@ -68,7 +68,7 @@ class Confuzzius(Tool):
         timeout = timeout if timeout is not None else self.default_timeout
 
         # Configure Solc version by environment variable.
-        cmd = f"{cmd} -s {test_file} -r {out_file} --evm byzantium -t {timeout}"
+        cmd = f"{cmd} -s {test_file} -r {out_file} -t {timeout}"
         env_vars = {"SOLC_VERSION": solc_version}
 
         return (cmd, env_vars)

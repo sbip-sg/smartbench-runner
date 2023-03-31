@@ -14,4 +14,4 @@ TOOL_DIR=$REPO_DIR/$TOOL_ID
 . $BASE_DIR/confuzzius_venv/bin/activate
 
 # Run Confuzzius
-python $TOOL_DIR/fuzzer/main.py $@
+python $TOOL_DIR/fuzzer/main.py --evm byzantium $@
