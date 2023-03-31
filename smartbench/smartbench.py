@@ -38,6 +38,10 @@ def parse_existing_results(args):
     for result_dir in args.result_directories:
         result.parse_result_directory(result_dir, args.validate_results, args.benchmark_name)
 
+def parse_instruction_coverage(args):
+    """Parse instruction coverage from analysis results."""
+    for result_dir in args.result_directories:
+        result.parse_instruction_coverage(result_dir)
 
 def parse_bug_annotations(args):
     """Parse bug annotation in smart contracts."""
@@ -76,6 +80,10 @@ def main():
     elif args.sub_command == Command.PARSE_RESULTS.value:
         print("Smartbench: running mode parsing benchmarking results...\n")
         parse_existing_results(args)
+    # Parse the instruction coverage in analysis results
+    elif args.sub_command == Command.PARSE_COVERAGE.value:
+        print("Smartbench: running mode parsing instruction coverage...\n")
+        parse_instruction_coverage(args)
     # Parse bug annotations
     elif args.sub_command == Command.PARSE_ANNOTS.value:
         print("Smartbench: running mode parsing bug annotations...\n")

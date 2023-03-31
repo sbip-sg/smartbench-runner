@@ -4,6 +4,7 @@
 
 # Standard Library
 import os
+import re
 
 from typing import List, Union, Optional, Tuple
 
@@ -155,6 +156,28 @@ class Sfuzz(Tool):
     def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
         """Function to check whether an reported issue is related to a bug
         annotation."""
-
         # Check for issue kind
         return issue.issue_kind == annot.annot_kind;
+
+    def parse_instruction_coverage(self, test_output_dir: str):
+        """Parse instruction coverage of sFuzz"""
+        lines = None
+        log_file = os.path.join(test_output_dir, self.log_file)
+        with open(log_file, "r", encoding="utf-8") as file:
+            try:
+                lines = [line.rstrip() for line in file]
+            except ValueError:
+                warning("Failed to parse sFuzz log file:", log_file)
+                return []
+
+        results = [(0,0)]
+        count = 1
+        for line in lines:
+            match_str = re.search(r"coverage : [0-9]+", line)
+            if match_str:
+                coverage = match_str.group()
+                coverage = coverage.removeprefix("coverage : ")
+                results.append((count, int(coverage)))
+                count += 1
+
+        return results

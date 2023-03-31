@@ -158,3 +158,10 @@ class Tool:
 
         # Pass all criteria to match an issue with a bug annotation
         return True
+
+    def parse_instruction_coverage(self, test_output_dir: str):
+        """Default function to parse instruction coverage of analysis results.
+        """
+
+        # When the tool does not support generating instruction coverage
+        return []

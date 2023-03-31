@@ -5,8 +5,6 @@
 # Standard Library
 import json
 import os
-import shlex
-import subprocess
 
 from typing import List, Optional, Tuple
 
@@ -142,6 +140,9 @@ class Confuzzius(Tool):
         output = None
 
         output_file = os.path.join(test_output_dir, self.output_file)
+        if not os.path.exists(output_file):
+            return []
+
         log_file = os.path.join(test_output_dir, self.log_file)
 
         debug("Confuzzius parse file: ", output_file)
@@ -186,4 +187,39 @@ class Confuzzius(Tool):
         except ValueError:
             return []
 
+    def parse_instruction_coverage(self, test_output_dir: str):
+        """Parse code coverage of Confuzzius"""
+        output_file = os.path.join(test_output_dir, self.output_file)
+        output = None
 
+        debug("Confuzzius parse file: ", output_file)
+        with open(output_file, "r", encoding="utf-8") as file:
+            try:
+                output = json.load(file)
+            except ValueError:
+                warning("Failed to parse Confuzzius output file:", output_file)
+                return []
+
+        if output is None:
+            warning("Failed to parse Confuzzius's output file:", output_file)
+            return []
+
+        try:
+            coverages = [(0,0)]
+            current_time = 0
+
+            all_results = list(output.values())
+            results = all_results[0]
+            generations = results.get("generations")
+            # generations = list(generations.values())
+
+            for generation in generations:
+                time = float("{:.1f}".format(generation.get("time")))
+                coverage = float("{:.1f}".format(generation.get("code_coverage")))
+                if time - current_time >= 1:
+                    coverages.append((time, coverage))
+                    current_time = time
+            return coverages;
+
+        except ValueError:
+            return []

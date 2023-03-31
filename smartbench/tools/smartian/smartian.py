@@ -199,7 +199,42 @@ class Smartian(Tool):
 
         return issues
 
+    
     def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
         """Function to check whether an reported issue is related to a bug
         annotation."""
         return issue.issue_kind == annot.annot_kind
+
+
+    def parse_instruction_coverage(self, test_output_dir: str):
+        """Parse code coverage of Smartian"""
+        output_file = os.path.join(test_output_dir, self.output_file)
+
+        lines = None
+        with open(output_file, "r", encoding="utf-8") as file:
+            try:
+                lines = [line.rstrip() for line in file]
+            except ValueError:
+                warning("Failed to parse Smartian output file:", output_file)
+                return []
+
+        results = [(0,0)]
+        count = 1
+        current_time = 0
+        for line in lines:
+            match_str = re.search(r"Covered Instructions: [0-9]+", line)
+            time_str = re.search('(\d{2})[/.:](\d{2})[/.:](\d{2})[/.:](\d{2})', line)
+            if match_str and time_str:
+                time = time_str.group()
+                seconds = int(time[9:11])
+                minutes = int(time[6:8])
+                hours = int(time[3:5])
+                duration = hours * 3600 + minutes * 60 + seconds
+                if duration - current_time >= 1:
+                    coverage = match_str.group()
+                    coverage = coverage.removeprefix("Covered Instructions: ")
+                    results.append((duration, int(coverage)))
+                    current_time = duration
+                count += 1
+
+        return results

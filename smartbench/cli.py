@@ -15,6 +15,7 @@ class Command(Enum):
 
     ANALYZE = "analyze"
     PARSE_RESULTS = "parse-results"
+    PARSE_COVERAGE = "parse-coverage"
     PARSE_ANNOTS = "parse-annots"
     DEPLOY_CONTRACTS = "deploy-contracts"
 
@@ -150,6 +151,25 @@ def parse_cli_arguments():
         "--benchmark-name",
         type=str,
         help="Specify benchmark name for special cases without standard annotation and validation e.g. SOLIDIFI",
+    )
+
+    ################################
+    # Parser for sub-command `parse-coverage`
+
+    # Create a parser for the `parse-coverage` sub-command
+    coverage_parser = sub_parsers.add_parser(
+        Command.PARSE_COVERAGE.value,
+        parents=[parent_parser],
+        add_help=False,
+        help="Sub-command to parse instruction coverage in existing analysis results.",
+    )
+
+    # Input result directories
+    coverage_parser.add_argument(
+        "result_directories",
+        nargs="+",  # Accept multiple input files or directories
+        type=str,
+        help="Input result directories.",
     )
 
     ################################

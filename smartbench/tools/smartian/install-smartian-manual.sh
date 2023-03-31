@@ -23,7 +23,7 @@ if [ -d "$TOOL_DIR" ]; then
     echo "Repository $TOOL_DIR already exists!"
     echo "Skip cloning..."
 else
-    git clone https://github.com/SoftSec-KAIST/Smartian $TOOL_DIR
+    git clone git@github.com:sbip-sg/Smartian.git $TOOL_DIR
 fi
 
 # Compiling Smartian
