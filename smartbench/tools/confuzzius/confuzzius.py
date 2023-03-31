@@ -187,37 +187,16 @@ class Confuzzius(Tool):
             return []
 
 
-def check_issue_kind(kind: IssueKind, bug_name: str):
-    if kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
-        return bug_name == "FRONT_RUNNING"
+# def check_issue_kind(kind: IssueKind, bug_name: str):
+#     if kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
+#         return bug_name == "FRONT_RUNNING"
 
-    if kind == IssueKind.INTEGER_BUG:
-        return bug_name == "ARITHMETIC"
+#     if kind == IssueKind.INTEGER_BUG:
+#         return bug_name == "ARITHMETIC"
 
-    if kind == IssueKind.UNHANDLED_EXCEPTION:
-        return bug_name == "UNCHECKED_LL_CALLS"
+#     if kind == IssueKind.UNHANDLED_EXCEPTION:
+#         return bug_name == "UNCHECKED_LL_CALLS"
 
-    if str(kind).casefold() != bug_name.casefold():
-        return False
-    return True
-
-
-def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
-    """Function to check whether an reported issue is related to a bug
-    annotation."""
-
-    # Check for issue kind
-    if not check_issue_kind(issue.issue_kind, annot.bug_name):
-        return False
-
-    iloc: Location = issue.location
-    # Check whether the issue location is covered by the annotation location.
-    if iloc.start_line is None or iloc.end_line is None:
-        return False
-    if iloc.start_line < annot.start_line + 1:
-        return False
-    if iloc.end_line > annot.end_line + 1:
-        return False
-
-    # Pass all criteria to match an issue with a bug annotation
-    return True
+#     if str(kind).casefold() != bug_name.casefold():
+#         return False
+#     return True

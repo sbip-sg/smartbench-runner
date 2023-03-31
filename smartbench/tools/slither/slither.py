@@ -6,13 +6,12 @@
 import json
 import os
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # Library
 from smartbench import log, solc
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from typing import Tuple
 from smartbench.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
@@ -47,7 +46,7 @@ class Slither(Tool):
         test_output_dir: str,
         timeout=int,
         use_docker=True,
-    ) -> Tuple[str, dict]:
+    ) -> Tuple[str, Optional[dict]]:
         """
         Function to make analysis command for Slither.
         This function should have the same signature with other tools.
@@ -64,9 +63,8 @@ class Slither(Tool):
         output_file = self.configure_output_file(test_output_dir)
 
         cmd = f"{cmd} {test_file} --solc {solc_path} --json {output_file}"
-        env_vars = {}
 
-        return (cmd, env_vars)
+        return (cmd, None)
 
     def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by Slither."""
@@ -313,3 +311,5 @@ class Slither(Tool):
             return issues
         except ValueError:
             return []
+
+        

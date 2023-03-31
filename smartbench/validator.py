@@ -12,13 +12,13 @@ from smartbench import bug_annot, issue, result
 from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
-from smartbench.tools.tool import Tool
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.loc import Location
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
-from smartbench.tools.smartian import smartian
+from smartbench.tools.sfuzz import sfuzz
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
+from smartbench.tools.smartian import smartian
 from smartbench.tools.tool import Tool
 
 
@@ -74,13 +74,17 @@ class ValidationResult:
         correct_issue_info = f"{len(self.correct_issues)}"
         correct_idxs = [x.index for x in self.correct_issues]
         if len(correct_idxs) > 0:
-            correct_issue_info += f" [Issue IDs: {result.print_indices(correct_idxs)}]"
+            correct_issue_info += (
+                f" [Issue IDs: {result.print_indices(correct_idxs)}]"
+            )
         print(f"  + Correct issues: {correct_issue_info}")
 
         wrong_issue_info = f"{len(self.incorrect_issues)}"
         wrong_idxs = [x.index for x in self.incorrect_issues]
         if len(wrong_idxs) > 0:
-            wrong_issue_info += f" [Issue IDs: {result.print_indices(wrong_idxs)}]"
+            wrong_issue_info += (
+                f" [Issue IDs: {result.print_indices(wrong_idxs)}]"
+            )
         print(f"  + Wrong issues: {wrong_issue_info}")
 
         print(f"  + Unknown issues: {len(self.unknown_issues)}")
@@ -88,8 +92,11 @@ class ValidationResult:
         missing_bug_info = f"{len(self.missing_bugs)}"
         missing_idxs = [x.index for x in self.missing_bugs]
         if len(missing_idxs) > 0:
-            missing_bug_info += f" [Bug IDs: {result.print_indices(missing_idxs)}]"
+            missing_bug_info += (
+                f" [Bug IDs: {result.print_indices(missing_idxs)}]"
+            )
         print(f"  + Missing bugs: {missing_bug_info}")
+
 
 @dataclass
 class SolidifiValidationResult:
@@ -99,6 +106,7 @@ class SolidifiValidationResult:
     correct_bugs: List[BugAnnot]
     missing_bugs: List[BugAnnot]
     unlabelled_issues: List[Issue]
+
     def num_correct_issues(self) -> int:
         return len(self.correct_bugs)
 
@@ -107,13 +115,17 @@ class SolidifiValidationResult:
         correct_issue_info = f"{len(self.correct_bugs)}"
         correct_idxs = [x.index for x in self.correct_bugs]
         if len(correct_idxs) > 0:
-            correct_issue_info += f" [Issue IDs: {result.print_indices(correct_idxs)}]"
+            correct_issue_info += (
+                f" [Issue IDs: {result.print_indices(correct_idxs)}]"
+            )
         print(f"  + Correct injected bugs: {correct_issue_info}")
         print(f"  + Unlabelled detected bugs: {len(self.unlabelled_issues)}")
         missing_bug_info = f"{len(self.missing_bugs)}"
         missing_idxs = [x.index for x in self.missing_bugs]
         if len(missing_idxs) > 0:
-            missing_bug_info += f" [Bug IDs: {result.print_indices(missing_idxs)}]"
+            missing_bug_info += (
+                f" [Bug IDs: {result.print_indices(missing_idxs)}]"
+            )
         print(f"  + Missing injected bugs: {missing_bug_info}")
 
 
@@ -139,11 +151,14 @@ def match_issue_to_annotation(
 
     match_command = None
 
+    if isinstance(tool, Slither):
+        tool.match_location_of_issue_to_annotation(issue, annot)
+
     if tool.is_sfuzz():
         match_command = sfuzz.match_location_of_issue_to_annotation
 
-    if tool.is_confuzzius():
-        match_command = confuzzius.match_location_of_issue_to_annotation
+    # if tool.is_confuzzius():
+    #     match_command = confuzzius.match_location_of_issue_to_annotation
 
     if tool.is_mythril():
         match_command = mythril.match_location_of_issue_to_annotation
@@ -170,7 +185,11 @@ def match_issue_to_annotation(
 
 
 def validate_issues(
-    tool: Tool, test_file: str, issues: List[Issue], annots: List[BugAnnot], benchmark_name: str=""
+    tool: Tool,
+    test_file: str,
+    issues: List[Issue],
+    annots: List[BugAnnot],
+    benchmark_name: str = "",
 ) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
@@ -181,12 +200,12 @@ def validate_issues(
     unlabelled_issues: List[Issue] = []
     reported_annots: List[BugAnnot] = []
     missing_annots: List[BugAnnot] = []
-    if  benchmark_name.lower() == "solidifi":
-        # special case for solidifi, other benchmarks may copy :
+    if benchmark_name.lower() == "solidifi":
+        # special case for solidifi, other benchmarks may copy:
         # two-loop to deal with dupplicated bugs annotation & multiple issues reported the same annotation
         # first loop detect missing bug. Simply checks if any annot is not reported
         for annot in annots:
-        # True-positive issues
+            # True-positive issues
             detected = False
             for issue in issues:
                 if match_issue_to_annotation(tool, issue, annot):
@@ -207,7 +226,14 @@ def validate_issues(
             # Unknown issue
             if not matched_bug:
                 unlabelled_issues.append(issue)
-        return SolidifiValidationResult(test_file,issues, annots, reported_annots, missing_annots, unlabelled_issues)
+        return SolidifiValidationResult(
+            test_file,
+            issues,
+            annots,
+            reported_annots,
+            missing_annots,
+            unlabelled_issues,
+        )
 
     target_sbcs = []
     if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
