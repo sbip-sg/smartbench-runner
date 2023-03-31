@@ -67,27 +67,7 @@ def print_summary(
 
     # Print validation results
     if validation is not None:
-        print("- Validation:")
-
-        correct_issue_info = f"{len(validation.correct_issues)}"
-        correct_idxs = [x.index for x in validation.correct_issues]
-        if len(correct_idxs) > 0:
-            correct_issue_info += f" [Issue IDs: {print_indices(correct_idxs)}]"
-        print(f"  + Correct issues: {correct_issue_info}")
-
-        wrong_issue_info = f"{len(validation.incorrect_issues)}"
-        wrong_idxs = [x.index for x in validation.incorrect_issues]
-        if len(wrong_idxs) > 0:
-            wrong_issue_info += f" [Issue IDs: {print_indices(wrong_idxs)}]"
-        print(f"  + Wrong issues: {wrong_issue_info}")
-
-        print(f"  + Unknown issues: {len(validation.unknown_issues)}")
-
-        missing_bug_info = f"{len(validation.missing_bugs)}"
-        missing_idxs = [x.index for x in validation.missing_bugs]
-        if len(missing_idxs) > 0:
-            missing_bug_info += f" [Bug IDs: {print_indices(missing_idxs)}]"
-        print(f"  + Missing bugs: {missing_bug_info}")
+        validation.print_summary()
 
     print("")
 
@@ -240,9 +220,9 @@ def parse_result_directory(
                         print(f"- {annot.print_concise()}")
 
                     validation = validator.validate_issues(
-                        tool, test_file, issues, bug_annots
+                        tool, test_file, issues, bug_annots, benchmark_name=benchmark_name or ""
                     )
-                    correct_bugs += len(validation.correct_issues)
+                    correct_bugs += validation.num_correct_issues()
                 print("")
             print_summary(tool, test_name, issues, bug_annots, validation)
             all_issues = all_issues + issues
