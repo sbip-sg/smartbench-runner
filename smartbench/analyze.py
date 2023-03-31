@@ -137,7 +137,7 @@ def analyze_test_file(
             stderr=subprocess.PIPE,
             check=False,
         )
-        log_analysis_output(tool, test_file, command, output, test_output_dir)
+        log_analysis_output(tool, output, test_output_dir)
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
