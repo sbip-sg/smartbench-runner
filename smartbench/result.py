@@ -21,11 +21,14 @@ from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
+from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz import sfuzz
+from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither import slither
 from smartbench.tools.slither.slither import Slither
-from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian import smartian
+from smartbench.tools.smartian.smartian import Smartian
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
 
@@ -81,20 +84,11 @@ def process_analysis_result(tool: Tool, test_output_dir: str) -> List[Issue]:
     # TODO: Make this function OOP
     process_result_fn = None
 
-    if isinstance(tool, Slither) or isinstance(tool, Confuzzius):
+    if isinstance(tool, Slither) or isinstance(tool, Confuzzius) or isinstance(tool, Sfuzz) or isinstance(tool, Mythril) or isinstance(tool, Smartian):
         return tool.process_analysis_result(test_output_dir)
 
     if tool.is_smartfuzz():
         process_result_fn = smartfuzz.parse_smartfuzz_json_output
-
-    if tool.is_sfuzz():
-        process_result_fn = sfuzz.parse_sfuzz_json_output
-
-    if tool.is_mythril():
-        process_result_fn = mythril.parse_mythril_json_output
-
-    if tool.is_smartian():
-        process_result_fn = smartian.parse_analysis_output
 
     if process_result_fn:
         output_file = os.path.join(test_output_dir, tool.output_file)

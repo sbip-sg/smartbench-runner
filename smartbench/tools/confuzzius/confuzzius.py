@@ -187,16 +187,3 @@ class Confuzzius(Tool):
             return []
 
 
-# def check_issue_kind(kind: IssueKind, bug_name: str):
-#     if kind == IssueKind.TRANSACTION_ORDER_DEPENDENCY:
-#         return bug_name == "FRONT_RUNNING"
-
-#     if kind == IssueKind.INTEGER_BUG:
-#         return bug_name == "ARITHMETIC"
-
-#     if kind == IssueKind.UNHANDLED_EXCEPTION:
-#         return bug_name == "UNCHECKED_LL_CALLS"
-
-#     if str(kind).casefold() != bug_name.casefold():
-#         return False
-#     return True

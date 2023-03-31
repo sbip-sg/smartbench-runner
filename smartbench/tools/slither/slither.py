@@ -312,4 +312,4 @@ class Slither(Tool):
         except ValueError:
             return []
 
-        
+

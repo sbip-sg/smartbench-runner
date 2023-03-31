@@ -13,12 +13,17 @@ from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.loc import Location
-from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.mythril import mythril
-from smartbench.tools.sfuzz import sfuzz
+from smartbench.tools.slither import slither
 from smartbench.tools.slither.slither import Slither
+from smartbench.tools.mythril import mythril
+from smartbench.tools.mythril.mythril import Mythril
+from smartbench.tools.sfuzz import sfuzz
+from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian import smartian
+from smartbench.tools.smartian.smartian import Smartian
+from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.tool import Tool
 
 
@@ -154,17 +159,17 @@ def match_issue_to_annotation(
     if isinstance(tool, Slither):
         tool.match_location_of_issue_to_annotation(issue, annot)
 
-    if tool.is_sfuzz():
-        match_command = sfuzz.match_location_of_issue_to_annotation
+    if isinstance(tool, Sfuzz):
+        tool.match_location_of_issue_to_annotation(issue, annot)
 
-    # if tool.is_confuzzius():
-    #     match_command = confuzzius.match_location_of_issue_to_annotation
+    if isinstance(tool, Confuzzius):
+        tool.match_location_of_issue_to_annotation(issue, annot)
 
-    if tool.is_mythril():
-        match_command = mythril.match_location_of_issue_to_annotation
+    if isinstance(tool, Mythril):
+        tool.match_location_of_issue_to_annotation(issue, annot)
 
-    if tool.is_smartian():
-        match_command = smartian.match_location_of_issue_to_annotation
+    if isinstance(tool, Smartian):
+        tool.match_location_of_issue_to_annotation(issue, annot)
 
     if tool.is_smartfuzz():
         match_command = smartfuzz.match_location_of_issue_to_annotation
@@ -177,7 +182,7 @@ def match_issue_to_annotation(
         return False
     if iloc.start_line < annot.start_line + 1:
         return False
-    if iloc.end_line > annot.end_line + 1:
+    if iloc.end_line > annot.end_line - 1:
         return False
 
     # Pass all criteria to match an issue with a bug annotation
@@ -235,26 +240,27 @@ def validate_issues(
             unlabelled_issues,
         )
 
-    target_sbcs = []
-    if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
-        target_sbcs = SBC.elements()
-    for issue in issues:
+    # target_sbcs = []
+    # if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
+    #     target_sbcs = SBC.elements()
+
+    for annot in annots:
         # True-positive issue
-        correct_bug = False
-        for annot in annots:
+        # correct_bug = False
+        for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
                 correct_issues.append(issue)
                 reported_annots.append(annot)
-                correct_bug = True
+                # correct_bug = True
                 break
 
-        # False-positive issue
-        if not correct_bug and issue.sbc in target_sbcs:
-            incorrect_issues.append(issue)
+        # # False-positive issue
+        # if not correct_bug and issue.sbc in target_sbcs:
+        #     incorrect_issues.append(issue)
 
-        # Unknown issue
-        else:
-            unlabelled_issues.append(issue)
+        # # Unknown issue
+        # else:
+        #     unknown_issues.append(issue)
 
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
