@@ -23,9 +23,7 @@ from smartbench.bug_annot import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.tools.ilf import ilf
-from smartbench.tools.mythril import mythril
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.smartian import smartian
 
 
 class Tool:
@@ -87,17 +85,9 @@ class Tool:
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
 
-    def is_mythril(self):
-        """Check if the current tool is Mythril."""
-        return self.id.casefold() == mythril.TOOL_NAME.casefold()
-
     def is_smartfuzz(self):
         """Check if the current tool is SmartFuzz."""
         return self.id.casefold() == smartfuzz.TOOL_NAME.casefold()
-
-    def is_smartian(self):
-        """Check if the current tool is Smartian."""
-        return self.id.casefold() == smartian.TOOL_NAME.casefold()
 
     def is_ilf(self):
         """Check if the current tool is ILF."""
@@ -119,12 +109,8 @@ class Tool:
         timeout = timeout if timeout is not None else self.default_timeout
 
         make_command = None
-        if self.is_mythril():
-            make_command = mythril.make_analysis_command
-        elif self.is_ilf():
+        if self.is_ilf():
             make_command = ilf.make_analysis_command
-        elif self.is_smartian():
-            make_command = smartian.make_analysis_command
         elif self.is_smartfuzz():
             make_command = smartfuzz.make_analysis_command
             arguments += " --seed " + str(self.random_seed)

@@ -15,9 +15,6 @@ from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.tools.tool import Tool
 
-# Tool name
-TOOL_NAME = "sFuzz"
-
 class Sfuzz(Tool):
 
     def __init__(

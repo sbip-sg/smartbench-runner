@@ -20,8 +20,7 @@ from smartbench.issue import Issue
 from smartbench.tools.config import RESULTS_DIR
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
-from smartbench.tools.slither import slither
-from smartbench.tools.slither.slither import Slither
+from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 
@@ -138,8 +137,7 @@ def analyze_test_file(
             check=False,
         )
         log_analysis_output(tool, output, test_output_dir)
-
-        if tool.is_mythril():
+        if isinstance(tool, Mythril):
             # the results of `mythril` is in `stdout`
             mythril.write_to_output_file(
                 output, tool.output_file, test_output_dir
