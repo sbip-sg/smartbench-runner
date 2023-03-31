@@ -9,7 +9,8 @@ This is the shared interface for all tools.
 import os
 import sys
 
-from typing import List, Optional
+from abc import abstractmethod
+from typing import List, Optional, Tuple
 
 # Third Party
 import tomli
@@ -18,30 +19,13 @@ import tomli
 import smartbench
 
 from smartbench import debug
-from smartbench.tools.confuzzius import confuzzius
+from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.loc import Location
 from smartbench.tools.ilf import ilf
 from smartbench.tools.mythril import mythril
 from smartbench.tools.sfuzz import sfuzz
-from smartbench.tools.slither import slither
-from smartbench.tools.smartian import smartian
 from smartbench.tools.smartfuzz import smartfuzz
-
-
-# List of keywords in configuration files
-INFO = "info"
-ID = "id"
-NAME = "name"
-HOMEPAGE = "homepage"
-CATEGORY = "category"
-COMMAND = "command"
-PATH = "path"
-DEFAULT_ARGUMENTS = "default_arguments"
-
-# Initiate some global varibles
-TOOLS_DIR = os.path.dirname(__file__)
-SMARTBENCH_ROOT_DIR = os.path.dirname(smartbench.__file__)
-RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
-DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "deploy")
+from smartbench.tools.smartian import smartian
 
 
 class Tool:
@@ -55,9 +39,9 @@ class Tool:
         category: str,
         path: str,
         default_arguments: str,
+        default_timeout: int,
         additional_arguments: Optional[str] = None,
-        timeout: Optional[int] = None,
-        seed: int = 0,
+        random_seed: int = 0,
     ):
         """Constructor"""
         self.id: str = str(id)
@@ -67,10 +51,11 @@ class Tool:
         self.path: str = str(path)
         self.default_arguments: str = default_arguments
         self.additional_arguments: Optional[str] = additional_arguments
-        self.timeout: Optional[int] = None if timeout is None else int(timeout)
+        self.default_timeout = int(default_timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
-        self.seed: int = seed  # increasing random seed for reproducible results
+        # increasing random seed for reproducible results
+        self.random_seed: int = int(random_seed)
 
     def __str__(self):
         """Printing to string."""
@@ -84,13 +69,23 @@ class Tool:
             + '"}'
         )
 
-    def is_slither(self):
-        """Check if the current tool is Slither."""
-        return self.id.casefold() == slither.TOOL_NAME.casefold()
+    def configure_output_file(self, result_dir: str) -> str:
+        """
+        Configure output file of the tool for a test file.
+        """
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        return os.path.join(result_dir, self.output_file)
 
-    def is_confuzzius(self):
-        """Check if the current tool is Confuzzius."""
-        return self.id.casefold() == confuzzius.TOOL_NAME.casefold()
+    def configure_log_file(self, result_dir: str) -> str:
+        """
+        Configure log file of a tool for a test file.
+        """
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        return os.path.join(result_dir, self.log_file)
 
     def is_mythril(self):
         """Check if the current tool is Mythril."""
@@ -115,25 +110,21 @@ class Tool:
     def make_analysis_command(
         self,
         test_file,
-        result_dir,
-        solc_path,
-        use_docker,
+        test_output_dir,
         timeout=None,
-    ):
+        use_docker=True,
+    ) -> Tuple[str, dict]:
         """Make an analysis command for a tool."""
-        # Prepare output directory for all results
-        make_command = None
-        self.seed += (
-            1  # determinstically increase from seed. Reproducible randomness
-        )
-        # TODO add random seed for fuzzing tools if they support it
+        # Deterministically increase from seed. Reproducible randomness
+        # TODO: add random seed for fuzzing tools if they support it.
+        self.random_seed += 1
+
         arguments = self.default_arguments
-        if self.is_slither():
-            make_command = slither.make_analysis_command
-        elif self.is_sfuzz():
+        timeout = timeout if timeout is not None else self.default_timeout
+
+        make_command = None
+        if self.is_sfuzz():
             make_command = sfuzz.make_analysis_command
-        elif self.is_confuzzius():
-            make_command = confuzzius.make_analysis_command
         elif self.is_mythril():
             make_command = mythril.make_analysis_command
         elif self.is_ilf():
@@ -142,99 +133,25 @@ class Tool:
             make_command = smartian.make_analysis_command
         elif self.is_smartfuzz():
             make_command = smartfuzz.make_analysis_command
-            arguments += " --seed " + str(self.seed)
-        elif self.is_confuzzius():
-            raise Exception("TODO: implement")
-
-        if make_command is None:
-            return None
+            arguments += " --seed " + str(self.random_seed)
+        else:
+            raise Exception(f"TODO: implement for tool: {self.id}")
 
         if self.additional_arguments:
             arguments = arguments + " " + self.additional_arguments
 
-        output_file = self.configure_output_file(result_dir)
+        output_file = self.configure_output_file(test_output_dir)
 
-        return make_command(
-            self.path, arguments, test_file, output_file, solc_path, timeout
+        cmd = make_command(
+            self.path, arguments, test_file, output_file, timeout
         )
 
-    def make_deployment_command(self, test_file, result_dir, solc_path):
-        # TODO: impleemnt
-        pass
+        return (cmd, {})
 
-    def configure_output_file(self, result_dir: str) -> str:
-        """
-        Configure output file of the tool for a test file.
-        """
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        return os.path.join(result_dir, self.output_file)
+    @abstractmethod
+    def make_deployment_command(self, test_file, result_dir) -> str:
+        """Make deployment command for an analyzer."""
 
-    def configure_log_file(self, result_dir: str) -> str:
-        """
-        Configure log file of a tool for a test file.
-        """
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        return os.path.join(result_dir, self.log_file)
-
-
-def load_tool_configuration(tool_name: str) -> Optional[Tool]:
-    """Parse configuration of an analysis tool"""
-    # Get path of the configuration file
-    tool_name = tool_name.casefold()
-    config_file_name = tool_name + ".toml"
-    config_file_path = os.path.join(TOOLS_DIR, tool_name, config_file_name)
-
-    # Read configuration file
-    with open(config_file_path, "r", encoding="utf-8") as file:
-        file_content = file.read()
-        config = tomli.loads(file_content)
-
-        try:
-            # Parse tool info
-            info = config.get(INFO)
-            if info:
-                tool_id = info.get(ID)
-                tool_name = info.get(NAME)
-                homepage = info.get(HOMEPAGE)
-                category = info.get(CATEGORY)
-
-            # Parse tool command
-            command = config.get(COMMAND)
-            if command:
-                path = command.get(PATH)
-                default_arguments = command.get(DEFAULT_ARGUMENTS)
-
-            return Tool(
-                tool_id,
-                tool_name,
-                homepage,
-                category,
-                path,
-                default_arguments,
-            )
-        except AttributeError:
-            debug.warning("Error in configuration of tool: " + str(tool_name))
-            return None
-
-
-def configure_analysis_tools(args) -> List[Tool]:
-    """Configure all analysis tools."""
-    print("Configure analysis tools...\n")
-
-    tool_names = args.tools
-    if tool_names is None or len(tool_names) == 0:
-        sys.exit("No analysis tool is selected!")
-
-    all_tool_configs = []
-    for tool_name in tool_names:
-        config = load_tool_configuration(tool_name)
-        if config is None:
-            debug.warning("Failed to read configuration of: " + tool_name)
-        else:
-            all_tool_configs.append(config)
-
-    return all_tool_configs
+    @abstractmethod
+    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
+        """Process analysis result of each tool."""

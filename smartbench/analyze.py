@@ -17,18 +17,20 @@ from typing import List
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
 from smartbench.issue import Issue
+from smartbench.tools.config import RESULTS_DIR
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.slither import slither
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.tool import RESULTS_DIR, Tool
+from smartbench.tools.tool import Tool
 
 
-def record_execution_log(
+def log_analysis_command(
     tool: Tool,
     input_file: str,
     command: str,
-    output: CompletedProcess,
+    env_vars: dict,
     result_dir: str,
 ) -> None:
     """Record execution log of an analysis tool in TOML format."""
@@ -45,8 +47,20 @@ def record_execution_log(
         file.write("-------------------------------------------------------\n")
         file.write("[command]\n")
         file.write("-------------------------------------------------------\n")
+        env = " ".join([f"{v}={env_vars[v]}" for v in env_vars])
+        if env != "":
+            command = env + " " + command
         file.write(f"{command}\n\n")
 
+
+def log_analysis_output(
+    tool: Tool,
+    output: CompletedProcess,
+    result_dir: str,
+) -> None:
+    """Record execution log of an analysis tool in TOML format."""
+    log_file = tool.configure_log_file(result_dir)
+    with open(log_file, "a", encoding="utf-8") as file:
         file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
         file.write("-------------------------------------------------------\n")
@@ -85,16 +99,13 @@ def analyze_test_file(
     test_file: str,
     test_output_dir: str,
     timeout=None,
-    validate=False,
     use_docker=True,
+    validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files."""
-
-    # Configure Solc compiler
-    solc_path = solc.configure_local_solc_compiler(test_file)
 
     # Reset issue index counter for the current test file
     Issue.index_counter = 1
@@ -104,25 +115,29 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        command = tool.make_analysis_command(
+        (command, env_vars) = tool.make_analysis_command(
             test_file,
             test_output_dir,
-            solc_path,
-            use_docker,
             timeout,
+            use_docker,
         )
 
         if command is None:
             print(f"Unable to make analysis command for tool: {tool.name}\n")
             return []
 
+        log_analysis_command(
+            tool, test_file, command, env_vars, test_output_dir
+        )
+
         output = subprocess.run(
             shlex.split(command),
+            env=env_vars,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
         )
-        record_execution_log(tool, test_file, command, output, test_output_dir)
+        log_analysis_output(tool, test_file, command, output, test_output_dir)
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
@@ -161,9 +176,9 @@ def run_analysis_tool(
     test_files: List[str],
     tool_output_dir: str,
     timeout=None,
-    validate=False,
-    jobs=1,
     use_docker=True,
+    jobs=1,
+    validate=False,
 ) -> List[Issue]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -191,7 +206,12 @@ def run_analysis_tool(
 
         # Analyze the test file
         issues = analyze_test_file(
-            tool, test_file, test_output_dir, timeout, validate, use_docker
+            tool,
+            test_file,
+            test_output_dir,
+            timeout,
+            use_docker,
+            validate,
         )
         all_issues += issues
 
@@ -201,10 +221,10 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
-    timeout: int,
-    validate=False,
-    jobs=1,
+    timeout=None,
     use_docker=True,
+    jobs=1,
+    validate=False,
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -234,9 +254,9 @@ def perform_analysis(
             test_files,
             tool_output_dir,
             timeout,
-            validate,
-            jobs,
             use_docker,
+            jobs,
+            validate,
         )
         all_issues += issues
 

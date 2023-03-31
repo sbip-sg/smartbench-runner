@@ -26,8 +26,7 @@ def make_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
-    solc_path: str,
-    timeout=None,
+    timeout=int,
 ):
     """Function to make analysis command for `ILF`. This function should
     have the same signature with other tools.

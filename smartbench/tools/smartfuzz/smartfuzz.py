@@ -45,14 +45,13 @@ def make_analysis_command(
     arguments: str,
     test_file: str,
     output_file: str,
-    solc_path: str,
+    timeout: int,
 ):
     """
     Function to make analysis command for Smartfuzz.
     This function should have the same signature with other tools.
     """
     command = executable_file
-    default_timeout = 10
     command = (
         command
         + " "
@@ -60,7 +59,7 @@ def make_analysis_command(
         + " -r "
         + output_file
         + " "
-        + f" --time {default_timeout} "
+        + f" --time {timeout} "
         + arguments
         or ""
     )

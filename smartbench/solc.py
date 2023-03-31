@@ -78,7 +78,7 @@ def detect_required_solc_version(test_file: str) -> str:
     return best_version
 
 
-def configure_local_solc_compiler(test_file: str) -> str:
+def configure_local_solc_path(test_file: str) -> str:
     """Configure Solc compiler for a test file.
 
     Return path to the required Solc compiler."""
