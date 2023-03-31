@@ -3,7 +3,7 @@
 BASEDIR=$(dirname "$0")
 
 echo "Running isort..."
-isort $BASEDIR/smartbench/
+isort $(git ls-files '*.py')
 
 echo "Running black..."
-black $BASEDIR/smartbench/
+black $(git ls-files '*.py')

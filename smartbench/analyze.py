@@ -139,9 +139,7 @@ def analyze_test_file(
         log_analysis_output(tool, output, test_output_dir)
         if isinstance(tool, Mythril):
             # the results of `mythril` is in `stdout`
-            tool.write_to_output_file(
-                output, test_output_dir
-            )
+            tool.write_to_output_file(output, test_output_dir)
 
     except ValueError as err:
         print(f"Failed to run command: {command}\n")

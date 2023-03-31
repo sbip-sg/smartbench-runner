@@ -13,17 +13,17 @@ from smartbench.bug_annot import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.loc import Location
-from smartbench.tools.slither import slither
-from smartbench.tools.slither.slither import Slither
+from smartbench.tools.confuzzius import confuzzius
+from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
+from smartbench.tools.slither import slither
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian import smartian
 from smartbench.tools.smartian.smartian import Smartian
-from smartbench.tools.confuzzius import confuzzius
-from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.tool import Tool
 
 

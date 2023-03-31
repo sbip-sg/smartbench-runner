@@ -89,7 +89,11 @@ class BugAnnot:
             return IssueKind.REENTRANCY
         if bug_name == "ASSERTION_FAILURE":
             return IssueKind.ASSERTION_FAILURE
-        if bug_name in ["BLOCK_DEPENDENCY", "TIME_MANIPULATION", "BAD_RANDOMNESS"]:
+        if bug_name in [
+            "BLOCK_DEPENDENCY",
+            "TIME_MANIPULATION",
+            "BAD_RANDOMNESS",
+        ]:
             return IssueKind.BLOCK_DEPENDENCY
         if bug_name == ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
             return IssueKind.UNHANDLED_EXCEPTION
@@ -114,6 +118,7 @@ class BugAnnot:
             return IssueKind.TX_ORIGIN_USAGE
         if bug_name == "Timestamp-Dependency":
             return IssueKind.BLOCK_DEPENDENCY
+
     def __str__(self):
         return self.print_concise()
 
@@ -209,29 +214,31 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     warnings.warn("TODO: implement `parse_smartbench_annotations`")
     return []
 
+
 def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `Solidifi` format benchmark."""
     dir_name = os.path.dirname(filename)
     file_name = os.path.basename(filename)
-    file_index = int(''.join(filter(str.isdigit, file_name)))
+    file_index = int("".join(filter(str.isdigit, file_name)))
     # format buggy_48.sol, only 1 number
     # format annotation BugLog_48.csv
     annotation_file = os.path.join(dir_name, f"BugLog_{file_index}.csv")
-    #Read the injected bug logs
+    # Read the injected bug logs
     bug_annots = []
-    with open(annotation_file, 'r') as f:
+    with open(annotation_file, "r") as f:
         reader = csv.reader(f)
         bug_log_list = list(reader)
-        for ibug in bug_log_list[1:len(bug_log_list)]:
+        for ibug in bug_log_list[1 : len(bug_log_list)]:
             bug_annotation = BugAnnot(
-                    ibug[2].strip(),
-                    AnnotFormat.SOLIDIFI_FORMAT,
-                    filename,
-                    int(ibug[0]),
-                    int(ibug[0])+int(ibug[1]),
-                )
+                ibug[2].strip(),
+                AnnotFormat.SOLIDIFI_FORMAT,
+                filename,
+                int(ibug[0]),
+                int(ibug[0]) + int(ibug[1]),
+            )
             bug_annots.append(bug_annotation)
     return bug_annots
+
 
 def guess_annotation_type(filename: str) -> Optional[str]:
     """Guess bug format and parse bug annotations."""

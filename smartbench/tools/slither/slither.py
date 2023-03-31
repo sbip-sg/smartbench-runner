@@ -311,5 +311,3 @@ class Slither(Tool):
             return issues
         except ValueError:
             return []
-
-

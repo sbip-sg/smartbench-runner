@@ -12,9 +12,9 @@ import tomli
 # Library
 from smartbench import debug
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
-from smartbench.tools.slither.slither import Slither
-from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.mythril.mythril import Mythril
+from smartbench.tools.sfuzz.sfuzz import Sfuzz
+from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 

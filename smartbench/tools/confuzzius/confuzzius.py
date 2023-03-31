@@ -205,7 +205,7 @@ class Confuzzius(Tool):
             return []
 
         try:
-            coverages = [(0,0)]
+            coverages = [(0, 0)]
             current_time = 0
 
             all_results = list(output.values())
@@ -215,11 +215,13 @@ class Confuzzius(Tool):
 
             for generation in generations:
                 time = float("{:.1f}".format(generation.get("time")))
-                coverage = float("{:.1f}".format(generation.get("code_coverage")))
+                coverage = float(
+                    "{:.1f}".format(generation.get("code_coverage"))
+                )
                 if time - current_time >= 1:
                     coverages.append((time, coverage))
                     current_time = time
-            return coverages;
+            return coverages
 
         except ValueError:
             return []

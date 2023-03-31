@@ -196,4 +196,6 @@ def match_location_of_issue_to_annotation(issue: Issue, annot: BugAnnot):
     if iloc.start_line is None or iloc.end_line is None:
         return False
     # Pass all criteria to match an issue with a bug annotation
-    return iloc.start_line >= annot.start_line and iloc.end_line <= annot.end_line
+    return (
+        iloc.start_line >= annot.start_line and iloc.end_line <= annot.end_line
+    )

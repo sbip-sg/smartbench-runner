@@ -26,9 +26,9 @@ from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither import slither
 from smartbench.tools.slither.slither import Slither
+from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian import smartian
 from smartbench.tools.smartian.smartian import Smartian
-from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
 
@@ -84,7 +84,13 @@ def process_analysis_result(tool: Tool, test_output_dir: str) -> List[Issue]:
     # TODO: Make this function OOP
     process_result_fn = None
 
-    if isinstance(tool, Slither) or isinstance(tool, Confuzzius) or isinstance(tool, Sfuzz) or isinstance(tool, Mythril) or isinstance(tool, Smartian):
+    if (
+        isinstance(tool, Slither)
+        or isinstance(tool, Confuzzius)
+        or isinstance(tool, Sfuzz)
+        or isinstance(tool, Mythril)
+        or isinstance(tool, Smartian)
+    ):
         return tool.process_analysis_result(test_output_dir)
 
     if tool.is_smartfuzz():
@@ -133,6 +139,7 @@ def parse_existing_analysis_result(
         return []
 
     return parse_result_fn(output_file, log_file)
+
 
 def parse_result_directory(
     results_dir: str, validate_results=False, benchmark_name=None
@@ -185,10 +192,18 @@ def parse_result_directory(
             print(f"Test file: {test_file}\n")
 
             issues = []
-            if isinstance(tool, Slither) or isinstance(tool, Confuzzius) or isinstance(tool, Sfuzz) or isinstance(tool, Mythril) or isinstance(tool, Smartian):
+            if (
+                isinstance(tool, Slither)
+                or isinstance(tool, Confuzzius)
+                or isinstance(tool, Sfuzz)
+                or isinstance(tool, Mythril)
+                or isinstance(tool, Smartian)
+            ):
                 issues = tool.process_analysis_result(test_output_dir)
             else:
-                issues = parse_existing_analysis_result(tool, output_file, log_file)
+                issues = parse_existing_analysis_result(
+                    tool, output_file, log_file
+                )
 
             for issue in issues:
                 print(f"- {issue}")
@@ -202,13 +217,19 @@ def parse_result_directory(
                     print("Skip validating results!")
                 else:
                     print("Bug annotations:")
-                    bug_annots = bug_annot.parse_bug_annotations(test_file, annot_format=benchmark_name)
+                    bug_annots = bug_annot.parse_bug_annotations(
+                        test_file, annot_format=benchmark_name
+                    )
                     annotations += len(bug_annots)
                     for annot in bug_annots:
                         print(f"- {annot.print_concise()}")
 
                     validation = validator.validate_issues(
-                        tool, test_file, issues, bug_annots, benchmark_name=benchmark_name or ""
+                        tool,
+                        test_file,
+                        issues,
+                        bug_annots,
+                        benchmark_name=benchmark_name or "",
                     )
                     correct_bugs += validation.num_correct_issues()
                 print("")
@@ -221,6 +242,7 @@ def parse_result_directory(
     print("Parsing result completed!")
     return all_issues
 
+
 def parse_instruction_coverage(results_dir: str):
     """Function to parse code coverage from analysis results of a tool.
 
@@ -231,7 +253,7 @@ def parse_instruction_coverage(results_dir: str):
     path = pathlib.Path(results_dir)
     if not path.is_dir():
         warning(f"Directory does not exists: {results_dir}")
-        return;
+        return
 
     all_issues: List[Issue] = []
 
@@ -250,7 +272,11 @@ def parse_instruction_coverage(results_dir: str):
             warning(f"Unable to load tool configuration: {tool_id}")
             continue
 
-        if not(isinstance(tool, Sfuzz) or isinstance(tool, Confuzzius) or isinstance(tool, Smartian)):
+        if not (
+            isinstance(tool, Sfuzz)
+            or isinstance(tool, Confuzzius)
+            or isinstance(tool, Smartian)
+        ):
             print(f"Parse coverage is not supported for: {tool.id}")
             continue
 
@@ -263,13 +289,14 @@ def parse_instruction_coverage(results_dir: str):
             if not is_test_result_directory(tool, test_output_dir):
                 continue
 
-            if isinstance(tool, Sfuzz) or isinstance(tool, Confuzzius) or isinstance(tool, Smartian):
+            if (
+                isinstance(tool, Sfuzz)
+                or isinstance(tool, Confuzzius)
+                or isinstance(tool, Smartian)
+            ):
                 coverage = tool.parse_instruction_coverage(test_output_dir)
                 print(f"test_output_dir: {test_output_dir}")
                 print(f"coverage: {coverage}")
 
-
     print("Parsing result completed!")
     return all_issues
-
-
