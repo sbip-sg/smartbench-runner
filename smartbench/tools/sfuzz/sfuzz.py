@@ -42,26 +42,28 @@ class Sfuzz(Tool):
 
     def make_analysis_command(
             self,
-            executable_file: str,
-            arguments: str,
             test_file: str,
-            output_file: str,
+            test_output_dir: str,
             timeout=int,
+            use_docker=False,
     ):
         """
         Function to make analysis command for Slither.
         This function should have the same signature with other tools.
         """
-        command = executable_file
+        cmd = self.path
+        solc_version = solc.detect_required_solc_version(test_file)
+        output_file = self.configure_output_file(test_output_dir)
 
-        if arguments:
-            command = command + " " + arguments
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_arguments:
+            cmd = cmd + " " + self.additional_arguments
 
         # Configure Solc version the test file
-        solc_version = solc.detect_required_solc_version(test_file)
 
-        command = (
-        command
+        cmd = (
+            cmd
             + " "
             + test_file
             + " "
@@ -71,8 +73,8 @@ class Sfuzz(Tool):
             + " "
             + output_file
         )
-        print(f"sfuzz command: {command}")
-        return command
+
+        return (cmd, None)
 
 
 

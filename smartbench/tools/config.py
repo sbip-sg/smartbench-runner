@@ -13,6 +13,7 @@ import tomli
 from smartbench import debug
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.slither.slither import Slither
+from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.tool import Tool
 
@@ -96,6 +97,8 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 ToolConstructor = Confuzzius
             elif tool_id == "mythril":
                 ToolConstructor = Mythril
+            elif tool_id == "sFuzz":
+                ToolConstructor = Sfuzz
 
             return ToolConstructor(
                 tool_id,

@@ -75,7 +75,6 @@ class Mythril(Tool):
             + " -o json  "
         )
 
-        debug(f"mythril command: {cmd}")
         return (cmd, None)
 
 
