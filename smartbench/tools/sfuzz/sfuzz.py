@@ -41,11 +41,11 @@ class Sfuzz(Tool):
         )
 
     def make_analysis_command(
-            self,
-            test_file: str,
-            test_output_dir: str,
-            timeout=int,
-            use_docker=False,
+        self,
+        test_file: str,
+        test_output_dir: str,
+        timeout=int,
+        use_docker=False,
     ) -> Tuple[str, Optional[dict]]:
         """
         Function to make analysis command for Slither.
