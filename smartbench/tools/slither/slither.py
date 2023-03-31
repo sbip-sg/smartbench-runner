@@ -13,7 +13,6 @@ from smartbench import log, solc
 from smartbench.debug import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
-from smartbench.bug_annot import BugAnnot
 from smartbench.tools.tool import Tool
 
 
@@ -312,3 +311,5 @@ class Slither(Tool):
             return issues
         except ValueError:
             return []
+
+
