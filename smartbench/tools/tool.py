@@ -19,6 +19,7 @@ import tomli
 import smartbench
 
 from smartbench import debug
+from smartbench.bug_annot import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.tools.ilf import ilf
@@ -113,7 +114,7 @@ class Tool:
         test_output_dir,
         timeout=None,
         use_docker=True,
-    ) -> Tuple[str, dict]:
+    ) -> Tuple[str, Optional[dict]]:
         """Make an analysis command for a tool."""
         # Deterministically increase from seed. Reproducible randomness
         # TODO: add random seed for fuzzing tools if they support it.
@@ -146,7 +147,7 @@ class Tool:
             self.path, arguments, test_file, output_file, timeout
         )
 
-        return (cmd, {})
+        return (cmd, None)
 
     @abstractmethod
     def make_deployment_command(self, test_file, result_dir) -> str:
@@ -155,3 +156,26 @@ class Tool:
     @abstractmethod
     def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
         """Process analysis result of each tool."""
+
+    def match_location_of_issue_to_annotation(
+        self, issue: Issue, annot: BugAnnot
+    ) -> bool:
+        """Default function to check whether an issue reported by the
+        tool is related to a bug annotation.
+        """
+
+        # Check for issue kind
+        if issue.issue_kind != annot.annot_kind:
+            return False
+
+        iloc: Location = issue.location
+        # Check whether the issue location is covered by the annotation location.
+        if iloc.start_line is None or iloc.end_line is None:
+            return False
+        if iloc.start_line < annot.start_line + 1:
+            return False
+        if iloc.end_line > annot.end_line + 1:
+            return False
+
+        # Pass all criteria to match an issue with a bug annotation
+        return True

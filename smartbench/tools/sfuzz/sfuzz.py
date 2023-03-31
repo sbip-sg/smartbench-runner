@@ -18,7 +18,7 @@ from smartbench.tools.tool import Tool
 # Tool name
 TOOL_NAME = "sFuzz"
 
-class SFuzz(Tool):
+class Sfuzz(Tool):
 
     def __init__(
         self,

@@ -12,7 +12,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import List
+from typing import List, Optional
 
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
@@ -30,7 +30,7 @@ def log_analysis_command(
     tool: Tool,
     input_file: str,
     command: str,
-    env_vars: dict,
+    env_vars: Optional[dict],
     result_dir: str,
 ) -> None:
     """Record execution log of an analysis tool in TOML format."""
@@ -47,8 +47,8 @@ def log_analysis_command(
         file.write("-------------------------------------------------------\n")
         file.write("[command]\n")
         file.write("-------------------------------------------------------\n")
-        env = " ".join([f"{v}={env_vars[v]}" for v in env_vars])
-        if env != "":
+        if env_vars is not None:
+            env = " ".join([f"{v}={env_vars[v]}" for v in env_vars])
             command = env + " " + command
         file.write(f"{command}\n\n")
 
@@ -137,7 +137,7 @@ def analyze_test_file(
             stderr=subprocess.PIPE,
             check=False,
         )
-        log_analysis_output(tool, test_file, command, output, test_output_dir)
+        log_analysis_output(tool, output, test_output_dir)
 
         if tool.is_mythril():
             # the results of `mythril` is in `stdout`
@@ -165,7 +165,9 @@ def analyze_test_file(
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")
-        validation = validator.validate_issues(tool, test_file, issues)
+        validation = validator.validate_issues(
+            tool, test_file, issues, bug_annots
+        )
 
     result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues
