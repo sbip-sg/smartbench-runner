@@ -13,6 +13,9 @@ import tomli
 from smartbench import debug
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.slither.slither import Slither
+from smartbench.tools.sfuzz.sfuzz import Sfuzz
+from smartbench.tools.mythril.mythril import Mythril
+from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
 
@@ -31,7 +34,8 @@ DEFAULT_ARGUMENTS = "default_arguments"
 TOOLS_DIR = os.path.dirname(__file__)
 SMARTBENCH_ROOT_DIR = os.path.dirname(os.path.dirname(TOOLS_DIR))
 # print(f"SMARTBENCH_ROOT_DIR: {SMARTBENCH_ROOT_DIR}")
-RESULTS_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "results")
+RESULTS_DIR = os.path.join(SMARTBENCH_ROOT_DIR, "results")
+# print(f"RESULTS_DIR: {RESULTS_DIR}")
 DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "deploy")
 
 
@@ -93,6 +97,12 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 ToolConstructor = Slither
             elif tool_id == "confuzzius":
                 ToolConstructor = Confuzzius
+            elif tool_id == "mythril":
+                ToolConstructor = Mythril
+            elif tool_id == "sFuzz":
+                ToolConstructor = Sfuzz
+            elif tool_id == "smartian":
+                ToolConstructor = Smartian
 
             return ToolConstructor(
                 tool_id,

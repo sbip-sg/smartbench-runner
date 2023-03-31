@@ -187,12 +187,9 @@ class Confuzzius(Tool):
         except ValueError:
             return []
 
-    def parse_instruction_coverage(
-        self,
-        output_file: str,
-        log_file: str,
-    ):
+    def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Confuzzius"""
+        output_file = os.path.join(test_output_dir, self.output_file)
         output = None
 
         debug("Confuzzius parse file: ", output_file)
@@ -226,3 +223,4 @@ class Confuzzius(Tool):
 
         except ValueError:
             return []
+
