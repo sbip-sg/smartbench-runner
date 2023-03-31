@@ -156,6 +156,8 @@ class Sfuzz(Tool):
     def match_location_of_issue_to_annotation(self, issue: Issue, annot: BugAnnot):
         """Function to check whether an reported issue is related to a bug
         annotation."""
+        # Check for issue kind
+        return issue.issue_kind == annot.annot_kind;
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse instruction coverage of sFuzz"""

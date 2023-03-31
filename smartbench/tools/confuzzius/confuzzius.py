@@ -226,4 +226,3 @@ class Confuzzius(Tool):
 
         except ValueError:
             return []
-
