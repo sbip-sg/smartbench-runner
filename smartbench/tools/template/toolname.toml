@@ -5,5 +5,5 @@ homepage = "https://github.com/tool/toolname"
 category = "Static analysis"
 
 [command]
-path = "..."
+executable = "..."
 default_arguments = ""

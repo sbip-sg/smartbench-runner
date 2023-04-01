@@ -5,6 +5,6 @@ homepage = "https://github.com/ConsenSys/mythril"
 category = "Symbolic Execution"
 
 [command]
-path = "myth"
+executable = "myth"
 default_arguments = ""
 default_timeout = 60

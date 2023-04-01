@@ -5,6 +5,6 @@ homepage = "https://github.com/sbip-sg/smart-fuzz"
 category = "Fuzzing"
 
 [command]
-path = "sh smartbench/tools/smartfuzz/smartfuzz.sh"
+executable = "sh smartbench/tools/smartfuzz/smartfuzz.sh"
 default_arguments = ""
 default_timeout = 10

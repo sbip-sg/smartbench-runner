@@ -5,6 +5,6 @@ homepage = "https://github.com/thanhtoantnt/sFuzz"
 category = "Fuzzing tool"
 
 [command]
-path = "sh smartbench/tools/sfuzz/sfuzz.sh"
+executable = "sh smartbench/tools/sfuzz/sfuzz.sh"
 default_arguments = ""
 default_timeout = 60

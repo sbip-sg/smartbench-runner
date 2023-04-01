@@ -16,6 +16,9 @@ from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
 
 
+SLITHER_DIR = os.path.dirname(__file__)
+
+
 class Slither(Tool):
     def __init__(
         self,
@@ -23,7 +26,7 @@ class Slither(Tool):
         name: str,
         homepage: str,
         category: str,
-        path: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -34,7 +37,7 @@ class Slither(Tool):
             name,
             homepage,
             category,
-            path,
+            executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -49,20 +52,18 @@ class Slither(Tool):
         """
         Function to make a local analysis command for Slither.
         """
-        cmd = self.path
-        solc_version = solc.detect_required_solc_version(test_file)
+        command = os.path.join(SLITHER_DIR, self.executable)
 
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            command = command + " " + self.default_arguments
         if self.additional_arguments:
-            cmd = cmd + " " + self.additional_arguments
+            command = command + " " + self.additional_arguments
 
         output_file = self.configure_output_file(test_output_dir)
 
-        cmd = f"{cmd} {test_file} --json {output_file}"
-        env_vars = {"SOLC_VERSION": solc_version}
+        command = f"{command} {test_file} --json {output_file}"
 
-        return (cmd, env_vars)
+        return (command, None)
 
     def make_analysis_command_docker(
         self,
@@ -73,7 +74,7 @@ class Slither(Tool):
         """
         Function to make a local analysis command for Slither.
         """
-        cmd = self.path
+        cmd = self.executable
         solc_version = solc.detect_required_solc_version(test_file)
 
         if self.default_arguments:

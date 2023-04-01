@@ -5,6 +5,6 @@ homepage = "https://github.com/crytic/slither"
 category = "Static analysis"
 
 [command]
-path = "bash run-slither.sh"
+executable = "run-slither.sh"
 default_arguments = ""
 default_timeout = 60

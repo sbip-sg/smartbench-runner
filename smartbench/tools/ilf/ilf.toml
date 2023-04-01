@@ -5,6 +5,6 @@ homepage = "https://github.com/eth-sri/ilf"
 category = "Fuzzing"
 
 [command]
-path = "..."
+executable = "..."
 default_arguments = ""
 default_timeout = 60

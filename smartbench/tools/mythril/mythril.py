@@ -12,9 +12,9 @@ from typing import List, Optional, Tuple
 # Library
 from smartbench import bug_annot, logger, solc
 from smartbench.bug_annot import BugAnnot
-from smartbench.printer import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
+from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
 
 
@@ -25,7 +25,7 @@ class Mythril(Tool):
         name: str,
         homepage: str,
         category: str,
-        path: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -37,7 +37,7 @@ class Mythril(Tool):
             name,
             homepage,
             category,
-            path,
+            executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -56,7 +56,7 @@ class Mythril(Tool):
 
         """
 
-        cmd = self.path
+        cmd = self.executable
         solc_version = solc.detect_required_solc_version(test_file)
 
         if self.default_arguments:

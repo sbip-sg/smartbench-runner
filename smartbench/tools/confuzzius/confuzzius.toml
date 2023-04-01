@@ -5,6 +5,6 @@ homepage = "https://github.com/christoftorres/ConFuzzius"
 category = "Fuzzing"
 
 [command]
-path = "bash smartbench/tools/confuzzius/confuzzius.sh"
+executable = "bash smartbench/tools/confuzzius/confuzzius.sh"
 default_arguments = ""
 default_timeout = 60

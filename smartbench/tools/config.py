@@ -26,16 +26,14 @@ NAME = "name"
 HOMEPAGE = "homepage"
 CATEGORY = "category"
 COMMAND = "command"
-PATH = "path"
+EXECUTABLE = "executable"
 DEFAULT_TIMEOUT = "default_timeout"
 DEFAULT_ARGUMENTS = "default_arguments"
 
 # Initiate some global varibles
 TOOLS_DIR = os.path.dirname(__file__)
 SMARTBENCH_ROOT_DIR = os.path.dirname(os.path.dirname(TOOLS_DIR))
-# print(f"SMARTBENCH_ROOT_DIR: {SMARTBENCH_ROOT_DIR}")
 RESULTS_DIR = os.path.join(SMARTBENCH_ROOT_DIR, "results")
-# print(f"RESULTS_DIR: {RESULTS_DIR}")
 DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "deploy")
 
 
@@ -83,8 +81,8 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
 
             assert command is not None
 
-            if (path := command.get(PATH)) is None:
-                report_config_error(PATH, cfg_fpath)
+            if (path := command.get(EXECUTABLE)) is None:
+                report_config_error(EXECUTABLE, cfg_fpath)
 
             if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
                 report_config_error(DEFAULT_ARGUMENTS, cfg_fpath)

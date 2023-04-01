@@ -5,6 +5,6 @@ homepage = "https://github.com/SoftSec-KAIST/Smartian"
 category = "Fuzzing"
 
 [command]
-path = "sh smartbench/tools/smartian/smartian.sh"
+executable = "sh smartbench/tools/smartian/smartian.sh"
 default_arguments = ""
 default_timeout = 60
