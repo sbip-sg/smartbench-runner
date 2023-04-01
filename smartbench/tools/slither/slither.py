@@ -40,31 +40,72 @@ class Slither(Tool):
             additional_arguments,
         )
 
-    def make_analysis_command(
+    def make_analysis_command_local(
         self,
         test_file: str,
         test_output_dir: str,
-        timeout=int,
-        use_docker=True,
+        timeout: int = None,
     ) -> Tuple[str, Optional[dict]]:
         """
-        Function to make analysis command for Slither.
-        This function should have the same signature with other tools.
+        Function to make a local analysis command for Slither.
         """
         cmd = self.path
+        solc_version = solc.detect_required_solc_version(test_file)
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_arguments:
             cmd = cmd + " " + self.additional_arguments
 
-        # Configure Solc for the test file
-        solc_path = solc.configure_local_solc_path(test_file)
         output_file = self.configure_output_file(test_output_dir)
 
-        cmd = f"{cmd} {test_file} --solc {solc_path} --json {output_file}"
+        cmd = f"{cmd} {test_file} --json {output_file}"
+        env_vars = {"SOLC_VERSION": solc_version}
 
-        return (cmd, None)
+        return (cmd, env_vars)
+
+    def make_analysis_command_docker(
+        self,
+        test_file: str,
+        test_output_dir: str,
+        timeout: int = None,
+    ) -> Tuple[str, Optional[dict]]:
+        """
+        Function to make a local analysis command for Slither.
+        """
+        cmd = self.path
+        solc_version = solc.detect_required_solc_version(test_file)
+
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_arguments:
+            cmd = cmd + " " + self.additional_arguments
+
+        output_file = self.configure_output_file(test_output_dir)
+
+        cmd = f"{cmd} {test_file} --json {output_file}"
+        env_vars = {"SOLC_VERSION": solc_version}
+
+        return (cmd, env_vars)
+
+    def make_analysis_command(
+        self,
+        test_file: str,
+        test_output_dir: str,
+        timeout: int,
+        use_docker=True,
+    ) -> Tuple[str, Optional[dict]]:
+        """
+        Function to make analysis command for Slither.
+        """
+        if use_docker:
+            return self.make_analysis_command_local(
+                test_file, test_output_dir, timeout
+            )
+        else:
+            return self.make_analysis_command_local(
+                test_file, test_output_dir, timeout
+            )
 
     def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by Slither."""

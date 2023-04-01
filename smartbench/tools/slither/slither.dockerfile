@@ -7,11 +7,13 @@ WORKDIR /root/
 
 # Install Ubuntu packages
 RUN apt-get update
-RUN apt-get install -y git python3 python-is-python3 python3-pip 
+RUN apt-get install -y git python3 python-is-python3 python3-pip
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
-RUN echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install
+RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do\
+    solc-select install $v;\
+    done
 
 # Install Solc-detect
 RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
