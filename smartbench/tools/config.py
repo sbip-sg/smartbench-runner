@@ -10,7 +10,7 @@ from typing import Callable, List, Optional
 import tomli
 
 # Library
-from smartbench import debug
+from smartbench.debugger import warning
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
@@ -114,7 +114,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 default_timeout,
             )
         except AttributeError:
-            debug.warning("Error in configuration of tool: " + str(tool_name))
+            warning("Error in configuration of tool: " + str(tool_name))
             return None
 
 
@@ -130,7 +130,7 @@ def configure_analysis_tools(args) -> List[Tool]:
     for tool_name in tool_names:
         config = load_tool_configuration(tool_name)
         if config is None:
-            debug.warning("Failed to read configuration of: " + tool_name)
+            warning("Failed to read configuration of: " + tool_name)
         else:
             all_tool_configs.append(config)
 

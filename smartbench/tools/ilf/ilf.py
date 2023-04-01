@@ -10,7 +10,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import log
-from smartbench.debug import debug, warning
+from smartbench.debugger import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 

@@ -16,9 +16,9 @@ from typing import List, Optional
 
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
+from smartbench.debugger import debug
 from smartbench.issue import Issue
 from smartbench.tools.config import RESULTS_DIR
-from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.smartfuzz import smartfuzz
@@ -128,6 +128,9 @@ def analyze_test_file(
         log_analysis_command(
             tool, test_file, command, env_vars, test_output_dir
         )
+
+        debug(f"COMMAND: {command}")
+        debug(f"ENV_VARS: {env_vars}")
 
         output = subprocess.run(
             shlex.split(command),

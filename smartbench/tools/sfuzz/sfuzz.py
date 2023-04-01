@@ -11,7 +11,7 @@ from typing import List, Optional, Tuple, Union
 # Library
 from smartbench import log, solc
 from smartbench.bug_annot import BugAnnot
-from smartbench.debug import debug, warning
+from smartbench.debugger import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.tools.tool import Tool

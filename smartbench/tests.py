@@ -13,7 +13,6 @@ from typing import List
 # Library
 from smartbench import bug_annot
 from smartbench.bug_annot import BugAnnot
-from smartbench.debug import debug
 
 
 def is_solidity_file(filename) -> bool:

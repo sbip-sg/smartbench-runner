@@ -12,7 +12,7 @@ from typing import List, Optional
 
 # Library
 from smartbench.bugdb.sbc import SBC
-from smartbench.debug import warning
+from smartbench.debugger import warning
 from smartbench.issue import IssueKind
 
 

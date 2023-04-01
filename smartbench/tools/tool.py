@@ -18,7 +18,6 @@ import tomli
 # Library
 import smartbench
 
-from smartbench import debug
 from smartbench.bug_annot import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location

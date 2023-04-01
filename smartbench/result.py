@@ -15,7 +15,7 @@ import more_itertools as mit
 # Library
 from smartbench import bug_annot, log, validator
 from smartbench.bug_annot import BugAnnot
-from smartbench.debug import warning
+from smartbench.debugger import warning
 from smartbench.issue import Issue, Severity
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius import confuzzius
