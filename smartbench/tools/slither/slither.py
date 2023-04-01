@@ -9,10 +9,10 @@ import os
 from typing import List, Optional, Tuple
 
 # Library
-from smartbench import log, solc
-from smartbench.debugger import debug, warning
+from smartbench import logger, solc
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
+from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
 
 
@@ -99,7 +99,7 @@ class Slither(Tool):
         Function to make analysis command for Slither.
         """
         if use_docker:
-            return self.make_analysis_command_local(
+            return self.make_analysis_command_docker(
                 test_file, test_output_dir, timeout
             )
         else:

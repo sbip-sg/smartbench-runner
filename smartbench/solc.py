@@ -14,7 +14,7 @@ import sys
 import solc_detect
 
 # Library
-from smartbench.debugger import debug
+from smartbench.printer import debug
 
 
 def install_solc_maybe(version) -> str:

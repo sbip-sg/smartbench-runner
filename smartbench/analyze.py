@@ -16,7 +16,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
-from smartbench.debugger import debug
+from smartbench.printer import debug
 from smartbench.issue import Issue
 from smartbench.tools.config import RESULTS_DIR
 from smartbench.tools.mythril import mythril

@@ -6,6 +6,7 @@
 from typing import Optional
 
 
+## REVIEW: consider moving this function to to other module
 def get_input_test_file(log_file: str) -> Optional[str]:
     """Get input test file from a log file"""
     with open(log_file, "r", encoding="utf-8") as file:

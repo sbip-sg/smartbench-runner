@@ -10,7 +10,7 @@ from typing import Callable, List, Optional
 import tomli
 
 # Library
-from smartbench.debugger import warning
+from smartbench.printer import warning
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz

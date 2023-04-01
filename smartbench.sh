@@ -1,7 +1,7 @@
-#!/usr/bin/bash
+#!/usr/bin/sh
 
 # Configure virtual environment venv
-source venv/bin/activate
+. venv/bin/activate
 
 # Run Smartbench
 python -m smartbench.smartbench $@
