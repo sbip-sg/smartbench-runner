@@ -18,16 +18,11 @@ from smartbench.bug_annot import BugAnnot
 from smartbench.issue import Issue, Severity
 from smartbench.printer import warning
 from smartbench.tools.config import load_tool_configuration
-from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
-from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
-from smartbench.tools.slither import slither
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.smartian import smartian
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
@@ -187,7 +182,7 @@ def parse_result_directory(
             output_file = os.path.join(test_output_dir, tool.output_file)
             log_file = os.path.join(test_output_dir, tool.log_file)
 
-            test_file = log.get_input_test_file(log_file)
+            test_file = logger.get_input_test_file(log_file)
             print(f"{'-' * 45}\n")
             print(f"Test file: {test_file}\n")
 

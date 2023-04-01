@@ -48,7 +48,7 @@ class Slither(Tool):
         test_file: str,
         test_output_dir: str,
         timeout: int = None,
-    ) -> Tuple[str, Optional[dict]]:
+    ) -> str:
         """
         Function to make a local analysis command for Slither.
         """
@@ -63,31 +63,29 @@ class Slither(Tool):
 
         command = f"{command} {test_file} --json {output_file}"
 
-        return (command, None)
+        return command
 
     def make_analysis_command_docker(
         self,
         test_file: str,
         test_output_dir: str,
         timeout: int = None,
-    ) -> Tuple[str, Optional[dict]]:
+    ) -> str:
         """
         Function to make a local analysis command for Slither.
         """
-        cmd = self.executable
-        solc_version = solc.detect_required_solc_version(test_file)
+        command = self.executable
 
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            command = command + " " + self.default_arguments
         if self.additional_arguments:
-            cmd = cmd + " " + self.additional_arguments
+            command = command + " " + self.additional_arguments
 
         output_file = self.configure_output_file(test_output_dir)
 
-        cmd = f"{cmd} {test_file} --json {output_file}"
-        env_vars = {"SOLC_VERSION": solc_version}
+        command = f"{command} {test_file} --json {output_file}"
 
-        return (cmd, env_vars)
+        return command
 
     def make_analysis_command(
         self,
@@ -95,7 +93,7 @@ class Slither(Tool):
         test_output_dir: str,
         timeout: int,
         use_docker=True,
-    ) -> Tuple[str, Optional[dict]]:
+    ) -> str:
         """
         Function to make analysis command for Slither.
         """

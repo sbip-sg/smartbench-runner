@@ -16,8 +16,8 @@ from typing import List, Optional
 
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
-from smartbench.printer import debug
 from smartbench.issue import Issue
+from smartbench.printer import debug
 from smartbench.tools.config import RESULTS_DIR
 from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
@@ -29,7 +29,6 @@ def log_analysis_command(
     tool: Tool,
     input_file: str,
     command: str,
-    env_vars: Optional[dict],
     result_dir: str,
 ) -> None:
     """Record execution log of an analysis tool in TOML format."""
@@ -46,9 +45,6 @@ def log_analysis_command(
         file.write("-------------------------------------------------------\n")
         file.write("[command]\n")
         file.write("-------------------------------------------------------\n")
-        if env_vars is not None:
-            env = " ".join([f"{v}={env_vars[v]}" for v in env_vars])
-            command = env + " " + command
         file.write(f"{command}\n\n")
 
 
@@ -114,7 +110,7 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        (command, env_vars) = tool.make_analysis_command(
+        command = tool.make_analysis_command(
             test_file,
             test_output_dir,
             timeout,
@@ -125,16 +121,12 @@ def analyze_test_file(
             print(f"Unable to make analysis command for tool: {tool.name}\n")
             return []
 
-        log_analysis_command(
-            tool, test_file, command, env_vars, test_output_dir
-        )
+        log_analysis_command(tool, test_file, command, test_output_dir)
 
         debug(f"COMMAND: {command}")
-        debug(f"ENV_VARS: {env_vars}")
 
         output = subprocess.run(
             shlex.split(command),
-            env=env_vars,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,

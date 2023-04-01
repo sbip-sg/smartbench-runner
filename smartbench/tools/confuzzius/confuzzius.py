@@ -49,13 +49,12 @@ class Confuzzius(Tool):
         test_output_dir: str,
         timeout=None,
         use_docker=True,
-    ) -> Tuple[str, dict]:
+    ) -> str:
         """
         Function to make analysis command for Confuzzius.
         This function should have the same signature with other tools.
         """
         cmd = self.executable
-        solc_version = solc.detect_required_solc_version(test_file)
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
@@ -66,10 +65,7 @@ class Confuzzius(Tool):
         timeout = timeout if timeout is not None else self.default_timeout
 
         # Configure Solc version by environment variable.
-        cmd = f"{cmd} -s {test_file} -r {out_file} -t {timeout}"
-        env_vars = {"SOLC_VERSION": solc_version}
-
-        return (cmd, env_vars)
+        return f"{cmd} -s {test_file} -r {out_file} -t {timeout}"
 
     def parse_issue_severity(self, severity: Optional[str]) -> Severity:
         if severity is None:

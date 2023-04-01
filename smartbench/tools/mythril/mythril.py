@@ -50,22 +50,22 @@ class Mythril(Tool):
         test_output_dir: str,
         timeout=int,
         use_docker=False,
-    ) -> Tuple[str, Optional[dict]]:
+    ) -> str:
         """Function to make analysis command for `Mythril`. This function should
         have the same signature with other tools.
 
         """
 
-        cmd = self.executable
+        command = self.executable
         solc_version = solc.detect_required_solc_version(test_file)
 
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            command = command + " " + self.default_arguments
         if self.additional_arguments:
-            cmd = cmd + " " + self.additional_arguments
+            command = command + " " + self.additional_arguments
 
-        cmd = (
-            cmd
+        command = (
+            command
             + " analyze "
             + test_file
             + " --execution-timeout "
@@ -75,7 +75,7 @@ class Mythril(Tool):
             + " -o json  "
         )
 
-        return (cmd, None)
+        return command
 
     def parse_severity(self, severity: Optional[str]) -> Severity:
         """Parse severity level of issue detected by Mythril."""

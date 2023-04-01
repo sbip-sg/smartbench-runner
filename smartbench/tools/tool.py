@@ -98,7 +98,7 @@ class Tool:
         test_output_dir,
         timeout=None,
         use_docker=True,
-    ) -> Tuple[str, Optional[dict]]:
+    ) -> str:
         """Make an analysis command for a tool."""
         # Deterministically increase from seed. Reproducible randomness
         # TODO: add random seed for fuzzing tools if they support it.
@@ -125,7 +125,7 @@ class Tool:
             self.executable, arguments, test_file, output_file, timeout
         )
 
-        return (cmd, None)
+        return cmd
 
     @abstractmethod
     def make_deployment_command(self, test_file, result_dir) -> str:
