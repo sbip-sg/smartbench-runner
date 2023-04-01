@@ -15,3 +15,9 @@ source venv/bin/activate
 
 # Install requirements
 pip install -r $BASEDIR/requirements.txt
+
+# Install Solc-select and all Solc compilers
+pip install solc-select
+for v in $(echo $(solc-select install) | sed 's/^.*: //'); do
+    solc-select install $v;
+done
