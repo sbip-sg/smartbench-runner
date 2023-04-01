@@ -17,6 +17,9 @@ from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
 
 
+CONFUZZIUS_DIR = os.path.dirname(__file__)
+
+
 class Confuzzius(Tool):
     def __init__(
         self,
@@ -54,7 +57,7 @@ class Confuzzius(Tool):
         Function to make analysis command for Confuzzius.
         This function should have the same signature with other tools.
         """
-        cmd = self.executable
+        cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
@@ -65,7 +68,7 @@ class Confuzzius(Tool):
         timeout = timeout if timeout is not None else self.default_timeout
 
         # Configure Solc version by environment variable.
-        return f"{cmd} -s {test_file} -r {out_file} -t {timeout}"
+        return f"{cmd} {test_file} -r {out_file} -t {timeout}"
 
     def parse_issue_severity(self, severity: Optional[str]) -> Severity:
         if severity is None:
