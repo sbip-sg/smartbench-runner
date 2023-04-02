@@ -41,7 +41,7 @@ def install_virtual_env():
 
 
 def make_analysis_command(
-    executable_file: str,
+    local_executable_file: str,
     arguments: str,
     test_file: str,
     output_file: str,
@@ -51,7 +51,7 @@ def make_analysis_command(
     Function to make analysis command for Smartfuzz.
     This function should have the same signature with other tools.
     """
-    command = executable_file
+    command = local_executable_file
     command = (
         command
         + " "

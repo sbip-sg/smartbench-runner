@@ -26,7 +26,7 @@ RUN pip install -r $CONFUZZIUS_DIR/fuzzer/requirements.txt
 
 # Install Solc
 RUN pip install py-solc --force-reinstall
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Prepare testing environments
 RUN mkdir examples

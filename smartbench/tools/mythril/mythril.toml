@@ -5,6 +5,7 @@ homepage = "https://github.com/ConsenSys/mythril"
 category = "Symbolic Execution"
 
 [command]
-executable = "myth"
+local_executable = "myth"
+docker_executable = "..."
 default_arguments = ""
 default_timeout = 60

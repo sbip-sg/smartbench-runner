@@ -5,6 +5,7 @@ homepage = "https://github.com/SoftSec-KAIST/Smartian"
 category = "Fuzzing"
 
 [command]
-executable = "sh smartbench/tools/smartian/smartian.sh"
+local_executable = "sh smartbench/tools/smartian/smartian.sh"
+docker_executable = "..."
 default_arguments = ""
 default_timeout = 60

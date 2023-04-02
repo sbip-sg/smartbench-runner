@@ -43,7 +43,7 @@ pip install -r $TOOL_DIR/fuzzer/requirements.txt
 
 # Install Solc packages
 pip install solc-select py-solc --force-reinstall
-pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
+pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Install all Solc compiler by Solc-select
 echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install

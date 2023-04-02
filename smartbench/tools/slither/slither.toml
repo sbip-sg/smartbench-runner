@@ -5,6 +5,7 @@ homepage = "https://github.com/crytic/slither"
 category = "Static analysis"
 
 [command]
-executable = "run-slither.sh"
+local_executable = "run-slither-local.sh"
+docker_executable = "..."
 default_arguments = ""
 default_timeout = 60

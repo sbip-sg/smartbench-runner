@@ -24,7 +24,7 @@ class Smartian(Tool):
         name: str,
         homepage: str,
         category: str,
-        executable: str,
+        local_executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -36,7 +36,7 @@ class Smartian(Tool):
             name,
             homepage,
             category,
-            executable,
+            local_executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -55,7 +55,7 @@ class Smartian(Tool):
 
         """
 
-        cmd = self.executable
+        cmd = self.local_executable
         solc_version = solc.detect_required_solc_version(test_file)
         output_file = self.configure_output_file(test_output_dir)
 

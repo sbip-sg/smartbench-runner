@@ -20,4 +20,6 @@ TOOL_SRC_DIR=$TOOL_DIR"/repo/confuzzius"
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Run Confuzzius
-SOLC_VERSION=$SOLC_VER python $TOOL_SRC_DIR/fuzzer/main.py --evm byzantium -s $TEST_FILE $OTHER_ARGS
+SOLC_VERSION=$SOLC_VER python $TOOL_SRC_DIR/fuzzer/main.py \
+    --evm byzantium \
+    -s $TEST_FILE $OTHER_ARGS

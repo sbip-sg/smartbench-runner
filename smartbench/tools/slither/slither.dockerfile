@@ -16,7 +16,7 @@ RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do\
     done
 
 # Install Solc-detect
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.5
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Install Slither 0.9.3
 RUN pip install solc-select slither-analyzer==0.9.3
@@ -29,5 +29,5 @@ ADD examples/*.sol examples/
 RUN mkdir benchmarks
 RUN mkdir results
 
-# Entry point when running the container as an executable
+# Entry point when running the container as an local_executable
 ENTRYPOINT [ "/bin/bash" ]

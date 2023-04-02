@@ -5,6 +5,7 @@ homepage = "https://github.com/eth-sri/ilf"
 category = "Fuzzing"
 
 [command]
-executable = "..."
+local_executable = "..."
+docker_executable = "..."
 default_arguments = ""
 default_timeout = 60

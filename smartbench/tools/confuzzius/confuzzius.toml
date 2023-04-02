@@ -5,6 +5,7 @@ homepage = "https://github.com/christoftorres/ConFuzzius"
 category = "Fuzzing"
 
 [command]
-executable = "run-confuzzius-local.sh"
+local_executable = "run-confuzzius-local.sh"
+docker_executable = "..."
 default_arguments = ""
 default_timeout = 60
