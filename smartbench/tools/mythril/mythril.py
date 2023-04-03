@@ -25,7 +25,7 @@ class Mythril(Tool):
         name: str,
         homepage: str,
         category: str,
-        local_executable: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -37,7 +37,7 @@ class Mythril(Tool):
             name,
             homepage,
             category,
-            local_executable,
+            executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -56,7 +56,7 @@ class Mythril(Tool):
 
         """
 
-        command = self.local_executable
+        command = self.executable
         solc_version = solc.detect_required_solc_version(test_file)
 
         if self.default_arguments:

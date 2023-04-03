@@ -5,7 +5,6 @@ homepage = "https://github.com/thanhtoantnt/sFuzz"
 category = "Fuzzing tool"
 
 [command]
-local_executable = "sh smartbench/tools/sfuzz/sfuzz.sh"
-docker_executable = "..."
+executable = "sh smartbench/tools/sfuzz/sfuzz.sh"
 default_arguments = ""
 default_timeout = 60

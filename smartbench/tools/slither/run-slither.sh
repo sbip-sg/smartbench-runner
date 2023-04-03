@@ -3,7 +3,12 @@
 # Usage:
 #   ./run-slither.sh <test-file> <additional arguments>
 #
-# NOTE: test file must be the first argument
+# NOTE:
+#   - Test file must be the first argument
+#   - This script must be configured so that it can be used both to run
+#     in a Docker container as well as to run locally.
+#
+
 
 # Arguments of Slither
 TEST_FILE=$(realpath $1)

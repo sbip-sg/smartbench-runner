@@ -34,7 +34,7 @@ class Tool:
         name: str,
         homepage: str,
         category: str,
-        local_executable: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -45,7 +45,7 @@ class Tool:
         self.name: str = str(name)
         self.homepage: str = str(homepage)
         self.category: str = str(category)
-        self.local_executable: str = str(local_executable)
+        self.executable: str = str(executable)
         self.default_arguments: str = default_arguments
         self.additional_arguments: Optional[str] = additional_arguments
         self.default_timeout = int(default_timeout)
@@ -60,7 +60,7 @@ class Tool:
             '{ Tool: "'
             + self.name
             + '", Path: "'
-            + self.local_executable
+            + self.executable
             + '", Arguments: "'
             + self.additional_arguments
             + '"}'
@@ -122,7 +122,7 @@ class Tool:
         output_file = self.configure_output_file(test_output_dir)
 
         cmd = make_command(
-            self.local_executable, arguments, test_file, output_file, timeout
+            self.executable, arguments, test_file, output_file, timeout
         )
 
         return cmd

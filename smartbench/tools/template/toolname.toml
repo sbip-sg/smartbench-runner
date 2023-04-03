@@ -5,7 +5,6 @@ homepage = "https://github.com/tool/toolname"
 category = "Static analysis"
 
 [command]
-local_executable = "..."
-docker_executable = "..."
+executable = "..."
 default_arguments = ""
 default_timeout = 60

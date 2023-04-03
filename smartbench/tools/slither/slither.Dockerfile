@@ -32,5 +32,5 @@ RUN mkdir results
 # Copy executable file
 ADD run-slither.sh /root/
 
-# Entry point when running the container as an local_executable
+# Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]

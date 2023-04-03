@@ -27,7 +27,7 @@ class Confuzzius(Tool):
         name: str,
         homepage: str,
         category: str,
-        local_executable: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -39,7 +39,7 @@ class Confuzzius(Tool):
             name,
             homepage,
             category,
-            local_executable,
+            executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -57,7 +57,7 @@ class Confuzzius(Tool):
         Function to make analysis command for Confuzzius.
         This function should have the same signature with other tools.
         """
-        cmd = os.path.join(CONFUZZIUS_DIR, self.local_executable)
+        cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments

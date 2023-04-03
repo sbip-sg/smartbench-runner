@@ -26,7 +26,7 @@ NAME = "name"
 HOMEPAGE = "homepage"
 CATEGORY = "category"
 COMMAND = "command"
-LOCAL_EXECUTABLE = "local_executable"
+EXECUTABLE = "executable"
 DEFAULT_TIMEOUT = "default_timeout"
 DEFAULT_ARGUMENTS = "default_arguments"
 
@@ -81,8 +81,8 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
 
             assert command is not None
 
-            if (path := command.get(LOCAL_EXECUTABLE)) is None:
-                report_config_error(LOCAL_EXECUTABLE, cfg_fpath)
+            if (path := command.get(EXECUTABLE)) is None:
+                report_config_error(EXECUTABLE, cfg_fpath)
 
             if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
                 report_config_error(DEFAULT_ARGUMENTS, cfg_fpath)

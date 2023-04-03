@@ -22,7 +22,7 @@ TOOL_NAME = "ilf"
 
 
 def make_analysis_command(
-    local_executable_file: str,
+    executable_file: str,
     arguments: str,
     test_file: str,
     output_file: str,

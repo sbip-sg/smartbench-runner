@@ -24,8 +24,7 @@ class Sfuzz(Tool):
         name: str,
         homepage: str,
         category: str,
-        local_executable: str,
-        docker_executable: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -36,8 +35,7 @@ class Sfuzz(Tool):
             name,
             homepage,
             category,
-            local_executable,
-            docker_executable,
+            executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -54,7 +52,7 @@ class Sfuzz(Tool):
         Function to make analysis command for Slither.
         This function should have the same signature with other tools.
         """
-        cmd = self.local_executable
+        cmd = self.executable
         solc_version = solc.detect_required_solc_version(test_file)
         output_file = self.configure_output_file(test_output_dir)
 

@@ -26,7 +26,7 @@ class Slither(Tool):
         name: str,
         homepage: str,
         category: str,
-        local_executable: str,
+        executable: str,
         default_arguments: str,
         default_timeout: int,
         additional_arguments: Optional[str] = None,
@@ -37,7 +37,7 @@ class Slither(Tool):
             name,
             homepage,
             category,
-            local_executable,
+            executable,
             default_arguments,
             default_timeout,
             additional_arguments,
@@ -53,7 +53,7 @@ class Slither(Tool):
         Function to make a local analysis command for Slither.
         """
 
-        command = os.path.join(SLITHER_DIR, self.local_executable)
+        command = os.path.join(SLITHER_DIR, self.executable)
         if self.default_arguments:
             command = command + " " + self.default_arguments
         if self.additional_arguments:
@@ -72,7 +72,7 @@ class Slither(Tool):
         """
         Function to make a local analysis command for Slither.
         """
-        command = self.local_executable
+        command = self.executable
 
         if self.default_arguments:
             command = command + " " + self.default_arguments

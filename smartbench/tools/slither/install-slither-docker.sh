@@ -24,7 +24,7 @@ clean_up () {
     fi
 }
 
-trap 'clean_up 1' ERR
+trap "clean_up 1" ERR
 
 # Configure tool name
 TOOL_ID="slither"
@@ -61,7 +61,7 @@ cp $HOST_EXAMPLES_DIR/*.sol $TOOL_EXAMPLES_DIR
 # Build Docker image
 echo "============================================="
 echo "Building Docker image for $TOOL_NAME..."
-docker build -f slither.dockerfile -t $DOCKER_IMAGE .
+docker build -f slither.Dockerfile -t $DOCKER_IMAGE .
 
 # Create a new Docker container that share the two folders:
 # `benchmarks` and `results` with the host system.
