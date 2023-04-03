@@ -94,7 +94,7 @@ def analyze_test_file(
     test_file: str,
     test_output_dir: str,
     timeout=None,
-    use_docker=True,
+    docker_container=None,
     validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -110,11 +110,17 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        command = tool.make_analysis_command(
-            test_file,
-            test_output_dir,
-            timeout,
-            use_docker,
+        command = (
+            tool.make_analysis_command_local(
+                test_file, test_output_dir, timeout
+            )
+            if docker_container is None
+            else tool.make_analysis_command_docker(
+                docker_container,
+                test_file,
+                test_output_dir,
+                timeout,
+            )
         )
 
         if command is None:
@@ -164,13 +170,11 @@ def analyze_test_file(
     return issues
 
 
-def run_analysis_tool(
+def run_analysis_tool_locally(
     tool: Tool,
     test_files: List[str],
     tool_output_dir: str,
     timeout=None,
-    use_docker=True,
-    jobs=1,
     validate=False,
 ) -> List[Issue]:
     """Run one analysis tool for all `test_files` and write all results
@@ -187,9 +191,6 @@ def run_analysis_tool(
 
     all_issues = []
 
-    # if (tool.name.casefold() == smartfuzz.TOOL_NAME.casefold()):
-    #     smartfuzz.install_virtual_env()
-
     for test_file in test_files:
         # Prepare output directory for one test file
         rel_path = os.path.relpath(test_file, start=parent_path)
@@ -203,7 +204,52 @@ def run_analysis_tool(
             test_file,
             test_output_dir,
             timeout,
-            use_docker,
+            None,
+            validate,
+        )
+        all_issues += issues
+
+    return all_issues
+
+
+def run_analysis_tool_using_docker(
+    tool: Tool,
+    test_files: List[str],
+    tool_output_dir: str,
+    timeout=None,
+    jobs=1,
+    validate=False,
+) -> List[Issue]:
+    """Run one analysis tool for all `test_files` and write all results
+    to `tool_output_dir`.
+
+    If `validate` is True, the detected issues will be validated with
+    bug annotations in the testing files.
+
+    Allow launching multiple Docker containers to run in parallel.
+    """
+    printer.print_long_double_horizontal_line()
+    print(f"Running analysis tool: {tool.name}\n")
+    common_path = os.path.commonpath(test_files)
+    parent_path = os.path.dirname(common_path)
+
+    all_issues = []
+
+    # TODO: run parallel for multiple jobs here.
+    for test_file in test_files:
+        # Prepare output directory for one test file
+        rel_path = os.path.relpath(test_file, start=parent_path)
+        test_output_dir = os.path.join(tool_output_dir, rel_path)
+        if not os.path.exists(test_output_dir):
+            os.makedirs(test_output_dir)
+
+        # Analyze the test file
+        issues = analyze_test_file(
+            tool,
+            test_file,
+            test_output_dir,
+            timeout,
+            True,
             validate,
         )
         all_issues += issues
@@ -242,15 +288,24 @@ def perform_analysis(
     all_issues = []
     for tool in tools:
         tool_output_dir = os.path.join(results_dir, tool.id)
-        issues = run_analysis_tool(
-            tool,
-            test_files,
-            tool_output_dir,
-            timeout,
-            use_docker,
-            jobs,
-            validate,
-        )
+        if use_docker:
+            issues = run_analysis_tool_using_docker(
+                tool,
+                test_files,
+                tool_output_dir,
+                timeout,
+                jobs,
+                validate,
+            )
+        else:
+            issues = run_analysis_tool_locally(
+                tool,
+                test_files,
+                tool_output_dir,
+                timeout,
+                validate,
+            )
+
         all_issues += issues
 
     print("Benchmarking completed!\n")

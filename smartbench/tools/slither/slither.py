@@ -65,6 +65,7 @@ class Slither(Tool):
 
     def make_analysis_command_docker(
         self,
+        docker_container: str,
         test_file: str,
         test_output_dir: str,
         timeout: int = None,
@@ -81,28 +82,10 @@ class Slither(Tool):
 
         output_file = self.configure_output_file(test_output_dir)
 
-        command = f"{command} {test_file} --json {output_file}"
-
-        return command
-
-    def make_analysis_command(
-        self,
-        test_file: str,
-        test_output_dir: str,
-        timeout: int,
-        use_docker=True,
-    ) -> str:
-        """
-        Function to make analysis command for Slither.
-        """
-        if use_docker:
-            return self.make_analysis_command_docker(
-                test_file, test_output_dir, timeout
-            )
-        else:
-            return self.make_analysis_command_local(
-                test_file, test_output_dir, timeout
-            )
+        return (
+            f"docker exec -it {docker_container} "
+            f"{command} {test_file} --json {output_file}"
+        )
 
     def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by Slither."""
