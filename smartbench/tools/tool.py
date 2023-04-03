@@ -32,8 +32,6 @@ class Tool:
         self,
         id: str,
         name: str,
-        homepage: str,
-        category: str,
         executable: str,
         default_arguments: str,
         default_timeout: int,
@@ -43,8 +41,6 @@ class Tool:
         """Constructor"""
         self.id: str = str(id)
         self.name: str = str(name)
-        self.homepage: str = str(homepage)
-        self.category: str = str(category)
         self.executable: str = str(executable)
         self.default_arguments: str = default_arguments
         self.additional_arguments: Optional[str] = additional_arguments

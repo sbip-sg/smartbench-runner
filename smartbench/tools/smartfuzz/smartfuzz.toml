@@ -1,8 +1,6 @@
 [info]
 id = "smartfuzz"
 name = "SmartFuzz"
-homepage = "https://github.com/sbip-sg/smart-fuzz"
-category = "Fuzzing"
 
 [command]
 executable = "sh smartbench/tools/smartfuzz/smartfuzz.sh"

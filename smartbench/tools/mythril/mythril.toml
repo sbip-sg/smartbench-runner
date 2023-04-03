@@ -1,8 +1,6 @@
 [info]
 id = "mythril"
 name = "mythril"
-homepage = "https://github.com/ConsenSys/mythril"
-category = "Symbolic Execution"
 
 [command]
 executable = "myth"

@@ -1,8 +1,6 @@
 [info]
 id = "sFuzz"
 name = "sFuzz"
-homepage = "https://github.com/thanhtoantnt/sFuzz"
-category = "Fuzzing tool"
 
 [command]
 executable = "sh smartbench/tools/sfuzz/sfuzz.sh"

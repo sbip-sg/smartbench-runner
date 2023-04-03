@@ -23,8 +23,6 @@ from smartbench.tools.tool import Tool
 INFO = "info"
 ID = "id"
 NAME = "name"
-HOMEPAGE = "homepage"
-CATEGORY = "category"
 COMMAND = "command"
 EXECUTABLE = "executable"
 DEFAULT_TIMEOUT = "default_timeout"
@@ -69,12 +67,6 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
             if (tool_name := info.get(NAME)) is None:
                 report_config_error(NAME, cfg_fpath)
 
-            if (homepage := info.get(HOMEPAGE)) is None:
-                report_config_error(HOMEPAGE, cfg_fpath)
-
-            if (category := info.get(CATEGORY)) is None:
-                report_config_error(CATEGORY, cfg_fpath)
-
             # Parse tool command
             if (command := config.get(COMMAND)) is None:
                 report_config_error(COMMAND, cfg_fpath)
@@ -105,8 +97,6 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
             return ToolConstructor(
                 tool_id,
                 tool_name,
-                homepage,
-                category,
                 path,
                 default_args,
                 default_timeout,

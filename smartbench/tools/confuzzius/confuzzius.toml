@@ -1,8 +1,6 @@
 [info]
 id = "confuzzius"
 name = "ConFuzzius"
-homepage = "https://github.com/christoftorres/ConFuzzius"
-category = "Fuzzing"
 
 [command]
 executable = "run-confuzzius.sh"

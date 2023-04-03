@@ -1,8 +1,6 @@
 [info]
 id = "slither"
 name = "Slither"
-homepage = "https://github.com/crytic/slither"
-category = "Static analysis"
 
 [command]
 executable = "run-slither.sh"

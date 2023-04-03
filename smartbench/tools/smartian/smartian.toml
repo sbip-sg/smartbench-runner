@@ -1,8 +1,6 @@
 [info]
 id = "smartian"
 name = "Smartian"
-homepage = "https://github.com/SoftSec-KAIST/Smartian"
-category = "Fuzzing"
 
 [command]
 executable = "sh smartbench/tools/smartian/smartian.sh"
