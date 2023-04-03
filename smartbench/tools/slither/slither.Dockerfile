@@ -21,13 +21,16 @@ RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-rein
 # Install Slither 0.9.3
 RUN pip install solc-select slither-analyzer==0.9.3
 
-# Prepare testing environments
+# Copy some examples for testing purpose
 RUN mkdir examples
 ADD examples/*.sol examples/
 
 # Prepare benchmarking environments
 RUN mkdir benchmarks
 RUN mkdir results
+
+# Copy executable file
+ADD run-slither.sh /root/
 
 # Entry point when running the container as an local_executable
 ENTRYPOINT [ "/bin/bash" ]

@@ -5,7 +5,13 @@ homepage = "https://github.com/crytic/slither"
 category = "Static analysis"
 
 [command]
-local_executable = "run-slither-local.sh"
-docker_executable = "..."
+executable = "run-slither.sh"
 default_arguments = ""
 default_timeout = 60
+
+[docker]
+image_name = "smartbench/slither"
+container_name = "slither"
+benchmarks_dir = "/root/benchmarks"
+examples_dir = "/root/examples"
+results_dir = "/root/results"
