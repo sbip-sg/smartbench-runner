@@ -6,10 +6,3 @@ name = "Slither"
 executable = "run-slither.sh"
 default_arguments = ""
 default_timeout = 60
-
-[docker]
-image_name = "smartbench/slither"
-container_name = "slither"
-benchmarks_dir = "/root/benchmarks"
-examples_dir = "/root/examples"
-results_dir = "/root/results"
