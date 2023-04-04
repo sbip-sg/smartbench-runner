@@ -186,6 +186,9 @@ def run_analysis_tool_locally(
     """
     printer.print_long_double_horizontal_line()
     print(f"Running analysis tool: {tool.name}\n")
+
+    # For local run, extract a common path in all test files
+    # to shorten the output file names when storing the results
     test_files_common_path = os.path.commonpath(test_files)
     test_file_parent = os.path.dirname(test_files_common_path)
 
@@ -282,10 +285,8 @@ def run_analysis_tool_using_docker(
     printer.print_long_double_horizontal_line()
     print(f"Running analysis tool: {tool.name}\n")
 
-    test_files_common_path = os.path.commonpath(test_files)
-    test_file_parent = os.path.dirname(test_files_common_path)
-
-    # Get relative path of output dir before passing to Docker
+    # Get relative path of output directory before passing to the Docker container
+    # so that the container can access to it
     tool_output_dir_docker = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
 
     all_issues: List[Issue] = []
@@ -298,8 +299,10 @@ def run_analysis_tool_using_docker(
         test_batches.append([])
     for idx, test_file in enumerate(test_files):
         idx = idx % jobs
-        # Make test file path become relative before passing to Docker
-        test_file_rel_path = os.path.relpath(test_file, start=test_file_parent)
+
+        # Get relative path of the test file compared to `SMARTBENCH_ROOT`
+        # so that the Docker container can access to it
+        test_file_rel_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
         test_batches[idx].append(test_file_rel_path)
 
     docker_jobs = []
