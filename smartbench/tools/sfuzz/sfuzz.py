@@ -10,7 +10,7 @@ from typing import List, Optional, Tuple, Union
 
 # Library
 from smartbench import logger, solc
-from smartbench.bug_annot import BugAnnot
+from smartbench.annotation import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.printer import debug, warning

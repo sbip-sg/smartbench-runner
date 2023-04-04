@@ -6,7 +6,7 @@ import signal
 import sys
 
 # Library
-from smartbench import analyze, bug_annot, deploy, flags, result, benchmark
+from smartbench import analyze, annotation, benchmark, deploy, flags, result
 from smartbench.cli import Command, parse_cli_arguments
 from smartbench.printer import error
 from smartbench.tools.config import configure_analysis_tools
@@ -57,7 +57,7 @@ def parse_instruction_coverage(args):
 def parse_bug_annotations(args):
     """Parse bug annotation in smart contracts."""
     test_files = benchmark.collect_test_cases(args)
-    bug_annot.collect_bug_annotations(test_files)
+    annotation.collect_bug_annotations(test_files)
 
 
 def deploy_smart_contracts(args):

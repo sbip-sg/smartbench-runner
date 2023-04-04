@@ -12,8 +12,8 @@ from typing import List, Optional
 
 # Library
 from smartbench.bugdb.sbc import SBC
-from smartbench.printer import warning
 from smartbench.issue import IssueKind
+from smartbench.printer import warning
 
 
 # SmartBugs annotations

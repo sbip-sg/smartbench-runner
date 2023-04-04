@@ -13,8 +13,8 @@ from typing import Dict, List, Optional
 import more_itertools as mit
 
 # Library
-from smartbench import bug_annot, logger, validator
-from smartbench.bug_annot import BugAnnot
+from smartbench import annotation, logger, validator
+from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
 from smartbench.printer import warning
 from smartbench.tools.config import load_tool_configuration
@@ -212,7 +212,7 @@ def parse_result_directory(
                     print("Skip validating results!")
                 else:
                     print("Bug annotations:")
-                    bug_annots = bug_annot.parse_bug_annotations(
+                    bug_annots = annotation.parse_bug_annotations(
                         test_file, annot_format=benchmark_name
                     )
                     annotations += len(bug_annots)

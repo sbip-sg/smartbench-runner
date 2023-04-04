@@ -11,8 +11,8 @@ import sys
 from typing import List
 
 # Library
-from smartbench import bug_annot
-from smartbench.bug_annot import BugAnnot
+from smartbench import annotation
+from smartbench.annotation import BugAnnot
 
 
 def is_solidity_file(filename) -> bool:

@@ -14,7 +14,7 @@ from subprocess import CompletedProcess
 from typing import List, Optional
 
 # Library
-from smartbench import bug_annot, printer, result, validator
+from smartbench import annotation, printer, result, validator
 from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Issue
 from smartbench.printer import debug
@@ -158,7 +158,7 @@ def analyze_test_file(
     test_name = os.path.basename(test_file)
     if validate:
         print("Bug annotations:")
-        bug_annots = bug_annot.parse_bug_annotations(test_file)
+        bug_annots = annotation.parse_bug_annotations(test_file)
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")

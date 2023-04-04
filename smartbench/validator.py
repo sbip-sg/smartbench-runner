@@ -8,8 +8,8 @@ from enum import Enum
 from typing import List
 
 # Library
-from smartbench import bug_annot, issue, result
-from smartbench.bug_annot import AnnotFormat, BugAnnot
+from smartbench import annotation, issue, result
+from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.loc import Location

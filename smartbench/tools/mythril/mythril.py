@@ -10,8 +10,8 @@ from subprocess import CompletedProcess
 from typing import List, Optional, Tuple
 
 # Library
-from smartbench import bug_annot, logger, solc
-from smartbench.bug_annot import BugAnnot
+from smartbench import annotation, logger, solc
+from smartbench.annotation import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.printer import debug, warning

@@ -15,7 +15,7 @@ import toml
 
 # Library
 from smartbench import logger
-from smartbench.bug_annot import BugAnnot
+from smartbench.annotation import BugAnnot
 from smartbench.printer import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
