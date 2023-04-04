@@ -17,7 +17,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
-from smartbench.docker import DockerJob
+from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Issue
 from smartbench.printer import debug
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
@@ -216,6 +216,26 @@ def run_analysis_tool_locally(
     return all_issues
 
 
+def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
+    if jobs == 1:
+        container_names = [tool.id]
+    else:
+        container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
+
+    containers = []
+    for name in container_names:
+        container = DockerContainer(name)
+        containers.append(container)
+        container.start()
+
+    return containers
+
+
+def stop_docker_containers(containers: List[DockerContainer]):
+    for container in containers:
+        container.stop()
+
+
 def run_analysis_tool_using_docker(
     tool: Tool,
     test_files: List[str],
@@ -240,7 +260,9 @@ def run_analysis_tool_using_docker(
     all_issues = []
 
     # TODO: run parallel for multiple jobs here.
-    print(f"JOBS: {jobs}")
+    # Start Docker containers after analysis
+    containers = start_docker_containers(tool, jobs)
+
     for idx, test_file in enumerate(test_files):
         docker_job = DockerJob((idx % jobs) + 1, jobs)
 
@@ -260,6 +282,9 @@ def run_analysis_tool_using_docker(
             validate,
         )
         all_issues += issues
+
+    # Stop Docker containers after analysis
+    stop_docker_containers(containers)
 
     return all_issues
 

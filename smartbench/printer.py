@@ -2,6 +2,9 @@
 
 """Module containing some printing utilities."""
 
+# Standard Library
+from sys import exit
+
 # Library
 from smartbench import flags
 
@@ -14,6 +17,8 @@ def warning(*args):
 def error(*args):
     """Print an error message"""
     print("ERROR: " + " ".join(map(str, args)) + "\n")
+    print("Smartbench exiting...")
+    exit(1)
 
 
 def debug(*args):

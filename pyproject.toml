@@ -52,5 +52,6 @@ strict = true
 disable = [
   "too-many-arguments",
   "too-few-public-methods",
-  "too-many-return-statements"
+  "too-many-return-statements",
+  "fixme"
 ]
