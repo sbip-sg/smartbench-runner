@@ -10,15 +10,17 @@ import subprocess
 import traceback
 
 from datetime import datetime
+from ntpath import relpath
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import List, Optional
 
 # Library
 from smartbench import bug_annot, printer, result, solc, validator
+from smartbench.docker import DockerJob
 from smartbench.issue import Issue
 from smartbench.printer import debug
-from smartbench.tools.config import RESULTS_DIR
+from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.smartfuzz import smartfuzz
@@ -94,7 +96,7 @@ def analyze_test_file(
     test_file: str,
     test_output_dir: str,
     timeout=None,
-    docker_container=None,
+    docker_job=Optional[DockerJob],
     validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -110,18 +112,20 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        command = (
-            tool.make_analysis_command_local(
+        if docker_job is None:
+            command = tool.make_analysis_command_local(
                 test_file, test_output_dir, timeout
             )
-            if docker_container is None
-            else tool.make_analysis_command_docker(
-                docker_container,
+        else:
+            # make test output directory relative to the project root
+            test_file = os.path.relpath(test_file, SMARTBENCH_ROOT)
+            test_output_dir = os.path.relpath(test_output_dir, SMARTBENCH_ROOT)
+            command = tool.make_analysis_command_docker(
+                docker_job,
                 test_file,
                 test_output_dir,
                 timeout,
             )
-        )
 
         if command is None:
             print(f"Unable to make analysis command for tool: {tool.name}\n")
@@ -236,7 +240,10 @@ def run_analysis_tool_using_docker(
     all_issues = []
 
     # TODO: run parallel for multiple jobs here.
-    for test_file in test_files:
+    print(f"JOBS: {jobs}")
+    for idx, test_file in enumerate(test_files):
+        docker_job = DockerJob((idx % jobs) + 1, jobs)
+
         # Prepare output directory for one test file
         rel_path = os.path.relpath(test_file, start=parent_path)
         test_output_dir = os.path.join(tool_output_dir, rel_path)
@@ -249,7 +256,7 @@ def run_analysis_tool_using_docker(
             test_file,
             test_output_dir,
             timeout,
-            True,
+            docker_job,
             validate,
         )
         all_issues += issues

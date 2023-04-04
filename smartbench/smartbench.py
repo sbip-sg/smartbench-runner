@@ -22,7 +22,7 @@ def analyze_smart_contracts(args):
     tools = configure_analysis_tools(args)
     test_files = tests.collect_test_cases(args)
     # Perform the analysis
-    jobs = 1 if args is None else args.jobs
+    jobs = 1 if args.jobs is None else args.jobs
     analyze.perform_analysis(
         tools,
         test_files,

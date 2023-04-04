@@ -30,9 +30,9 @@ DEFAULT_ARGUMENTS = "default_arguments"
 
 # Initiate some global varibles
 TOOLS_DIR = os.path.dirname(__file__)
-SMARTBENCH_ROOT_DIR = os.path.dirname(os.path.dirname(TOOLS_DIR))
-RESULTS_DIR = os.path.join(SMARTBENCH_ROOT_DIR, "results")
-DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT_DIR), "deploy")
+SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(TOOLS_DIR))
+RESULTS_DIR = os.path.join(SMARTBENCH_ROOT, "results")
+DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT), "deploy")
 
 
 def load_tool_configuration(tool_name: str) -> Optional[Tool]:
