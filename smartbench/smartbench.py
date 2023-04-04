@@ -8,6 +8,7 @@ import sys
 # Library
 from smartbench import analyze, bug_annot, deploy, flags, result, tests
 from smartbench.cli import Command, parse_cli_arguments
+from smartbench.printer import error
 from smartbench.tools.config import configure_analysis_tools
 
 
@@ -21,8 +22,14 @@ def analyze_smart_contracts(args):
     # Prepare analysis tools and test files
     tools = configure_analysis_tools(args)
     test_files = tests.collect_test_cases(args)
-    # Perform the analysis
+
+    # Prepare environment
     jobs = 1 if args.jobs is None else args.jobs
+
+    if jobs > 1 and not args.docker:
+        error("Do not support running multiple jobs in local mode!")
+
+    # Perform the analysis
     analyze.perform_analysis(
         tools,
         test_files,

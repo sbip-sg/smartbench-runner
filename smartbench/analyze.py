@@ -3,27 +3,23 @@
 """Module for running smart contract analyzers for testing contracts."""
 
 # Standard Library
-import json
 import os
 import shlex
 import subprocess
 import traceback
 
 from datetime import datetime
-from ntpath import relpath
-from pathlib import Path
+from multiprocessing import Process
 from subprocess import CompletedProcess
 from typing import List, Optional
 
 # Library
-from smartbench import bug_annot, printer, result, solc, validator
+from smartbench import bug_annot, printer, result, validator
 from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Issue
 from smartbench.printer import debug
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
-from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
-from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.tool import Tool
 
 
@@ -95,8 +91,8 @@ def analyze_test_file(
     tool: Tool,
     test_file: str,
     test_output_dir: str,
+    container=Optional[DockerContainer],
     timeout=None,
-    docker_job=Optional[DockerJob],
     validate=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -112,7 +108,7 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        if docker_job is None:
+        if container is None:
             command = tool.make_analysis_command_local(
                 test_file, test_output_dir, timeout
             )
@@ -121,7 +117,7 @@ def analyze_test_file(
             test_file = os.path.relpath(test_file, SMARTBENCH_ROOT)
             test_output_dir = os.path.relpath(test_output_dir, SMARTBENCH_ROOT)
             command = tool.make_analysis_command_docker(
-                docker_job,
+                container,
                 test_file,
                 test_output_dir,
                 timeout,
@@ -190,15 +186,15 @@ def run_analysis_tool_locally(
     """
     printer.print_long_double_horizontal_line()
     print(f"Running analysis tool: {tool.name}\n")
-    common_path = os.path.commonpath(test_files)
-    parent_path = os.path.dirname(common_path)
+    test_files_common_path = os.path.commonpath(test_files)
+    test_file_parent = os.path.dirname(test_files_common_path)
 
     all_issues = []
 
     for test_file in test_files:
         # Prepare output directory for one test file
-        rel_path = os.path.relpath(test_file, start=parent_path)
-        test_output_dir = os.path.join(tool_output_dir, rel_path)
+        test_file_rel_path = os.path.relpath(test_file, start=test_file_parent)
+        test_output_dir = os.path.join(tool_output_dir, test_file_rel_path)
         if not os.path.exists(test_output_dir):
             os.makedirs(test_output_dir)
 
@@ -207,8 +203,8 @@ def run_analysis_tool_locally(
             tool,
             test_file,
             test_output_dir,
-            timeout,
             None,
+            timeout,
             validate,
         )
         all_issues += issues
@@ -217,6 +213,9 @@ def run_analysis_tool_locally(
 
 
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
+    printer.print_short_double_horizontal_line()
+    print("Preparing docker containers...")
+
     if jobs == 1:
         container_names = [tool.id]
     else:
@@ -232,8 +231,35 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
 
 
 def stop_docker_containers(containers: List[DockerContainer]):
+    printer.print_short_double_horizontal_line()
+    print("Cleaning docker containers...")
+
     for container in containers:
         container.stop()
+
+
+def run_docker_job(
+    job: DockerJob,
+    validate=False,
+) -> List[Issue]:
+    all_issues = []
+
+    for test_file in job.test_files:
+        test_output_dir = os.path.join(job.job_output_dir, test_file)
+        print(f"TEST OUTPUT DIR: {test_output_dir}")
+
+        # Analyze the test file
+        issues = analyze_test_file(
+            job.tool,
+            test_file,
+            test_output_dir,
+            job.container,
+            job.timeout,
+            validate,
+        )
+        all_issues.extend(issues)
+
+    return all_issues
 
 
 def run_analysis_tool_using_docker(
@@ -252,36 +278,52 @@ def run_analysis_tool_using_docker(
 
     Allow launching multiple Docker containers to run in parallel.
     """
+
     printer.print_long_double_horizontal_line()
     print(f"Running analysis tool: {tool.name}\n")
-    common_path = os.path.commonpath(test_files)
-    parent_path = os.path.dirname(common_path)
 
-    all_issues = []
+    test_files_common_path = os.path.commonpath(test_files)
+    test_file_parent = os.path.dirname(test_files_common_path)
 
-    # TODO: run parallel for multiple jobs here.
-    # Start Docker containers after analysis
+    # Get relative path of output dir before passing to Docker
+    tool_output_dir_docker = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
+
+    all_issues: List[Issue] = []
+
     containers = start_docker_containers(tool, jobs)
 
+    # Distribute test files to containers
+    test_batches: List[List[str]] = []
+    for _ in range(jobs):
+        test_batches.append([])
     for idx, test_file in enumerate(test_files):
-        docker_job = DockerJob((idx % jobs) + 1, jobs)
+        idx = idx % jobs
+        # Make test file path become relative before passing to Docker
+        test_file_rel_path = os.path.relpath(test_file, start=test_file_parent)
+        test_batches[idx].append(test_file_rel_path)
 
-        # Prepare output directory for one test file
-        rel_path = os.path.relpath(test_file, start=parent_path)
-        test_output_dir = os.path.join(tool_output_dir, rel_path)
-        if not os.path.exists(test_output_dir):
-            os.makedirs(test_output_dir)
-
-        # Analyze the test file
-        issues = analyze_test_file(
+    docker_jobs = []
+    for i in range(jobs):
+        docker_job = DockerJob(
+            containers[i],
             tool,
-            test_file,
-            test_output_dir,
+            test_batches[i],
+            tool_output_dir_docker,
             timeout,
-            docker_job,
-            validate,
         )
-        all_issues += issues
+        docker_jobs.append(docker_job)
+
+    # Run docker jobs in parallel
+    processes = []
+    for docker_job in docker_jobs:
+        proc = Process(target=run_docker_job, args=(docker_job, validate))
+        processes.append(proc)
+        proc.start()
+        # issues = run_docker_job(docker_job, validate)
+        # all_issues.extend(issues)
+
+    for proc in processes:
+        proc.join()
 
     # Stop Docker containers after analysis
     stop_docker_containers(containers)

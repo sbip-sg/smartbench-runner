@@ -10,7 +10,7 @@ from typing import List, Optional, Tuple
 
 # Library
 from smartbench import logger, solc
-from smartbench.docker import DockerJob
+from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
 from smartbench.printer import debug, warning
@@ -62,7 +62,7 @@ class Slither(Tool):
 
     def make_analysis_command_docker(
         self,
-        docker_job: DockerJob,
+        container: DockerContainer,
         test_file: str,
         test_output_dir: str,
         timeout: Optional[int] = None,
@@ -70,10 +70,6 @@ class Slither(Tool):
         """
         Function to make a local analysis command for Slither.
         """
-        docker_container = self.id
-        if docker_job.total_jobs > 1:
-            docker_container += f"-{docker_job.index}"
-
         command = f"/root/{self.executable}"
 
         if self.default_arguments:
@@ -84,7 +80,7 @@ class Slither(Tool):
         output_file = self.configure_output_file(test_output_dir)
 
         return (
-            f"docker exec -it {docker_container} "
+            f"docker exec -it {container.name} "
             f"{command} {test_file} --json {output_file}"
         )
 

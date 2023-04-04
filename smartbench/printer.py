@@ -11,12 +11,12 @@ from smartbench import flags
 
 def warning(*args):
     """Print a warning message"""
-    print("WARNING: " + " ".join(map(str, args)) + "\n")
+    print("\nWARNING: " + " ".join(map(str, args)) + "\n")
 
 
 def error(*args):
     """Print an error message"""
-    print("ERROR: " + " ".join(map(str, args)) + "\n")
+    print("\nERROR: " + " ".join(map(str, args)) + "\n")
     print("Smartbench exiting...")
     exit(1)
 
@@ -28,24 +28,24 @@ def debug(*args):
 
 
 def print_short_single_horizontal_line():
-    print(f"{'=' * 30}\n")
+    print(f"{'=' * 30}")
 
 
 def print_medium_single_horizontal_line():
-    print(f"{'=' * 45}\n")
+    print(f"{'=' * 45}")
 
 
 def print_long_single_horizontal_line():
-    print(f"{'=' * 55}\n")
+    print(f"{'=' * 55}")
 
 
 def print_short_double_horizontal_line():
-    print(f"{'=' * 30}\n")
+    print(f"{'=' * 30}")
 
 
 def print_medium_double_horizontal_line():
-    print(f"{'=' * 45}\n")
+    print(f"{'=' * 45}")
 
 
 def print_long_double_horizontal_line():
-    print(f"{'=' * 55}\n")
+    print(f"{'=' * 55}")

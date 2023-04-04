@@ -5,20 +5,11 @@ import shlex
 import subprocess
 
 from subprocess import CalledProcessError
+from typing import List
 
 # Library
 from smartbench.printer import error
-
-
-class DockerJob:
-    """Class modelling an analysis job running using Docker."""
-
-    def __init__(self, index: int, total_jobs: int):
-        self.index = int(index)
-        self.total_jobs = int(total_jobs)
-
-    def __str__(self):
-        return f"{self.index}/{self.total_jobs}"
+from smartbench.tools.tool import Tool
 
 
 class DockerContainer:
@@ -57,3 +48,29 @@ class DockerContainer:
             )
         except CalledProcessError as err:
             error(f"Failed to stop Docker container: {self}!\n" f"Log: {err}")
+
+
+class DockerJob:
+    """Class modelling an analysis job running using Docker."""
+
+    def __init__(
+        self,
+        container: DockerContainer,
+        tool: Tool,
+        test_files: List[str],
+        job_output_dir: str,
+        timeout=None,
+    ):
+        self.container = container
+        self.tool = tool
+
+        # List of test file, which are relative path to the `/root/`
+        # folder in a Docker container
+        self.test_files = list(test_files)
+
+        # Output directory of a job to store results of all test files
+        self.job_output_dir = job_output_dir
+        self.timeout = timeout
+
+    def __str__(self):
+        return f"{self.container.name}: {len(self.test_files)} tasks"
