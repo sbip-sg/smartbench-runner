@@ -6,7 +6,7 @@ import signal
 import sys
 
 # Library
-from smartbench import analyze, bug_annot, deploy, flags, result, tests
+from smartbench import analyze, bug_annot, deploy, flags, result, benchmark
 from smartbench.cli import Command, parse_cli_arguments
 from smartbench.printer import error
 from smartbench.tools.config import configure_analysis_tools
@@ -21,7 +21,7 @@ def analyze_smart_contracts(args):
     """Run analyzers to analyze input smart contracts"""
     # Prepare analysis tools and test files
     tools = configure_analysis_tools(args)
-    test_files = tests.collect_test_cases(args)
+    test_files = benchmark.collect_test_cases(args)
 
     # Prepare environment
     jobs = 1 if args.jobs is None else args.jobs
@@ -56,14 +56,14 @@ def parse_instruction_coverage(args):
 
 def parse_bug_annotations(args):
     """Parse bug annotation in smart contracts."""
-    test_files = tests.collect_test_cases(args)
+    test_files = benchmark.collect_test_cases(args)
     bug_annot.collect_bug_annotations(test_files)
 
 
 def deploy_smart_contracts(args):
     """Deploy smart contracts for testing."""
     # Prepare analysis tools and test files
-    test_files = tests.collect_test_cases(args)
+    test_files = benchmark.collect_test_cases(args)
     tools = configure_analysis_tools(args)
     # Perform the deployment
     deploy.perform_deployment(tools, test_files)

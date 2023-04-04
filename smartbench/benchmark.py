@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Module for handling test cases"""
+"""Module for handling benchmarks of test cases"""
 
 
 # Standard Library
