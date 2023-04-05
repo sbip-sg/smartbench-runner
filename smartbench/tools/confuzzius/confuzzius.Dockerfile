@@ -1,4 +1,4 @@
-# Dockerfile for Slither 0.9.3
+# Dockerfile for Confuzzius
 
 FROM ubuntu:20.04
 

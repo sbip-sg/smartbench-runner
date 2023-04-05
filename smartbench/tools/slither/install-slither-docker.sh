@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # Usage: this script should be run from
 #    ./install-slither-docker.sh [container_name_1] [container_name_2] ...
@@ -43,7 +43,7 @@ set -e
 clean_up () {
     arg=$1
     echo "============================================="
-    if [ $arg -eq 0 ]; then
+    if [[ $arg -eq 0 ]]; then
         echo "Cleaning after installation..."
     else
         echo "Cleaning after error..."
@@ -51,7 +51,7 @@ clean_up () {
 
     rm -rf examples
 
-    if [ ! $arg -eq 0 ]; then
+    if [[ ! $arg -eq 0 ]]; then
         echo "Abort installation!"
         exit 1
     fi
