@@ -15,9 +15,9 @@ OTHER_ARGS=${@:2}
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
-    $CONFUZZIUS_ROOT_PATH="/root/confuzzius"
+    CONFUZZIUS_ROOT_PATH="/root/confuzzius"
 else
-    $CONFUZZIUS_ROOT_PATH="$(realpath $(dirname "$0"))/repo/confuzzius"
+    CONFUZZIUS_ROOT_PATH="$(realpath $(dirname "$0"))/repo/confuzzius"
 fi
 
 # Detect Solc version to be used.

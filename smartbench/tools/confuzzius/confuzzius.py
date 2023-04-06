@@ -11,10 +11,11 @@ from typing import List, Optional, Tuple
 # Library
 from smartbench import annotation, logger, solc
 from smartbench.annotation import BugAnnot
+from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
-from smartbench.docker import DockerContainer
 from smartbench.printer import debug, warning
+from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
@@ -43,53 +44,33 @@ class Confuzzius(Tool):
             random_seed,
         )
 
-    def make_analysis_command_local(
+    def make_analysis_command(
         self,
         test_file: str,
         test_output_dir: str,
-        timeout=None,
-        use_docker=True,
+        container=Optional[DockerContainer],
+        timeout: Optional[int] = None,
     ) -> str:
         """
-        Function to make analysis command for Confuzzius.
-        This function should have the same signature with other tools.
+        Function to make an analysis command for Slither.
         """
-        cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
+        if container is not None:
+            # make test output directory relative to the project root
+            test_file = os.path.relpath(test_file, SMARTBENCH_ROOT)
+            test_output_dir = os.path.relpath(test_output_dir, SMARTBENCH_ROOT)
+            cmd = f"docker exec -it {container.name} /root/{self.executable}"
+        else:
+            cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_arguments:
             cmd = cmd + " " + self.additional_arguments
 
-        out_file = self.configure_output_file(test_output_dir)
+        output_file = self.configure_output_file(test_output_dir)
         timeout = timeout if timeout is not None else self.default_timeout
 
-        # Configure Solc version by environment variable.
-        return f"{cmd} {test_file} -r {out_file} -t {timeout}"
-
-    def make_analysis_command_docker(
-        self,
-        container: DockerContainer,
-        test_file: str,
-        test_output_dir: str,
-        timeout: Optional[int] = None,
-    ) -> str:
-        """
-        Function to make a local analysis command for Slither.
-        """
-        command = f"/root/{self.executable}"
-
-        if self.default_arguments:
-            command = command + " " + self.default_arguments
-        if self.additional_arguments:
-            command = command + " " + self.additional_arguments
-
-        output_file = self.configure_output_file(test_output_dir)
-
-        return (
-            f"docker exec -it {container.name} "
-            f"{command} {test_file} --json {output_file}"
-        )
+        return f"{cmd} {test_file} -r {output_file} -t {timeout}"
 
     def parse_issue_severity(self, severity: Optional[str]) -> Severity:
         if severity is None:

@@ -14,6 +14,7 @@ from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
 from smartbench.printer import debug, warning
+from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
@@ -40,49 +41,32 @@ class Slither(Tool):
             additional_arguments,
         )
 
-    def make_analysis_command_local(
+    def make_analysis_command(
         self,
         test_file: str,
         test_output_dir: str,
+        container=Optional[DockerContainer],
         timeout: Optional[int] = None,
     ) -> str:
         """
-        Function to make a local analysis command for Slither.
+        Function to make an analysis command for Slither.
         """
+        if container is not None:
+            # make test output directory relative to the project root
+            test_file = os.path.relpath(test_file, SMARTBENCH_ROOT)
+            test_output_dir = os.path.relpath(test_output_dir, SMARTBENCH_ROOT)
+            cmd = f"docker exec -it {container.name} /root/{self.executable}"
+        else:
+            cmd = os.path.join(SLITHER_DIR, self.executable)
 
-        command = os.path.join(SLITHER_DIR, self.executable)
         if self.default_arguments:
-            command = command + " " + self.default_arguments
+            cmd = cmd + " " + self.default_arguments
         if self.additional_arguments:
-            command = command + " " + self.additional_arguments
+            cmd = cmd + " " + self.additional_arguments
 
         output_file = self.configure_output_file(test_output_dir)
 
-        return f"{command} {test_file} --json {output_file}"
-
-    def make_analysis_command_docker(
-        self,
-        container: DockerContainer,
-        test_file: str,
-        test_output_dir: str,
-        timeout: Optional[int] = None,
-    ) -> str:
-        """
-        Function to make a local analysis command for Slither.
-        """
-        command = f"/root/{self.executable}"
-
-        if self.default_arguments:
-            command = command + " " + self.default_arguments
-        if self.additional_arguments:
-            command = command + " " + self.additional_arguments
-
-        output_file = self.configure_output_file(test_output_dir)
-
-        return (
-            f"docker exec -it {container.name} "
-            f"{command} {test_file} --json {output_file}"
-        )
+        return f"{cmd} {test_file} --json {output_file}"
 
     def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by Slither."""

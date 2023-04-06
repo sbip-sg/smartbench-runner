@@ -108,31 +108,20 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
-        if container is None:
-            command = tool.make_analysis_command_local(
-                test_file, test_output_dir, timeout
-            )
-        else:
-            # make test output directory relative to the project root
-            test_file = os.path.relpath(test_file, SMARTBENCH_ROOT)
-            test_output_dir = os.path.relpath(test_output_dir, SMARTBENCH_ROOT)
-            command = tool.make_analysis_command_docker(
-                container,
-                test_file,
-                test_output_dir,
-                timeout,
-            )
+        cmd = tool.make_analysis_command(
+            container, test_file, test_output_dir, timeout
+        )
 
-        if command is None:
+        if cmd is None:
             print(f"Unable to make analysis command for tool: {tool.name}\n")
             return []
 
-        log_analysis_command(tool, test_file, command, test_output_dir)
+        log_analysis_command(tool, test_file, cmd, test_output_dir)
 
-        debug(f"COMMAND: {command}")
+        debug(f"COMMAND: {cmd}")
 
         output = subprocess.run(
-            shlex.split(command),
+            shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
@@ -143,7 +132,7 @@ def analyze_test_file(
             tool.write_to_output_file(output, test_output_dir)
 
     except ValueError as err:
-        print(f"Failed to run command: {command}\n")
+        print(f"Failed to run command: {cmd}\n")
         print(f"** Error: {err}")
         traceback.print_exc()
         return []
