@@ -32,8 +32,42 @@ if [[ $# == 0 ]]; then
     exit 1
 fi
 
+##############################
+# Parse arguments
+
 # Tool ID
 TOOL_ID="$1"
+shift
+
+CONTAINER_NAMES=()
+NUM_CONTAINERS=0
+FORCE_INSTALL=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -n)
+            NUM_CONTAINERS=$2
+            shift # past argument
+            shift # past value
+            ;;
+        --force-install)
+            FORCE_INSTALL=true
+            shift # past argument
+            ;;
+        -*|--*)
+            echo "Unknown option $1"
+            print_usage
+            exit 1
+            ;;
+        *)
+            CONTAINER_NAMES+=("$1") # save positional args as container names
+            shift # past argument
+            ;;
+    esac
+done
+
+##############################
+
 
 # Smartbench directories
 SMARTBENCH_ROOT=$(realpath $(dirname "$0"))
@@ -49,24 +83,13 @@ TOOL_EXAMPLES_DIR="$TOOL_DIR/examples"
 DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
 DOCKER_IMAGE="smartbench/$TOOL_ID"
 
-# Containers to be installed
-if [[ -z "$2" ]]; then
-    DOCKER_CONTAINERS="$TOOL_ID"      # default container name
-elif [[ $2 == "-n" ]]; then
-    if [[ -z "$3" ]]; then
-        echo "Number of containers is not provided!"
-        print_usage
-        exit 1
-    else
-        NUM_CONTAINERS=$3
-        DOCKER_CONTAINERS=""
-        for ((i=1;i<=$NUM_CONTAINERS;i++)); do
-            DOCKER_CONTAINERS="$DOCKER_CONTAINERS$TOOL_ID-$i "
-        done
-    fi
-    echo "CONTAINERS: $DOCKER_CONTAINERS"
-else
-    DOCKER_CONTAINERS="${@:2}"        # get container names from arguments
+# Docker containers to be installed
+for ((i=1; i<=$NUM_CONTAINERS; i++)); do
+    CONTAINER_NAMES+=("$TOOL_ID-$i")
+done
+
+if [[ ${#CONTAINER_NAMES[@]} == 0 ]]; then
+    CONTAINER_NAMES=($TOOL_ID)
 fi
 
 # Docker container directories
@@ -114,10 +137,20 @@ docker build -f $DOCKER_FILE -t $DOCKER_IMAGE .
 # Create a new Docker container that share the two folders:
 # `benchmarks` and `results` with the host system.
 echo "============================================="
-for CONTAINER in $DOCKER_CONTAINERS; do
-    echo "Create and launch a Docker container: $CONTAINER"
+echo "Creating docker containers: ${CONTAINER_NAMES[*]}"
+
+if $FORCE_INSTALL; then
+    echo "Running force-install mode"
+fi
+
+for CONTAINER in "${CONTAINER_NAMES[@]}"; do
+    echo ""
+    echo "Checking container: $CONTAINER"
     if [[ $(docker ps -a -f name=$CONTAINER | grep -e "[ \t]$CONTAINER\$") ]]; then
-        if [[ $(docker ps -f name=$CONTAINER | grep -e "[ \t]$CONTAINER\$") ]]; then
+        if $FORCE_INSTALL; then
+            echo "A container named \"$CONTAINER\" already exists. Removing it ..."
+            docker rm $CONTAINER --force
+        elif [[ $(docker ps -f name=$CONTAINER | grep -e "[ \t]$CONTAINER\$") ]]; then
             echo "ERROR: a container named \"$CONTAINER\" is already running"
             echo "Please delete it and run this script again to continue a fresh installation!"
             clean_up 1
@@ -129,6 +162,7 @@ for CONTAINER in $DOCKER_CONTAINERS; do
     fi
 
     # run your container
+    echo "Running the new container ..."
     docker run -itd \
         --name $CONTAINER \
         -v $SMARTBENCH_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \

@@ -15,15 +15,15 @@ OTHER_ARGS=${@:2}
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
-    $TOOL_PATH="/root/confuzzius"
+    $CONFUZZIUS_ROOT_PATH="/root/confuzzius"
 else
-    $TOOL_PATH="$(realpath $(dirname "$0"))/repo/confuzzius"
+    $CONFUZZIUS_ROOT_PATH="$(realpath $(dirname "$0"))/repo/confuzzius"
 fi
 
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Run Confuzzius
-SOLC_VERSION=$SOLC_VER python /root/confuzzius/fuzzer/main.py \
+SOLC_VERSION=$SOLC_VER python "$CONFUZZIUS_ROOT_PATH/fuzzer/main.py" \
     --evm byzantium \
     -s $TEST_FILE $OTHER_ARGS

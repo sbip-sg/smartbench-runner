@@ -14,19 +14,16 @@ RUN apt-get install -y python3 python-is-python3 python3-pip
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
-RUN echo $(solc-select install) | sed 's/^.*: //' | xargs solc-select install
+RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
 
-# Set default Solc to 0.8.19
-RUN solc-select use 0.8.19
+# Install Solc libraries
+RUN pip install py-solc --force-reinstall
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Install Confuzzius
 ENV CONFUZZIUS_DIR=confuzzius
 RUN git clone https://github.com/christoftorres/ConFuzzius $CONFUZZIUS_DIR
 RUN pip install -r $CONFUZZIUS_DIR/fuzzer/requirements.txt
-
-# Install Solc
-RUN pip install py-solc --force-reinstall
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Prepare testing environments
 RUN mkdir examples
@@ -35,6 +32,9 @@ ADD examples/*.sol examples/
 # Prepare benchmarking environments
 RUN mkdir benchmarks
 RUN mkdir results
+
+# Copy executable file
+ADD run-confuzzius.sh /root/
 
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]

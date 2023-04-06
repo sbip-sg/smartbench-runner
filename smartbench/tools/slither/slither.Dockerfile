@@ -11,17 +11,15 @@ RUN apt-get install -y git python3 python-is-python3 python3-pip
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
-RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do\
-    solc-select install $v;\
-    done
+RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
 
-# Install Solc-detect
+# Install Solc libraries
 RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Install Slither 0.9.3
 RUN pip install solc-select slither-analyzer==0.9.3
 
-# Copy some examples for testing purpose
+# Prepare testing environments
 RUN mkdir examples
 ADD examples/*.sol examples/
 
