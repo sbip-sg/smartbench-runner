@@ -13,6 +13,7 @@ from smartbench import annotation, logger, solc
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
+from smartbench.docker import DockerContainer
 from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
 
@@ -42,7 +43,7 @@ class Confuzzius(Tool):
             random_seed,
         )
 
-    def make_analysis_command(
+    def make_analysis_command_local(
         self,
         test_file: str,
         test_output_dir: str,
@@ -65,6 +66,30 @@ class Confuzzius(Tool):
 
         # Configure Solc version by environment variable.
         return f"{cmd} {test_file} -r {out_file} -t {timeout}"
+
+    def make_analysis_command_docker(
+        self,
+        container: DockerContainer,
+        test_file: str,
+        test_output_dir: str,
+        timeout: Optional[int] = None,
+    ) -> str:
+        """
+        Function to make a local analysis command for Slither.
+        """
+        command = f"/root/{self.executable}"
+
+        if self.default_arguments:
+            command = command + " " + self.default_arguments
+        if self.additional_arguments:
+            command = command + " " + self.additional_arguments
+
+        output_file = self.configure_output_file(test_output_dir)
+
+        return (
+            f"docker exec -it {container.name} "
+            f"{command} {test_file} --json {output_file}"
+        )
 
     def parse_issue_severity(self, severity: Optional[str]) -> Severity:
         if severity is None:

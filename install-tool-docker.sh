@@ -1,36 +1,72 @@
 #!/usr/bin/bash
 
-# Usage: this script should be run from
-#    ./install-slither-docker.sh [container_name_1] [container_name_2] ...
+# This script installs Docker container for all analysis tools
+
+# Usage:
+#   ./install-tool-docker.sh <TOOL-ID> [CONTAINER_NAME] [-n <NUMBER-OF-CONTAINERS>]
 #
 # Example:
-#    ./install-slither-docker.sh
-#    ./install-slither-docker.sh slither-1 slither-2 slither-3
+#   # Install the default container named `slither`
+#   ./install-tool-docker.sh slither
+#
+#   # Install a container named `slither-analyzer`
+#   ./install-tool-docker.sh slither slither-analyzer
+#
+#   # Install 5 containers: `slither-1`, ..., `slither-5`
+#   ./install-tool-docker.sh slither -n 5
 
+print_usage () {
+    echo ""
+    echo "Usage: "
+    echo "  install-tool-docker.sh <TOOL-ID> [CONTAINER_NAME] [-n <NUMBER-OF-CONTAINERS>]"
+    echo ""
+    echo "Examples:"
+    echo "  install-tool-docker.sh slither"
+    echo "  install-tool-docker.sh slither slither-analyzer"
+    echo "  install-tool-docker.sh slither -n 5"
+}
 
-# Tool name and ID
-TOOL_ID="slither"
-TOOL_NAME="Slither"
+if [[ $# == 0 ]]; then
+    echo "No argument is provided"
+    print_usage
+    exit 1
+fi
+
+# Tool ID
+TOOL_ID="$1"
+
+# Smartbench directories
+SMARTBENCH_ROOT=$(realpath $(dirname "$0"))
+SMARTBENCH_BENCHMARKS_DIR="$SMARTBENCH_ROOT/benchmarks"
+SMARTBENCH_EXAMPLES_DIR="$SMARTBENCH_ROOT/examples"
+SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
 
 # Tool directories
-TOOL_DIR=$(realpath $(dirname "$0"))
+TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
 TOOL_EXAMPLES_DIR="$TOOL_DIR/examples"
 
-# Host directories
-SMARTBENCH_ROOT=$(dirname $(dirname $(dirname "$TOOL_DIR")))
-HOST_BENCHMARKS_DIR="$SMARTBENCH_ROOT/benchmarks"
-HOST_EXAMPLES_DIR="$SMARTBENCH_ROOT/examples"
-HOST_RESULTS_DIR="$SMARTBENCH_ROOT/results"
-
-# Docker image
-DOCKER_FILE="$TOOL_ID.Dockerfile"
+# Docker information
+DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
 DOCKER_IMAGE="smartbench/$TOOL_ID"
 
 # Containers to be installed
-if [ -z "$1" ]; then
+if [[ -z "$2" ]]; then
     DOCKER_CONTAINERS="$TOOL_ID"      # default container name
+elif [[ $2 == "-n" ]]; then
+    if [[ -z "$3" ]]; then
+        echo "Number of containers is not provided!"
+        print_usage
+        exit 1
+    else
+        NUM_CONTAINERS=$3
+        DOCKER_CONTAINERS=""
+        for ((i=1;i<=$NUM_CONTAINERS;i++)); do
+            DOCKER_CONTAINERS="$DOCKER_CONTAINERS$TOOL_ID-$i "
+        done
+    fi
+    echo "CONTAINERS: $DOCKER_CONTAINERS"
 else
-    DOCKER_CONTAINERS="${@:1}"        # from argument inputs of this script
+    DOCKER_CONTAINERS="${@:2}"        # get container names from arguments
 fi
 
 # Docker container directories
@@ -68,7 +104,7 @@ echo "Prepare environments..."
 # Prepare some examples to copy to Docker image
 cd $TOOL_DIR
 mkdir $TOOL_EXAMPLES_DIR
-cp $HOST_EXAMPLES_DIR/*.sol $TOOL_EXAMPLES_DIR
+cp $SMARTBENCH_EXAMPLES_DIR/*.sol $TOOL_EXAMPLES_DIR
 
 # Build Docker image
 echo "============================================="
@@ -95,8 +131,8 @@ for CONTAINER in $DOCKER_CONTAINERS; do
     # run your container
     docker run -itd \
         --name $CONTAINER \
-        -v $HOST_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \
-        -v $HOST_RESULTS_DIR:$DOCKER_RESULTS_DIR \
+        -v $SMARTBENCH_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \
+        -v $SMARTBENCH_RESULTS_DIR:$DOCKER_RESULTS_DIR \
         $DOCKER_IMAGE
 done
 

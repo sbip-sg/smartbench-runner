@@ -13,6 +13,13 @@
 TEST_FILE=$(realpath $1)
 OTHER_ARGS=${@:2}
 
+# Configure tool path when running inside or outside a Docker container.
+if [ -f /.dockerenv ]; then
+    $TOOL_PATH="/root/confuzzius"
+else
+    $TOOL_PATH="$(realpath $(dirname "$0"))/repo/confuzzius"
+fi
+
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
