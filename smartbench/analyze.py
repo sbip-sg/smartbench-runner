@@ -109,7 +109,7 @@ def analyze_test_file(
         print(f"Analyzing: {test_file}\n")
 
         cmd = tool.make_analysis_command(
-            container, test_file, test_output_dir, timeout
+            test_file, test_output_dir, container, timeout
         )
 
         if cmd is None:
@@ -238,6 +238,7 @@ def run_docker_job(
 
     for test_file in job.test_files:
         test_output_dir = os.path.join(job.job_output_dir, test_file)
+
         print(f"TEST OUTPUT DIR: {test_output_dir}")
 
         # Analyze the test file

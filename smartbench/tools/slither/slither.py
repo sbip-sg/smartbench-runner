@@ -14,7 +14,6 @@ from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
 from smartbench.printer import debug, warning
-from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
@@ -52,9 +51,6 @@ class Slither(Tool):
         Function to make an analysis command for Slither.
         """
         if container is not None:
-            # make test output directory relative to the project root
-            test_file = os.path.relpath(test_file, SMARTBENCH_ROOT)
-            test_output_dir = os.path.relpath(test_output_dir, SMARTBENCH_ROOT)
             cmd = f"docker exec -it {container.name} /root/{self.executable}"
         else:
             cmd = os.path.join(SLITHER_DIR, self.executable)
