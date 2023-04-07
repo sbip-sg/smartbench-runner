@@ -20,6 +20,18 @@ class Command(Enum):
     DEPLOY_CONTRACTS = "deploy-contracts"
 
 
+def preprocess_remainder_arguments(args):
+    """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
+    them into a string."""
+    if args.slither_args is not None:
+        args.slither_args = " ".join(args.slither_args)
+
+    if args.confuzzius_args is not None:
+        args.confuzzius_args = " ".join(args.confuzzius_args)
+
+    return args
+
+
 def parse_cli_arguments():
     """Configure command arguments line."""
     arg_parser = argparse.ArgumentParser(
@@ -82,11 +94,18 @@ def parse_cli_arguments():
         help="Running analysis tools in Docker.",
     )
 
-    # Timeout for each test case
+    # Timeout for each test case, controlled by Smartbench.
     analyze_parser.add_argument(
         "--timeout",
         type=int,
-        help="Timeout for each test case.",
+        help="Timeout for each test case, controlled by Smartbench.",
+    )
+
+    # Timeout for each test case, controlled by the analysis tool.
+    analyze_parser.add_argument(
+        "--tool-timeout",
+        type=int,
+        help="Timeout for each test case, controlled by each tool.",
     )
 
     # Number of jobs per tool
@@ -107,17 +126,25 @@ def parse_cli_arguments():
     # Additional arguments of Slither
     analyze_parser.add_argument(
         "--slither-args",
-        metavar="ARGUMENTS",
         type=str,
-        help="Additional arguments of Slither",
+        nargs=argparse.REMAINDER,
+        help=(
+            "Additional arguments for Slither.\n"
+            + "This option should be put only at the end of the command.\n"
+            + 'Example: --slither-args "--option value"'
+        ),
     )
 
     # Additional arguments of Confuzzius
     analyze_parser.add_argument(
         "--confuzzius-args",
-        metavar="ARGUMENTS",
         type=str,
-        help="Additional arguments of Confuzzius",
+        nargs=argparse.REMAINDER,
+        help=(
+            "Additional arguments for Confuzzius.\n"
+            + "This option should be put only at the end of the command.\n"
+            + 'Example: --confuzzius-args "--option value"'
+        ),
     )
 
     ################################
@@ -134,7 +161,7 @@ def parse_cli_arguments():
     # Input result directories
     result_parser.add_argument(
         "result_directories",
-        nargs="+",  # Accept multiple input files or directories
+        # nargs="+",  # Accept multiple input files or directories
         type=str,
         help="Input result directories.",
     )
@@ -146,11 +173,15 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
-    # Specify benchmark name for special cases without standard annotation and validation
+    # Specify benchmark name for special cases without standard annotation and
+    # validation
     result_parser.add_argument(
         "--benchmark-name",
         type=str,
-        help="Specify benchmark name for special cases without standard annotation and validation e.g. SOLIDIFI",
+        help=(
+            "Specify benchmark name for special cases "
+            + "without standard annotation and validation e.g. SOLIDIFI"
+        ),
     )
 
     ################################
@@ -161,7 +192,7 @@ def parse_cli_arguments():
         Command.PARSE_COVERAGE.value,
         parents=[parent_parser],
         add_help=False,
-        help="Sub-command to parse instruction coverage in existing analysis results.",
+        help="Sub-command to parse instruction coverage in analysis results.",
     )
 
     # Input result directories
@@ -223,5 +254,6 @@ def parse_cli_arguments():
     # Parse all arguments
 
     args = arg_parser.parse_args()
+    args = preprocess_remainder_arguments(args)
 
     return (arg_parser, args)

@@ -16,7 +16,6 @@ def signal_handler(_sig, _frame):
     print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
 
-
 def analyze_smart_contracts(args):
     """Run analyzers to analyze input smart contracts"""
     # Prepare analysis tools and test files
@@ -28,6 +27,8 @@ def analyze_smart_contracts(args):
 
     if jobs > 1 and not args.docker:
         error("Do not support running multiple jobs in local mode!")
+
+    print(f"Confuzzius args: '{args.confuzzius_args}'")
 
     # Perform the analysis
     analyze.perform_analysis(
@@ -87,22 +88,27 @@ def main():
     if args.sub_command == Command.ANALYZE.value:
         print("Smartbench: running mode analyzing smart contracts...\n")
         analyze_smart_contracts(args)
+
     # Parse analysis results
     elif args.sub_command == Command.PARSE_RESULTS.value:
         print("Smartbench: running mode parsing benchmarking results...\n")
         parse_existing_results(args)
+
     # Parse the instruction coverage in analysis results
     elif args.sub_command == Command.PARSE_COVERAGE.value:
         print("Smartbench: running mode parsing instruction coverage...\n")
         parse_instruction_coverage(args)
+
     # Parse bug annotations
     elif args.sub_command == Command.PARSE_ANNOTS.value:
         print("Smartbench: running mode parsing bug annotations...\n")
         parse_bug_annotations(args)
+
     # Deploy contracts
     elif args.sub_command == Command.DEPLOY_CONTRACTS.value:
         print("Smartbench: running mode deploying contracts...\n")
         deploy_smart_contracts(args)
+
     else:
         print("Smartbench runner: no sub-command is specified!")
 
