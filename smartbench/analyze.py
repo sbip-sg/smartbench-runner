@@ -5,7 +5,9 @@
 # Standard Library
 import os
 import shlex
+import signal
 import subprocess
+import threading
 import traceback
 
 from datetime import datetime
@@ -48,7 +50,8 @@ def log_analysis_command(
 
 def log_analysis_output(
     tool: Tool,
-    output: CompletedProcess,
+    stdout,
+    stderr,
     result_dir: str,
 ) -> None:
     """Record execution log of an analysis tool in TOML format."""
@@ -57,14 +60,14 @@ def log_analysis_output(
         file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
         file.write("-------------------------------------------------------\n")
-        stdout = output.stdout.decode("utf-8")
-        file.write(f"{stdout}\n\n")
+        output = stdout.decode("utf-8")
+        file.write(f"{output}\n\n")
 
         file.write("-------------------------------------------------------\n")
         file.write("[errors]\n")
         file.write("-------------------------------------------------------\n")
-        stderr = output.stderr.decode("utf-8")
-        file.write(f"{stderr}")
+        error = stderr.decode("utf-8")
+        file.write(f"{error}")
 
 
 def log_analysis_info(
@@ -85,6 +88,15 @@ def log_analysis_info(
         else:
             tests_info = ",\n  ".join([f'"{test}"' for test in test_files])
             file.write(f"test_files = [\n  {tests_info}\n]\n")
+
+
+def kill_analysis_process(*processes: List[subprocess.Popen]):
+    """Kill a process by the SIGINT signal so that some fuzzer can still print
+    the summary result."""
+    for proc in processes:
+        if proc.poll() is None:
+            print("# Kill process:")
+            proc.send_signal(signal.SIGINT)
 
 
 def analyze_test_file(
@@ -120,16 +132,27 @@ def analyze_test_file(
 
         debug(f"COMMAND: {cmd}")
 
-        output = subprocess.run(
+        # Prepare to run the analyzer
+        proc = subprocess.Popen(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            check=False,
         )
-        log_analysis_output(tool, output, test_output_dir)
+
+        # Run a thread to kill the analyzer after a timeout
+        if timeout is not None:
+            proc_killer = threading.Timer(
+                timeout, kill_analysis_process, args=[proc]
+            )
+            proc_killer.start()
+
+        # Run the analyzer
+        (stdout, stderr) = proc.communicate()
+
+        log_analysis_output(tool, stdout, stderr, test_output_dir)
         if isinstance(tool, Mythril):
             # the results of `mythril` is in `stdout`
-            tool.write_to_output_file(output, test_output_dir)
+            tool.write_to_output_file(stdout, test_output_dir)
 
     except ValueError as err:
         print(f"Failed to run command: {cmd}\n")
