@@ -35,7 +35,7 @@ class Tool:
         executable: str,
         default_arguments: str,
         default_timeout: int,
-        additional_arguments: Optional[str] = None,
+        additional_args: Optional[str] = None,
         random_seed: int = 0,
     ):
         """Constructor"""
@@ -43,7 +43,7 @@ class Tool:
         self.name: str = str(name)
         self.executable: str = str(executable)
         self.default_arguments: str = default_arguments
-        self.additional_arguments: Optional[str] = additional_arguments
+        self.additional_args: Optional[str] = additional_args
         self.default_timeout = int(default_timeout)
         self.output_file: str = f"{id}_result.json"
         self.log_file: str = f"{id}_execution.log"
@@ -58,7 +58,7 @@ class Tool:
             + '", Path: "'
             + self.executable
             + '", Arguments: "'
-            + self.additional_arguments
+            + self.additional_args
             + '"}'
         )
 
@@ -112,8 +112,8 @@ class Tool:
         else:
             raise Exception(f"TODO: implement for tool: {self.id}")
 
-        if self.additional_arguments:
-            arguments = arguments + " " + self.additional_arguments
+        if self.additional_args:
+            arguments = arguments + " " + self.additional_args
 
         output_file = self.configure_output_file(test_output_dir)
 

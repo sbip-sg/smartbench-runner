@@ -28,7 +28,7 @@ class Slither(Tool):
         executable: str,
         default_arguments: str,
         default_timeout: int,
-        additional_arguments: Optional[str] = None,
+        additional_args: Optional[str] = None,
     ):
         Tool.__init__(
             self,
@@ -37,7 +37,7 @@ class Slither(Tool):
             executable,
             default_arguments,
             default_timeout,
-            additional_arguments,
+            additional_args,
         )
 
     def make_analysis_command(
@@ -57,8 +57,8 @@ class Slither(Tool):
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
-        if self.additional_arguments:
-            cmd = cmd + " " + self.additional_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
 
         output_file = self.configure_output_file(test_output_dir)
 

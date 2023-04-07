@@ -24,9 +24,9 @@ class Mythril(Tool):
         id: str,
         name: str,
         executable: str,
-        default_arguments: str,
+        default_args: str,
         default_timeout: int,
-        additional_arguments: Optional[str] = None,
+        additional_args: Optional[str] = None,
         random_seed: int = 0,
     ):
         Tool.__init__(
@@ -34,9 +34,9 @@ class Mythril(Tool):
             id,
             name,
             executable,
-            default_arguments,
+            default_args,
             default_timeout,
-            additional_arguments,
+            additional_args,
             random_seed,
         )
 
@@ -55,10 +55,10 @@ class Mythril(Tool):
         command = self.executable
         solc_version = solc.detect_required_solc_version(test_file)
 
-        if self.default_arguments:
-            command = command + " " + self.default_arguments
-        if self.additional_arguments:
-            command = command + " " + self.additional_arguments
+        if self.default_args:
+            command = command + " " + self.default_args
+        if self.additional_args:
+            command = command + " " + self.additional_args
 
         command = (
             command

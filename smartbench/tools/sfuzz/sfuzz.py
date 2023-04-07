@@ -25,7 +25,7 @@ class Sfuzz(Tool):
         executable: str,
         default_arguments: str,
         default_timeout: int,
-        additional_arguments: Optional[str] = None,
+        additional_args: Optional[str] = None,
     ):
         Tool.__init__(
             self,
@@ -34,7 +34,7 @@ class Sfuzz(Tool):
             executable,
             default_arguments,
             default_timeout,
-            additional_arguments,
+            additional_args,
         )
 
     def make_analysis_command(
@@ -54,8 +54,8 @@ class Sfuzz(Tool):
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
-        if self.additional_arguments:
-            cmd = cmd + " " + self.additional_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
 
         # Configure Solc version the test file
 

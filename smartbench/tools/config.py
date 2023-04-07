@@ -35,7 +35,7 @@ RESULTS_DIR = os.path.join(SMARTBENCH_ROOT, "results")
 DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT), "deploy")
 
 
-def load_tool_configuration(tool_name: str) -> Optional[Tool]:
+def load_tool_configuration(tool_name: str, args) -> Optional[Tool]:
     """Parse configuration of an analysis tool"""
 
     # Helper function to report configuration error
@@ -73,7 +73,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
 
             assert command is not None
 
-            if (path := command.get(EXECUTABLE)) is None:
+            if (executable := command.get(EXECUTABLE)) is None:
                 report_config_error(EXECUTABLE, cfg_fpath)
 
             if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
@@ -97,9 +97,10 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
             return ToolConstructor(
                 tool_id,
                 tool_name,
-                path,
+                executable,
                 default_args,
                 default_timeout,
+                args.additional_args,
             )
         except AttributeError:
             warning("Error in configuration of tool: " + str(tool_name))
@@ -116,7 +117,7 @@ def configure_analysis_tools(args) -> List[Tool]:
 
     all_tool_configs = []
     for tool_name in tool_names:
-        config = load_tool_configuration(tool_name)
+        config = load_tool_configuration(tool_name, args)
         if config is None:
             warning("Failed to read configuration of: " + tool_name)
         else:

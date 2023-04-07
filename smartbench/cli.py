@@ -23,11 +23,9 @@ class Command(Enum):
 def preprocess_remainder_arguments(args):
     """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
     them into a string."""
-    if args.slither_args is not None:
-        args.slither_args = " ".join(args.slither_args)
 
-    if args.confuzzius_args is not None:
-        args.confuzzius_args = " ".join(args.confuzzius_args)
+    if args.additional_args is not None:
+        args.additional_args = " ".join(args.additional_args)
 
     return args
 
@@ -101,13 +99,6 @@ def parse_cli_arguments():
         help="Timeout for each test case, controlled by Smartbench.",
     )
 
-    # Timeout for each test case, controlled by the analysis tool.
-    analyze_parser.add_argument(
-        "--tool-timeout",
-        type=int,
-        help="Timeout for each test case, controlled by each tool.",
-    )
-
     # Number of jobs per tool
     analyze_parser.add_argument(
         "-j",
@@ -123,27 +114,15 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
-    # Additional arguments of Slither
+    # Additional arguments passing to the analysis tool.
     analyze_parser.add_argument(
-        "--slither-args",
-        type=str,
-        nargs=argparse.REMAINDER,
-        help=(
-            "Additional arguments for Slither.\n"
-            + "This option should be put only at the end of the command.\n"
-            + 'Example: --slither-args "--option value"'
-        ),
-    )
-
-    # Additional arguments of Confuzzius
-    analyze_parser.add_argument(
-        "--confuzzius-args",
+        "--additional-args",
         type=str,
         nargs=argparse.REMAINDER,
         help=(
             "Additional arguments for Confuzzius.\n"
             + "This option should be put only at the end of the command.\n"
-            + 'Example: --confuzzius-args "--option value"'
+            + 'Example: --additional-args "--option value"'
         ),
     )
 

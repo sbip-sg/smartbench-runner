@@ -25,7 +25,7 @@ class Smartian(Tool):
         executable: str,
         default_arguments: str,
         default_timeout: int,
-        additional_arguments: Optional[str] = None,
+        additional_args: Optional[str] = None,
         random_seed: int = 0,
     ):
         Tool.__init__(
@@ -35,7 +35,7 @@ class Smartian(Tool):
             executable,
             default_arguments,
             default_timeout,
-            additional_arguments,
+            additional_args,
             random_seed,
         )
 
@@ -57,8 +57,8 @@ class Smartian(Tool):
 
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
-        if self.additional_arguments:
-            cmd = cmd + " " + self.additional_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
 
         cmd = (
             cmd

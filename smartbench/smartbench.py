@@ -28,7 +28,7 @@ def analyze_smart_contracts(args):
     if jobs > 1 and not args.docker:
         error("Do not support running multiple jobs in local mode!")
 
-    print(f"Confuzzius args: '{args.confuzzius_args}'")
+    print(f"Tool additional args: '{args.additional_args}'")
 
     # Perform the analysis
     analyze.perform_analysis(
