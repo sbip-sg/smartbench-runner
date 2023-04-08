@@ -3,3 +3,4 @@
 
 # Except the example folder
 !/examples
+!smartbench/tools/*/run-*.sh

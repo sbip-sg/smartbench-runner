@@ -53,7 +53,8 @@ RUN mkdir benchmarks
 RUN mkdir results
 
 # Copy executable file
-ADD run-smartian.sh /root/
+ADD smartbench/tools/smartian/run-smartian.sh /root/
 
 # Entry point when running the container as an executable
+WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]
