@@ -17,10 +17,10 @@ RUN apt-get -y install git tzdata
 # Install Python3.9
 RUN apt-get install -y python3.9 python3.9-dev python-is-python3 python3-pip
 RUN ln -sf /usr/bin/python3.9 /usr/bin/python3
-
+RUN pip install --upgrade pip
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
-RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
+# RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
 
 # Install Solc libraries
 RUN pip install py-solc --force-reinstall
@@ -31,14 +31,14 @@ WORKDIR /root/
 RUN git clone --depth=1 --single-branch --branch fuzzing \
     https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/py-evm.git /root/py-evm
 WORKDIR /root/py-evm/
-# RUN pip install -e ./
+# RUN pip3 install -e ./
 
 # Install SmartFuzz
 WORKDIR /root/
 ENV TOOL_DIR=smartfuzz
 RUN git clone https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/smart-fuzz $TOOL_DIR
 WORKDIR /root/smartfuzz
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Prepare testing environments
 RUN mkdir examples
