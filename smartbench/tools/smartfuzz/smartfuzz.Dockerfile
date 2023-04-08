@@ -1,4 +1,4 @@
-# Dockerfile for Confuzzius
+# Dockerfile for SmartFuzz
 
 FROM ubuntu:20.04
 
@@ -20,10 +20,10 @@ RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select in
 RUN pip install py-solc --force-reinstall
 RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
-# Install Confuzzius
-ENV TOOL_DIR=confuzzius
-RUN git clone https://github.com/christoftorres/ConFuzzius $TOOL_DIR
-RUN pip install -r $TOOL_DIR/fuzzer/requirements.txt
+# Install SmartFuzz
+ENV TOOL_DIR=smartfuzz
+RUN git clone git@github.com:sbip-sg/smart-fuzz $TOOL_DIR
+RUN pip install -r $TOOL_DIR/requirements.txt
 
 # Prepare testing environments
 RUN mkdir examples
@@ -34,7 +34,7 @@ RUN mkdir benchmarks
 RUN mkdir results
 
 # Copy executable file
-ADD run-confuzzius.sh /root/
+ADD run-smartfuzz.sh /root/
 
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]

@@ -1,19 +1,11 @@
 #!/bin/bash
 
-# Script to install ConFuzzius tool
-#
-# Requires Python3.9 to run Confuzzius.
-#    sudo add-apt-repository ppa:deadsnakes/ppa
-#    sudo apt update
-#    sudo apt install python3.9 python3.9-venv
-#
-# Usage:
 #    ./install-confuzzius-local.sh
 
 # Tool settings
-TOOL_NAME="confuzzius"
-TOOL_ID="confuzzius"
-TOOL_VENV="${TOOL_ID}_env"
+TOOL_NAME="SmartFuzz"
+TOOL_ID="smartfuzz"
+TOOL_VENV="${TOOL_ID}_venv"
 
 # Prepare repository directory
 echo "Preparing repository directory..."
@@ -31,7 +23,7 @@ if [ -d "$TOOL_DIR" ]; then
     echo "Repository $TOOL_DIR already exists!"
     echo "Skip cloning..."
 else
-    git clone https://github.com/sbip-sg/ConFuzzius $TOOL_DIR
+    git clone git@github.com:sbip-sg/smart-fuzz $TOOL_DIR
 fi
 
 # Set up virtual environment venv
@@ -39,7 +31,7 @@ python -m venv $BASE_DIR/$TOOL_VENV
 . $BASE_DIR/$TOOL_VENV/bin/activate
 
 # Install requirements
-pip install -r $TOOL_DIR/fuzzer/requirements.txt
+pip install -r $TOOL_DIR/requirements.txt
 
 # Install Solc packages
 pip install solc-select py-solc --force-reinstall
