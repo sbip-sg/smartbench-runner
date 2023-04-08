@@ -30,7 +30,6 @@ fi
 cd $TOOL_DIR
 echo "\nUpdating sub-modules..."
 git submodule update --init --recursive
-make
 
 # Install environment
 echo "\nInstall Dotnet 5 SDK"

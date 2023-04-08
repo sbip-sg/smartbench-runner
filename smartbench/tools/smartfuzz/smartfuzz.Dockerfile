@@ -2,15 +2,21 @@
 
 FROM ubuntu:20.04
 
+# Some build arguments
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Asia/Singapore
+ARG GIT_ACCESS_TOKEN         # Github token to be read from --build-arg
+
 # Update working directory to $HOME (default to `/root` in Ubuntu Docker image)
 WORKDIR /root/
 
 # Install Ubuntu packages
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive TZ=Asia/Singapore apt-get -y install git tzdata
+RUN apt-get -y install git tzdata
 
-# Install Python3
-RUN apt-get install -y python3 python-is-python3 python3-pip
+# Install Python3.9
+RUN apt-get install -y python3.9 python3.9-dev python-is-python3 python3-pip
+RUN ln -sf /usr/bin/python3.9 /usr/bin/python3
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
@@ -20,10 +26,19 @@ RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select in
 RUN pip install py-solc --force-reinstall
 RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
+# Install py-evm
+WORKDIR /root/
+RUN git clone --depth=1 --single-branch --branch fuzzing \
+    https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/py-evm.git /root/py-evm
+WORKDIR /root/py-evm/
+# RUN pip install -e ./
+
 # Install SmartFuzz
+WORKDIR /root/
 ENV TOOL_DIR=smartfuzz
-RUN git clone git@github.com:sbip-sg/smart-fuzz $TOOL_DIR
-RUN pip install -r $TOOL_DIR/requirements.txt
+RUN git clone https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/smart-fuzz $TOOL_DIR
+WORKDIR /root/smartfuzz
+RUN pip install -r requirements.txt
 
 # Prepare testing environments
 RUN mkdir examples

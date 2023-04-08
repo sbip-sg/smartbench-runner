@@ -42,12 +42,17 @@ shift
 CONTAINER_NAMES=()
 NUM_CONTAINERS=0
 FORCE_INSTALL=false
+USE_GIT_TOKEN=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         -n)
             NUM_CONTAINERS=$2
             shift # past argument
+            shift # past value
+            ;;
+        --use-git-token)
+            USE_GIT_TOKEN=true
             shift # past value
             ;;
         --force-install)
@@ -77,7 +82,6 @@ SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
 
 # Tool directories
 TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
-TOOL_EXAMPLES_DIR="$TOOL_DIR/examples"
 
 # Docker information
 DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
@@ -106,8 +110,6 @@ clean_up () {
         echo "Cleaning after error..."
     fi
 
-    rm -rf examples
-
     if [[ ! $arg -eq 0 ]]; then
         echo "Abort installation!"
         exit 1
@@ -118,18 +120,20 @@ clean_up () {
 trap "clean_up 1" ERR
 
 echo "============================================="
-echo "Install $TOOL_NAME in docker mode"
+echo "Install $TOOL_ID in docker mode"
 echo "Prepare environments..."
-
-# Prepare some examples to copy to Docker image
-cd $TOOL_DIR
-mkdir $TOOL_EXAMPLES_DIR
-cp $SMARTBENCH_EXAMPLES_DIR/*.sol $TOOL_EXAMPLES_DIR
 
 # Build Docker image
 echo "============================================="
-echo "Building Docker image for $TOOL_NAME..."
-docker build -f $DOCKER_FILE -t $DOCKER_IMAGE .
+echo "Building Docker image for $TOOL_ID..."
+if [[ $USE_GIT_TOKEN == true ]]; then
+    echo "Git Access Token is required to build Docker image from: $DOCKER_FILE"
+    echo -n "Enter your Git Access Token: "
+    read GIT_TOKEN
+    docker build -f $DOCKER_FILE -t $DOCKER_IMAGE --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN .
+else
+    docker build -f $DOCKER_FILE -t $DOCKER_IMAGE .
+fi
 
 # Create a new Docker container that share the two folders:
 # `benchmarks` and `results` with the host system.

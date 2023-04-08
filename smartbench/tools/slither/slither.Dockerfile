@@ -2,6 +2,10 @@
 
 FROM ubuntu:20.04
 
+# Some build arguments
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=Asia/Singapore
+
 # Update working directory to $HOME (default to `/root` in Ubuntu Docker image)
 WORKDIR /root/
 

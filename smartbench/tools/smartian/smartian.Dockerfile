@@ -1,4 +1,4 @@
-# Dockerfile for Confuzzius
+# Dockerfile for Smartian
 
 FROM ubuntu:20.04
 
@@ -14,7 +14,7 @@ RUN apt-get update
 RUN apt-get -y install git tzdata
 
 # Install Python3
-RUN apt-get install -y python3 python-is-python3 python3-pip
+RUN apt-get install -y python3 python-is-python3 python3-pip wget
 
 # Install Solc-select and all Solc compilers
 RUN pip install solc-select
@@ -24,12 +24,27 @@ RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select in
 RUN pip install py-solc --force-reinstall
 RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
-# Install Confuzzius
-ENV TOOL_DIR=confuzzius
-RUN git clone https://github.com/christoftorres/ConFuzzius $TOOL_DIR
-RUN pip install -r $TOOL_DIR/fuzzer/requirements.txt
+# Install Smartian
+ENV TOOL_DIR=/root/smartian
+RUN git clone https://github.com/sbip-sg/Smartian $TOOL_DIR
+WORKDIR $TOOL_DIR
+RUN git submodule update --init --recursive
+
+# Install environment
+RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb \
+    -O packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN apt-get update
+RUN apt-get install -y apt-transport-https
+RUN apt-get update
+RUN apt-get install -y dotnet-sdk-5.0
+
+# Compile Smartian
+WORKDIR $TOOL_DIR
+RUN make
 
 # Prepare testing environments
+WORKDIR /root/
 RUN mkdir examples
 ADD examples/*.sol examples/
 
@@ -38,7 +53,7 @@ RUN mkdir benchmarks
 RUN mkdir results
 
 # Copy executable file
-ADD run-confuzzius.sh /root/
+ADD run-smartian.sh /root/
 
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]
