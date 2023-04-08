@@ -1,44 +1,20 @@
 # Dockerfile for Confuzzius
 
-FROM ubuntu:20.04
+# Usage: this file should only be run by the installation script:
+# `smartbench-runner/install-tool-docker.sh`
 
-# Some build arguments
-ARG DEBIAN_FRONTEND=noninteractive
-ARG TZ=Asia/Singapore
+# Use the base image of Smartbench
+FROM smartbench/base:latest
 
-# Update working directory to $HOME (default to `/root` in Ubuntu Docker image)
 WORKDIR /root/
-
-# Install Ubuntu packages
-RUN apt-get update
-RUN apt-get -y install git tzdata
-
-# Install Python3
-RUN apt-get install -y python3 python-is-python3 python3-pip
-
-# Install Solc-select and all Solc compilers
-RUN pip install solc-select
-RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
-
-# Install Solc libraries
-RUN pip install py-solc --force-reinstall
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
 
 # Install Confuzzius
 ENV TOOL_DIR=confuzzius
 RUN git clone https://github.com/christoftorres/ConFuzzius $TOOL_DIR
 RUN pip install -r $TOOL_DIR/fuzzer/requirements.txt
 
-# Prepare testing environments
-RUN mkdir examples
-ADD examples/*.sol examples/
-
-# Prepare benchmarking environments
-RUN mkdir benchmarks
-RUN mkdir results
-
 # Copy executable file
-ADD run-confuzzius.sh /root/
+ADD smartbench/tools/confuzzius/run-confuzzius.sh /root/
 
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]

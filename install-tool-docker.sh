@@ -18,12 +18,12 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  install-tool-docker.sh <TOOL-ID> [CONTAINER_NAME] [-n <NUMBER-OF-CONTAINERS>]"
+    echo "  install-tool-docker.sh <TOOL-ID> [CONTAINER_NAME] [OPTIONS]"
     echo ""
-    echo "Examples:"
-    echo "  install-tool-docker.sh slither"
-    echo "  install-tool-docker.sh slither slither-analyzer"
-    echo "  install-tool-docker.sh slither -n 5"
+    echo "Options:"
+    echo "  -n <NUMBER_OF_CONTAINERS>   Number of containers to be installed."
+    echo "  --force-install             Force install new containers."
+    echo "  --use-git-token             Allow using GitHub personal token."
 }
 
 if [[ $# == 0 ]]; then
@@ -79,13 +79,15 @@ SMARTBENCH_ROOT=$(realpath $(dirname "$0"))
 SMARTBENCH_BENCHMARKS_DIR="$SMARTBENCH_ROOT/benchmarks"
 SMARTBENCH_EXAMPLES_DIR="$SMARTBENCH_ROOT/examples"
 SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
+SMARTBENCH_DOCKER_FILE="$SMARTBENCH_ROOT/smartbench/tools/smartbench.Dockerfile"
+SMARTBENCH_DOCKER_IMAGE="smartbench/base"
 
 # Tool directories
 TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
 
 # Docker information
-DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
-DOCKER_IMAGE="smartbench/$TOOL_ID"
+TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
+TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
 
 # Docker containers to be installed
 CONTAINER_NAMES=($TOOL_ID)
@@ -125,14 +127,19 @@ echo "Prepare environments..."
 
 # Build Docker image
 echo "============================================="
+echo "Building base image for all analysis tools..."
+docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE .
+
+# Build Docker image
+echo "============================================="
 echo "Building Docker image for $TOOL_ID..."
 if [[ $USE_GIT_TOKEN == true ]]; then
-    echo "Git Access Token is required to build Docker image from: $DOCKER_FILE"
+    echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
     echo -n "Enter your Git Access Token: "
     read GIT_TOKEN
-    docker build -f $DOCKER_FILE -t $DOCKER_IMAGE --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN .
+    docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN .
 else
-    docker build -f $DOCKER_FILE -t $DOCKER_IMAGE .
+    docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE .
 fi
 
 # Create a new Docker container that share the two folders:
@@ -168,7 +175,7 @@ for CONTAINER in "${CONTAINER_NAMES[@]}"; do
         --name $CONTAINER \
         -v $SMARTBENCH_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \
         -v $SMARTBENCH_RESULTS_DIR:$DOCKER_RESULTS_DIR \
-        $DOCKER_IMAGE
+        $TOOL_DOCKER_IMAGE
 done
 
 # Clean after installation

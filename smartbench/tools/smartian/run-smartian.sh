@@ -25,5 +25,4 @@ SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Run Smartian
 SOLC_VERSION=$SOLC_VER python "$TOOL_ROOT_PATH/fuzzer/main.py" \
-    --evm byzantium \
     -s $TEST_FILE $OTHER_ARGS
