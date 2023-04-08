@@ -39,7 +39,7 @@ ENV TOOL_DIR=smartfuzz
 RUN git clone https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/smart-fuzz $TOOL_DIR
 WORKDIR /root/smartfuzz
 RUN pip3 install -r requirements.txt
-
+RUN python scripts/download_solc_compilers.py
 # Prepare testing environments
 RUN mkdir examples
 ADD examples/*.sol examples/
