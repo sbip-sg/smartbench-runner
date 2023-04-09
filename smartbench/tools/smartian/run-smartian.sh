@@ -67,9 +67,9 @@ if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
 fi
 
 # Run Smartian on each candidate contract
-for CONTRACT in $CONTRACT_NAMES; do
+for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================="
-    echo "* Fuzzing contract: $CONTRACT"
+    echo "** Fuzzing contract: $CONTRACT"
     dotnet $TOOL_ROOT_PATH/build/Smartian.dll fuzz \
         --useothersoracle --checkoptionalbugs --verbose 1 \
         --program "$COMPILED_CONTRACTS/$CONTRACT.bin" \

@@ -39,12 +39,12 @@ def log_analysis_command(
         # Log input
         file.write("-------------------------------------------------------\n")
         file.write("[input contract]\n")
-        file.write("-------------------------------------------------------\n")
+        file.write("-------------------------------------------------------\n\n")
         file.write(f"{input_file}\n\n")
 
         file.write("-------------------------------------------------------\n")
         file.write("[command]\n")
-        file.write("-------------------------------------------------------\n")
+        file.write("-------------------------------------------------------\n\n")
         file.write(f"{command}\n\n")
 
 
@@ -60,7 +60,7 @@ def log_analysis_output(
     with open(log_file, "a", encoding="utf-8") as file:
         file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
-        file.write("-------------------------------------------------------\n")
+        file.write("-------------------------------------------------------\n\n")
         output = stdout.decode("utf-8")
         file.write(f"{output}\n\n")
 
@@ -85,13 +85,13 @@ def log_analysis_info(
             file.write(f"test_files = [\n  {tests_info}\n]\n")
 
 
-def kill_analysis_process(*processes: List[subprocess.Popen]):
-    """Kill a process by the SIGINT signal so that some fuzzer can still print
-    the summary result."""
-    for proc in processes:
-        if proc.poll() is None:
-            print("# Kill process:")
-            proc.send_signal(signal.SIGINT)
+# def kill_analysis_process(*processes: List[subprocess.Popen]):
+#     """Kill a process by the SIGINT signal so that some fuzzer can still print
+#     the summary result."""
+#     for proc in processes:
+#         if proc.poll() is None:
+#             print("# Kill process:")
+#             proc.send_signal(signal.SIGINT)
 
 
 def analyze_test_file(
@@ -138,12 +138,12 @@ def analyze_test_file(
             stderr=subprocess.PIPE,
         )
 
-        # Run a thread to kill the analyzer after a timeout
-        if timeout is not None:
-            proc_killer = threading.Timer(
-                timeout, kill_analysis_process, args=[proc]
-            )
-            proc_killer.start()
+        # # Run a thread to kill the analyzer after a timeout
+        # if timeout is not None:
+        #     proc_killer = threading.Timer(
+        #         timeout, kill_analysis_process, args=[proc]
+        #     )
+        #     proc_killer.start()
 
         # Run the analyzer
         (stdout, _) = proc.communicate()

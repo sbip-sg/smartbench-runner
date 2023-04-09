@@ -13,7 +13,10 @@ def get_input_test_file(log_file: str) -> Optional[str]:
         while line := file.readline():
             if line.rstrip() == "[input contract]":
                 try:
-                    file.readline()  # skip next line
+                    # Skip next 2 lines
+                    file.readline()
+                    file.readline()
+                    # Read the input file
                     return file.readline().rstrip()
                 except Exception:
                     return None
