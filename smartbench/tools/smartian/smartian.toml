@@ -3,6 +3,6 @@ id = "smartian"
 name = "Smartian"
 
 [command]
-executable = "sh smartbench/tools/smartian/smartian.sh"
+executable = "run-smartian.sh"
 default_arguments = ""
 default_timeout = 60

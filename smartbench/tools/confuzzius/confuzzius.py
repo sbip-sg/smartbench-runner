@@ -72,8 +72,7 @@ class Confuzzius(Tool):
         # Calculate timeout for each contract if it is not specified in
         # additional arguments of Confuzzius
         if self.additional_args is None or "-t " not in self.additional_args:
-            if timeout is None:
-                timeout = self.default_timeout
+            timeout = self.default_timeout if timeout is None else timeout
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
 

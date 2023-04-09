@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-confuzzius.sh <test-file> <additional arguments>
+#   ./run-confuzzius.sh <test-file> [additional-confuzzius-arguments]
 #
 # NOTE:
 #   - Test file must be the first argument
@@ -11,7 +11,7 @@
 
 # Arguments of Confuzzius
 TEST_FILE=$(realpath $1)
-OTHER_ARGS=${@:2}
+ADDITIONAL_ARGS=${@:2}
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
@@ -26,4 +26,4 @@ SOLC_VER=$(solc-detect $TEST_FILE)
 # Run Confuzzius
 SOLC_VERSION=$SOLC_VER python "$TOOL_ROOT_PATH/fuzzer/main.py" \
     --evm byzantium \
-    -s $TEST_FILE $OTHER_ARGS
+    -s $TEST_FILE $ADDITIONAL_ARGS

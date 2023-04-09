@@ -3,6 +3,7 @@
 """Module handling Smartian analyzer."""
 
 # Standard Library
+import math
 import os
 import re
 
@@ -11,10 +12,14 @@ from typing import List, Optional, Tuple, Union
 # Library
 from smartbench import logger, solc
 from smartbench.annotation import BugAnnot
+from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
+
+
+SMARTIAN_DIR = os.path.dirname(__file__)
 
 
 class Smartian(Tool):
@@ -42,35 +47,45 @@ class Smartian(Tool):
     def make_analysis_command(
         self,
         test_file: str,
+        contracts: List[str],
         test_output_dir: str,
-        timeout=int,
-        use_docker=False,
+        container=Optional[DockerContainer],
+        timeout: Optional[int] = None,
     ) -> str:
         """Function to make analysis command for `Smartian`. This function should
         have the same signature with other tools.
 
         """
 
-        cmd = self.executable
-        solc_version = solc.detect_required_solc_version(test_file)
-        output_file = self.configure_output_file(test_output_dir)
+        if container is not None:
+            cmd = f"docker exec -it {container.name} /root/{self.executable}"
+        else:
+            cmd = os.path.join(SMARTIAN_DIR, self.executable)
 
+        # Input file must be the first argument to be run by docker
+        cmd = cmd + " " + test_file
+
+        # Pass contract names to Smartian
+        if len(contracts) > 0:
+            cmd = cmd + " -c " + " ".join(contracts)
+
+        # Pass arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
 
-        cmd = (
-            cmd
-            + " "
-            + test_file
-            + " "
-            + str(timeout)
-            + " "
-            + solc_version
-            + " "
-            + output_file
-        )
+        # Calculate timeout for each contract if it is not specified in
+        # additional arguments of Confuzzius
+        if self.additional_args is None or (
+            "-t " not in self.additional_args
+            and "--timelimit " not in self.additional_args
+        ):
+            timeout = self.default_timeout if timeout is None else timeout
+            contract_timeout = math.ceil(timeout / len(contracts))
+            cmd = cmd + " -t " + str(contract_timeout)
+
+        cmd = cmd + " --outputdir " + test_output_dir
 
         return cmd
 
