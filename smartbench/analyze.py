@@ -51,10 +51,11 @@ def log_analysis_command(
 def log_analysis_output(
     tool: Tool,
     stdout,
-    stderr,
     result_dir: str,
 ) -> None:
-    """Record execution log of an analysis tool in TOML format."""
+    """Record execution log of an analysis tool in TOML format.
+    `stderr` should be redirected to `stdout` by the executable script.
+    """
     log_file = tool.configure_log_file(result_dir)
     with open(log_file, "a", encoding="utf-8") as file:
         file.write("-------------------------------------------------------\n")
@@ -62,12 +63,6 @@ def log_analysis_output(
         file.write("-------------------------------------------------------\n")
         output = stdout.decode("utf-8")
         file.write(f"{output}\n\n")
-
-        file.write("-------------------------------------------------------\n")
-        file.write("[errors]\n")
-        file.write("-------------------------------------------------------\n")
-        error = stderr.decode("utf-8")
-        file.write(f"{error}")
 
 
 def log_analysis_info(
@@ -151,9 +146,10 @@ def analyze_test_file(
             proc_killer.start()
 
         # Run the analyzer
-        (stdout, stderr) = proc.communicate()
+        (stdout, _) = proc.communicate()
 
-        log_analysis_output(tool, stdout, stderr, test_output_dir)
+        log_analysis_output(tool, stdout, test_output_dir)
+
         if isinstance(tool, Mythril):
             # the results of `mythril` is in `stdout`
             tool.write_to_output_file(stdout, test_output_dir)

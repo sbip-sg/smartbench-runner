@@ -85,6 +85,8 @@ class Smartian(Tool):
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
 
+        output_file = self.configure_output_file(test_output_dir)
+
         cmd = cmd + " --outputdir " + test_output_dir
 
         return cmd

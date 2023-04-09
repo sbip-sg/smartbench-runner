@@ -24,6 +24,5 @@ fi
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Run Confuzzius
-SOLC_VERSION=$SOLC_VER python "$TOOL_ROOT_PATH/fuzzer/main.py" \
-    --evm byzantium \
-    -s $TEST_FILE $ADDITIONAL_ARGS
+SOLC_VERSION=$SOLC_VER python "$TOOL_ROOT_PATH/fuzzer/main.py" --evm byzantium \
+    -s $TEST_FILE $ADDITIONAL_ARGS 2>&1

@@ -45,10 +45,18 @@ class Tool:
         self.default_arguments: str = default_arguments
         self.additional_args: Optional[str] = additional_args
         self.default_timeout = int(default_timeout)
-        self.output_file: str = f"{id}_result.json"
-        self.log_file: str = f"{id}_execution.log"
         # increasing random seed for reproducible results
         self.random_seed: int = int(random_seed)
+
+        # Output file for capturing analysis result
+        if id in ["smartian"]:
+            output_file = f"{id}_result.txt"
+        else:
+            output_file = f"{id}_result.json"
+        self.output_file = output_file
+
+        # Log file for capturing execution log
+        self.log_file: str = f"{id}_execution.log"
 
     def __str__(self):
         """Printing to string."""

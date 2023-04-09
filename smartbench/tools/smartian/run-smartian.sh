@@ -57,7 +57,7 @@ rm -rf $COMPILED_CONTRACTS
 mkdir $COMPILED_CONTRACTS
 SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
     -o $COMPILED_CONTRACTS --overwrite \
-    1>/dev/null 2>&1
+    1>/dev/null 2>&1  # Do not capture output of Solc
 
 if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
     CURRENT_DIR=$(pwd)
@@ -74,5 +74,5 @@ for CONTRACT in $CONTRACT_NAMES; do
         --useothersoracle --checkoptionalbugs --verbose 1 \
         --program "$COMPILED_CONTRACTS/$CONTRACT.bin" \
         --abifile "$COMPILED_CONTRACTS/$CONTRACT.abi" \
-        ${ADDITIONAL_ARGS[@]}
+        ${ADDITIONAL_ARGS[@]} 2>&1
 done
