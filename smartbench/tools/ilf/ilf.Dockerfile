@@ -15,16 +15,6 @@ RUN apt-get -y install nodejs
 RUN npm -g config set user root
 RUN npm install -g truffle web3 ganache-cli
 
-# Install Golang and prepare workspace
-WORKDIR /root/
-RUN wget https://dl.google.com/go/go1.10.4.linux-amd64.tar.gz
-RUN tar -xvf go1.10.4.linux-amd64.tar.gz
-RUN mv go /usr/lib/go-1.10
-RUN mkdir go
-ENV GOPATH=/root/go
-ENV GOROOT=/usr/lib/go-1.10
-ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
 # Install z3
 WORKDIR /root/
 RUN git clone https://github.com/Z3Prover/z3.git
@@ -35,9 +25,22 @@ WORKDIR /root/z3/build
 RUN make -j7
 RUN make install
 
+# Install Golang
+WORKDIR /tmp/
+RUN wget https://dl.google.com/go/go1.10.4.linux-amd64.tar.gz
+RUN tar -xvf go1.10.4.linux-amd64.tar.gz
+RUN mv go /usr/lib/go-1.10
+
+# Prepare workspace
+WORKDIR /root/
+RUN mkdir go
+ENV GOPATH=/root/go
+ENV GOROOT=/usr/lib/go-1.10
+ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
 # Clone ILF
 WORKDIR $GOPATH/src/
-RUN git clone https://github.com/taquangtrung/ilf ilf
+RUN git clone https://github.com/eth-sri/ilf ilf
 
 # Install Go-Ethereum and apply ILF patch
 RUN mkdir -p $GOPATH/src/github.com/ethereum/
@@ -49,12 +52,8 @@ RUN git apply $GOPATH/src/ilf/script/patch.geth
 
 # Install ILF's dependencies
 WORKDIR $GOPATH/src/ilf
-RUN pip install cython
-RUN pip install -r requirements-aiohttp.txt --no-cache-dir
-RUN pip install aiohttp
-RUN pip install numpy
-RUN pip install scipy>=0.17.0
-RUN pip install -r requirements.txt
+RUN pip install cython cytoolz numpy scipy --no-cache-dir
+RUN pip install -r requirements.txt --no-cache-dir
 RUN pip install torch==1.10.2+cpu torchvision==0.11.3+cpu torchaudio==0.10.2+cpu\
     -f https://download.pytorch.org/whl/cpu/torch_stable.html
 
@@ -62,6 +61,7 @@ RUN pip install torch==1.10.2+cpu torchvision==0.11.3+cpu torchaudio==0.10.2+cpu
 RUN go build -o execution.so -buildmode=c-shared export/execution.go
 
 # Copy executable file
+WORKDIR /root
 ADD smartbench/tools/ilf/run-ilf.sh /root/
 
 # Entry point when running the container as an executable
