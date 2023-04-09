@@ -15,6 +15,9 @@ TEST_FILE=$(realpath $1)
 shift  # Past test file
 
 CONTRACT_NAMES=()
+TIMEOUT=0
+OUTPUT_DIR=""
+RESULT_FILE=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -34,12 +37,34 @@ while [[ $# -gt 0 ]]; do
                 esac
             done
             ;;
+        -o)
+            OUTPUT_DIR="$2"
+            shift  # past argument
+            shift  # past value
+            ;;
+        -t)
+            TIMEOUT=$2
+            shift  # past argument
+            shift  # past value
+            ;;
         *)
             ADDITIONAL_ARGS+=("$1") # save all other arguments
             shift # past argument
             ;;
     esac
 done
+
+# Checking output dir
+if [[ $OUTPUT_DIR == "" ]]; then
+    echo "Smartian: output dir is not specified!"
+    exit 1
+fi
+
+# Checking timeout
+if [[ $TIMEOUT -lt 0 ]]; then
+    echo "Smartian: timeout is not specified or invalid!"
+    exit 1
+fi
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
@@ -52,16 +77,16 @@ fi
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Compile test file to contracts in ABI and BIN format
-COMPILED_CONTRACTS="compiled_contracts"
-rm -rf $COMPILED_CONTRACTS
-mkdir $COMPILED_CONTRACTS
+CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
+rm -rf $CONTRACTS_DIR
+mkdir $CONTRACTS_DIR
 SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-    -o $COMPILED_CONTRACTS --overwrite \
+    -o $CONTRACTS_DIR --overwrite \
     1>/dev/null 2>&1  # Do not capture output of Solc
 
 if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
     CURRENT_DIR=$(pwd)
-    cd $COMPILED_CONTRACTS
+    cd $CONTRACTS_DIR
     CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
     cd $CURRENT_DIR
 fi
@@ -72,7 +97,8 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "** Fuzzing contract: $CONTRACT"
     dotnet $TOOL_ROOT_PATH/build/Smartian.dll fuzz \
         --useothersoracle --checkoptionalbugs --verbose 1 \
-        --program "$COMPILED_CONTRACTS/$CONTRACT.bin" \
-        --abifile "$COMPILED_CONTRACTS/$CONTRACT.abi" \
+        --program "$CONTRACTS_DIR/$CONTRACT.bin" \
+        --abifile "$CONTRACTS_DIR/$CONTRACT.abi" \
+        --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
         ${ADDITIONAL_ARGS[@]} 2>&1
 done

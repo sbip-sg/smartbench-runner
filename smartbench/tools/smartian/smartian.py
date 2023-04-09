@@ -87,7 +87,7 @@ class Smartian(Tool):
 
         output_file = self.configure_output_file(test_output_dir)
 
-        cmd = cmd + " --outputdir " + test_output_dir
+        cmd = cmd + " -o " + test_output_dir
 
         return cmd
 
@@ -97,12 +97,14 @@ class Smartian(Tool):
         return Location(file_path, 0, 0, 0, 0)
 
     def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
-        """Parse output of Smartian"""
-        output_file = os.path.join(test_output_dir, self.output_file)
+        """Parse analysis result of Smartian."""
+        # Smartian does not write output to any JSON file, so we parse its
+        # result from the log file.
         log_file = os.path.join(test_output_dir, self.log_file)
-        debug("Smartian output_file: ", output_file)
-        output_file_data = open(output_file, "r", encoding="utf-8")
-        data = output_file_data.read()
+        debug("Smartian log file: ", log_file)
+
+        log_file_data = open(log_file, "r", encoding="utf-8")
+        data = log_file_data.read()
         kinds = []
 
         assert_failure_match = re.search(r"Assertion Failure: [0-9]+", data)

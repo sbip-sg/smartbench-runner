@@ -50,7 +50,8 @@ class Tool:
 
         # Output file for capturing analysis result
         if id in ["smartian"]:
-            output_file = f"{id}_result.txt"
+            # Smartian does not write to any specific output file
+            output_file = None
         else:
             output_file = f"{id}_result.json"
         self.output_file = output_file
@@ -70,10 +71,13 @@ class Tool:
             + '"}'
         )
 
-    def configure_output_file(self, result_dir: str) -> str:
+    def configure_output_file(self, result_dir: str) -> Optional[str]:
         """
         Configure output file of the tool for a test file.
         """
+        if self.output_file is None:
+            return None
+
         # Prepare output directory
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
