@@ -16,7 +16,7 @@ from subprocess import CompletedProcess
 from typing import List, Optional
 
 # Library
-from smartbench import annotation, printer, result, validator
+from smartbench import annotation, printer, result, solc, validator
 from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Issue
 from smartbench.printer import debug
@@ -120,8 +120,11 @@ def analyze_test_file(
         print(f"{'-' * 45}\n")
         print(f"Analyzing: {test_file}\n")
 
+        contracts = solc.get_candidate_testing_contracts(test_file)
+        # print("Test contracts:", contracts)
+
         cmd = tool.make_analysis_command(
-            test_file, test_output_dir, container, timeout
+            test_file, contracts, test_output_dir, container, timeout
         )
 
         if cmd is None:
@@ -131,6 +134,7 @@ def analyze_test_file(
         log_analysis_command(tool, test_file, cmd, test_output_dir)
 
         debug(f"COMMAND: {cmd}")
+        print(f"Output dir: {test_output_dir}")
 
         # Prepare to run the analyzer
         proc = subprocess.Popen(
@@ -261,8 +265,6 @@ def run_docker_job(
 
     for test_file in job.test_files:
         test_output_dir = os.path.join(job.job_output_dir, test_file)
-
-        print(f"TEST OUTPUT DIR: {test_output_dir}")
 
         # Analyze the test file
         issues = analyze_test_file(

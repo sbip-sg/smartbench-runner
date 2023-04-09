@@ -4,6 +4,7 @@
 
 # Standard Library
 import json
+import math
 import os
 
 from typing import List, Optional, Tuple
@@ -46,6 +47,7 @@ class Confuzzius(Tool):
     def make_analysis_command(
         self,
         test_file: str,
+        contracts: List[str],
         test_output_dir: str,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
@@ -67,9 +69,13 @@ class Confuzzius(Tool):
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
 
-        # Use default timeout if it is not specified in additional_args
+        # Calculate timeout for each contract if it is not specified in
+        # additional arguments of Confuzzius
         if self.additional_args is None or "-t " not in self.additional_args:
-            cmd = cmd + " -t " + str(self.default_timeout)
+            if timeout is None:
+                timeout = self.default_timeout
+            contract_timeout = math.ceil(timeout / len(contracts))
+            cmd = cmd + " -t " + str(contract_timeout)
 
         # Output file
         output_file = self.configure_output_file(test_output_dir)

@@ -43,6 +43,7 @@ class Slither(Tool):
     def make_analysis_command(
         self,
         test_file: str,
+        contracts: List[str],
         test_output_dir: str,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,

@@ -90,9 +90,10 @@ class Tool:
 
     def make_analysis_command(
         self,
-        test_file,
-        test_output_dir,
-        timeout=None,
+        test_file: str,
+        contract_names: List[str],
+        test_output_dir: str,
+        timeout: Optional[int] = None,
         use_docker=True,
     ) -> str:
         """Make an analysis command for a tool."""
