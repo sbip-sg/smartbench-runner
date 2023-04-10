@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 import more_itertools as mit
 
 # Library
-from smartbench import annotation, logger, validator
+from smartbench import annotation, logger
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
 from smartbench.printer import warning
@@ -25,7 +25,58 @@ from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
-from smartbench.validator import ValidationResult
+
+
+class AnalysisResult:
+    """Class capturing the validation result between detected issues and
+    bug annotations in a smart contract."""
+
+    def __init__(
+        self,
+        test_file: str,
+        issues: List[Issue],
+        bug_annotations: List[BugAnnot],
+        correct_bugs: List[Issue],
+        missing_bugs: List[BugAnnot],
+        unlabelled_issues: List[Issue],
+    ):
+        self.test_file = test_file
+
+        # All the issues that are reported
+        self.issues: List[Issue] = list(issues)
+
+        # Bug annotations specified for the test files.
+        self.bug_annotations: List[BugAnnot] = list(bug_annotations)
+
+        # Issues that are reported.
+        self.correct_bugs: List[Issue] = list(correct_bugs)
+
+        # Bug annotations that are not reported.
+        self.missing_bugs: List[BugAnnot] = list(missing_bugs)
+
+        # Issues unrelated to bug annotations.
+        self.unlabelled_issues: List[Issue] = list(unlabelled_issues)
+
+    def num_correct_bugs(self) -> int:
+        return len(self.correct_bugs)
+
+    def print_summary(self) -> None:
+        print("- Validation:")
+
+        correct_bugs_info = f"{len(self.correct_bugs)}"
+        correct_idxs = [x.index for x in self.correct_bugs]
+        if len(correct_idxs) > 0:
+            correct_bugs_info += f" [Issue IDs: {print_indices(correct_idxs)}]"
+        print(f"  + Correct bugs: {correct_bugs_info}")
+
+        missing_bug_info = f"{len(self.missing_bugs)}"
+        missing_idxs = [x.index for x in self.missing_bugs]
+        if len(missing_idxs) > 0:
+            missing_bug_info += f" [Bug IDs: {print_indices(missing_idxs)}]"
+        print(f"  + Missing bugs: {missing_bug_info}")
+
+        print(f"  + Unlabelled issues: {len(self.unlabelled_issues)}")
+
 
 
 def print_indices(indices: List[int]) -> str:
@@ -42,7 +93,7 @@ def print_summary(
     test_name: str,
     issues: List[Issue],
     annots: Optional[List[BugAnnot]] = None,
-    validation: Optional[ValidationResult] = None,
+    validation: Optional[AnalysisResult] = None,
 ):
     """Print statistic summary of detected issues for a test file"""
     print("------------------")
