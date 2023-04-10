@@ -1,0 +1,3 @@
+[submodule "benchmarks/smartbench-dataset"]
+	path = benchmarks/smartbench-dataset
+	url = git@github.com:sbip-sg/smartbench-dataset
