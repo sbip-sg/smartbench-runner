@@ -92,11 +92,20 @@ def parse_cli_arguments():
         help="Running analysis tools in Docker.",
     )
 
-    # Timeout for each test case, controlled by Smartbench.
+    # Timeout for each test file.
     analyze_parser.add_argument(
         "--timeout",
         type=int,
-        help="Timeout for each test case, controlled by Smartbench.",
+        help="Timeout for each test file. \
+        This is the total timeout for all contracts in the same test file.",
+    )
+
+    # Timeout for each test contract.
+    analyze_parser.add_argument(
+        "--contract-timeout",
+        type=int,
+        help="Timeout for each contract in the test file. \
+        One file may contain multiple contracts",
     )
 
     # Number of jobs per tool

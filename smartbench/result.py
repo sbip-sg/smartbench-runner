@@ -4,6 +4,7 @@
 
 
 # Standard Library
+import bisect
 import os
 import pathlib
 
@@ -37,8 +38,8 @@ class AnalysisResult:
         bug_annots: List[BugAnnot],
         validation: Optional[Validation],
     ):
-        self.tool = tool
-        self.test_file = test_file
+        self.tool: Tool = tool
+        self.test_file: str = test_file
 
         # All the issues that are reported
         self.issues: List[Issue] = list(issues)
@@ -49,11 +50,18 @@ class AnalysisResult:
         # Validation of detected issues
         self.validation = validation
 
-    def print_summary(self):
+    def __lt__(self, other):
+        """Compare analysis result by the test file name, case insensitive.
+        Used only for the ordering purpose."""
+        test_file = self.test_file.casefold()
+        other_file = other.test_file.casefold()
+        return test_file.__lt__(other_file)
+
+    def print_detailed_summary(self):
         """Print statistic summary of detected issues for a test file"""
-        print("-------------------------")
-        print("ANALYSIS RESULT SUMMARY")
-        print("-------------------------")
+        print("-------------------")
+        print("ANALYSIS RESULT")
+        print("-------------------")
         print(f"- Tool: {self.tool.name}")
         print(f"- Test file: {self.test_file}")
         print(f"- Annotated bugs: {len(self.bug_annots)}")
@@ -75,6 +83,20 @@ class AnalysisResult:
             self.validation.print_summary()
 
         print("")
+
+    def print_benchmarking_summary(self):
+        if self.validation is None:
+            raise ValueError("Results were not validated for benchmarking!")
+
+        validation = self.validation
+        num_correct = len(validation.correct_bugs)
+        num_missing = len(validation.missing_bugs)
+        num_unlabelled = len(validation.unlabelled_issues)
+
+        print(
+            f"{self.test_file} {self.tool.name}, "
+            f"{num_correct}, {num_missing}, {num_unlabelled}"
+        )
 
 
 def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
@@ -209,13 +231,17 @@ def parse_result_directory(
             ares = AnalysisResult(
                 tool, test_file, issues, bug_annots, validation
             )
-            ares.print_summary()
+            ares.print_detailed_summary()
             all_results.append(ares)
 
         if validate:
             print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     print("Parsing result completed!")
+
+    if benchmarking:
+        print_benchmarking_results(results_dir, all_results)
+
     return all_results
 
 
@@ -230,8 +256,6 @@ def parse_instruction_coverage(results_dir: str):
     if not path.is_dir():
         warning(f"Directory does not exists: {results_dir}")
         return
-
-    all_issues: List[Issue] = []
 
     # Parse results of each analysis tool
     items = list(os.listdir(results_dir))
@@ -274,5 +298,60 @@ def parse_instruction_coverage(results_dir: str):
                 print(f"test_output_dir: {test_output_dir}")
                 print(f"coverage: {coverage}")
 
-    print("Parsing result completed!")
-    return all_issues
+    print("Parsing coverage completed!")
+
+
+def print_benchmarking_results(results_dir: str, results: List[AnalysisResult]):
+    print("\n========================")
+    print("BENCHMARKING RESULT")
+    print("========================")
+
+    tools_results = group_analysis_result_by_tools(results)
+
+    for tool_id in tools_results.keys():
+        print(f"\n** Result of {tool_id}\n")
+        for result in tools_results[tool_id]:
+            result.print_benchmarking_summary()
+
+    export_benchmarking_results(results_dir, tools_results)
+
+
+def group_analysis_result_by_tools(
+    results: List[AnalysisResult],
+) -> Dict[str, List[AnalysisResult]]:
+    tools_results = {}
+
+    for result in results:
+        tool_id = result.tool.id
+        if tool_id in tools_results:
+            bisect.insort(tools_results[tool_id], result)
+        else:
+            tools_results[tool_id] = [result]
+
+    return tools_results
+
+
+def export_benchmarking_results(
+    result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
+):
+    """Record analysis log of all tools."""
+    print(f"\n** Exporting benchmarking results...")
+    for tool_name in tools_results.keys():
+        results = tools_results[tool_name]
+
+        result_file = os.path.join(result_dir, f"results_{tool_name}.csv")
+        print(f"- {result_file}")
+        with open(result_file, "w", encoding="utf-8") as file:
+            file.write(f"Benchmarking result of {tool_name}\n")
+            file.write("======================================\n\n")
+
+            for result in results:
+                validation = result.validation
+                num_correct = len(validation.correct_bugs)
+                num_missing = len(validation.missing_bugs)
+                num_unlabelled = len(validation.unlabelled_issues)
+
+                file.write(
+                    f"{result.test_file}, {num_correct}, "
+                    f"{num_missing}, {num_unlabelled}\n"
+                )

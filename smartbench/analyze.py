@@ -180,7 +180,7 @@ def analyze_test_file(
     )
 
     # Print benchmarking information
-    analysis_result.print_summary()
+    analysis_result.print_detailed_summary()
 
     return analysis_result
 
@@ -408,5 +408,8 @@ def perform_analysis(
 
     print("Benchmarking completed!\n")
     print(f"Results are recorded at: {results_dir}")
+
+    if benchmarking:
+        result.print_benchmarking_results(results_dir, all_results)
 
     return all_results
