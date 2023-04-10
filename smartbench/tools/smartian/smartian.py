@@ -107,103 +107,103 @@ class Smartian(Tool):
         data = log_file_data.read()
         kinds = []
 
-        assert_failure_match = re.search(r"Assertion Failure: [0-9]+", data)
-        if assert_failure_match:
-            assert_failure = assert_failure_match.group()
-            assert_failure_num = assert_failure.removeprefix(
-                "Assertion Failure: "
-            )
-            if int(assert_failure_num) > 0:
-                kinds.append(IssueKind.ASSERTION_FAILURE)
+        assert_failure_matches = re.findall(r"Assertion Failure: [0-9]+", data)
+        for assert_failure_match in assert_failure_matches:
+            if IssueKind.ASSERTION_FAILURE not in kinds:
+                assert_failure_num = assert_failure_match.removeprefix(
+                    "Assertion Failure: "
+                )
+                if int(assert_failure_num) > 0:
+                    kinds.append(IssueKind.ASSERTION_FAILURE)
 
-        arbitrary_write_match = re.search(r"Suicidal Contract: [0-9]+", data)
-        if arbitrary_write_match:
-            arbitrary_write_dep = arbitrary_write_match.group()
-            arbitrary_write_num = arbitrary_write_dep.removeprefix(
-                "Suicidal Contract: "
-            )
-            if int(arbitrary_write_num) > 0:
-                kinds.append(IssueKind.ARBITRARY_WRITE)
+        arbitrary_write_matches = re.findall(r"Suicidal Contract: [0-9]+", data)
+        for arbitrary_write_match in arbitrary_write_matches:
+            if IssueKind.ARBITRARY_WRITE not in kinds:
+                arbitrary_write_num = arbitrary_write_match.removeprefix(
+                    "Suicidal Contract: "
+                )
+                if int(arbitrary_write_num) > 0:
+                    kinds.append(IssueKind.ARBITRARY_WRITE)
 
-        blk_dep_match = re.search(r"Block state Dependency: [0-9]+", data)
-        if blk_dep_match:
-            blk_dep = blk_dep_match.group()
-            blk_dep_num = blk_dep.removeprefix("Block state Dependency: ")
-            if int(blk_dep_num) > 0:
-                kinds.append(IssueKind.BLOCK_DEPENDENCY)
+        blk_dep_matches = re.findall(r"Block state Dependency: [0-9]+", data)
+        for blk_dep_match in blk_dep_matches:
+            if IssueKind.BLOCK_DEPENDENCY not in kinds:
+                blk_dep_num = blk_dep_match.removeprefix("Block state Dependency: ")
+                if int(blk_dep_num) > 0:
+                    kinds.append(IssueKind.BLOCK_DEPENDENCY)
 
-        delegatecall_match = re.search(r"Control Hijack: [0-9]+", data)
-        if delegatecall_match:
-            delegatecall_dep = delegatecall_match.group()
-            delegatecall_num = delegatecall_dep.removeprefix("Control Hijack: ")
-            if int(delegatecall_num) > 0:
-                kinds.append(IssueKind.UNSAFE_DELEGATECALL)
+        delegatecall_matches = re.findall(r"Control Hijack: [0-9]+", data)
+        for delegatecall_match in delegatecall_matches:
+            if IssueKind.UNSAFE_DELEGATECALL not in kinds:
+                delegatecall_num = delegatecall_match.removeprefix("Control Hijack: ")
+                if int(delegatecall_num) > 0:
+                    kinds.append(IssueKind.UNSAFE_DELEGATECALL)
 
-        leaking_ether_match = re.search(r"Ether Leak: [0-9]+", data)
-        if leaking_ether_match:
-            leaking_ether_dep = leaking_ether_match.group()
-            leaking_ether_num = leaking_ether_dep.removeprefix("Ether Leak: ")
-            if int(leaking_ether_num) > 0:
-                kinds.append(IssueKind.LEAKING_ETHER)
+        leaking_ether_matches = re.findall(r"Ether Leak: [0-9]+", data)
+        for leaking_ether_match in leaking_ether_matches:
+            if IssueKind.LEAKING_ETHER not in kinds:
+                leaking_ether_num = leaking_ether_match.removeprefix("Ether Leak: ")
+                if int(leaking_ether_num) > 0:
+                    kinds.append(IssueKind.LEAKING_ETHER)
 
-        integer_match = re.search(r"Integer Bug: [0-9]+", data)
-        if integer_match:
-            integer_dep = integer_match.group()
-            integer_num = integer_dep.removeprefix("Integer Bug: ")
-            if int(integer_num) > 0:
-                kinds.append(IssueKind.INTEGER_BUG)
+        integer_matches = re.findall(r"Integer Bug: [0-9]+", data)
+        for integer_match in integer_matches:
+            if IssueKind.INTEGER_BUG not in kinds:
+                integer_num = integer_match.removeprefix("Integer Bug: ")
+                if int(integer_num) > 0:
+                    kinds.append(IssueKind.INTEGER_BUG)
 
-        exception_match = re.search(r"Mishandled Exception: [0-9]+", data)
-        if exception_match:
-            exception_dep = exception_match.group()
-            exception_num = exception_dep.removeprefix("Mishandled Exception: ")
-            if int(exception_num) > 0:
-                kinds.append(IssueKind.UNHANDLED_EXCEPTION)
+        exception_matches = re.findall(r"Mishandled Exception: [0-9]+", data)
+        for exception_match in exception_matches:
+            if IssueKind.UNHANDLED_EXCEPTION not in kinds:
+                exception_num = exception_match.removeprefix("Mishandled Exception: ")
+                if int(exception_num) > 0:
+                    kinds.append(IssueKind.UNHANDLED_EXCEPTION)
 
-        reentrancy_match = re.search(r"Reentrancy: [0-9]+", data)
-        if reentrancy_match:
-            reentrancy_dep = reentrancy_match.group()
-            reentrancy_num = reentrancy_dep.removeprefix("Reentrancy: ")
-            if int(reentrancy_num) > 0:
-                kinds.append(IssueKind.REENTRANCY)
+        reentrancy_matches = re.findall(r"Reentrancy: [0-9]+", data)
+        for reentrancy_match in reentrancy_matches:
+            if IssueKind.REENTRANCY not in kinds:
+                reentrancy_num = reentrancy_match.removeprefix("Reentrancy: ")
+                if int(reentrancy_num) > 0:
+                    kinds.append(IssueKind.REENTRANCY)
 
-        selfdestruct_match = re.search(r"Suicidal Contract: [0-9]+", data)
-        if selfdestruct_match:
-            selfdestruct_dep = selfdestruct_match.group()
-            selfdestruct_num = selfdestruct_dep.removeprefix(
-                "Suicidal Contract: "
-            )
-            if int(selfdestruct_num) > 0:
-                kinds.append(IssueKind.UNSAFE_SELFDESTRUCT)
+        selfdestruct_matches = re.findall(r"Suicidal Contract: [0-9]+", data)
+        for selfdestruct_match in selfdestruct_matches:
+            if IssueKind.UNSAFE_SELFDESTRUCT not in kinds:
+                selfdestruct_num = selfdestruct_match.removeprefix(
+                    "Suicidal Contract: "
+                )
+                if int(selfdestruct_num) > 0:
+                    kinds.append(IssueKind.UNSAFE_SELFDESTRUCT)
 
-        tx_origin_match = re.search(r"Transaction Origin Use: [0-9]+", data)
-        if tx_origin_match:
-            tx_origin_dep = tx_origin_match.group()
-            tx_origin_num = tx_origin_dep.removeprefix(
-                "Transaction Origin Use: "
-            )
-            if int(tx_origin_num) > 0:
-                kinds.append(IssueKind.TRANSACTION_ORDER_DEPENDENCY)
+        tx_origin_matches = re.findall(r"Transaction Origin Use: [0-9]+", data)
+        for tx_origin_match in tx_origin_matches:
+            if IssueKind.TRANSACTION_ORDER_DEPENDENCY not in kinds:
+                tx_origin_num = tx_origin_match.removeprefix(
+                    "Transaction Origin Use: "
+                )
+                if int(tx_origin_num) > 0:
+                    kinds.append(IssueKind.TRANSACTION_ORDER_DEPENDENCY)
 
-        locking_ether_match = re.search(r"Freezing Ether: [0-9]+", data)
-        if locking_ether_match:
-            locking_ether_dep = locking_ether_match.group()
-            locking_ether_num = locking_ether_dep.removeprefix(
-                "Freezing Ether: "
-            )
-            if int(locking_ether_num) > 0:
-                kinds.append(IssueKind.LOCKING_ETHER)
+        locking_ether_matches = re.findall(r"Freezing Ether: [0-9]+", data)
+        for locking_ether_match in locking_ether_matches:
+            if IssueKind.LOCKING_ETHER not in kinds:
+                locking_ether_num = locking_ether_match.removeprefix(
+                    "Freezing Ether: "
+                )
+                if int(locking_ether_num) > 0:
+                    kinds.append(IssueKind.LOCKING_ETHER)
 
-        require_violation_match = re.search(
+        require_violation_matches = re.findall(
             r"Requirement Violation: [0-9]+", data
         )
-        if require_violation_match:
-            require_violation_dep = require_violation_match.group()
-            require_violation_num = require_violation_dep.removeprefix(
-                "Requirement Violation: "
-            )
-            if int(require_violation_num) > 0:
-                kinds.append(IssueKind.REQUIREMENT_VIOLATION)
+        for require_violation_match in require_violation_matches:
+            if IssueKind.REQUIREMENT_VIOLATION not in kinds:
+                require_violation_num = require_violation_match.removeprefix(
+                    "Requirement Violation: "
+                )
+                if int(require_violation_num) > 0:
+                    kinds.append(IssueKind.REQUIREMENT_VIOLATION)
 
         checker = Checker("Smartian", "fuzzing")
         issues = []

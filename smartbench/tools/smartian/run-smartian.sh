@@ -78,28 +78,28 @@ fi
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # # Compile test file to contracts in ABI and BIN format
-# CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
-# rm -rf $CONTRACTS_DIR
-# mkdir $CONTRACTS_DIR
-# SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-#     -o $CONTRACTS_DIR --overwrite \
-#     1>/dev/null 2>&1  # Do not capture output of Solc
+CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
+rm -rf $CONTRACTS_DIR
+mkdir $CONTRACTS_DIR
+SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
+    -o $CONTRACTS_DIR --overwrite \
+    1>/dev/null 2>&1  # Do not capture output of Solc
 
-# if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
-#     CURRENT_DIR=$(pwd)
-#     cd $CONTRACTS_DIR
-#     CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
-#     cd $CURRENT_DIR
-# fi
+if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
+    CURRENT_DIR=$(pwd)
+    cd $CONTRACTS_DIR
+    CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
+    cd $CURRENT_DIR
+fi
 
-# # Run Smartian on each candidate contract
-# for CONTRACT in ${CONTRACT_NAMES[@]}; do
-#     echo "==============================="
-#     echo "** Fuzzing contract: $CONTRACT"
-#     dotnet $TOOL_ROOT_PATH/build/Smartian.dll fuzz \
-#         --useothersoracle --checkoptionalbugs --verbose 1 \
-#         --program "$CONTRACTS_DIR/$CONTRACT.bin" \
-#         --abifile "$CONTRACTS_DIR/$CONTRACT.abi" \
-#         --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
-#         ${ADDITIONAL_ARGS[@]} 2>&1
-# done
+# Run Smartian on each candidate contract
+for CONTRACT in ${CONTRACT_NAMES[@]}; do
+    echo "==============================="
+    echo "** Fuzzing contract: $CONTRACT"
+    dotnet $TOOL_ROOT_PATH/build/Smartian.dll fuzz \
+        --useothersoracle --checkoptionalbugs --verbose 1 \
+        --program "$CONTRACTS_DIR/$CONTRACT.bin" \
+        --abifile "$CONTRACTS_DIR/$CONTRACT.abi" \
+        --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
+        ${ADDITIONAL_ARGS[@]} 2>&1
+done
