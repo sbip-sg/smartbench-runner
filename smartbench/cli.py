@@ -20,14 +20,14 @@ class Command(Enum):
     DEPLOY_CONTRACTS = "deploy-contracts"
 
 
-def preprocess_remainder_arguments(args):
-    """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
-    them into a string."""
+# def preprocess_remainder_arguments(args):
+#     """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
+#     them into a string."""
 
-    if args.additional_args is not None:
-        args.additional_args = " ".join(args.additional_args)
+#     if args.additional_args is not None:
+#         args.additional_args = " ".join(args.additional_args)
 
-    return args
+#     return args
 
 
 def parse_cli_arguments():
@@ -114,11 +114,11 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
-    # Validate analysis result
+    # Validate analysis result for benchmarking purpose
     analyze_parser.add_argument(
         "--benchmarking",
         action="store_true",
-        help="Benchmarking anlaysis results.",
+        help="Validating analysis results for benchmarking.",
     )
 
     # Additional arguments passing to the analysis tool.
@@ -135,7 +135,7 @@ def parse_cli_arguments():
     )
 
     ################################
-    # Parser for sub-command `parse-result`
+    # Parser for sub-command `parse-results`
 
     # Create a parser for the `parse-result` sub-command
     result_parser = sub_parsers.add_parser(
@@ -155,9 +155,16 @@ def parse_cli_arguments():
 
     # Validate analysis result
     result_parser.add_argument(
-        "--validate-results",
+        "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
+    )
+
+    # Validate analysis result for benchmarking purpose
+    result_parser.add_argument(
+        "--benchmarking",
+        action="store_true",
+        help="Validating analysis results for benchmarking.",
     )
 
     # Specify benchmark name for special cases without standard annotation and
@@ -241,6 +248,6 @@ def parse_cli_arguments():
     # Parse all arguments
 
     args = arg_parser.parse_args()
-    args = preprocess_remainder_arguments(args)
+    # args = preprocess_remainder_arguments(args)
 
     return (arg_parser, args)

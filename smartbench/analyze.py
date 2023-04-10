@@ -20,6 +20,7 @@ from smartbench import annotation, printer, result, solc, validator
 from smartbench.docker import DockerContainer, DockerJob
 from smartbench.issue import Issue
 from smartbench.printer import debug
+from smartbench.result import AnalysisResult
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.tool import Tool
@@ -99,7 +100,7 @@ def analyze_test_file(
     timeout=None,
     validate=False,
     benchmarking=False,
-) -> List[Issue]:
+) -> AnalysisResult:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
@@ -155,14 +156,13 @@ def analyze_test_file(
         traceback.print_exc()
         return []
 
-    # Process results
-    issues = result.process_analysis_result(tool, test_output_dir)
+    # Process analysis output
+    issues = tool.parse_analysis_output(test_output_dir)
     for issue in issues:
         print("- " + str(issue))
 
-    # Validating results
-    bug_annots = None
-    validation = None
+    # Validating reported issues
+    bug_annots = []
     test_name = os.path.basename(test_file)
     if validate or benchmarking:
         print("Bug annotations:")
@@ -170,14 +170,18 @@ def analyze_test_file(
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")
-        validation = validator.validate_issues(
+        analysis_result = validator.validate_issues(
             tool, test_file, issues, bug_annots
+        )
+    else:
+        analysis_result = AnalysisResult(
+            tool, test_name, issues, bug_annots, None
         )
 
     # Print benchmarking information
+    analysis_result.print_summary()
 
-    result.print_summary(tool, test_name, issues, bug_annots, validation)
-    return issues
+    return analysis_result
 
 
 def run_analysis_tool_locally(
@@ -187,7 +191,7 @@ def run_analysis_tool_locally(
     timeout=None,
     validate=False,
     benchmarking=False,
-) -> List[Issue]:
+) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
 
@@ -203,7 +207,7 @@ def run_analysis_tool_locally(
     test_files_common_path = os.path.commonpath(test_files)
     test_file_parent = os.path.dirname(test_files_common_path)
 
-    all_issues = []
+    all_results = []
 
     for test_file in test_files:
         # Prepare output directory for one test file
@@ -213,7 +217,7 @@ def run_analysis_tool_locally(
             os.makedirs(test_output_dir)
 
         # Analyze the test file
-        issues = analyze_test_file(
+        res = analyze_test_file(
             tool,
             test_file,
             test_output_dir,
@@ -222,9 +226,9 @@ def run_analysis_tool_locally(
             validate,
             benchmarking,
         )
-        all_issues += issues
+        all_results.append(res)
 
-    return all_issues
+    return all_results
 
 
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
@@ -286,7 +290,7 @@ def run_analysis_tool_using_docker(
     jobs=1,
     validate=False,
     benchmarking=False,
-) -> List[Issue]:
+) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
 
@@ -303,8 +307,7 @@ def run_analysis_tool_using_docker(
     # so that the container can access to it
     tool_output_dir_docker = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
 
-    all_issues: List[Issue] = []
-
+    all_results: List[AnalysisResult] = []
     containers = start_docker_containers(tool, jobs)
 
     # Distribute test files to containers
@@ -345,7 +348,7 @@ def run_analysis_tool_using_docker(
     # Stop Docker containers after analysis
     stop_docker_containers(containers)
 
-    return all_issues
+    return all_results
 
 
 def perform_analysis(
@@ -356,7 +359,7 @@ def perform_analysis(
     jobs=1,
     validate=False,
     benchmarking=False,
-) -> List[Issue]:
+) -> List[AnalysisResult]:
     """Function to run all tools to analyze all test files.
 
     If `validate` is True, the detected issues will be validated with
@@ -377,11 +380,11 @@ def perform_analysis(
     log_analysis_info(tools, test_files, results_dir)
 
     # Perform the analysis
-    all_issues = []
+    all_results = []
     for tool in tools:
         tool_output_dir = os.path.join(results_dir, tool.id)
         if use_docker:
-            issues = run_analysis_tool_using_docker(
+            results = run_analysis_tool_using_docker(
                 tool,
                 test_files,
                 tool_output_dir,
@@ -391,7 +394,7 @@ def perform_analysis(
                 benchmarking,
             )
         else:
-            issues = run_analysis_tool_locally(
+            results = run_analysis_tool_locally(
                 tool,
                 test_files,
                 tool_output_dir,
@@ -400,9 +403,9 @@ def perform_analysis(
                 benchmarking,
             )
 
-        all_issues += issues
+        all_results.extend(results)
 
     print("Benchmarking completed!\n")
     print(f"Results are recorded at: {results_dir}")
 
-    return all_issues
+    return all_results

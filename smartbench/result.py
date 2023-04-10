@@ -7,7 +7,7 @@
 import os
 import pathlib
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 # Third Party
 import more_itertools as mit
@@ -21,34 +21,19 @@ from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
-from typing import Tuple
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
 
-class AnalysisResult:
-    """Class capturing the validation result between detected issues and
-    bug annotations in a smart contract."""
-
+class Validation:
     def __init__(
         self,
-        test_file: str,
-        issues: List[Issue],
-        bug_annots: List[BugAnnot],
         correct_bugs: List[Tuple[Issue, BugAnnot]],
         missing_bugs: List[BugAnnot],
         unlabelled_issues: List[Issue],
     ):
-        self.test_file = test_file
-
-        # All the issues that are reported
-        self.issues: List[Issue] = list(issues)
-
-        # Bug annotations specified for the test files.
-        self.bug_annots: List[BugAnnot] = list(bug_annots)
-
         # Issues that are reported.
         self.correct_bugs: List[(Issue, BugAnnot)] = list(correct_bugs)
 
@@ -58,9 +43,6 @@ class AnalysisResult:
         # Issues unrelated to bug annotations.
         self.unlabelled_issues: List[Issue] = list(unlabelled_issues)
 
-    def num_correct_bugs(self) -> int:
-        return len(self.correct_bugs)
-
     def print_summary(self) -> None:
         print("- Validation:")
 
@@ -69,16 +51,71 @@ class AnalysisResult:
         if len(correct_issue_idxs) > 0:
             issues_idxs = print_indices(correct_issue_idxs)
             correct_bugs_info += f" [Issue IDs: {issues_idxs}]"
-        print(f"  + Correct bugs: {correct_bugs_info}")
+            print(f"  + Correct bugs: {correct_bugs_info}")
 
         missing_bug_info = f"{len(self.missing_bugs)}"
         missing_bug_idxs = [x.index for x in self.missing_bugs]
         if len(missing_bug_idxs) > 0:
             bug_annot_idxs = print_indices(missing_bug_idxs)
             missing_bug_info += f" [Bug annot IDs: {bug_annot_idxs}]"
-        print(f"  + Missing bugs: {missing_bug_info}")
+            print(f"  + Missing bugs: {missing_bug_info}")
 
         print(f"  + Unlabelled issues: {len(self.unlabelled_issues)}")
+
+
+class AnalysisResult:
+    """Class capturing the validation result between detected issues and
+    bug annotations in a smart contract."""
+
+    def __init__(
+        self,
+        tool: Tool,
+        test_file: str,
+        issues: List[Issue],
+        bug_annots: List[BugAnnot],
+        validation: Optional[Validation],
+    ):
+        self.tool = tool
+        self.test_file = test_file
+
+        # All the issues that are reported
+        self.issues: List[Issue] = list(issues)
+
+        # Bug annotations specified for the test files.
+        self.bug_annots: List[BugAnnot] = list(bug_annots)
+
+        # Validation of detected issues
+        self.validation = validation
+
+    def num_correct_bugs(self) -> int:
+        return len(self.correct_bugs)
+
+    def print_summary(self):
+        """Print statistic summary of detected issues for a test file"""
+        print("-------------------------")
+        print("ANALYSIS RESULT SUMMARY")
+        print("-------------------------")
+        print(f"- Tool: {self.tool.name}")
+        print(f"- Test file: {self.test_file}")
+        print(f"- Annotated bugs: {len(self.bug_annots)}")
+        print(f"- Detected issues: {len(self.issues)}")
+
+        # Print severity information
+        severity_stat: Dict[Severity, int] = {}
+        for issue in self.issues:
+            if issue.severity in severity_stat:
+                severity_stat[issue.severity] += 1
+            else:
+                severity_stat[issue.severity] = 1
+        severity_info = [f"  + {s}: {severity_stat[s]}" for s in severity_stat]
+        if len(severity_stat) > 0:
+            print("\n".join(severity_info))
+
+        # Print validation results
+        if self.validation is not None:
+            self.validation.print_summary()
+
+        print("")
 
 
 def print_indices(indices: List[int]) -> str:
@@ -88,72 +125,6 @@ def print_indices(indices: List[int]) -> str:
         for group in index_groups
     ]
     return ", ".join(groups)
-
-
-def print_summary(
-    tool: Tool,
-    test_name: str,
-    issues: List[Issue],
-    annots: Optional[List[BugAnnot]] = None,
-    validation: Optional[AnalysisResult] = None,
-):
-    """Print statistic summary of detected issues for a test file"""
-    print("------------------")
-    print("ANALYSIS SUMMARY")
-    print("------------------")
-    print(f"- Tool: {tool.name}")
-    print(f"- Contract: {test_name}")
-
-    # Print bug annotations
-    if annots is not None:
-        print(f"- Annotated bugs: {len(annots)}")
-
-    # Print issues details
-    print(f"- Detected issues: {len(issues)}")
-    severities: Dict[Severity, int] = {}
-    for issue in issues:
-        if issue.severity in severities:
-            severities[issue.severity] += 1
-        else:
-            severities[issue.severity] = 1
-    severities = [f"  + {s}: {severities[s]}" for s in severities]
-    if len(severities) > 0:
-        print("\n".join(severities))
-
-    # Print validation results
-    if validation is not None:
-        validation.print_summary()
-
-    print("")
-
-
-def process_analysis_result(tool: Tool, test_output_dir: str) -> List[Issue]:
-    """Process analysis result of a tool for a test file."""
-    # TODO: Make this function OOP
-    process_result_fn = None
-
-    if (
-        isinstance(tool, Slither)
-        or isinstance(tool, Confuzzius)
-        or isinstance(tool, Sfuzz)
-        or isinstance(tool, Mythril)
-        or isinstance(tool, Smartian)
-    ):
-        return tool.process_analysis_result(test_output_dir)
-
-    if tool.is_smartfuzz():
-        process_result_fn = smartfuzz.parse_smartfuzz_json_output
-
-    if process_result_fn:
-        output_file = os.path.join(test_output_dir, tool.output_file)
-        log_file = os.path.join(test_output_dir, tool.log_file)
-        try:
-            return process_result_fn(output_file, log_file)
-        except:
-            # When there is no results
-            return []
-
-    return []
 
 
 def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
@@ -217,7 +188,7 @@ def parse_result_directory(
 
         # Tool ID is assumed to be the same as tool_dir
         tool_id = item
-        tool = load_tool_configuration(tool_id)
+        tool = load_tool_configuration(tool_id, args)
 
         if tool is None:
             warning(f"Unable to load tool configuration: {tool_id}")
@@ -250,7 +221,7 @@ def parse_result_directory(
                 or isinstance(tool, Mythril)
                 or isinstance(tool, Smartian)
             ):
-                issues = tool.process_analysis_result(test_output_dir)
+                issues = tool.parse_analysis_output(test_output_dir)
             else:
                 issues = parse_existing_analysis_result(
                     tool, output_file, log_file
@@ -317,7 +288,7 @@ def parse_instruction_coverage(results_dir: str):
 
         # Tool ID is assumed to be the same as tool_dir
         tool_id = item
-        tool = load_tool_configuration(tool_id)
+        tool = load_tool_configuration(tool_id, args)
 
         if tool is None:
             warning(f"Unable to load tool configuration: {tool_id}")

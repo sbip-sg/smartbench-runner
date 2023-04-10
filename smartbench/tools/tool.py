@@ -141,7 +141,7 @@ class Tool:
         """Make deployment command for an analyzer."""
 
     @abstractmethod
-    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
+    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Process analysis result of each tool."""
 
     def match_location_of_issue_to_annotation(

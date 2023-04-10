@@ -39,6 +39,7 @@ def analyze_smart_contracts(args):
         args.docker,
         jobs,
         args.validate,
+        args.benchmarking,
     )
 
 
@@ -47,7 +48,7 @@ def parse_existing_results(args):
     for result_dir in args.result_directories:
         result.parse_result_directory(
             result_dir,
-            args.validate_results,
+            args.validate,
             args.benchmarking,
             args.benchmark_name,
         )

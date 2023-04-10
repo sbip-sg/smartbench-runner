@@ -143,7 +143,7 @@ class Confuzzius(Tool):
 
         return IssueKind.UNKNOWN
 
-    def process_analysis_result(
+    def parse_analysis_output(
         self,
         test_output_dir: str,
     ) -> List[Issue]:

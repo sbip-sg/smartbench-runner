@@ -13,7 +13,7 @@ from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.loc import Location
-from smartbench.result import AnalysisResult
+from smartbench.result import AnalysisResult, Validation
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
@@ -147,7 +147,7 @@ def validate_issues(
             detected = False
             for issue in issues:
                 if match_issue_to_annotation(tool, issue, annot):
-                    correct_bugs.extend((issue, annot))
+                    correct_bugs.append((issue, annot))
                     detected = True
                     break
             if not detected:
@@ -164,14 +164,9 @@ def validate_issues(
             # Unknown issue
             if not matched_bug:
                 unlabelled_issues.append(issue)
-        return AnalysisResult(
-            test_file,
-            issues,
-            annots,
-            correct_bugs,
-            missing_bugs,
-            unlabelled_issues,
-        )
+
+        validation = Validation(correct_bugs, missing_bugs, unlabelled_issues)
+        return AnalysisResult(tool, test_file, issues, annots, validation)
 
     # target_sbcs = []
     # if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
@@ -182,7 +177,7 @@ def validate_issues(
         # correct_bug = False
         for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
-                correct_bugs.extend((issue, annot))
+                correct_bugs.append((issue, annot))
                 reported_annots.append(annot)
                 # correct_bug = True
                 break
@@ -190,11 +185,5 @@ def validate_issues(
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
 
-    return AnalysisResult(
-        test_file,
-        issues,
-        annots,
-        correct_bugs,
-        missing_bugs,
-        unlabelled_issues,
-    )
+    validation = Validation(correct_bugs, missing_bugs, unlabelled_issues)
+    return AnalysisResult(tool, test_file, issues, annots, validation)
