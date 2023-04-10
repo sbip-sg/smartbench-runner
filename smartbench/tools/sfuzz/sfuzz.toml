@@ -3,6 +3,6 @@ id = "sFuzz"
 name = "sFuzz"
 
 [command]
-executable = "sh smartbench/tools/sfuzz/sfuzz.sh"
+executable = "run-sfuzz.sh"
 default_arguments = ""
 default_timeout = 60

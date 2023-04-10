@@ -18,7 +18,7 @@ WORKDIR /root/sfuzz/build/fuzzer
 RUN make
 
 # Copy executable file
-# ADD smartbench/tools/sfuzz/run-confuzzius.sh /root/
+# ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
 
 # Entry point when running the container as an executable
 WORKDIR /root/
