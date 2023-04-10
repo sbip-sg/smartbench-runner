@@ -17,8 +17,19 @@ RUN mkdir -p build; cd build; cmake ..
 WORKDIR /root/sfuzz/build/fuzzer
 RUN make
 
+# Add
+rm -rf assets
+mkdir assets
+rm -rf output
+mkdir -p output
+cd assets
+ADD smartbench/tools/sfuzz/NormalAttacker.sol .
+ADD smartbench/tools/sfuzz/ReentrancyAttacker.sol .
+
+
 # Copy executable file
-# ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
+WORKDIR /root/
+ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
 
 # Entry point when running the container as an executable
 WORKDIR /root/

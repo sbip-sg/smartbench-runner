@@ -92,14 +92,24 @@ if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
     cd $CURRENT_DIR
 fi
 
+# Run sFuzz insider the `build/fuzzer` repository
+cd $TOOL_ROOT_PATH/build/fuzzer
+rm -rf contracts
+mkdir contracts
+rm -rf output
+mkdir output
+
 # Run sFuzz on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================="
     echo "** Fuzzing contract: $CONTRACT"
-    dotnet $TOOL_ROOT_PATH/build/fuzzer -g \
-        --useothersoracle --checkoptionalbugs --verbose 1 \
-        --program "$CONTRACTS_DIR/$CONTRACT.bin" \
-        --abifile "$CONTRACTS_DIR/$CONTRACT.abi" \
-        --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
-        ${ADDITIONAL_ARGS[@]} 2>&1
+    cp $TEST_FILE "contracts/$CONTRACT.sol"
 done
+
+./fuzzer -g \
+         -r 0 \
+         -d $TIMEOUT \
+         --attacker ReentrancyAttacker 2>&1
+chmod +x fuzzMe
+./fuzzMe
+
