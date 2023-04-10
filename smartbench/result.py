@@ -9,11 +9,8 @@ import pathlib
 
 from typing import Dict, List, Optional, Tuple
 
-# Third Party
-import more_itertools as mit
-
 # Library
-from smartbench import annotation, logger
+from smartbench import annotation, logger, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
 from smartbench.printer import warning
@@ -25,42 +22,7 @@ from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
-
-
-class Validation:
-    def __init__(
-        self,
-        correct_bugs: List[Tuple[Issue, BugAnnot]],
-        missing_bugs: List[BugAnnot],
-        unlabelled_issues: List[Issue],
-    ):
-        # Issues that are reported.
-        self.correct_bugs: List[(Issue, BugAnnot)] = list(correct_bugs)
-
-        # Bug annotations that are not reported.
-        self.missing_bugs: List[BugAnnot] = list(missing_bugs)
-
-        # Issues unrelated to bug annotations.
-        self.unlabelled_issues: List[Issue] = list(unlabelled_issues)
-
-    def print_summary(self) -> None:
-        print("- Validation:")
-
-        correct_bugs_info = f"{len(self.correct_bugs)}"
-        correct_issue_idxs = [issue.index for (issue, _) in self.correct_bugs]
-        if len(correct_issue_idxs) > 0:
-            issues_idxs = print_indices(correct_issue_idxs)
-            correct_bugs_info += f" [Issue IDs: {issues_idxs}]"
-            print(f"  + Correct bugs: {correct_bugs_info}")
-
-        missing_bug_info = f"{len(self.missing_bugs)}"
-        missing_bug_idxs = [x.index for x in self.missing_bugs]
-        if len(missing_bug_idxs) > 0:
-            bug_annot_idxs = print_indices(missing_bug_idxs)
-            missing_bug_info += f" [Bug annot IDs: {bug_annot_idxs}]"
-            print(f"  + Missing bugs: {missing_bug_info}")
-
-        print(f"  + Unlabelled issues: {len(self.unlabelled_issues)}")
+from smartbench.validator import Validation
 
 
 class AnalysisResult:
@@ -86,9 +48,6 @@ class AnalysisResult:
 
         # Validation of detected issues
         self.validation = validation
-
-    def num_correct_bugs(self) -> int:
-        return len(self.correct_bugs)
 
     def print_summary(self):
         """Print statistic summary of detected issues for a test file"""
@@ -116,15 +75,6 @@ class AnalysisResult:
             self.validation.print_summary()
 
         print("")
-
-
-def print_indices(indices: List[int]) -> str:
-    index_groups = [list(group) for group in mit.consecutive_groups(indices)]
-    groups = [
-        f"{group[0]}-{group[-1]}" if len(group) > 1 else f"{group[0]}"
-        for group in index_groups
-    ]
-    return ", ".join(groups)
 
 
 def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
@@ -162,22 +112,23 @@ def parse_existing_analysis_result(
 
 def parse_result_directory(
     results_dir: str,
-    validate_results=False,
+    validate=False,
     benchmarking=False,
     benchmark_name=None,
-) -> List[Issue]:
+) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
     The input `result_dir` is the directory containing results of all
     tools.
     """
+    print(f"Parsing result directory: {results_dir}")
 
     path = pathlib.Path(results_dir)
     if not path.is_dir():
         warning(f"Directory does not exists: {results_dir}")
         return []
 
-    all_issues: List[Issue] = []
+    all_results: List[Issue] = []
 
     # Parse results of each analysis tool
     items = list(os.listdir(results_dir))
@@ -188,7 +139,7 @@ def parse_result_directory(
 
         # Tool ID is assumed to be the same as tool_dir
         tool_id = item
-        tool = load_tool_configuration(tool_id, args)
+        tool = load_tool_configuration(tool_id)
 
         if tool is None:
             warning(f"Unable to load tool configuration: {tool_id}")
@@ -230,10 +181,9 @@ def parse_result_directory(
             for issue in issues:
                 print(f"- {issue}")
 
-            bug_annots = None
+            bug_annots = []
             validation = None
-            test_name = os.path.basename(test_output_dir)
-            if validate_results:
+            if validate or benchmarking:
                 if test_file is None:
                     print(f"Unable to read test file: {test_file}")
                     print("Skip validating results!")
@@ -253,16 +203,20 @@ def parse_result_directory(
                         bug_annots,
                         benchmark_name=benchmark_name or "",
                     )
-                    correct_bugs += validation.num_correct_issues()
+                    correct_bugs += validation.num_correct_bugs()
                 print("")
-            print_summary(tool, test_name, issues, bug_annots, validation)
-            all_issues = all_issues + issues
 
-        if validate_results:
+            ares = AnalysisResult(
+                tool, test_file, issues, bug_annots, validation
+            )
+            ares.print_summary()
+            all_results.append(ares)
+
+        if validate:
             print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     print("Parsing result completed!")
-    return all_issues
+    return all_results
 
 
 def parse_instruction_coverage(results_dir: str):
@@ -288,7 +242,7 @@ def parse_instruction_coverage(results_dir: str):
 
         # Tool ID is assumed to be the same as tool_dir
         tool_id = item
-        tool = load_tool_configuration(tool_id, args)
+        tool = load_tool_configuration(tool_id)
 
         if tool is None:
             warning(f"Unable to load tool configuration: {tool_id}")

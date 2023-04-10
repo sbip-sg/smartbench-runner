@@ -164,19 +164,20 @@ def analyze_test_file(
     # Validating reported issues
     bug_annots = []
     test_name = os.path.basename(test_file)
+    validation = None
     if validate or benchmarking:
         print("Bug annotations:")
         bug_annots = annotation.parse_bug_annotations(test_file)
         for annot in bug_annots:
             print(f"- {annot.print_concise()}")
         print("")
-        analysis_result = validator.validate_issues(
+        validation = validator.validate_issues(
             tool, test_file, issues, bug_annots
         )
-    else:
-        analysis_result = AnalysisResult(
-            tool, test_name, issues, bug_annots, None
-        )
+
+    analysis_result = AnalysisResult(
+        tool, test_name, issues, bug_annots, validation
+    )
 
     # Print benchmarking information
     analysis_result.print_summary()

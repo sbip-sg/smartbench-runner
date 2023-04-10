@@ -121,19 +121,6 @@ def parse_cli_arguments():
         help="Validating analysis results for benchmarking.",
     )
 
-    # Additional arguments passing to the analysis tool.
-    # TODO: need to support adding to additional arguments to each specific tool.
-    analyze_parser.add_argument(
-        "--additional-args",
-        type=str,
-        nargs=argparse.REMAINDER,
-        help=(
-            "Additional arguments for each analysis tools.\n"
-            + "This option should be put only at the end of the command.\n"
-            + 'Example: --additional-args "--option value"'
-        ),
-    )
-
     ################################
     # Parser for sub-command `parse-results`
 
@@ -148,7 +135,7 @@ def parse_cli_arguments():
     # Input result directories
     result_parser.add_argument(
         "result_directories",
-        # nargs="+",  # Accept multiple input files or directories
+        nargs="+",  # Accept multiple result directories
         type=str,
         help="Input result directories.",
     )
