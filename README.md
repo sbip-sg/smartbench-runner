@@ -6,62 +6,52 @@
 
   ```sh
   cd smartbench-runner
-  ./install.sh
+  ./install-smartbench-env.sh
+  ```
+
+- Install Docker containers for each analysis tool:
+
+  ```sh
+  # Install 5 docker containers named: slither-1, ..., slither-5
+  ./install-tool-docker.sh slither --force-install -n 5
   ```
 
 # Usage
 
-## Analiss mode
+## Features
 
-- Run `analyze` sub-command for new analyses.
+- `analyze`: analyze contracts and record results
 
   ```sh
-  # Input a single file
-  ./smartbench.sh analyze examples/Rubixi.sol -t slither
-
-  # Input a wild-card pattern
-  ./smartbench.sh analyze examples/*.sol -t slither
-
-  # Input a directory
   ./smartbench.sh analyze examples -t slither
+  ./smartbench.sh analyze examples/*.sol -t slither
   ```
 
-- Run with `--validate-results` to validate all detected issues.
-
-  ```sh
-  # Validate analysis results
-  ./smartbench.sh analyze examples -t slither --validate-results
-  ```
-
-## Parsing results
-
-- Run `parse-results` sub-command to read existing results.
+- `parse-results`: parse existing raw results obtained from previous analyses.
 
   ```sh
   ./smartbench.sh parse-results results/<path_to_results>/
   ```
 
-- Run with `--validate-results` to validate all detected issues.
+- `parse-annots`: parse bug annotations in smart contracts.
 
   ```sh
-  ./smartbench.sh parse-results results/<path_to_results>/ --validate-results
+  ./smartbench.sh parse-annots examples/**.sol
   ```
 
-## Parsing bug annotations
+## Benchmarking mode
 
-- Run `parse-annots` sub-command to collect bug annotations in smart contracts.
+- Benchmarking structure:
+  + Test files must be copied to: `smartbench-runner/benchmarks`.
+  + The result will be recorded to `smartbench-runner/results`.
 
-  ```sh
-  # Input a single file
-  ./smartbench.sh parse-annots examples/Rubixi.sol
+- Sample commands:
 
-  # Input a wild-card pattern
-  ./smartbench.sh parse-annots examples/*.sol
-
-  # Input a directory
-  ./smartbench.sh parse-annots examples
+  ``` sh
+  # Benchmarking smartbugs dataset using 3 docker jobs, timeout 60s per test file
+  ./smartbench benchmarks/smartbugs -t confuzzius --docker --jobs 3 --timeout 60
   ```
 
 # Development
 
-- Code formatting is performed by `black` (see configuration in `pyproject.toml`).
+- Code formatting is performed by `black` (see `format-code.sh`).
