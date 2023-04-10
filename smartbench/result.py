@@ -99,37 +99,13 @@ class AnalysisResult:
         )
 
 
-def is_test_result_directory(tool: Tool, test_dir: str) -> bool:
+def verify_tool_result_dir(tool: Tool, test_dir: str) -> bool:
     """Check whether `test_dir` containing analysis result of a tool for
     a test file."""
 
     test_dir = os.path.abspath(test_dir)
     output_file = os.path.join(test_dir, tool.output_file)
     return os.path.exists(output_file)
-
-
-def parse_existing_analysis_result(
-    tool: Tool, output_file: str, log_file: str
-) -> List[Issue]:
-    """Parse a test result.
-
-    The input `test_result_dir` is the directory containing the
-    immediate result of an analysis tool.
-    """
-
-    # Reset issue index counter for the current output file
-    Issue.index_counter = 1
-
-    parse_result_fn = None
-
-    if tool.is_smartfuzz():
-        parse_result_fn = smartfuzz.parse_smartfuzz_json_output
-
-    if parse_result_fn is None:
-        warning(f"Does not support parsing result of tool: {tool.name}")
-        return []
-
-    return parse_result_fn(output_file, log_file)
 
 
 def parse_result_directory(
@@ -175,30 +151,17 @@ def parse_result_directory(
         correct_bugs = 0
         annotations = 0
         for test_output_dir in test_output_dirs:
-            if not is_test_result_directory(tool, test_output_dir):
+            if not verify_tool_result_dir(tool, test_output_dir):
                 continue
 
             test_output_dir = os.path.abspath(test_output_dir)
-            output_file = os.path.join(test_output_dir, tool.output_file)
             log_file = os.path.join(test_output_dir, tool.log_file)
 
             test_file = logger.get_input_test_file(log_file)
             print(f"{'-' * 45}\n")
             print(f"Test file: {test_file}\n")
 
-            issues = []
-            if (
-                isinstance(tool, Slither)
-                or isinstance(tool, Confuzzius)
-                or isinstance(tool, Sfuzz)
-                or isinstance(tool, Mythril)
-                or isinstance(tool, Smartian)
-            ):
-                issues = tool.parse_analysis_output(test_output_dir)
-            else:
-                issues = parse_existing_analysis_result(
-                    tool, output_file, log_file
-                )
+            issues = tool.parse_analysis_output(test_output_dir)
 
             for issue in issues:
                 print(f"- {issue}")
@@ -286,7 +249,7 @@ def parse_instruction_coverage(results_dir: str):
         tool_output_dir = os.path.join(results_dir, tool_id)
         test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
         for test_output_dir in test_output_dirs:
-            if not is_test_result_directory(tool, test_output_dir):
+            if not verify_tool_result_dir(tool, test_output_dir):
                 continue
 
             if (
