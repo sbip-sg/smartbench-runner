@@ -21,6 +21,7 @@ from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
+from typing import Tuple
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
@@ -35,8 +36,8 @@ class AnalysisResult:
         self,
         test_file: str,
         issues: List[Issue],
-        bug_annotations: List[BugAnnot],
-        correct_bugs: List[Issue],
+        bug_annots: List[BugAnnot],
+        correct_bugs: List[Tuple[Issue, BugAnnot]],
         missing_bugs: List[BugAnnot],
         unlabelled_issues: List[Issue],
     ):
@@ -46,10 +47,10 @@ class AnalysisResult:
         self.issues: List[Issue] = list(issues)
 
         # Bug annotations specified for the test files.
-        self.bug_annotations: List[BugAnnot] = list(bug_annotations)
+        self.bug_annots: List[BugAnnot] = list(bug_annots)
 
         # Issues that are reported.
-        self.correct_bugs: List[Issue] = list(correct_bugs)
+        self.correct_bugs: List[(Issue, BugAnnot)] = list(correct_bugs)
 
         # Bug annotations that are not reported.
         self.missing_bugs: List[BugAnnot] = list(missing_bugs)
@@ -64,19 +65,20 @@ class AnalysisResult:
         print("- Validation:")
 
         correct_bugs_info = f"{len(self.correct_bugs)}"
-        correct_idxs = [x.index for x in self.correct_bugs]
-        if len(correct_idxs) > 0:
-            correct_bugs_info += f" [Issue IDs: {print_indices(correct_idxs)}]"
+        correct_issue_idxs = [issue.index for (issue, _) in self.correct_bugs]
+        if len(correct_issue_idxs) > 0:
+            issues_idxs = print_indices(correct_issue_idxs)
+            correct_bugs_info += f" [Issue IDs: {issues_idxs}]"
         print(f"  + Correct bugs: {correct_bugs_info}")
 
         missing_bug_info = f"{len(self.missing_bugs)}"
-        missing_idxs = [x.index for x in self.missing_bugs]
-        if len(missing_idxs) > 0:
-            missing_bug_info += f" [Bug IDs: {print_indices(missing_idxs)}]"
+        missing_bug_idxs = [x.index for x in self.missing_bugs]
+        if len(missing_bug_idxs) > 0:
+            bug_annot_idxs = print_indices(missing_bug_idxs)
+            missing_bug_info += f" [Bug annot IDs: {bug_annot_idxs}]"
         print(f"  + Missing bugs: {missing_bug_info}")
 
         print(f"  + Unlabelled issues: {len(self.unlabelled_issues)}")
-
 
 
 def print_indices(indices: List[int]) -> str:
