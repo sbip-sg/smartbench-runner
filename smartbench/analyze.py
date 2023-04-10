@@ -39,12 +39,16 @@ def log_analysis_command(
         # Log input
         file.write("-------------------------------------------------------\n")
         file.write("[input contract]\n")
-        file.write("-------------------------------------------------------\n\n")
+        file.write(
+            "-------------------------------------------------------\n\n"
+        )
         file.write(f"{input_file}\n\n")
 
         file.write("-------------------------------------------------------\n")
         file.write("[command]\n")
-        file.write("-------------------------------------------------------\n\n")
+        file.write(
+            "-------------------------------------------------------\n\n"
+        )
         file.write(f"{command}\n\n")
 
 
@@ -60,7 +64,9 @@ def log_analysis_output(
     with open(log_file, "a", encoding="utf-8") as file:
         file.write("-------------------------------------------------------\n")
         file.write("[output]\n")
-        file.write("-------------------------------------------------------\n\n")
+        file.write(
+            "-------------------------------------------------------\n\n"
+        )
         output = stdout.decode("utf-8")
         file.write(f"{output}\n\n")
 
@@ -85,15 +91,6 @@ def log_analysis_info(
             file.write(f"test_files = [\n  {tests_info}\n]\n")
 
 
-# def kill_analysis_process(*processes: List[subprocess.Popen]):
-#     """Kill a process by the SIGINT signal so that some fuzzer can still print
-#     the summary result."""
-#     for proc in processes:
-#         if proc.poll() is None:
-#             print("# Kill process:")
-#             proc.send_signal(signal.SIGINT)
-
-
 def analyze_test_file(
     tool: Tool,
     test_file: str,
@@ -101,6 +98,7 @@ def analyze_test_file(
     container=Optional[DockerContainer],
     timeout=None,
     validate=False,
+    benchmarking=False,
 ) -> List[Issue]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
@@ -119,7 +117,11 @@ def analyze_test_file(
         # print("Test contracts:", contracts)
 
         cmd = tool.make_analysis_command(
-            test_file, contracts, test_output_dir, container, timeout
+            test_file,
+            contracts,
+            test_output_dir,
+            container,
+            timeout,
         )
 
         if cmd is None:
@@ -137,13 +139,6 @@ def analyze_test_file(
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-
-        # # Run a thread to kill the analyzer after a timeout
-        # if timeout is not None:
-        #     proc_killer = threading.Timer(
-        #         timeout, kill_analysis_process, args=[proc]
-        #     )
-        #     proc_killer.start()
 
         # Run the analyzer
         (stdout, _) = proc.communicate()
@@ -165,10 +160,11 @@ def analyze_test_file(
     for issue in issues:
         print("- " + str(issue))
 
+    # Validating results
     bug_annots = None
     validation = None
     test_name = os.path.basename(test_file)
-    if validate:
+    if validate or benchmarking:
         print("Bug annotations:")
         bug_annots = annotation.parse_bug_annotations(test_file)
         for annot in bug_annots:
@@ -177,6 +173,8 @@ def analyze_test_file(
         validation = validator.validate_issues(
             tool, test_file, issues, bug_annots
         )
+
+    # Print benchmarking information
 
     result.print_summary(tool, test_name, issues, bug_annots, validation)
     return issues
@@ -188,6 +186,7 @@ def run_analysis_tool_locally(
     tool_output_dir: str,
     timeout=None,
     validate=False,
+    benchmarking=False,
 ) -> List[Issue]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -221,6 +220,7 @@ def run_analysis_tool_locally(
             None,
             timeout,
             validate,
+            benchmarking,
         )
         all_issues += issues
 
@@ -256,6 +256,7 @@ def stop_docker_containers(containers: List[DockerContainer]):
 def run_docker_job(
     job: DockerJob,
     validate=False,
+    benchmarking=False,
 ) -> List[Issue]:
     all_issues = []
 
@@ -270,6 +271,7 @@ def run_docker_job(
             job.container,
             job.timeout,
             validate,
+            benchmarking,
         )
         all_issues.extend(issues)
 
@@ -283,6 +285,7 @@ def run_analysis_tool_using_docker(
     timeout=None,
     jobs=1,
     validate=False,
+    benchmarking=False,
 ) -> List[Issue]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -352,6 +355,7 @@ def perform_analysis(
     use_docker=True,
     jobs=1,
     validate=False,
+    benchmarking=False,
 ) -> List[Issue]:
     """Function to run all tools to analyze all test files.
 
@@ -384,6 +388,7 @@ def perform_analysis(
                 timeout,
                 jobs,
                 validate,
+                benchmarking,
             )
         else:
             issues = run_analysis_tool_locally(
@@ -392,6 +397,7 @@ def perform_analysis(
                 tool_output_dir,
                 timeout,
                 validate,
+                benchmarking,
             )
 
         all_issues += issues

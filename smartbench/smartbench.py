@@ -16,6 +16,7 @@ def signal_handler(_sig, _frame):
     print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
 
+
 def analyze_smart_contracts(args):
     """Run analyzers to analyze input smart contracts"""
     # Prepare analysis tools and test files
@@ -45,7 +46,10 @@ def parse_existing_results(args):
     """Parse existing results obtained from previous analyses."""
     for result_dir in args.result_directories:
         result.parse_result_directory(
-            result_dir, args.validate_results, args.benchmark_name
+            result_dir,
+            args.validate_results,
+            args.benchmarking,
+            args.benchmark_name,
         )
 
 

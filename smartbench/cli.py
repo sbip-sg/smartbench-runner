@@ -114,13 +114,21 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
+    # Validate analysis result
+    analyze_parser.add_argument(
+        "--benchmarking",
+        action="store_true",
+        help="Benchmarking anlaysis results.",
+    )
+
     # Additional arguments passing to the analysis tool.
+    # TODO: need to support adding to additional arguments to each specific tool.
     analyze_parser.add_argument(
         "--additional-args",
         type=str,
         nargs=argparse.REMAINDER,
         help=(
-            "Additional arguments for Confuzzius.\n"
+            "Additional arguments for each analysis tools.\n"
             + "This option should be put only at the end of the command.\n"
             + 'Example: --additional-args "--option value"'
         ),

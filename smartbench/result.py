@@ -137,7 +137,10 @@ def parse_existing_analysis_result(
 
 
 def parse_result_directory(
-    results_dir: str, validate_results=False, benchmark_name=None
+    results_dir: str,
+    validate_results=False,
+    benchmarking=False,
+    benchmark_name=None,
 ) -> List[Issue]:
     """Function to parse result directory of a tool.
 
