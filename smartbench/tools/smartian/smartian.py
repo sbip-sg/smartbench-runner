@@ -230,7 +230,7 @@ class Smartian(Tool):
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
-        output_file = os.path.join(test_output_dir, self.output_file)
+        output_file = os.path.join(test_output_dir, self.json_output_file)
 
         lines = None
         with open(output_file, "r", encoding="utf-8") as file:

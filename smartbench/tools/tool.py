@@ -48,12 +48,10 @@ class Tool:
         # increasing random seed for reproducible results
         self.random_seed: int = int(random_seed)
 
-        # Output file for capturing analysis result
-        if id in ["smartian", "mythril"]:
-            output_file = None
-        else:
-            output_file = f"{id}_result.json"
-        self.output_file = output_file
+        # Output file in JSON format, some tools may not support this output
+        self.json_output_file = (
+            None if id in ["smartian", "mythril"] else f"{id}_result.json"
+        )
 
         # Log file for capturing execution log
         self.log_file: str = f"{id}_execution.log"
@@ -61,26 +59,21 @@ class Tool:
     def __str__(self):
         """Printing to string."""
         return (
-            '{ Tool: "'
-            + self.name
-            + '", Path: "'
-            + self.executable
-            + '", Arguments: "'
-            + self.additional_args
-            + '"}'
+            f"{{ Tool: {self.name}, Path: {self.executable}, "
+            f"Arguments: {self.additional_args}}}"
         )
 
     def configure_output_file(self, result_dir: str) -> Optional[str]:
         """
         Configure output file of the tool for a test file.
         """
-        if self.output_file is None:
+        if self.json_output_file is None:
             return None
 
         # Prepare output directory
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
-        return os.path.join(result_dir, self.output_file)
+        return os.path.join(result_dir, self.json_output_file)
 
     def configure_log_file(self, result_dir: str) -> str:
         """

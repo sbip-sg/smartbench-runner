@@ -150,7 +150,7 @@ class Confuzzius(Tool):
         """Parse output of Confuzzius"""
         output = None
 
-        output_file = os.path.join(test_output_dir, self.output_file)
+        output_file = os.path.join(test_output_dir, self.json_output_file)
         if not os.path.exists(output_file):
             return []
 
@@ -200,7 +200,7 @@ class Confuzzius(Tool):
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Confuzzius"""
-        output_file = os.path.join(test_output_dir, self.output_file)
+        output_file = os.path.join(test_output_dir, self.json_output_file)
         output = None
 
         debug("Confuzzius parse file: ", output_file)

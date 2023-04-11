@@ -257,7 +257,7 @@ class Slither(Tool):
     ) -> List[Issue]:
         """Parse output of Slither"""
 
-        output_file = os.path.join(test_output_dir, self.output_file)
+        output_file = os.path.join(test_output_dir, self.json_output_file)
         log_file = os.path.join(test_output_dir, self.log_file)
 
         output = None

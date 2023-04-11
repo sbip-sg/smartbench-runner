@@ -105,7 +105,7 @@ def verify_tool_result_dir(tool: Tool, test_dir: str) -> bool:
     a test file."""
 
     test_dir = os.path.abspath(test_dir)
-    output_file = os.path.join(test_dir, tool.output_file)
+    output_file = os.path.join(test_dir, tool.json_output_file)
     return os.path.exists(output_file)
 
 
@@ -156,7 +156,7 @@ def parse_result_directory(
                 continue
 
             test_output_dir = os.path.abspath(test_output_dir)
-            output_file = os.path.join(test_output_dir, tool.output_file)
+            output_file = os.path.join(test_output_dir, tool.json_output_file)
             log_file = os.path.join(test_output_dir, tool.log_file)
 
             test_file = logger.get_input_test_file(log_file)
