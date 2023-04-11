@@ -184,13 +184,3 @@ class Sfuzz(Tool):
 
         return results
 
-def log_analysis_results(
-    stdout,
-    log_file: str,
-) -> None:
-    """ Since `sFuzz` does not allow printing out results to an output file,
-        we store the `stdout` in the output file.
-    """
-    with open(log_file, "a", encoding="utf-8") as file:
-        output = stdout.decode("utf-8")
-        file.write(f"{output}\n\n")

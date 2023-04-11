@@ -23,8 +23,6 @@ from smartbench.issue import Issue
 from smartbench.printer import debug, print_unless, safe_print, warning
 from smartbench.result import AnalysisResult
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
-from smartbench.tools.sfuzz import sfuzz
-from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.tool import Tool
 
 
@@ -157,12 +155,6 @@ def analyze_test_file(
         (stdout, _) = proc.communicate()
 
         log_analysis_output(tool, stdout, test_output_dir)
-        # The results of `sFuzz` are in `stdout`
-        # We need to store in the output file.
-        if isinstance(tool, Sfuzz):
-            output_file = tool.configure_output_file(test_output_dir)
-            sfuzz.log_analysis_results(stdout, output_file)
-
 
     except SubprocessError as err:
         if parallel_mode and container:
