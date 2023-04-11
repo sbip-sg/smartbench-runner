@@ -16,7 +16,7 @@ from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.loc import Location
-from smartbench.printer import print_unless
+from smartbench.printer import print_unless, safe_print
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
@@ -51,28 +51,31 @@ class Validation:
         return len(self.correct_bugs)
 
     def print_summary(self, parallel_mode=False) -> None:
-        print_unless(parallel_mode, "- Validation:")
+        if not parallel_mode:
+            safe_print("- Validation:")
 
-        correct_bugs_info = f"{len(self.correct_bugs)}"
-        correct_issue_idxs = [iss.index for (iss, _) in self.correct_bugs]
-        if len(correct_issue_idxs) > 0:
-            issues_idxs = print_indices(correct_issue_idxs)
-            correct_bugs_info += f" [Issue IDs: {issues_idxs}]"
-            print_unless(
-                parallel_mode, f"  + Correct bugs: {correct_bugs_info}"
+            # Print correct bugs
+            correct_bugs_info = f"{len(self.correct_bugs)}"
+            correct_issue_idxs = [iss.index for (iss, _) in self.correct_bugs]
+            if len(correct_issue_idxs) > 0:
+                correct_bugs_info += (
+                    f" [Issue IDs: {print_indices(correct_issue_idxs)}]"
+                )
+            safe_print(f"  + Correct bugs: {correct_bugs_info}")
+
+            # Print missing bugs
+            missing_bug_info = f"{len(self.missing_bugs)}"
+            missing_bug_idxs = [x.index for x in self.missing_bugs]
+            if len(missing_bug_idxs) > 0:
+                missing_bug_info += (
+                    f" [Bug annot IDs: {print_indices(missing_bug_idxs)}]"
+                )
+            safe_print(f"  + Missing bugs: {missing_bug_info}")
+
+            # Print unlabelled issues
+            safe_print(
+                f"  + Unlabelled issues: {len(self.unlabelled_issues)}",
             )
-
-        missing_bug_info = f"{len(self.missing_bugs)}"
-        missing_bug_idxs = [x.index for x in self.missing_bugs]
-        if len(missing_bug_idxs) > 0:
-            bug_annot_idxs = print_indices(missing_bug_idxs)
-            missing_bug_info += f" [Bug annot IDs: {bug_annot_idxs}]"
-            print_unless(parallel_mode, f"  + Missing bugs: {missing_bug_info}")
-
-        print_unless(
-            parallel_mode,
-            f"  + Unlabelled issues: {len(self.unlabelled_issues)}",
-        )
 
 
 def print_indices(indices: List[int]) -> str:

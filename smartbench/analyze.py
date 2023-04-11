@@ -121,8 +121,8 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        runner = "local" if container is None else f"docker:{container.name}"
-        safe_print(f"runner:{runner}: {test_file}\n")
+        runner = "local-runner" if container is None else f"docker:{container.name}"
+        safe_print(f"{runner}: {test_file}\n")
     else:
         safe_print(f"{'-' * 45}\n")
         safe_print(f"Analyzing: {test_file}\n")
