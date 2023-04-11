@@ -244,10 +244,8 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
     printer.print_short_double_horizontal_line()
     print("Preparing docker containers...")
 
-    if jobs == 1:
-        container_names = [tool.id]
-    else:
-        container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
+    # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
+    container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
 
     containers = []
     for name in container_names:

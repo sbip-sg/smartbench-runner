@@ -90,7 +90,6 @@ TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
 TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
 
 # Docker containers to be installed
-CONTAINER_NAMES=($TOOL_ID)
 for ((i=1; i<=$NUM_CONTAINERS; i++)); do
     CONTAINER_NAMES+=("$TOOL_ID-$i")
 done
