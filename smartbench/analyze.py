@@ -121,7 +121,9 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        runner = "local-runner" if container is None else f"docker:{container.name}"
+        runner = (
+            "local-runner" if container is None else f"docker:{container.name}"
+        )
         safe_print(f"{runner}: {test_file}\n")
     else:
         safe_print(f"{'-' * 45}\n")
@@ -192,9 +194,7 @@ def analyze_test_file(
         for annot in bug_annots:
             print_unless(parallel_mode, f"- {annot.print_concise()}")
         print_unless(parallel_mode, "")
-        validation = validator.validate_issues(
-            tool, test_file, issues, bug_annots
-        )
+        validation = validator.validate_issues(tool, issues, bug_annots)
 
     res = AnalysisResult(tool, test_name, issues, bug_annots, validation)
 

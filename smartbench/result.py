@@ -187,11 +187,7 @@ def parse_result_directory(
                         print(f"- {annot.print_concise()}")
 
                     validation = validator.validate_issues(
-                        tool,
-                        test_file,
-                        issues,
-                        bug_annots,
-                        benchmark_name=benchmark_name or "",
+                        tool, issues, bug_annots
                     )
                     correct_bugs += validation.num_correct_bugs()
                 print("")

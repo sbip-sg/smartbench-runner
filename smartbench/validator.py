@@ -144,64 +144,37 @@ def match_issue_to_annotation(
 
 def validate_issues(
     tool: Tool,
-    test_file: str,
     issues: List[Issue],
     annots: List[BugAnnot],
-    benchmark_name: str = "",
 ) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
     # not used in solidifi
     correct_bugs: List[Tuple[Issue, BugAnnot]] = []
     unlabelled_issues: List[Issue] = []
-    reported_annots: List[BugAnnot] = []
     missing_bugs: List[BugAnnot] = []
 
-    if benchmark_name.lower() == "solidifi":
-        # special case for solidifi, other benchmarks may copy: two-loop to deal
-        # with duplicated bugs annotation & multiple issues reported the same
-        # annotation first loop detect missing bug. Simply checks if any annot
-        # is not reported
-        for annot in annots:
-            # True-positive issues
-            detected = False
-            for issue in issues:
-                if match_issue_to_annotation(tool, issue, annot):
-                    correct_bugs.append((issue, annot))
-                    detected = True
-                    break
-            if not detected:
-                missing_bugs.append(annot)
-
-        # Second loop detect unlabelled_issues
-        for issue in issues:
-            # True-positive issue
-            matched_bug = False
-            for annot in annots:
-                if match_issue_to_annotation(tool, issue, annot):
-                    matched_bug = True
-                    break
-            # Unknown issue
-            if not matched_bug:
-                unlabelled_issues.append(issue)
-
-        return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
-
-    # target_sbcs = []
-    # if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
-    #     target_sbcs = SBC.elements()
-
+    # First loop to detect correct bugs and missing bugs
     for annot in annots:
-        # True-positive issue
-        # correct_bug = False
+        # True-positive issues ==> correct bugs
+        detected = False
         for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
                 correct_bugs.append((issue, annot))
-                reported_annots.append(annot)
-                # correct_bug = True
+                detected = True
                 break
+        if not detected:
+            missing_bugs.append(annot)
 
-    # Missing bugs:
-    missing_bugs = [b for b in annots if b not in reported_annots]
+    # Second loop to detect unlabelled_issues
+    for issue in issues:
+        matched_bug = False
+        for annot in annots:
+            if match_issue_to_annotation(tool, issue, annot):
+                matched_bug = True
+                break
+        # Unknown issue
+        if not matched_bug:
+            unlabelled_issues.append(issue)
 
     return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
