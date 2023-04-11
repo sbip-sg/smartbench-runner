@@ -1,7 +1,3 @@
-# Standard Library
-from multiprocessing.queues import Queue
-
-
 #!/usr/bin/env python3
 
 """Module for running smart contract analyzers for testing contracts."""
@@ -25,10 +21,10 @@ from typing import List, Optional
 # Library
 from smartbench import annotation, printer, result, solc, validator
 from smartbench.docker import AnalysisJob, DockerContainer
-from smartbench.globals import screen_lock
 from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
+    print_short_double_horizontal_line,
     print_unless,
     safe_print,
     safe_warning,
@@ -36,7 +32,6 @@ from smartbench.printer import (
 )
 from smartbench.result import AnalysisResult
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
-from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.tool import Tool
 
 
@@ -126,12 +121,11 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        sys.stdout.flush()
         runner = "local" if container is None else f"docker:{container.name}"
         safe_print(f"runner:{runner}: {test_file}\n")
     else:
-        print(f"{'-' * 45}\n")
-        print(f"Analyzing: {test_file}\n")
+        safe_print(f"{'-' * 45}\n")
+        safe_print(f"Analyzing: {test_file}\n")
 
     try:
         contracts = solc.get_candidate_testing_contracts(test_file)
@@ -140,7 +134,7 @@ def analyze_test_file(
         print_unless(parallel_mode, f"** Error: {err}")
         return None
 
-    # print("Test contracts:", contracts)
+    # safe_print("Test contracts:", contracts)
 
     cmd = tool.make_analysis_command(
         test_file,
@@ -178,7 +172,7 @@ def analyze_test_file(
             safe_warning(f"{container.name}: failed to run command: {cmd}\n")
         else:
             warning(f"Failed to run command: {cmd}\n")
-            print(f"** Error: {err}")
+            safe_print(f"** Error: {err}")
             traceback.print_exc()
         return None
 
@@ -211,8 +205,8 @@ def analyze_test_file(
 
 
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
-    printer.print_short_double_horizontal_line()
-    print("Preparing docker containers...")
+    print_short_double_horizontal_line()
+    safe_print("Preparing docker containers...")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
     container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
@@ -228,7 +222,7 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
 
 def stop_docker_containers(containers: List[DockerContainer]):
     printer.print_short_double_horizontal_line()
-    print("Cleaning docker containers...")
+    safe_print("Cleaning docker containers...")
 
     for container in containers:
         container.stop()
@@ -283,7 +277,7 @@ def run_analysis_tool(
     """
 
     printer.print_long_double_horizontal_line()
-    print(f"Running analysis tool: {tool.name}\n")
+    safe_print(f"Running analysis tool: {tool.name}\n")
 
     # When running in Docker mode, use relative path of output directory mounted
     # to the Docker container so that the container can access to it
@@ -298,9 +292,9 @@ def run_analysis_tool(
     else:
         docker_containers = [None] * jobs
 
-    print("")
+    safe_print("")
     printer.print_short_double_horizontal_line()
-    print("Running analysis jobs...\n")
+    safe_print("Running analysis jobs...\n")
 
     # Distribute test files to containers
     test_batches: List[List[str]] = []
@@ -378,7 +372,7 @@ def perform_analysis(
     When `jobs` > 1, the analysis can be performed concurrently.
     """
     # Prepare output directory for all tests and all tools in this run
-    print("Start analyzing all test cases...\n")
+    safe_print("Start analyzing all test cases...\n")
     results_dir = os.path.join(
         RESULTS_DIR,
         datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
@@ -406,8 +400,9 @@ def perform_analysis(
 
         all_results.extend(results)
 
-    print("Benchmarking completed!\n")
-    print(f"Results are recorded at: {results_dir}")
+    print_short_double_horizontal_line()
+    safe_print("Benchmarking completed!\n")
+    safe_print(f"Results are recorded at: {results_dir}")
 
     if benchmarking:
         result.print_benchmarking_results(results_dir, all_results)

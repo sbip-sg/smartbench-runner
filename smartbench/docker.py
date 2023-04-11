@@ -8,6 +8,7 @@ from subprocess import CalledProcessError
 from typing import List, Optional
 
 # Library
+from smartbench.printer import safe_print
 from smartbench.printer import error
 from smartbench.tools.tool import Tool
 
@@ -25,7 +26,7 @@ class DockerContainer:
         """Start the docker container"""
         command = f"docker start {self.name}"
         try:
-            print(f"Starting docker container: {self}")
+            safe_print(f"Starting docker container: {self}")
             subprocess.run(
                 shlex.split(command),
                 stdout=subprocess.PIPE,
@@ -39,7 +40,7 @@ class DockerContainer:
         """Stop the docker container"""
         command = f"docker stop {self.name}"
         try:
-            print(f"Stopping docker container: {self}")
+            safe_print(f"Stopping docker container: {self}")
             subprocess.run(
                 shlex.split(command),
                 stdout=subprocess.PIPE,
