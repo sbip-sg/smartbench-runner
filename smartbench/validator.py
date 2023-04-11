@@ -31,7 +31,7 @@ from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
 
-class Validation:
+class ValidationResult:
     def __init__(
         self,
         correct_bugs: List[Tuple[Issue, BugAnnot]],
@@ -148,7 +148,7 @@ def validate_issues(
     issues: List[Issue],
     annots: List[BugAnnot],
     benchmark_name: str = "",
-) -> Validation:
+) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
     # not used in solidifi
@@ -185,7 +185,7 @@ def validate_issues(
             if not matched_bug:
                 unlabelled_issues.append(issue)
 
-        return Validation(correct_bugs, missing_bugs, unlabelled_issues)
+        return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
 
     # target_sbcs = []
     # if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
@@ -204,4 +204,4 @@ def validate_issues(
     # Missing bugs:
     missing_bugs = [b for b in annots if b not in reported_annots]
 
-    return Validation(correct_bugs, missing_bugs, unlabelled_issues)
+    return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
