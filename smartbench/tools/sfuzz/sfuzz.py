@@ -77,13 +77,11 @@ class Sfuzz(Tool):
         timeout = self.default_timeout if timeout is None else timeout
         contract_timeout = math.ceil(timeout / len(contracts))
 
-        cmd = (
-            cmd
-            + " -t "
-            + str(contract_timeout)
-            + " -o "
-            + test_output_dir
-        )
+        cmd = cmd + " -t " + str(contract_timeout)
+
+        # Output file
+        output_file = self.configure_output_file(test_output_dir)
+        cmd = cmd + " -o " + output_file
 
         return cmd
 

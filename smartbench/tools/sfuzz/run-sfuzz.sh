@@ -16,7 +16,7 @@ shift  # Past test file
 
 CONTRACT_NAMES=()
 TIMEOUT=0
-OUTPUT_DIR=""
+OUTPUT_FILE=""
 RESULT_FILE=""
 ADDITIONAL_ARGS=()
 
@@ -39,7 +39,7 @@ while [[ $# -gt 0 ]]; do
             done
             ;;
         -o)
-            OUTPUT_DIR="$2"
+            OUTPUT_FILE="$2"
             shift  # past argument
             shift  # past value
             ;;
@@ -56,8 +56,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Checking output dir
-if [[ $OUTPUT_DIR == "" ]]; then
-    echo "sFuzz: output dir is not specified!"
+if [[ $OUTPUT_FILE == "" ]]; then
+    echo "sFuzz: output file is not specified!"
     exit 1
 fi
 
@@ -99,7 +99,7 @@ solc-select use $SOLC_VER
 ./fuzzer -g \
          -r 0 \
          -d $TIMEOUT \
-         --attacker ReentrancyAttacker 2>&1
+         --attacker ReentrancyAttacker > $OUTPUT_FILE 2>&1
 chmod +x fuzzMe
 ./fuzzMe
 
