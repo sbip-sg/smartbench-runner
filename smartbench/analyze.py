@@ -100,7 +100,7 @@ def analyze_test_file(
     timeout=None,
     validate=False,
     benchmarking=False,
-) -> AnalysisResult:
+) -> Optional[AnalysisResult]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
@@ -154,7 +154,7 @@ def analyze_test_file(
         print(f"Failed to run command: {cmd}\n")
         print(f"** Error: {err}")
         traceback.print_exc()
-        return []
+        return None
 
     # Process analysis output
     issues = tool.parse_analysis_output(test_output_dir)
@@ -175,14 +175,12 @@ def analyze_test_file(
             tool, test_file, issues, bug_annots
         )
 
-    analysis_result = AnalysisResult(
-        tool, test_name, issues, bug_annots, validation
-    )
+    res = AnalysisResult(tool, test_name, issues, bug_annots, validation)
 
     # Print benchmarking information
-    analysis_result.print_detailed_summary()
+    res.print_detailed_summary()
 
-    return analysis_result
+    return res
 
 
 def run_analysis_tool_locally(
@@ -218,7 +216,7 @@ def run_analysis_tool_locally(
             os.makedirs(test_output_dir)
 
         # Analyze the test file
-        res = analyze_test_file(
+        if res := analyze_test_file(
             tool,
             test_file,
             test_output_dir,
@@ -226,8 +224,8 @@ def run_analysis_tool_locally(
             timeout,
             validate,
             benchmarking,
-        )
-        all_results.append(res)
+        ):
+            all_results.append(res)
 
     return all_results
 
@@ -262,14 +260,14 @@ def run_docker_job(
     job: DockerJob,
     validate=False,
     benchmarking=False,
-) -> List[Issue]:
-    all_issues = []
+) -> List[AnalysisResult]:
+    all_results: List[AnalysisResult] = []
 
     for test_file in job.test_files:
         test_output_dir = os.path.join(job.job_output_dir, test_file)
 
         # Analyze the test file
-        issues = analyze_test_file(
+        if res := analyze_test_file(
             job.tool,
             test_file,
             test_output_dir,
@@ -277,10 +275,10 @@ def run_docker_job(
             job.timeout,
             validate,
             benchmarking,
-        )
-        all_issues.extend(issues)
+        ):
+            all_results.append(res)
 
-    return all_issues
+    return all_results
 
 
 def run_analysis_tool_using_docker(

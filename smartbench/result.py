@@ -155,6 +155,7 @@ def parse_result_directory(
                 continue
 
             test_output_dir = os.path.abspath(test_output_dir)
+            output_file = os.path.join(test_output_dir, tool.output_file)
             log_file = os.path.join(test_output_dir, tool.log_file)
 
             test_file = logger.get_input_test_file(log_file)
