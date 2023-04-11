@@ -15,30 +15,26 @@
 #   # Install 5 containers: `slither-1`, ..., `slither-5`
 #   ./install-tool-docker.sh slither -n 5
 
+SUPPORTED_TOOLS=("slither" "sfuzz" "confuzzius" "smartian" "smartfuzz" "ilf")
+
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  install-tool-docker.sh <TOOL-ID> [CONTAINER_NAME] [OPTIONS]"
+    echo "  install-tool-docker.sh -t <tool-id> [options] [container_1, ... , container_n]"
     echo ""
     echo "Options:"
-    echo "  -n <NUMBER_OF_CONTAINERS>   Number of containers to be installed."
-    echo "  --force-install             Force install new containers."
-    echo "  --use-git-token             Allow using GitHub personal token."
+    echo "  -t <tool-id>               ID of analysis tool, currently support the followings:"
+    echo "                             $(echo ${SUPPORTED_TOOLS[@]} | sed 's/ /, /g') "
+    echo "  -n <number_of_containers>  Number of containers to be installed, which are named"
+    echo "                             as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
+    echo "  --force-install            Force install new containers."
+    echo "  --use-git-token            Enable reading GitHub access token during installation."
 }
-
-if [[ $# == 0 ]]; then
-    echo "No argument is provided"
-    print_usage
-    exit 1
-fi
 
 ##############################
 # Parse arguments
 
-# Tool ID
-TOOL_ID="$1"
-shift
-
+TOOL_ID=""
 CONTAINER_NAMES=()
 NUM_CONTAINERS=0
 FORCE_INSTALL=false
@@ -46,30 +42,62 @@ USE_GIT_TOKEN=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -t)
+            TOOL_ID="$2"
+            shift
+            shift
+            ;;
         -n)
             NUM_CONTAINERS=$2
-            shift # past argument
-            shift # past value
+            shift
+            shift
             ;;
         --use-git-token)
             USE_GIT_TOKEN=true
-            shift # past value
+            shift
             ;;
         --force-install)
             FORCE_INSTALL=true
-            shift # past argument
+            shift
+            ;;
+        -h|--help)
+            print_usage
+            exit 1
             ;;
         -*|--*)
-            echo "Unknown option $1"
+            echo "Error: unknown option $1"
             print_usage
             exit 1
             ;;
         *)
             CONTAINER_NAMES+=("$1") # save positional args as container names
-            shift # past argument
+            shift
             ;;
     esac
 done
+
+# Checking tool ID
+if [[ $TOOL_ID == "" ]]; then
+    echo "Error: analysis tool ID is not specified!"
+    print_usage
+    exit 1
+elif [[ ! $(echo ${SUPPORTED_TOOLS[@]} | grep -w $TOOL_ID) ]]; then
+    echo "Error: tool $TOOL_ID is not supported!"
+    print_usage
+    exit 1
+fi
+
+# Checking container names
+for ((i=1; i<=$NUM_CONTAINERS; i++)); do
+    CONTAINER_NAMES+=("$TOOL_ID-$i")
+done
+
+if [[ ${#CONTAINER_NAMES[@]} == 0 ]]; then
+    echo "No container name or number of container is specified!"
+    print_usage
+    exit 1
+fi
+
 
 ##############################
 
@@ -88,11 +116,6 @@ TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
 # Docker information
 TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
 TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
-
-# Docker containers to be installed
-for ((i=1; i<=$NUM_CONTAINERS; i++)); do
-    CONTAINER_NAMES+=("$TOOL_ID-$i")
-done
 
 # Docker container directories
 DOCKER_BENCHMARKS_DIR="/root/benchmarks"
@@ -169,7 +192,8 @@ for CONTAINER in "${CONTAINER_NAMES[@]}"; do
     fi
 
     # run your container
-    echo "Running the new container ..."
+    echo ""
+    echo "Installing container \"$CONTAINER\" ..."
     docker run -itd \
         --name $CONTAINER \
         -v $SMARTBENCH_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \
