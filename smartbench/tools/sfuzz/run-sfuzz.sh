@@ -94,7 +94,6 @@ done
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-solc-select install $SOLC_VER
 solc-select use $SOLC_VER
 
 ./fuzzer -g \
