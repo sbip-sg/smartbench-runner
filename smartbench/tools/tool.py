@@ -49,8 +49,7 @@ class Tool:
         self.random_seed: int = int(random_seed)
 
         # Output file for capturing analysis result
-        if id in ["smartian"]:
-            # Smartian does not write to any specific output file
+        if id in ["smartian", "mythril"]:
             output_file = None
         else:
             output_file = f"{id}_result.json"
@@ -141,7 +140,7 @@ class Tool:
         """Make deployment command for an analyzer."""
 
     @abstractmethod
-    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
+    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Process analysis result of each tool."""
 
     def match_location_of_issue_to_annotation(

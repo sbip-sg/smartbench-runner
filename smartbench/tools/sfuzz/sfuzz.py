@@ -116,7 +116,7 @@ class Sfuzz(Tool):
 
         return IssueKind.UNKNOWN
 
-    def process_analysis_result(self, test_output_dir: str) -> List[Issue]:
+    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Parse output of sFuzz"""
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)

@@ -20,14 +20,14 @@ class Command(Enum):
     DEPLOY_CONTRACTS = "deploy-contracts"
 
 
-def preprocess_remainder_arguments(args):
-    """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
-    them into a string."""
+# def preprocess_remainder_arguments(args):
+#     """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
+#     them into a string."""
 
-    if args.additional_args is not None:
-        args.additional_args = " ".join(args.additional_args)
+#     if args.additional_args is not None:
+#         args.additional_args = " ".join(args.additional_args)
 
-    return args
+#     return args
 
 
 def parse_cli_arguments():
@@ -92,11 +92,20 @@ def parse_cli_arguments():
         help="Running analysis tools in Docker.",
     )
 
-    # Timeout for each test case, controlled by Smartbench.
+    # Timeout for each test file.
     analyze_parser.add_argument(
         "--timeout",
         type=int,
-        help="Timeout for each test case, controlled by Smartbench.",
+        help="Timeout for each test file. \
+        This is the total timeout for all contracts in the same test file.",
+    )
+
+    # Timeout for each test contract.
+    analyze_parser.add_argument(
+        "--contract-timeout",
+        type=int,
+        help="Timeout for each contract in the test file. \
+        One file may contain multiple contracts",
     )
 
     # Number of jobs per tool
@@ -114,28 +123,15 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
-    # Validate analysis result
+    # Validate analysis result for benchmarking purpose
     analyze_parser.add_argument(
         "--benchmarking",
         action="store_true",
-        help="Benchmarking anlaysis results.",
-    )
-
-    # Additional arguments passing to the analysis tool.
-    # TODO: need to support adding to additional arguments to each specific tool.
-    analyze_parser.add_argument(
-        "--additional-args",
-        type=str,
-        nargs=argparse.REMAINDER,
-        help=(
-            "Additional arguments for each analysis tools.\n"
-            + "This option should be put only at the end of the command.\n"
-            + 'Example: --additional-args "--option value"'
-        ),
+        help="Validating analysis results for benchmarking.",
     )
 
     ################################
-    # Parser for sub-command `parse-result`
+    # Parser for sub-command `parse-results`
 
     # Create a parser for the `parse-result` sub-command
     result_parser = sub_parsers.add_parser(
@@ -148,16 +144,23 @@ def parse_cli_arguments():
     # Input result directories
     result_parser.add_argument(
         "result_directories",
-        # nargs="+",  # Accept multiple input files or directories
+        nargs="+",  # Accept multiple result directories
         type=str,
         help="Input result directories.",
     )
 
     # Validate analysis result
     result_parser.add_argument(
-        "--validate-results",
+        "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
+    )
+
+    # Validate analysis result for benchmarking purpose
+    result_parser.add_argument(
+        "--benchmarking",
+        action="store_true",
+        help="Validating analysis results for benchmarking.",
     )
 
     # Specify benchmark name for special cases without standard annotation and
@@ -241,6 +244,6 @@ def parse_cli_arguments():
     # Parse all arguments
 
     args = arg_parser.parse_args()
-    args = preprocess_remainder_arguments(args)
+    # args = preprocess_remainder_arguments(args)
 
     return (arg_parser, args)

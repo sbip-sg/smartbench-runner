@@ -130,12 +130,14 @@ def parse_issue_kind(description: str) -> IssueKind:
     return IssueKind.UNKNOWN
 
 
-def parse_smartfuzz_json_output(
-    output_file: str,
-    log_file: str,
+def parse_analysis_output(
+    self,
+    test_output_dir: str,
 ) -> List[Issue]:
     """Parse output of Smartfuzz"""
     output = None
+
+    output_file = os.path.join(test_output_dir, self.output_file)
 
     debug("Smartfuzz parse file: ", output_file)
     with open(output_file, "r", encoding="utf-8") as file:

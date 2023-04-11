@@ -93,10 +93,10 @@ def deploy_one_contracts(
     except ValueError:
         print("Failed to run command: " + str(command))
 
-    # Process results
-    issues = result.process_analysis_result(tool, tool_deploy_dir)
-    for issue in issues:
-        print("- " + str(issue))
+    # # Process results
+    # issues = result.process_analysis_result(tool, tool_deploy_dir)
+    # for issue in issues:
+    #     print("- " + str(issue))
 
 
 def deploy_all_contracts(

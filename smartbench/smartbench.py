@@ -20,7 +20,7 @@ def signal_handler(_sig, _frame):
 def analyze_smart_contracts(args):
     """Run analyzers to analyze input smart contracts"""
     # Prepare analysis tools and test files
-    tools = configure_analysis_tools(args)
+    tools = configure_analysis_tools(args.tools)
     test_files = benchmark.collect_test_cases(args)
 
     # Prepare environment
@@ -28,8 +28,6 @@ def analyze_smart_contracts(args):
 
     if jobs > 1 and not args.docker:
         error("Do not support running multiple jobs in local mode!")
-
-    print(f"Tool additional args: '{args.additional_args}'")
 
     # Perform the analysis
     analyze.perform_analysis(
@@ -39,6 +37,7 @@ def analyze_smart_contracts(args):
         args.docker,
         jobs,
         args.validate,
+        args.benchmarking,
     )
 
 
@@ -47,7 +46,7 @@ def parse_existing_results(args):
     for result_dir in args.result_directories:
         result.parse_result_directory(
             result_dir,
-            args.validate_results,
+            args.validate,
             args.benchmarking,
             args.benchmark_name,
         )
@@ -69,7 +68,7 @@ def deploy_smart_contracts(args):
     """Deploy smart contracts for testing."""
     # Prepare analysis tools and test files
     test_files = benchmark.collect_test_cases(args)
-    tools = configure_analysis_tools(args)
+    tools = configure_analysis_tools(args.tools)
     # Perform the deployment
     deploy.perform_deployment(tools, test_files)
 

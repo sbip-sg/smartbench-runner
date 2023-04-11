@@ -3,10 +3,13 @@
 """Module containing some printing utilities."""
 
 # Standard Library
+import threading
+
 from sys import exit
 
 # Library
 from smartbench import flags
+from smartbench.globals import screen_lock
 
 
 def warning(*args):
@@ -49,3 +52,22 @@ def print_medium_double_horizontal_line():
 
 def print_long_double_horizontal_line():
     print(f"{'=' * 55}")
+
+
+def safe_print(*args):
+    """Print with a lock to be thread-safe."""
+    # screen_lock:
+    with screen_lock:
+        print(*args)
+
+def print_if(condition: bool, *args):
+    """Print if the input condition holds."""
+    # screen_lock:
+    if condition:
+        print(*args)
+
+def print_unless(condition: bool, *args):
+    """Print unless the input condition holds."""
+    # screen_lock:
+    if not condition:
+        print(*args)
