@@ -22,6 +22,7 @@ from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
+from smartbench.printer import print_unless
 from smartbench.tools.tool import Tool
 from smartbench.validator import Validation
 
@@ -57,15 +58,15 @@ class AnalysisResult:
         other_file = other.test_file.casefold()
         return test_file.__lt__(other_file)
 
-    def print_detailed_summary(self):
+    def print_detailed_summary(self, parallel_mode: False):
         """Print statistic summary of detected issues for a test file"""
-        print("-------------------")
-        print("ANALYSIS RESULT")
-        print("-------------------")
-        print(f"- Tool: {self.tool.name}")
-        print(f"- Test file: {self.test_file}")
-        print(f"- Annotated bugs: {len(self.bug_annots)}")
-        print(f"- Detected issues: {len(self.issues)}")
+        print_unless(parallel_mode, "-------------------")
+        print_unless(parallel_mode, "ANALYSIS RESULT")
+        print_unless(parallel_mode, "-------------------")
+        print_unless(parallel_mode, f"- Tool: {self.tool.name}")
+        print_unless(parallel_mode, f"- Test file: {self.test_file}")
+        print_unless(parallel_mode, f"- Annotated bugs: {len(self.bug_annots)}")
+        print_unless(parallel_mode, f"- Detected issues: {len(self.issues)}")
 
         # Print severity information
         severity_stat: Dict[Severity, int] = {}
@@ -76,13 +77,13 @@ class AnalysisResult:
                 severity_stat[issue.severity] = 1
         severity_info = [f"  + {s}: {severity_stat[s]}" for s in severity_stat]
         if len(severity_stat) > 0:
-            print("\n".join(severity_info))
+            print_unless(parallel_mode, "\n".join(severity_info))
 
         # Print validation results
         if self.validation is not None:
             self.validation.print_summary()
 
-        print("")
+        print_unless(parallel_mode, "")
 
     def print_benchmarking_summary(self):
         if self.validation is None:
