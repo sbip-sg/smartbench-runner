@@ -77,21 +77,6 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-# Compile test file to contracts in ABI and BIN format
-CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
-rm -rf $CONTRACTS_DIR
-mkdir $CONTRACTS_DIR
-SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-    -o $CONTRACTS_DIR --overwrite \
-    1>/dev/null 2>&1  # Do not capture output of Solc
-
-if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
-    CURRENT_DIR=$(pwd)
-    cd $CONTRACTS_DIR
-    CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
-    cd $CURRENT_DIR
-fi
-
 # Run sFuzz insider the `build/fuzzer` repository
 cd $TOOL_ROOT_PATH/build/fuzzer
 rm -rf contracts
@@ -105,6 +90,12 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "** Fuzzing contract: $CONTRACT"
     cp $TEST_FILE "contracts/$CONTRACT.sol"
 done
+
+# Detect Solc version to be used.
+SOLC_VER=$(solc-detect $TEST_FILE)
+
+solc-select install $SOLC_VER
+solc-select use $SOLC_VER
 
 ./fuzzer -g \
          -r 0 \

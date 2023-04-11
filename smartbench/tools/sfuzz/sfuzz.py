@@ -66,8 +66,6 @@ class Sfuzz(Tool):
             cmd = cmd + " -c " + " ".join(contracts)
 
 
-        output_file = self.configure_output_file(test_output_dir)
-
         # Pass arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
@@ -81,7 +79,7 @@ class Sfuzz(Tool):
             + " -t "
             + str(timeout)
             + " -o "
-            + output_file
+            + test_output_dir
         )
 
         return cmd

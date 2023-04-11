@@ -28,6 +28,9 @@ RUN cp ../../assets . -r
 WORKDIR /root/
 ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
 
+RUN solc-select install 0.4.16
+RUN cp ~/.solc-select/artifacts/solc-0.4.16/solc-0.4.16 /bin/
+
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]
