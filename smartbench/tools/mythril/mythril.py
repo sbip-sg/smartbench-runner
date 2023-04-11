@@ -199,12 +199,3 @@ class Mythril(Tool):
             return bugs
         except ValueError:
             return []
-
-    def write_to_output_file(self, stdout, benchmark_output_dir: str):
-        output_file = self.configure_output_file(benchmark_output_dir)
-        f = open(output_file, "w")
-        stdout = stdout.decode("utf-8")
-        json_data = json.loads(stdout)
-        json_formatted_str = json.dumps(json_data, indent=2)
-        f.write(f"{json_formatted_str}")
-        f.close()

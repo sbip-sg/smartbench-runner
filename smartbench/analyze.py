@@ -12,7 +12,7 @@ import traceback
 
 from datetime import datetime
 from multiprocessing import Process
-from subprocess import CompletedProcess
+from subprocess import CompletedProcess, SubprocessError
 from typing import List, Optional
 
 # Library
@@ -20,7 +20,7 @@ from smartbench import annotation, printer, result, solc, validator
 from smartbench.docker import DockerContainer, DockerJob
 from smartbench.globals import screen_lock
 from smartbench.issue import Issue
-from smartbench.printer import debug, print_unless, safe_print
+from smartbench.printer import debug, print_unless, safe_print, warning
 from smartbench.result import AnalysisResult
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.mythril.mythril import Mythril
@@ -111,34 +111,40 @@ def analyze_test_file(
     # Reset issue index counter for the current test file
     Issue.index_counter = 1
 
+    # Run the analysis
+    if parallel_mode and container:
+        print(f"{container.name}: {test_file}\n")
+    else:
+        print(f"{'-' * 45}\n")
+        print(f"Analyzing: {test_file}\n")
+
     try:
-        # Run the analysis
-        if parallel_mode:
-            print(f"{container.name}: {test_file}\n")
-        else:
-            print(f"{'-' * 45}\n")
-            print(f"Analyzing: {test_file}\n")
-
         contracts = solc.get_candidate_testing_contracts(test_file)
-        # print("Test contracts:", contracts)
+    except ValueError as err:
+        warning(f"Failed to get testing contract names from: {test_file}!")
+        print_unless(parallel_mode, f"** Error: {err}")
+        return None
 
-        cmd = tool.make_analysis_command(
-            test_file,
-            contracts,
-            test_output_dir,
-            container,
-            timeout,
-        )
+    # print("Test contracts:", contracts)
 
-        if cmd is None:
-            print(f"Unable to make analysis command for tool: {tool.name}\n")
-            return []
+    cmd = tool.make_analysis_command(
+        test_file,
+        contracts,
+        test_output_dir,
+        container,
+        timeout,
+    )
 
-        log_analysis_command(tool, test_file, cmd, test_output_dir)
+    if cmd is None:
+        warning(f"Unable to make analysis command for tool: {tool.name}\n")
+        return None
 
-        debug(f"COMMAND: {cmd}")
-        print_unless(parallel_mode, f"Output dir: {test_output_dir}")
+    log_analysis_command(tool, test_file, cmd, test_output_dir)
 
+    debug(f"COMMAND: {cmd}")
+    print_unless(parallel_mode, f"Output dir: {test_output_dir}")
+
+    try:
         # Prepare to run the analyzer
         proc = subprocess.Popen(
             shlex.split(cmd),
@@ -151,15 +157,11 @@ def analyze_test_file(
 
         log_analysis_output(tool, stdout, test_output_dir)
 
-        if isinstance(tool, Mythril):
-            # the results of `mythril` is in `stdout`
-            tool.write_to_output_file(stdout, test_output_dir)
-
-    except Exception as err:
-        if parallel_mode:
-            print(f"{container.name}: failed to run command: {cmd}\n")
+    except SubprocessError as err:
+        if parallel_mode and container:
+            warning(f"{container.name}: failed to run command: {cmd}\n")
         else:
-            print(f"Failed to run command: {cmd}\n")
+            warning(f"Failed to run command: {cmd}\n")
             print(f"** Error: {err}")
             traceback.print_exc()
         return None

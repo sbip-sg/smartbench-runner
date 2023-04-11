@@ -49,8 +49,7 @@ class Tool:
         self.random_seed: int = int(random_seed)
 
         # Output file for capturing analysis result
-        if id in ["smartian"]:
-            # Smartian does not write to any specific output file
+        if id in ["smartian", "mythril"]:
             output_file = None
         else:
             output_file = f"{id}_result.json"
