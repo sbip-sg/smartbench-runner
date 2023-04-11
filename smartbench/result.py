@@ -196,7 +196,7 @@ def parse_result_directory(
             ares = AnalysisResult(
                 tool, test_file, issues, bug_annots, validation
             )
-            ares.print_detailed_summary()
+            ares.print_detailed_summary(False)
             all_results.append(ares)
 
         if validate:
