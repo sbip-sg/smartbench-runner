@@ -10,7 +10,7 @@ from typing import List, Optional, Tuple
 
 # Library
 from smartbench import logger, solc
-from smartbench.docker import DockerContainer, DockerJob
+from smartbench.docker import DockerContainer, AnalysisJob
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
 from smartbench.printer import debug, warning

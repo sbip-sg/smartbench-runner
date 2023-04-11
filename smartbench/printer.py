@@ -3,6 +3,7 @@
 """Module containing some printing utilities."""
 
 # Standard Library
+import sys
 import threading
 
 from sys import exit
@@ -12,9 +13,35 @@ from smartbench import flags
 from smartbench.globals import screen_lock
 
 
+def safe_print(*args):
+    """Print with a lock to be thread-safe."""
+    # screen_lock:
+    with screen_lock:
+        print(*args, flush=True)
+
+
+def print_if(condition: bool, *args):
+    """Print if the input condition holds."""
+    # screen_lock:
+    if condition:
+        print(*args)
+
+
+def print_unless(condition: bool, *args):
+    """Print unless the input condition holds."""
+    # screen_lock:
+    if not condition:
+        print(*args)
+
+
 def warning(*args):
     """Print a warning message"""
     print("\nWARNING: " + " ".join(map(str, args)) + "\n")
+
+
+def safe_warning(*args):
+    """Print a warning message"""
+    safe_print("\nWARNING: " + " ".join(map(str, args)) + "\n")
 
 
 def error(*args):
@@ -52,22 +79,3 @@ def print_medium_double_horizontal_line():
 
 def print_long_double_horizontal_line():
     print(f"{'=' * 55}")
-
-
-def safe_print(*args):
-    """Print with a lock to be thread-safe."""
-    # screen_lock:
-    with screen_lock:
-        print(*args)
-
-def print_if(condition: bool, *args):
-    """Print if the input condition holds."""
-    # screen_lock:
-    if condition:
-        print(*args)
-
-def print_unless(condition: bool, *args):
-    """Print unless the input condition holds."""
-    # screen_lock:
-    if not condition:
-        print(*args)

@@ -58,7 +58,7 @@ class AnalysisResult:
         other_file = other.test_file.casefold()
         return test_file.__lt__(other_file)
 
-    def print_detailed_summary(self, parallel_mode: False):
+    def print_detailed_summary(self, parallel_mode=False):
         """Print statistic summary of detected issues for a test file"""
         print_unless(parallel_mode, "-------------------")
         print_unless(parallel_mode, "ANALYSIS RESULT")
@@ -81,7 +81,7 @@ class AnalysisResult:
 
         # Print validation results
         if self.validation is not None:
-            self.validation.print_summary()
+            self.validation.print_summary(parallel_mode)
 
         print_unless(parallel_mode, "")
 
