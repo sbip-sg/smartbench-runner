@@ -18,13 +18,10 @@ WORKDIR /root/sfuzz/build/fuzzer
 RUN make
 
 # Add
-rm -rf assets
-mkdir assets
-rm -rf output
-mkdir -p output
-cd assets
-ADD smartbench/tools/sfuzz/NormalAttacker.sol .
-ADD smartbench/tools/sfuzz/ReentrancyAttacker.sol .
+RUN rm -rf output
+RUN mkdir -p output
+WORKDIR /root/sfuzz/build/fuzzer
+RUN cp ../../assets . -r
 
 
 # Copy executable file
