@@ -3,6 +3,7 @@
 """Module handling sFuzz."""
 
 # Standard Library
+import math
 import os
 import re
 
@@ -72,12 +73,14 @@ class Sfuzz(Tool):
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
 
-        # Configure Solc version the test file
+        # Timeout
+        timeout = self.default_timeout if timeout is None else timeout
+        contract_timeout = math.ceil(timeout / len(contracts))
 
         cmd = (
             cmd
             + " -t "
-            + str(timeout)
+            + str(contract_timeout)
             + " -o "
             + test_output_dir
         )
