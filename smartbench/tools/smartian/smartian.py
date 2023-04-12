@@ -243,18 +243,8 @@ class Smartian(Tool):
         current_time = 0
 
         contracts_coverage = []
-        total_execution = 0
 
         for line in lines:
-            execution_match = re.search(r"Total Executions: [0-9]+", line)
-            if execution_match is not None:
-                execution_num = execution_match.group();
-                execution_num = execution_num.removeprefix(
-                            "Total Executions: "
-                )
-                if int(execution_num) > 0:
-                    total_execution += int(execution_num)
-
             match_str = re.search(r"Covered Instructions: [0-9]+", line)
             time_str = re.search(
                 "(\d{2})[/.:](\d{2})[/.:](\d{2})[/.:](\d{2})", line
@@ -282,12 +272,10 @@ class Smartian(Tool):
         current_time = 0
         current_instr = 0
         results = []
-        print(f"total: ", total_execution)
         for contract_coverage in contracts_coverage:
             for (time, instr) in contract_coverage:
                 instr += current_instr
-                percentage = float("{:.1f}".format(instr / total_execution))
-                results.append((time + current_time, percentage))
+                results.append((time + current_time, instr))
 
             current_time += contract_coverage[-1][0]
             current_instr += contract_coverage[-1][1]
