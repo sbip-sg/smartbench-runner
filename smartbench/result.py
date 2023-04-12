@@ -195,7 +195,7 @@ def parse_result_directory(
             res = AnalysisResult(
                 tool, test_file, issues, bug_annots, validation
             )
-            res.print_detailed_summary()
+            res.print_detailed_summary(False)
             all_results.append(res)
 
         if validate:

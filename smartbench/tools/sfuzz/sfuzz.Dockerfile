@@ -17,8 +17,18 @@ RUN mkdir -p build; cd build; cmake ..
 WORKDIR /root/sfuzz/build/fuzzer
 RUN make
 
+# Add
+RUN rm -rf output
+RUN mkdir -p output
+WORKDIR /root/sfuzz/build/fuzzer
+RUN cp ../../assets . -r
+
+
 # Copy executable file
-# ADD smartbench/tools/sfuzz/run-confuzzius.sh /root/
+WORKDIR /root/
+ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
+
+RUN cp ~/.solc-select/artifacts/solc-0.4.16/solc-0.4.16 /bin/
 
 # Entry point when running the container as an executable
 WORKDIR /root/

@@ -16,7 +16,6 @@ shift  # Past test file
 
 CONTRACT_NAMES=()
 TIMEOUT=0
-OUTPUT_DIR=""
 RESULT_FILE=""
 ADDITIONAL_ARGS=()
 
@@ -38,11 +37,6 @@ while [[ $# -gt 0 ]]; do
                 esac
             done
             ;;
-        -o)
-            OUTPUT_DIR="$2"
-            shift  # past argument
-            shift  # past value
-            ;;
         -t)
             TIMEOUT=$2
             shift  # past argument
@@ -54,12 +48,6 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-
-# Checking output dir
-if [[ $OUTPUT_DIR == "" ]]; then
-    echo "sFuzz: output dir is not specified!"
-    exit 1
-fi
 
 # Checking timeout
 if [[ $TIMEOUT -lt 0 ]]; then
@@ -77,29 +65,26 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-# Compile test file to contracts in ABI and BIN format
-CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
-rm -rf $CONTRACTS_DIR
-mkdir $CONTRACTS_DIR
-SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-    -o $CONTRACTS_DIR --overwrite \
-    1>/dev/null 2>&1  # Do not capture output of Solc
-
-if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
-    CURRENT_DIR=$(pwd)
-    cd $CONTRACTS_DIR
-    CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
-    cd $CURRENT_DIR
-fi
+# Run sFuzz insider the `build/fuzzer` repository
+cd $TOOL_ROOT_PATH/build/fuzzer
+rm -rf contracts
+mkdir contracts
+rm -rf output
+mkdir output
 
 # Run sFuzz on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================="
     echo "** Fuzzing contract: $CONTRACT"
-    dotnet $TOOL_ROOT_PATH/build/fuzzer -g \
-        --useothersoracle --checkoptionalbugs --verbose 1 \
-        --program "$CONTRACTS_DIR/$CONTRACT.bin" \
-        --abifile "$CONTRACTS_DIR/$CONTRACT.abi" \
-        --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
-        ${ADDITIONAL_ARGS[@]} 2>&1
+    cp $TEST_FILE "contracts/$CONTRACT.sol"
 done
+
+# Detect Solc version to be used.
+SOLC_VER=$(solc-detect $TEST_FILE)
+
+solc-select use $SOLC_VER
+
+./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker 2>&1
+chmod +x fuzzMe
+./fuzzMe
+

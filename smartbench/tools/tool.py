@@ -50,7 +50,7 @@ class Tool:
 
         # Output file in JSON format, some tools may not support this output
         self.json_output_file = (
-            None if id in ["smartian", "mythril"] else f"{id}_result.json"
+            None if id in ["smartian", "mythril", "sfuzz"] else f"{id}_result.json"
         )
 
         # Log file for capturing execution log

@@ -3,6 +3,7 @@
 """Module handling sFuzz."""
 
 # Standard Library
+import math
 import os
 import re
 
@@ -11,10 +12,13 @@ from typing import List, Optional, Tuple, Union
 # Library
 from smartbench import logger, solc
 from smartbench.annotation import BugAnnot
+from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
+
+SFUZZ_DIR = os.path.dirname(__file__)
 
 
 class Sfuzz(Tool):
@@ -40,36 +44,40 @@ class Sfuzz(Tool):
     def make_analysis_command(
         self,
         test_file: str,
+        contracts: List[str],
         test_output_dir: str,
-        timeout=int,
-        use_docker=False,
+        container=Optional[DockerContainer],
+        timeout: Optional[int] = None,
     ) -> str:
         """
         Function to make analysis command for Slither.
         This function should have the same signature with other tools.
         """
-        cmd = self.executable
-        solc_version = solc.detect_required_solc_version(test_file)
-        output_file = self.configure_output_file(test_output_dir)
 
+        if container is not None:
+            cmd = f"docker exec -it {container.name} /root/{self.executable}"
+        else:
+            cmd = os.path.join(SFUZZ_DIR, self.executable)
+
+        # Input file must be the first argument to be run by docker
+        cmd = cmd + " " + test_file
+
+        # Pass contract names to Smartian
+        if len(contracts) > 0:
+            cmd = cmd + " -c " + " ".join(contracts)
+
+
+        # Pass arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
 
-        # Configure Solc version the test file
+        # Timeout
+        timeout = self.default_timeout if timeout is None else timeout
+        contract_timeout = math.ceil(timeout / len(contracts))
 
-        cmd = (
-            cmd
-            + " "
-            + test_file
-            + " "
-            + str(timeout)
-            + " "
-            + solc_version
-            + " "
-            + output_file
-        )
+        cmd = cmd + " -t " + str(contract_timeout)
 
         return cmd
 
@@ -175,3 +183,4 @@ class Sfuzz(Tool):
                 count += 1
 
         return results
+

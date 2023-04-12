@@ -167,7 +167,7 @@ def analyze_test_file(
         # Run the analyzer
         (stdout, _) = proc.communicate()
 
-        # log_analysis_output(tool, stdout, test_output_dir)
+        log_analysis_output(tool, stdout, test_output_dir)
 
     except SubprocessError as err:
         if parallel_mode and container:

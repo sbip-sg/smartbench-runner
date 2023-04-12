@@ -17,7 +17,7 @@ class DockerContainer:
     """Class modelling a docker container for a job"""
 
     def __init__(self, name):
-        self.name = name
+        self.name = name.lower()
 
     def __str__(self):
         return f"{self.name}"
