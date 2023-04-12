@@ -10,19 +10,15 @@ import sys
 
 from typing import List
 
-# Library
-from smartbench import annotation
-from smartbench.annotation import BugAnnot
-
 
 def is_solidity_file(filename) -> bool:
     """Check whether the input file is an existing Solidity file."""
     return os.path.isfile(filename) and filename[-4:] in (".sol")
 
 
-def collect_test_cases_in_directory(directory: str) -> List[str]:
+def find_test_files_in_directory(directory: str) -> List[str]:
     """
-    Collect all Solidity files in a directory.
+    Find all Solidity files in a directory.
     Return a list of absolute file names.
     """
     files = []
@@ -34,16 +30,16 @@ def collect_test_cases_in_directory(directory: str) -> List[str]:
     return files
 
 
-def collect_test_cases(args) -> List[str]:
+def collect_test_files(input_files_directories: List[str]) -> List[str]:
     """
     Collect test cases for the analysis.
     """
     print("Collecting test cases...")
     test_files = []
 
-    for input_path in args.input_files_directories:
+    for input_path in input_files_directories:
         if os.path.isdir(input_path):
-            test_files += collect_test_cases_in_directory(input_path)
+            test_files += find_test_files_in_directory(input_path)
         elif os.path.isfile(input_path):
             input_path = os.path.abspath(input_path)
             if is_solidity_file(input_path):
