@@ -21,7 +21,7 @@ def analyze_smart_contracts(args):
     """Run analyzers to analyze input smart contracts"""
     # Prepare analysis tools and test files
     tools = configure_analysis_tools(args.tools)
-    test_files = benchmark.collect_test_cases(args)
+    test_files = benchmark.collect_test_files(args.input_files_directories)
 
     # Prepare environment
     jobs = 1 if args.jobs is None else args.jobs
@@ -60,14 +60,14 @@ def parse_instruction_coverage(args):
 
 def parse_bug_annotations(args):
     """Parse bug annotation in smart contracts."""
-    test_files = benchmark.collect_test_cases(args)
+    test_files = benchmark.collect_test_files(args.input_files_directories)
     annotation.collect_bug_annotations(test_files)
 
 
 def deploy_smart_contracts(args):
     """Deploy smart contracts for testing."""
     # Prepare analysis tools and test files
-    test_files = benchmark.collect_test_cases(args)
+    test_files = benchmark.collect_test_files(args.input_files_directories)
     tools = configure_analysis_tools(args.tools)
     # Perform the deployment
     deploy.perform_deployment(tools, test_files)

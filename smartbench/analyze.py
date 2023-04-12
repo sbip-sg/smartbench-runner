@@ -6,16 +6,13 @@
 import multiprocessing
 import os
 import shlex
-import signal
 import subprocess
-import sys
-import tempfile
 import threading
 import traceback
 
 from datetime import datetime
 from multiprocessing import Process, Queue
-from subprocess import CompletedProcess, SubprocessError
+from subprocess import SubprocessError
 from typing import List, Optional
 
 # Library
@@ -24,7 +21,6 @@ from smartbench.docker import AnalysisJob, DockerContainer
 from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
-    print_short_double_horizontal_line,
     print_unless,
     safe_print,
     safe_warning,
@@ -40,26 +36,36 @@ def log_analysis_command(
     input_file: str,
     command: str,
     result_dir: str,
-) -> None:
+) -> bool:
     """Record execution log of an analysis tool in TOML format."""
     log_file = tool.configure_log_file(result_dir)
-    with open(log_file, "w", encoding="utf-8") as file:
-        file.write(f"# Execution log of {tool.name}:\n\n")
+    try:
+        with open(log_file, "w", encoding="utf-8") as file:
+            file.write(f"# Execution log of {tool.name}:\n\n")
 
-        # Log input
-        file.write("-------------------------------------------------------\n")
-        file.write("[input contract]\n")
-        file.write(
-            "-------------------------------------------------------\n\n"
-        )
-        file.write(f"{input_file}\n\n")
+            # Log input
+            file.write(
+                "-------------------------------------------------------\n"
+            )
+            file.write("[input contract]\n")
+            file.write(
+                "-------------------------------------------------------\n\n"
+            )
+            file.write(f"{input_file}\n\n")
 
-        file.write("-------------------------------------------------------\n")
-        file.write("[command]\n")
-        file.write(
-            "-------------------------------------------------------\n\n"
-        )
-        file.write(f"{command}\n\n")
+            file.write(
+                "-------------------------------------------------------\n"
+            )
+            file.write("[command]\n")
+            file.write(
+                "-------------------------------------------------------\n\n"
+            )
+            file.write(f"{command}\n\n")
+        return True
+    except Exception as err:
+        warning(f"Failed to log analysis command to: {log_file}")
+        safe_print(f"{err}")
+        return False
 
 
 def log_analysis_output(
@@ -126,14 +132,14 @@ def analyze_test_file(
         )
         safe_print(f"{runner}: {test_file}\n")
     else:
-        safe_print(f"{'-' * 45}\n")
-        safe_print(f"Analyzing: {test_file}\n")
+        printer.print_medium_single_horizontal_line()
+        safe_print(f"Analyzing: {test_file}")
 
     try:
         contracts = solc.get_candidate_testing_contracts(test_file)
     except Exception as err:
-        warning(f"Failed to get testing contract names from: {test_file}!")
-        print_unless(parallel_mode, f"** Error: {err}")
+        warning(f"Failed to get testing contract names from: {test_file}")
+        safe_print(f"{err}")
         return None
 
     # safe_print("Test contracts:", contracts)
@@ -150,22 +156,22 @@ def analyze_test_file(
         warning(f"Unable to make analysis command for tool: {tool.name}\n")
         return None
 
-    log_analysis_command(tool, test_file, cmd, test_output_dir)
+    if not log_analysis_command(tool, test_file, cmd, test_output_dir):
+        return None
 
     debug(f"COMMAND: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir}")
 
     try:
         # Prepare to run the analyzer
-        proc = subprocess.Popen(
+        with subprocess.Popen(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False,
-        )
-
-        # Run the analyzer
-        (stdout, _) = proc.communicate()
+        ) as proc:
+            # Run the analyzer
+            (stdout, _) = proc.communicate()
 
         log_analysis_output(tool, stdout, test_output_dir)
 
@@ -205,7 +211,8 @@ def analyze_test_file(
 
 
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
-    print_short_double_horizontal_line()
+    """Start all docker containers to run analysis jobs."""
+    printer.print_short_double_horizontal_line()
     safe_print("Preparing docker containers...")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
@@ -221,6 +228,7 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
 
 
 def stop_docker_containers(containers: List[DockerContainer]):
+    """Stop all docker containers after finishing analysis jobs."""
     printer.print_short_double_horizontal_line()
     safe_print("Cleaning docker containers...")
 
@@ -239,7 +247,17 @@ def run_analysis_job(
     all_results: List[AnalysisResult] = []
 
     for test_file in job.test_files:
-        test_output_dir = os.path.join(job.job_output_dir, test_file)
+        # Configure test output directory for the curren test file
+        tool_output_dir = job.job_output_dir
+        if job.docker_container:
+            test_output_dir = os.path.join(tool_output_dir, test_file)
+        elif test_file.startswith(SMARTBENCH_ROOT):
+            test_file_rel_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
+            test_output_dir = os.path.join(tool_output_dir, test_file_rel_path)
+        else:
+            common_path = os.path.commonpath([tool_output_dir, test_file])
+            test_file_rel_path = os.path.relpath(test_file, common_path)
+            test_output_dir = os.path.join(tool_output_dir, test_file_rel_path)
 
         # Analyze the test file
         if res := analyze_test_file(
@@ -277,10 +295,10 @@ def run_analysis_tool(
     """
 
     printer.print_long_double_horizontal_line()
-    safe_print(f"Running analysis tool: {tool.name}\n")
+    safe_print(f"Running analysis tool: {tool.name}")
 
-    # When running in Docker mode, use relative path of output directory mounted
-    # to the Docker container so that the container can access to it
+    # When running in Docker mode, use relative path of output directory
+    # mounted to the Docker container so that the container can access to it
     if use_docker:
         tool_output_dir = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
 
@@ -291,21 +309,24 @@ def run_analysis_tool(
     if use_docker:
         docker_containers = start_docker_containers(tool, jobs)
 
-    safe_print("")
     printer.print_short_double_horizontal_line()
-    safe_print("Running analysis jobs...\n")
+    safe_print("Running analysis jobs...")
 
     # Distribute test files to containers
     test_batches: List[List[str]] = []
     for _ in range(jobs):
         test_batches.append([])
+
     for idx, test_file in enumerate(test_files):
         idx = idx % jobs
 
-        # Get relative path of the test file compared to `SMARTBENCH_ROOT`
-        # so that the Docker container can access to it
-        test_file_rel_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
-        test_batches[idx].append(test_file_rel_path)
+        if use_docker:
+            # Get relative path of the test file compared to `SMARTBENCH_ROOT`
+            # so that the Docker container can access to it
+            test_file_rel_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
+            test_batches[idx].append(test_file_rel_path)
+        else:
+            test_batches[idx].append(test_file)
 
     analysis_jobs = []
     for i in range(jobs):
@@ -372,7 +393,7 @@ def perform_analysis(
     When `jobs` > 1, the analysis can be performed concurrently.
     """
     # Prepare output directory for all tests and all tools in this run
-    safe_print("Start analyzing all test cases...\n")
+    safe_print("Start analyzing all test cases...")
     results_dir = os.path.join(
         RESULTS_DIR,
         datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
@@ -400,7 +421,7 @@ def perform_analysis(
 
         all_results.extend(results)
 
-    print_short_double_horizontal_line()
+    printer.print_short_double_horizontal_line()
     safe_print("Benchmarking completed!\n")
     safe_print(f"Results are recorded at: {results_dir}")
 

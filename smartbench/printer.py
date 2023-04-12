@@ -57,24 +57,24 @@ def debug(*args):
 
 
 def print_short_single_horizontal_line():
-    safe_print(f"{'=' * 30}")
+    safe_print(f"\n{'=' * 30}")
 
 
 def print_medium_single_horizontal_line():
-    safe_print(f"{'=' * 45}")
+    safe_print(f"\n{'-' * 45}")
 
 
 def print_long_single_horizontal_line():
-    safe_print(f"{'=' * 55}")
+    safe_print(f"\n{'-' * 55}")
 
 
 def print_short_double_horizontal_line():
-    safe_print(f"{'=' * 30}")
+    safe_print(f"\n{'=' * 30}")
 
 
 def print_medium_double_horizontal_line():
-    safe_print(f"{'=' * 45}")
+    safe_print(f"\n{'=' * 45}")
 
 
 def print_long_double_horizontal_line():
-    safe_print(f"{'=' * 55}")
+    safe_print(f"\n{'=' * 55}")
