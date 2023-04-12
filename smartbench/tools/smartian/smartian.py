@@ -238,8 +238,8 @@ class Smartian(Tool):
                 warning("Failed to parse Smartian log file:", log_file)
                 return []
 
-        contract_coverage = [(0, 0)]
         current_time = 0
+        contract_coverage = [(0, 0)]
         contract_coverage_list = []
 
         for line in lines:
@@ -253,18 +253,25 @@ class Smartian(Tool):
                 minutes = int(time[6:8])
                 hours = int(time[3:5])
                 duration = hours * 3600 + minutes * 60 + seconds
+
+                # Results of new contract
                 if duration < current_time:
-                    contract_coverage_list.append(contract_coverage)
+                    if contract_coverage != []:
+                        contract_coverage_list.append(contract_coverage)
+
                     current_time = duration
                     contract_coverage = [(0,0)]
 
+                # Add a new pair every second
                 if duration - current_time >= 1:
                     current_coverage = match_str.group()
                     current_coverage = current_coverage.removeprefix("Covered Instructions: ")
                     contract_coverage.append((duration, int(current_coverage)))
                     current_time = duration
 
-        contract_coverage_list.append(contract_coverage)
+        # Append the last list if it is not empty
+        if contract_coverage != []:
+            contract_coverage_list.append(contract_coverage)
 
         prev_contract_time = 0
         prev_contract_instrs = 0
