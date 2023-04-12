@@ -155,14 +155,14 @@ class Mythril(Tool):
     def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Parse output of Mythril"""
         output = None
-        output_file = os.path.join(test_output_dir, self.json_output_file)
         log_file = os.path.join(test_output_dir, self.log_file)
-        debug("Mythril parse file: ", output_file)
-        with open(output_file, "r", encoding="utf-8") as file:
+        log_file = os.path.join(test_output_dir, self.log_file)
+        debug("Mythril parse file: ", log_file)
+        with open(log_file, "r", encoding="utf-8") as file:
             try:
                 output = json.load(file)
             except ValueError:
-                warning("Failed to parse Mythril output file:", output_file)
+                warning("Failed to parse Mythril output file:", log_file)
                 return []
 
         try:
