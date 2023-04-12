@@ -3,24 +3,33 @@
 """Module for running smart contract analyzers for testing contracts."""
 
 # Standard Library
+import multiprocessing
 import os
 import shlex
 import signal
 import subprocess
+import sys
+import tempfile
 import threading
 import traceback
 
 from datetime import datetime
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 from subprocess import CompletedProcess, SubprocessError
 from typing import List, Optional
 
 # Library
 from smartbench import annotation, printer, result, solc, validator
-from smartbench.docker import DockerContainer, DockerJob
-from smartbench.globals import screen_lock
+from smartbench.docker import AnalysisJob, DockerContainer
 from smartbench.issue import Issue
-from smartbench.printer import debug, print_unless, safe_print, warning
+from smartbench.printer import (
+    debug,
+    print_short_double_horizontal_line,
+    print_unless,
+    safe_print,
+    safe_warning,
+    warning,
+)
 from smartbench.result import AnalysisResult
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
@@ -111,11 +120,14 @@ def analyze_test_file(
     Issue.index_counter = 1
 
     # Run the analysis
-    if parallel_mode and container:
-        print(f"{container.name}: {test_file}\n")
+    if parallel_mode:
+        runner = (
+            "local-runner" if container is None else f"docker:{container.name}"
+        )
+        safe_print(f"{runner}: {test_file}\n")
     else:
-        print(f"{'-' * 45}\n")
-        print(f"Analyzing: {test_file}\n")
+        safe_print(f"{'-' * 45}\n")
+        safe_print(f"Analyzing: {test_file}\n")
 
     try:
         contracts = solc.get_candidate_testing_contracts(test_file)
@@ -124,7 +136,7 @@ def analyze_test_file(
         print_unless(parallel_mode, f"** Error: {err}")
         return None
 
-    # print("Test contracts:", contracts)
+    # safe_print("Test contracts:", contracts)
 
     cmd = tool.make_analysis_command(
         test_file,
@@ -149,24 +161,26 @@ def analyze_test_file(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            shell=False,
         )
 
         # Run the analyzer
         (stdout, _) = proc.communicate()
 
-        log_analysis_output(tool, stdout, test_output_dir)
+        # log_analysis_output(tool, stdout, test_output_dir)
 
     except SubprocessError as err:
         if parallel_mode and container:
-            warning(f"{container.name}: failed to run command: {cmd}\n")
+            safe_warning(f"{container.name}: failed to run command: {cmd}\n")
         else:
             warning(f"Failed to run command: {cmd}\n")
-            print(f"** Error: {err}")
+            safe_print(f"** Error: {err}")
             traceback.print_exc()
         return None
 
     # Process analysis output
     issues = tool.parse_analysis_output(test_output_dir)
+
     for issue in issues:
         print_unless(parallel_mode, "- " + str(issue))
 
@@ -180,9 +194,7 @@ def analyze_test_file(
         for annot in bug_annots:
             print_unless(parallel_mode, f"- {annot.print_concise()}")
         print_unless(parallel_mode, "")
-        validation = validator.validate_issues(
-            tool, test_file, issues, bug_annots
-        )
+        validation = validator.validate_issues(tool, issues, bug_annots)
 
     res = AnalysisResult(tool, test_name, issues, bug_annots, validation)
 
@@ -192,56 +204,9 @@ def analyze_test_file(
     return res
 
 
-def run_analysis_tool_locally(
-    tool: Tool,
-    test_files: List[str],
-    tool_output_dir: str,
-    timeout=None,
-    validate=False,
-    benchmarking=False,
-) -> List[AnalysisResult]:
-    """Run one analysis tool for all `test_files` and write all results
-    to `tool_output_dir`.
-
-    If `validate` is True, the detected issues will be validated with
-    bug annotations in the testing files.
-
-    """
-    printer.print_long_double_horizontal_line()
-    print(f"Running analysis tool: {tool.name}\n")
-
-    # For local run, extract a common path in all test files
-    # to shorten the output file names when storing the results
-    test_files_common_path = os.path.commonpath(test_files)
-    test_file_parent = os.path.dirname(test_files_common_path)
-
-    all_results = []
-
-    for test_file in test_files:
-        # Prepare output directory for one test file
-        test_file_rel_path = os.path.relpath(test_file, start=test_file_parent)
-        test_output_dir = os.path.join(tool_output_dir, test_file_rel_path)
-        if not os.path.exists(test_output_dir):
-            os.makedirs(test_output_dir)
-
-        # Analyze the test file
-        if res := analyze_test_file(
-            tool,
-            test_file,
-            test_output_dir,
-            None,
-            timeout,
-            validate,
-            benchmarking,
-        ):
-            all_results.append(res)
-
-    return all_results
-
-
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
-    printer.print_short_double_horizontal_line()
-    print("Preparing docker containers...")
+    print_short_double_horizontal_line()
+    safe_print("Preparing docker containers...")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
     container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
@@ -257,18 +222,20 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
 
 def stop_docker_containers(containers: List[DockerContainer]):
     printer.print_short_double_horizontal_line()
-    print("Cleaning docker containers...")
+    safe_print("Cleaning docker containers...")
 
     for container in containers:
         container.stop()
 
 
-def run_docker_job(
-    job: DockerJob,
+def run_analysis_job(
+    job: AnalysisJob,
+    result_queue: Queue,
     validate=False,
     benchmarking=False,
     parallel_mode=False,
-) -> List[AnalysisResult]:
+) -> None:
+    """Run an analysis job. Output will be stored in `result_queue`."""
     all_results: List[AnalysisResult] = []
 
     for test_file in job.test_files:
@@ -279,7 +246,7 @@ def run_docker_job(
             job.tool,
             test_file,
             test_output_dir,
-            job.container,
+            job.docker_container,
             job.timeout,
             validate,
             benchmarking,
@@ -287,14 +254,15 @@ def run_docker_job(
         ):
             all_results.append(res)
 
-    return all_results
+    result_queue.put(all_results)
 
 
-def run_analysis_tool_using_docker(
+def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
     tool_output_dir: str,
     timeout=None,
+    use_docker=True,
     jobs=1,
     validate=False,
     benchmarking=False,
@@ -309,14 +277,24 @@ def run_analysis_tool_using_docker(
     """
 
     printer.print_long_double_horizontal_line()
-    print(f"Running analysis tool: {tool.name}\n")
+    safe_print(f"Running analysis tool: {tool.name}\n")
 
-    # Get relative path of output directory before passing to the Docker container
-    # so that the container can access to it
-    tool_output_dir_docker = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
+    # When running in Docker mode, use relative path of output directory mounted
+    # to the Docker container so that the container can access to it
+    if use_docker:
+        tool_output_dir = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
 
     all_results: List[AnalysisResult] = []
-    containers = start_docker_containers(tool, jobs)
+
+    # Start Docker containers if using Docker mode
+    if use_docker:
+        docker_containers = start_docker_containers(tool, jobs)
+    else:
+        docker_containers = [None] * jobs
+
+    safe_print("")
+    printer.print_short_double_horizontal_line()
+    safe_print("Running analysis jobs...\n")
 
     # Distribute test files to containers
     test_batches: List[List[str]] = []
@@ -330,35 +308,49 @@ def run_analysis_tool_using_docker(
         test_file_rel_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
         test_batches[idx].append(test_file_rel_path)
 
-    docker_jobs = []
+    analysis_jobs = []
     for i in range(jobs):
-        docker_job = DockerJob(
-            containers[i],
+        analysis_job = AnalysisJob(
             tool,
             test_batches[i],
-            tool_output_dir_docker,
+            tool_output_dir,
             timeout,
+            docker_containers[i],
         )
-        docker_jobs.append(docker_job)
+        analysis_jobs.append(analysis_job)
 
-    # Run docker jobs in parallel
+    # Prepare to run analysis jobs in parallel if needed.
     processes = []
     parallel_mode = jobs > 1
-    for docker_job in docker_jobs:
+
+    # Use a queue to store all results
+    result_queue: Queue = multiprocessing.Queue()
+
+    # Run all analysis jobs
+    for analysis_job in analysis_jobs:
         proc = Process(
-            target=run_docker_job,
-            args=(docker_job, validate, benchmarking, parallel_mode),
+            target=run_analysis_job,
+            args=(
+                analysis_job,
+                result_queue,
+                validate,
+                benchmarking,
+                parallel_mode,
+            ),
         )
         processes.append(proc)
         proc.start()
-        # issues = run_docker_job(docker_job, validate)
-        # all_issues.extend(issues)
+
+    # Get result from queue
+    for proc in processes:
+        all_results.extend(result_queue.get())
 
     for proc in processes:
         proc.join()
 
-    # Stop Docker containers after analysis
-    stop_docker_containers(containers)
+    if use_docker:
+        # Stop Docker containers after analysis
+        stop_docker_containers(docker_containers)
 
     return all_results
 
@@ -380,7 +372,7 @@ def perform_analysis(
     When `jobs` > 1, the analysis can be performed concurrently.
     """
     # Prepare output directory for all tests and all tools in this run
-    print("Start analyzing all test cases...\n")
+    safe_print("Start analyzing all test cases...\n")
     results_dir = os.path.join(
         RESULTS_DIR,
         datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
@@ -395,30 +387,22 @@ def perform_analysis(
     all_results = []
     for tool in tools:
         tool_output_dir = os.path.join(results_dir, tool.id)
-        if use_docker:
-            results = run_analysis_tool_using_docker(
-                tool,
-                test_files,
-                tool_output_dir,
-                timeout,
-                jobs,
-                validate,
-                benchmarking,
-            )
-        else:
-            results = run_analysis_tool_locally(
-                tool,
-                test_files,
-                tool_output_dir,
-                timeout,
-                validate,
-                benchmarking,
-            )
+        results = run_analysis_tool(
+            tool,
+            test_files,
+            tool_output_dir,
+            timeout,
+            use_docker,
+            jobs,
+            validate,
+            benchmarking,
+        )
 
         all_results.extend(results)
 
-    print("Benchmarking completed!\n")
-    print(f"Results are recorded at: {results_dir}")
+    print_short_double_horizontal_line()
+    safe_print("Benchmarking completed!\n")
+    safe_print(f"Results are recorded at: {results_dir}")
 
     if benchmarking:
         result.print_benchmarking_results(results_dir, all_results)

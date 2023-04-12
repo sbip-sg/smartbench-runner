@@ -26,8 +26,8 @@ def analyze_smart_contracts(args):
     # Prepare environment
     jobs = 1 if args.jobs is None else args.jobs
 
-    if jobs > 1 and not args.docker:
-        error("Do not support running multiple jobs in local mode!")
+    # if jobs > 1 and not args.docker:
+    #     error("support running multiple jobs in local mode!")
 
     # Perform the analysis
     analyze.perform_analysis(

@@ -16,6 +16,7 @@ from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
 from smartbench.loc import Location
+from smartbench.printer import print_unless, safe_print
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril import mythril
@@ -30,7 +31,7 @@ from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
 
-class Validation:
+class ValidationResult:
     def __init__(
         self,
         correct_bugs: List[Tuple[Issue, BugAnnot]],
@@ -49,24 +50,32 @@ class Validation:
     def num_correct_bugs(self) -> int:
         return len(self.correct_bugs)
 
-    def print_summary(self) -> None:
-        print("- Validation:")
+    def print_summary(self, parallel_mode=False) -> None:
+        if not parallel_mode:
+            safe_print("- Validation:")
 
-        correct_bugs_info = f"{len(self.correct_bugs)}"
-        correct_issue_idxs = [issue.index for (issue, _) in self.correct_bugs]
-        if len(correct_issue_idxs) > 0:
-            issues_idxs = print_indices(correct_issue_idxs)
-            correct_bugs_info += f" [Issue IDs: {issues_idxs}]"
-            print(f"  + Correct bugs: {correct_bugs_info}")
+            # Print correct bugs
+            correct_bugs_info = f"{len(self.correct_bugs)}"
+            correct_issue_idxs = [iss.index for (iss, _) in self.correct_bugs]
+            if len(correct_issue_idxs) > 0:
+                correct_bugs_info += (
+                    f" [Issue IDs: {print_indices(correct_issue_idxs)}]"
+                )
+            safe_print(f"  + Correct bugs: {correct_bugs_info}")
 
-        missing_bug_info = f"{len(self.missing_bugs)}"
-        missing_bug_idxs = [x.index for x in self.missing_bugs]
-        if len(missing_bug_idxs) > 0:
-            bug_annot_idxs = print_indices(missing_bug_idxs)
-            missing_bug_info += f" [Bug annot IDs: {bug_annot_idxs}]"
-            print(f"  + Missing bugs: {missing_bug_info}")
+            # Print missing bugs
+            missing_bug_info = f"{len(self.missing_bugs)}"
+            missing_bug_idxs = [x.index for x in self.missing_bugs]
+            if len(missing_bug_idxs) > 0:
+                missing_bug_info += (
+                    f" [Bug annot IDs: {print_indices(missing_bug_idxs)}]"
+                )
+            safe_print(f"  + Missing bugs: {missing_bug_info}")
 
-        print(f"  + Unlabelled issues: {len(self.unlabelled_issues)}")
+            # Print unlabelled issues
+            safe_print(
+                f"  + Unlabelled issues: {len(self.unlabelled_issues)}",
+            )
 
 
 def print_indices(indices: List[int]) -> str:
@@ -135,64 +144,37 @@ def match_issue_to_annotation(
 
 def validate_issues(
     tool: Tool,
-    test_file: str,
     issues: List[Issue],
     annots: List[BugAnnot],
-    benchmark_name: str = "",
-) -> Validation:
+) -> ValidationResult:
     """Validate detected issues against bug annotations in an input file."""
 
     # not used in solidifi
     correct_bugs: List[Tuple[Issue, BugAnnot]] = []
     unlabelled_issues: List[Issue] = []
-    reported_annots: List[BugAnnot] = []
     missing_bugs: List[BugAnnot] = []
 
-    if benchmark_name.lower() == "solidifi":
-        # special case for solidifi, other benchmarks may copy: two-loop to deal
-        # with duplicated bugs annotation & multiple issues reported the same
-        # annotation first loop detect missing bug. Simply checks if any annot
-        # is not reported
-        for annot in annots:
-            # True-positive issues
-            detected = False
-            for issue in issues:
-                if match_issue_to_annotation(tool, issue, annot):
-                    correct_bugs.append((issue, annot))
-                    detected = True
-                    break
-            if not detected:
-                missing_bugs.append(annot)
-
-        # Second loop detect unlabelled_issues
-        for issue in issues:
-            # True-positive issue
-            matched_bug = False
-            for annot in annots:
-                if match_issue_to_annotation(tool, issue, annot):
-                    matched_bug = True
-                    break
-            # Unknown issue
-            if not matched_bug:
-                unlabelled_issues.append(issue)
-
-        return Validation(correct_bugs, missing_bugs, unlabelled_issues)
-
-    # target_sbcs = []
-    # if any(a.annot_format == AnnotFormat.SMARTBUGS_FORMAT for a in annots):
-    #     target_sbcs = SBC.elements()
-
+    # First loop to detect correct bugs and missing bugs
     for annot in annots:
-        # True-positive issue
-        # correct_bug = False
+        # True-positive issues ==> correct bugs
+        detected = False
         for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
                 correct_bugs.append((issue, annot))
-                reported_annots.append(annot)
-                # correct_bug = True
+                detected = True
                 break
+        if not detected:
+            missing_bugs.append(annot)
 
-    # Missing bugs:
-    missing_bugs = [b for b in annots if b not in reported_annots]
+    # Second loop to detect unlabelled_issues
+    for issue in issues:
+        matched_bug = False
+        for annot in annots:
+            if match_issue_to_annotation(tool, issue, annot):
+                matched_bug = True
+                break
+        # Unknown issue
+        if not matched_bug:
+            unlabelled_issues.append(issue)
 
-    return Validation(correct_bugs, missing_bugs, unlabelled_issues)
+    return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)

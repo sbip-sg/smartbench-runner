@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Tuple
 from smartbench import annotation, logger, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
-from smartbench.printer import warning
+from smartbench.printer import print_unless, safe_print, warning
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
@@ -22,9 +22,8 @@ from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
-from smartbench.printer import print_unless
 from smartbench.tools.tool import Tool
-from smartbench.validator import Validation
+from smartbench.validator import ValidationResult
 
 
 class AnalysisResult:
@@ -37,7 +36,7 @@ class AnalysisResult:
         test_file: str,
         issues: List[Issue],
         bug_annots: List[BugAnnot],
-        validation: Optional[Validation],
+        validation_result: Optional[ValidationResult],
     ):
         self.tool: Tool = tool
         self.test_file: str = test_file
@@ -49,7 +48,7 @@ class AnalysisResult:
         self.bug_annots: List[BugAnnot] = list(bug_annots)
 
         # Validation of detected issues
-        self.validation = validation
+        self.validation_result = validation_result
 
     def __lt__(self, other):
         """Compare analysis result by the test file name, case insensitive.
@@ -58,38 +57,39 @@ class AnalysisResult:
         other_file = other.test_file.casefold()
         return test_file.__lt__(other_file)
 
-    def print_detailed_summary(self, parallel_mode: False):
+    def print_detailed_summary(self, parallel_mode=False):
         """Print statistic summary of detected issues for a test file"""
-        print_unless(parallel_mode, "-------------------")
-        print_unless(parallel_mode, "ANALYSIS RESULT")
-        print_unless(parallel_mode, "-------------------")
-        print_unless(parallel_mode, f"- Tool: {self.tool.name}")
-        print_unless(parallel_mode, f"- Test file: {self.test_file}")
-        print_unless(parallel_mode, f"- Annotated bugs: {len(self.bug_annots)}")
-        print_unless(parallel_mode, f"- Detected issues: {len(self.issues)}")
+        if not parallel_mode:
+            safe_print("-------------------")
+            safe_print("ANALYSIS RESULT")
+            safe_print("-------------------")
+            safe_print(f"- Tool: {self.tool.name}")
+            safe_print(f"- Test file: {self.test_file}")
+            safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
+            safe_print(f"- Detected issues: {len(self.issues)}")
 
         # Print severity information
-        severity_stat: Dict[Severity, int] = {}
+        severity_dict: Dict[Severity, int] = {}
         for issue in self.issues:
-            if issue.severity in severity_stat:
-                severity_stat[issue.severity] += 1
+            if issue.severity in severity_dict:
+                severity_dict[issue.severity] += 1
             else:
-                severity_stat[issue.severity] = 1
-        severity_info = [f"  + {s}: {severity_stat[s]}" for s in severity_stat]
-        if len(severity_stat) > 0:
-            print_unless(parallel_mode, "\n".join(severity_info))
+                severity_dict[issue.severity] = 1
+        severity_info = [f"  + {s}: {severity_dict[s]}" for s in severity_dict]
+        if len(severity_dict) > 0 and not parallel_mode:
+            safe_print("\n".join(severity_info))
 
         # Print validation results
-        if self.validation is not None:
-            self.validation.print_summary()
+        if self.validation_result is not None:
+            self.validation_result.print_summary(parallel_mode)
 
         print_unless(parallel_mode, "")
 
     def print_benchmarking_summary(self):
-        if self.validation is None:
+        if self.validation_result is None:
             raise ValueError("Results were not validated for benchmarking!")
 
-        validation = self.validation
+        validation = self.validation_result
         num_correct = len(validation.correct_bugs)
         num_missing = len(validation.missing_bugs)
         num_unlabelled = len(validation.unlabelled_issues)
@@ -101,12 +101,11 @@ class AnalysisResult:
 
 
 def verify_tool_result_dir(tool: Tool, test_dir: str) -> bool:
-    """Check whether `test_dir` containing analysis result of a tool for
+    """Check whether `test_dir` containing analysis log of a tool for
     a test file."""
-
     test_dir = os.path.abspath(test_dir)
-    output_file = os.path.join(test_dir, tool.output_file)
-    return os.path.exists(output_file)
+    log_file = os.path.join(test_dir, tool.log_file)
+    return os.path.exists(log_file)
 
 
 def parse_result_directory(
@@ -127,7 +126,7 @@ def parse_result_directory(
         warning(f"Directory does not exists: {results_dir}")
         return []
 
-    all_results: List[Issue] = []
+    all_results: List[AnalysisResult] = []
 
     # Parse results of each analysis tool
     items = list(os.listdir(results_dir))
@@ -155,13 +154,17 @@ def parse_result_directory(
             if not verify_tool_result_dir(tool, test_output_dir):
                 continue
 
+            # Get test file
             test_output_dir = os.path.abspath(test_output_dir)
-            output_file = os.path.join(test_output_dir, tool.output_file)
             log_file = os.path.join(test_output_dir, tool.log_file)
-
             test_file = logger.get_input_test_file(log_file)
-            print(f"{'-' * 45}\n")
-            print(f"Test file: {test_file}\n")
+
+            if test_file is None:
+                warning(f"Unable to get test file: {test_file}")
+                continue
+
+            safe_print(f"{'-' * 45}\n")
+            safe_print(f"Test file: {test_file}\n")
 
             issues = tool.parse_analysis_output(test_output_dir)
 
@@ -184,20 +187,16 @@ def parse_result_directory(
                         print(f"- {annot.print_concise()}")
 
                     validation = validator.validate_issues(
-                        tool,
-                        test_file,
-                        issues,
-                        bug_annots,
-                        benchmark_name=benchmark_name or "",
+                        tool, issues, bug_annots
                     )
                     correct_bugs += validation.num_correct_bugs()
                 print("")
 
-            ares = AnalysisResult(
+            res = AnalysisResult(
                 tool, test_file, issues, bug_annots, validation
             )
-            ares.print_detailed_summary(False)
-            all_results.append(ares)
+            res.print_detailed_summary(False)
+            all_results.append(res)
 
         if validate:
             print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
@@ -237,11 +236,7 @@ def parse_instruction_coverage(results_dir: str):
             warning(f"Unable to load tool configuration: {tool_id}")
             continue
 
-        if not (
-            isinstance(tool, Sfuzz)
-            or isinstance(tool, Confuzzius)
-            or isinstance(tool, Smartian)
-        ):
+        if not isinstance(tool, (Sfuzz, Confuzzius, Smartian)):
             print(f"Parse coverage is not supported for: {tool.id}")
             continue
 
@@ -254,11 +249,7 @@ def parse_instruction_coverage(results_dir: str):
             if not verify_tool_result_dir(tool, test_output_dir):
                 continue
 
-            if (
-                isinstance(tool, Sfuzz)
-                or isinstance(tool, Confuzzius)
-                or isinstance(tool, Smartian)
-            ):
+            if isinstance(tool, (Sfuzz, Confuzzius, Smartian)):
                 coverage = tool.parse_instruction_coverage(test_output_dir)
                 print(f"test_output_dir: {test_output_dir}")
                 print(f"coverage: {coverage}")
@@ -284,7 +275,8 @@ def print_benchmarking_results(results_dir: str, results: List[AnalysisResult]):
 def group_analysis_result_by_tools(
     results: List[AnalysisResult],
 ) -> Dict[str, List[AnalysisResult]]:
-    tools_results = {}
+    """Group all analysis results by tool name"""
+    tools_results: Dict[str, List[AnalysisResult]] = {}
 
     for result in results:
         tool_id = result.tool.id
@@ -311,7 +303,11 @@ def export_benchmarking_results(
             file.write("======================================\n\n")
 
             for result in results:
-                validation = result.validation
+                validation = result.validation_result
+                if validation is None:
+                    warning(f"Validation result not found: {result.test_file}")
+                    continue
+
                 num_correct = len(validation.correct_bugs)
                 num_missing = len(validation.missing_bugs)
                 num_unlabelled = len(validation.unlabelled_issues)
