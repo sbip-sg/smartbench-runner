@@ -15,14 +15,14 @@ OTHER_ARGS=${@:2}
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
-    TOOL_ROOT_PATH="/root/smartfuzz"
+    TOOL_DIR="/root/smartfuzz"
 else
-    TOOL_ROOT_PATH="$(realpath $(dirname "$0"))/repo/smartfuzz"
+    TOOL_DIR="$(realpath $(dirname "$0"))/repo/smartfuzz"
 fi
 
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Run SmartFuzz
-SOLC_VERSION=$SOLC_VER python "$TOOL_ROOT_PATH/main.py" \
+SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/main.py" \
     $TEST_FILE $OTHER_ARGS

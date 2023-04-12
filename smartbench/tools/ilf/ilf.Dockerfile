@@ -62,8 +62,7 @@ RUN go build -o execution.so -buildmode=c-shared export/execution.go
 
 # Copy truffle template project
 WORKDIR /root
-RUN mkdir template
-ADD smartbench/tools/ilf/template/truffle-project /root/template
+ADD smartbench/tools/ilf/template/truffle-project /root/template/truffle-project
 
 # Copy executable file
 WORKDIR /root
