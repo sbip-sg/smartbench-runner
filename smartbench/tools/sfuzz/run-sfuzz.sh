@@ -84,10 +84,7 @@ SOLC_VER=$(solc-detect $TEST_FILE)
 
 solc-select use $SOLC_VER
 
-./fuzzer -g \
-         -r 0 \
-         -d $TIMEOUT \
-         --attacker ReentrancyAttacker 2>&1
+./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker 2>&1
 chmod +x fuzzMe
 ./fuzzMe
 
