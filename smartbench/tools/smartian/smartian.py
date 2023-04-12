@@ -238,11 +238,9 @@ class Smartian(Tool):
                 warning("Failed to parse Smartian log file:", log_file)
                 return []
 
-        coverages = [(0, 0)]
-        count = 1
+        contract_coverage = [(0, 0)]
         current_time = 0
-
-        contracts_coverage = []
+        contract_coverage_list = []
 
         for line in lines:
             match_str = re.search(r"Covered Instructions: [0-9]+", line)
@@ -256,28 +254,26 @@ class Smartian(Tool):
                 hours = int(time[3:5])
                 duration = hours * 3600 + minutes * 60 + seconds
                 if duration < current_time:
-                    contracts_coverage.append(coverages)
+                    contract_coverage_list.append(contract_coverage)
                     current_time = duration
-                    coverages = [(0,0)]
+                    contract_coverage = [(0,0)]
 
                 if duration - current_time >= 1:
                     current_coverage = match_str.group()
                     current_coverage = current_coverage.removeprefix("Covered Instructions: ")
-                    coverages.append((duration, int(current_coverage)))
+                    contract_coverage.append((duration, int(current_coverage)))
                     current_time = duration
-                count += 1
 
-        contracts_coverage.append(coverages)
+        contract_coverage_list.append(contract_coverage)
 
-        current_time = 0
-        current_instr = 0
+        prev_contract_time = 0
+        prev_contract_instrs = 0
         results = []
-        for contract_coverage in contracts_coverage:
+        for contract_coverage in contract_coverage_list:
             for (time, instr) in contract_coverage:
-                instr += current_instr
-                results.append((time + current_time, instr))
+                results.append((time + prev_contract_time, instr + prev_contract_instrs))
 
-            current_time += contract_coverage[-1][0]
-            current_instr += contract_coverage[-1][1]
+            prev_contract_time += contract_coverage[-1][0]
+            prev_contract_instrs += contract_coverage[-1][1]
 
         return results
