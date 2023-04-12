@@ -3,6 +3,6 @@ id = "mythril"
 name = "mythril"
 
 [command]
-executable = "myth"
+executable = "run-mythril.sh"
 default_arguments = ""
 default_timeout = 60

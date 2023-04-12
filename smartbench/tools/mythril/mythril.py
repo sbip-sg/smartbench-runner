@@ -11,11 +11,15 @@ from typing import List, Optional, Tuple
 
 # Library
 from smartbench import annotation, logger, solc
+from smartbench.docker import DockerContainer
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
 from smartbench.printer import debug, warning
 from smartbench.tools.tool import Tool
+
+
+MYTHRIL_DIR = os.path.dirname(__file__)
 
 
 class Mythril(Tool):
@@ -43,35 +47,29 @@ class Mythril(Tool):
     def make_analysis_command(
         self,
         test_file: str,
+        contracts: List[str],
         test_output_dir: str,
-        timeout=int,
-        use_docker=False,
+        container=Optional[DockerContainer],
+        timeout: Optional[int] = None,
     ) -> str:
         """Function to make analysis command for `Mythril`. This function should
         have the same signature with other tools.
 
         """
+        if container is not None:
+            cmd = f"docker exec -it {container.name} /root/{self.executable}"
+        else:
+            cmd = os.path.join(MYTHRIL_DIR, self.executable)
 
-        command = self.executable
-        solc_version = solc.detect_required_solc_version(test_file)
-
-        if self.default_args:
-            command = command + " " + self.default_args
-        if self.additional_args:
-            command = command + " " + self.additional_args
-
-        command = (
-            command
-            + " analyze "
+        cmd = (
+            cmd
+            + " "
             + test_file
-            + " --execution-timeout "
+            + " -t "
             + str(timeout)
-            + " --solv "
-            + solc_version
-            + " -o json  "
         )
 
-        return command
+        return cmd
 
     def parse_severity(self, severity: Optional[str]) -> Severity:
         """Parse severity level of issue detected by Mythril."""
