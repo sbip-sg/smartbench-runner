@@ -10,7 +10,7 @@ FROM smartbench/base:latest
 RUN apt -y install libssl-dev curl pkg-config
 
 # Install Nodejs truffle web3 ganache-cli
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get -y install nodejs
 RUN npm -g config set user root
 RUN npm install -g truffle web3 ganache-cli
