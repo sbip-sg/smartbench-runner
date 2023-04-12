@@ -85,8 +85,6 @@ class Smartian(Tool):
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
 
-        output_file = self.configure_output_file(test_output_dir)
-
         cmd = cmd + " -o " + test_output_dir
 
         return cmd
@@ -230,19 +228,22 @@ class Smartian(Tool):
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
-        output_file = os.path.join(test_output_dir, self.json_output_file)
+        log_file = os.path.join(test_output_dir, self.log_file)
 
         lines = None
-        with open(output_file, "r", encoding="utf-8") as file:
+        with open(log_file, "r", encoding="utf-8") as file:
             try:
                 lines = [line.rstrip() for line in file]
             except ValueError:
-                warning("Failed to parse Smartian output file:", output_file)
+                warning("Failed to parse Smartian log file:", log_file)
                 return []
 
-        results = [(0, 0)]
+        coverages = [(0, 0)]
         count = 1
         current_time = 0
+
+        contracts_coverage = []
+
         for line in lines:
             match_str = re.search(r"Covered Instructions: [0-9]+", line)
             time_str = re.search(
@@ -254,11 +255,28 @@ class Smartian(Tool):
                 minutes = int(time[6:8])
                 hours = int(time[3:5])
                 duration = hours * 3600 + minutes * 60 + seconds
+                if duration < current_time:
+                    contracts_coverage.append(coverages)
+                    current_time = duration
+                    coverages = [(0,0)]
+
                 if duration - current_time >= 1:
-                    coverage = match_str.group()
-                    coverage = coverage.removeprefix("Covered Instructions: ")
-                    results.append((duration, int(coverage)))
+                    current_coverage = match_str.group()
+                    current_coverage = current_coverage.removeprefix("Covered Instructions: ")
+                    coverages.append((duration, int(current_coverage)))
                     current_time = duration
                 count += 1
+
+        contracts_coverage.append(coverages)
+
+        current_time = 0
+        instruction = 0
+        results = []
+        for contract_coverage in contracts_coverage:
+            for (time, instr) in contract_coverage:
+                instruction += instr
+                results.append((time + current_time, instruction))
+
+            current_time += contract_coverage[-1][0]
 
         return results
