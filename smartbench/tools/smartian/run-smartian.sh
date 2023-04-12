@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-smartian.sh <test-file> [-c <contract names>] [additional-smartian-arguments]
+#   ./run-smartian.sh -f <test-file> [-c <contract names>] [additional-smartian-arguments]
 #
 # NOTE:
 #   - Test file must be the first argument
@@ -10,19 +10,42 @@
 #     in a Docker container as well as to run locally.
 #
 
-# Arguments of Smartian
-TEST_FILE=$(realpath $1)
-shift  # Past test file
+################################################
+# Usage
 
+print_usage () {
+    echo ""
+    echo "Usage: "
+    echo "  run-smartian.sh -f <test-file> [options] [additional-smartial-arguments]"
+    echo ""
+    echo "Options:"
+    echo "  -f <test-file>        Smart contract file to be analyzed."
+    echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
+    echo "                        as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
+    echo "  -o <output-dir>       Output directory containing analysis results."
+    echo "  -t <timeout>          Timeout for each contract of the test file."
+    echo "  -h, --help            Print this usage."
+    echo ""
+    echo "Note: arguments not matching the above list will be passed directy to Smartian."
+}
+
+################################################
+# Parse arguments
+
+TEST_FILE=""
 CONTRACT_NAMES=()
 TIMEOUT=0
 OUTPUT_DIR=""
 RESULT_FILE=""
 ADDITIONAL_ARGS=()
 
-# Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -f)
+            TEST_FILE=$(realpath $2)
+            shift # past argument
+            shift # past value
+            ;;
         -c)
             shift # past argument
             # Parse contract names
@@ -48,6 +71,10 @@ while [[ $# -gt 0 ]]; do
             shift  # past argument
             shift  # past value
             ;;
+        -h|--help)
+            print_usage
+            exit 1
+            ;;
         *)
             ADDITIONAL_ARGS+=("$1") # save all other arguments
             shift # past argument
@@ -57,15 +84,20 @@ done
 
 # Checking output dir
 if [[ $OUTPUT_DIR == "" ]]; then
-    echo "Smartian: output dir is not specified!"
+    echo "Error: output dir is not specified!"
+    print_usage
     exit 1
 fi
 
 # Checking timeout
 if [[ $TIMEOUT -lt 0 ]]; then
-    echo "Smartian: timeout is not specified or invalid!"
+    echo "Error: timeout is not specified or invalid!"
+    print_usage
     exit 1
 fi
+
+################################################
+# Configure paths
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
@@ -74,23 +106,31 @@ else
     TOOL_ROOT_PATH="$(realpath $(dirname "$0"))/repo/smartian"
 fi
 
+################################################
+# Compile contracts
+
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-# # Compile test file to contracts in ABI and BIN format
 CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
 rm -rf $CONTRACTS_DIR
 mkdir $CONTRACTS_DIR
+
 SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
     -o $CONTRACTS_DIR --overwrite \
     1>/dev/null 2>&1  # Do not capture output of Solc
 
+# If contract names are not specified from the input, analyze all contracts
+# obtained after compilation.
 if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
     CURRENT_DIR=$(pwd)
     cd $CONTRACTS_DIR
     CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
     cd $CURRENT_DIR
 fi
+
+################################################
+# Analyze contracts
 
 # Run Smartian on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do

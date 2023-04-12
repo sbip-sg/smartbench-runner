@@ -51,8 +51,9 @@ strict = true
 [tool.pylint]
 max-line-length=80
 disable = [
-  "too-many-arguments",
+  "broad-exception-caught",
+  "fixme",
   "too-few-public-methods",
+  "too-many-arguments",
   "too-many-return-statements",
-  "fixme"
 ]

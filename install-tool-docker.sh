@@ -1,19 +1,6 @@
 #!/usr/bin/bash
 
-# This script installs Docker container for all analysis tools
-
-# Usage:
-#   ./install-tool-docker.sh <TOOL-ID> [CONTAINER_NAME] [-n <NUMBER-OF-CONTAINERS>]
-#
-# Example:
-#   # Install the default container named `slither`
-#   ./install-tool-docker.sh slither
-#
-#   # Install a container named `slither-analyzer`
-#   ./install-tool-docker.sh slither slither-analyzer
-#
-#   # Install 5 containers: `slither-1`, ..., `slither-5`
-#   ./install-tool-docker.sh slither -n 5
+# This script installs Docker container for smart contract analysis tools
 
 SUPPORTED_TOOLS=("slither" "sfuzz" "confuzzius" "smartian" "smartfuzz" "ilf")
 

@@ -131,7 +131,7 @@ def analyze_test_file(
 
     try:
         contracts = solc.get_candidate_testing_contracts(test_file)
-    except ValueError as err:
+    except Exception as err:
         warning(f"Failed to get testing contract names from: {test_file}!")
         print_unless(parallel_mode, f"** Error: {err}")
         return None
@@ -287,10 +287,9 @@ def run_analysis_tool(
     all_results: List[AnalysisResult] = []
 
     # Start Docker containers if using Docker mode
+    docker_containers = []
     if use_docker:
         docker_containers = start_docker_containers(tool, jobs)
-    else:
-        docker_containers = [None] * jobs
 
     safe_print("")
     printer.print_short_double_horizontal_line()
@@ -310,12 +309,13 @@ def run_analysis_tool(
 
     analysis_jobs = []
     for i in range(jobs):
+        container = None if not docker_containers else docker_containers[i]
         analysis_job = AnalysisJob(
             tool,
             test_batches[i],
             tool_output_dir,
             timeout,
-            docker_containers[i],
+            container,
         )
         analysis_jobs.append(analysis_job)
 
