@@ -60,6 +60,11 @@ RUN pip install torch==1.10.2+cpu torchvision==0.11.3+cpu torchaudio==0.10.2+cpu
 # Compile ILF
 RUN go build -o execution.so -buildmode=c-shared export/execution.go
 
+# Copy truffle template project
+WORKDIR /root
+RUN mkdir template
+ADD smartbench/tools/ilf/template/truffle-project /root/template
+
 # Copy executable file
 WORKDIR /root
 ADD smartbench/tools/ilf/run-ilf.sh /root/

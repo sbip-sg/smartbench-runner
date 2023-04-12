@@ -4,3 +4,4 @@
 # Except the example folder
 !/examples
 !smartbench/tools/*/run-*.sh
+!smartbench/tools/ilf/template/
