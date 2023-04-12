@@ -114,9 +114,6 @@ else
 fi
 TOOL_DIR="$GO_DIR/src/ilf"
 
-# Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
-
 ################################################
 # Deploy contracts using Truffle as required by ILF
 
@@ -145,8 +142,12 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
 done
 echo "};" >> $DEPLOY_FILE
 
-# Extract deployment transactions
-GOPATH=$GO_DIR python3 "$TOOL_DIR/script/extract.py" --proj $PROJECT_DIR --port 8545
+# Detect Solc version to be used.
+SOLC_VER=$(solc-detect $TEST_FILE)
+
+# Deploy contracts and extract deployment transactions
+SOLC_VERSION=$SOLC_VER GOPATH=$GO_DIR \
+    python3 "$TOOL_DIR/script/extract.py" --proj $PROJECT_DIR --port 8545
 
 ################################################
 # Analyze contracts

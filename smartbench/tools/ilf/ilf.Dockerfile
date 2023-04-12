@@ -9,7 +9,7 @@ FROM smartbench/base:latest
 # Install some libraries
 RUN apt -y install libssl-dev curl pkg-config
 
-# Install Nodejs truffle web3 ganache-cli
+# Install Nodejs libraries: truffle web3 ganache-cli
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get -y install nodejs
 RUN npm -g config set user root
@@ -56,6 +56,7 @@ RUN pip install cython cytoolz numpy scipy --no-cache-dir
 RUN pip install -r requirements.txt --no-cache-dir
 RUN pip install torch==1.10.2+cpu torchvision==0.11.3+cpu torchaudio==0.10.2+cpu\
     -f https://download.pytorch.org/whl/cpu/torch_stable.html
+RUN pip install ethereum
 
 # Compile ILF
 RUN go build -o execution.so -buildmode=c-shared export/execution.go
