@@ -17,6 +17,9 @@
 
 SUPPORTED_TOOLS=("slither" "sfuzz" "confuzzius" "smartian" "smartfuzz" "ilf")
 
+################################################
+# Usage
+
 print_usage () {
     echo ""
     echo "Usage: "
@@ -31,7 +34,12 @@ print_usage () {
     echo "  --use-git-token            Enable reading GitHub access token during installation."
 }
 
-##############################
+print_run_help () {
+    echo ""
+    echo "Please run the command again with '-h' to see help message!"
+}
+
+################################################
 # Parse arguments
 
 TOOL_ID=""
@@ -66,7 +74,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -*|--*)
             echo "Error: unknown option $1"
-            print_usage
+            print_run_help
             exit 1
             ;;
         *)
@@ -79,28 +87,33 @@ done
 # Checking tool ID
 if [[ $TOOL_ID == "" ]]; then
     echo "Error: analysis tool ID is not specified!"
-    print_usage
+    print_run_help
     exit 1
 elif [[ ! $(echo ${SUPPORTED_TOOLS[@]} | grep -w $TOOL_ID) ]]; then
     echo "Error: tool $TOOL_ID is not supported!"
-    print_usage
+    print_run_help
     exit 1
 fi
 
 # Checking container names
+if [[ $NUM_CONTAINERS == "" ]]; then
+    echo "Error: invalid number of containers!"
+    print_run_help
+    exit 1
+fi
+
 for ((i=1; i<=$NUM_CONTAINERS; i++)); do
     CONTAINER_NAMES+=("$TOOL_ID-$i")
 done
 
 if [[ ${#CONTAINER_NAMES[@]} == 0 ]]; then
-    echo "No container name or number of container is specified!"
-    print_usage
+    echo "Error: no container name or number of container is specified!"
+    print_run_help
     exit 1
 fi
 
 
-##############################
-
+################################################
 
 # Smartbench directories
 SMARTBENCH_ROOT=$(realpath $(dirname "$0"))
@@ -150,11 +163,14 @@ echo "Prepare environments..."
 # Build Docker image
 echo "============================================="
 echo "Building base image for all analysis tools..."
+
+cd $SMARTBENCH_ROOT
 docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE .
 
 # Build Docker image
 echo "============================================="
 echo "Building Docker image for $TOOL_ID..."
+
 if [[ $USE_GIT_TOKEN == true ]]; then
     echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
     echo -n "Enter your Git Access Token: "
