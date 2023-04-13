@@ -168,14 +168,23 @@ class Sfuzz(Tool):
             error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
             return []
 
-        results = [(0, 0)]
-        count = 1
+        contract_coverage = [(0)]
+        contract_coverage_list = []
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
+            fuzz_match = re.search(r">> Fuzz", line)
+            if fuzz_match:
+                if contract_coverage != [(0)]:
+                    contract_coverage_list.append(contract_coverage)
+                    contract_coverage = [(0)]
+
             if match_str:
                 coverage = match_str.group()
                 coverage = coverage.removeprefix("coverage : ")
-                results.append((count, int(coverage)))
-                count += 1
+                contract_coverage.append(int(coverage))
 
-        return results
+        # Add the results of the last contract
+        if contract_coverage != [(0)]:
+            contract_coverage_list.append(contract_coverage)
+
+        return contract_coverage_list

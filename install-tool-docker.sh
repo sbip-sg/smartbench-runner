@@ -2,7 +2,7 @@
 
 # This script installs Docker container for smart contract analysis tools
 
-SUPPORTED_TOOLS=("slither" "sfuzz" "confuzzius" "smartian" "smartfuzz" "ilf")
+SUPPORTED_TOOLS=("slither" "sfuzz" "confuzzius" "smartian" "smartfuzz" "ilf" "mythril")
 
 ################################################
 # Usage

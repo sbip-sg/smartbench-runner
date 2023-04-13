@@ -45,7 +45,7 @@ class Tool:
         # Output file in JSON format, some tools may not support this output
         self.json_output_file = (
             None
-            if tool_id in ["smartian", "mythril", "sfuzz"]
+            if tool_id in ["smartian", "sfuzz"]
             else f"{tool_id}_result.json"
         )
 
