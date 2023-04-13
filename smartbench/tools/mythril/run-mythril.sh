@@ -1,11 +1,10 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-mythril.sh <test-file> -t timeout
+#   ./run-mythril.sh <test-file> -t timeout -o output_file
 #
 # NOTE:
 #   - Test file must be the first argument
-#   - Contract names are whitespace-separated
 #   - This script must be configured so that it can be used both to run
 #     in a Docker container as well as to run locally.
 #
