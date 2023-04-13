@@ -168,27 +168,28 @@ class Confuzzius(Tool):
         try:
             issues = []
 
-            all_results = list(output.values())
-            results = all_results[0]
-            bug_list = results.get("errors")
-            bugs = list(bug_list.values())
+            contracts = list(output.keys())
+            for contract in contracts:
+                contract_results = output.get(contract);
+                bug_list = contract_results.get("errors")
+                bugs = list(bug_list.values())
 
-            for bug in bugs:
-                error = bug[0]
-                kind = self.parse_issue_kind(error.get("type"))
-                location = self.parse_source_location(
-                    log_file, error.get("line"), error.get("column")
-                )
-                severity = self.parse_issue_severity(error.get("severity"))
-                issue = Issue(
-                    kind,
-                    "",
-                    severity,
-                    Confidence.UNKNOWN,
-                    location,
-                    checker,
-                )
-                issues.append(issue)
+                for bug in bugs:
+                    error = bug[0]
+                    kind = self.parse_issue_kind(error.get("type"))
+                    location = self.parse_source_location(
+                        log_file, error.get("line"), error.get("column")
+                    )
+                    severity = self.parse_issue_severity(error.get("severity"))
+                    issue = Issue(
+                        kind,
+                        "",
+                        severity,
+                        Confidence.UNKNOWN,
+                        location,
+                        checker,
+                    )
+                    issues.append(issue)
             return issues
 
         except ValueError:
@@ -209,7 +210,6 @@ class Confuzzius(Tool):
             error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
             return None
 
-        all_results = list(output.values())
         contracts = list(output.keys())
         contract_coverage_list = []
         for contract in contracts:
