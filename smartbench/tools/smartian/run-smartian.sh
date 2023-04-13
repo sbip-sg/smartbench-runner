@@ -43,13 +43,12 @@ OUTPUT_DIR=""
 RESULT_FILE=""
 ADDITIONAL_ARGS=()
 
+# Arguments of sFuzz
+TEST_FILE=$(realpath $1)
+shift  # Past test file
+
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -f)
-            TEST_FILE=$(realpath $2)
-            shift # past argument
-            shift # past value
-            ;;
         -c)
             shift # past argument
             # Parse contract names

@@ -63,7 +63,7 @@ class Smartian(Tool):
             cmd = os.path.join(SMARTIAN_DIR, self.executable)
 
         # Input file must be the first argument to be run by docker
-        cmd = cmd + " -f " + test_file
+        cmd = cmd + " " + test_file
 
         # Pass contract names to Smartian
         if len(contracts) > 0:
