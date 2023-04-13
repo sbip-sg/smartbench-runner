@@ -10,7 +10,7 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-confuzzius.sh -f <test-file> [confuzzius-arguments]"
+    echo "  run-confuzzius.sh <test-file> [confuzzius-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
@@ -29,6 +29,10 @@ print_help () {
 
 TEST_FILE=""
 ADDITIONAL_ARGS=()
+
+# Arguments of smartian
+TEST_FILE=$(realpath $1)
+shift  # Past test file
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -68,6 +72,9 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
+# set the solc version
+solc-select use $SOLC_VER
+
 # Run Confuzzius
-SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
+python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
     -s $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1
