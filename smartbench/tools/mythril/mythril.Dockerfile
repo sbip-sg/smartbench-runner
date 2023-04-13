@@ -8,11 +8,11 @@ FROM smartbench/base:latest
 
 WORKDIR /root/
 
-# Copy executable file
-ADD smartbench/tools/mythril/run-mythril.sh /root/
-
 # Install mythril
 RUN pip install mythril
+
+# Copy executable file
+ADD smartbench/tools/mythril/run-mythril.sh /root/
 
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]

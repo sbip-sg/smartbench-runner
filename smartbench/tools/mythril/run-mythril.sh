@@ -16,6 +16,7 @@ shift  # Past test file
 
 TIMEOUT=0
 RESULT_FILE=""
+OUTPUT_FILE=""
 ADDITIONAL_ARGS=()
 
 # Parse arguments
@@ -23,6 +24,11 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -t)
             TIMEOUT=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        -o)
+            OUTPUT_FILE=$2
             shift  # past argument
             shift  # past value
             ;;
@@ -39,7 +45,14 @@ if [[ $TIMEOUT -lt 0 ]]; then
     exit 1
 fi
 
+# Checking output dir
+if [[ $OUTPUT_FILE == "" ]]; then
+    echo "Error: output file is not specified!"
+    exit 1
+fi
+
+
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-myth analyze $TEST_FILE --execution-timeout $TIMEOUT -o json
+myth analyze $TEST_FILE --execution-timeout $TIMEOUT -o json > $OUTPUT_FILE
