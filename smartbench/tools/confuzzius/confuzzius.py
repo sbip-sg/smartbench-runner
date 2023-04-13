@@ -201,6 +201,8 @@ class Confuzzius(Tool):
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Confuzzius"""
         output_file = os.path.join(test_output_dir, self.json_output_file)
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        write_file = open(coverage_file, "w")
         output = None
 
         debug("Confuzzius parse file: ", output_file)
@@ -215,24 +217,35 @@ class Confuzzius(Tool):
             warning("Failed to parse Confuzzius's output file:", output_file)
             return []
 
-        try:
-            coverages = [(0, 0)]
+
+        all_results = list(output.values())
+        contracts = list(output.keys())
+        contract_coverage_list = []
+        for contract in contracts:
+            contract_results = output.get(contract);
+            generations = contract_results.get("generations")
+            contract_coverage = [0]
             current_time = 0
-
-            all_results = list(output.values())
-            results = all_results[0]
-            generations = results.get("generations")
-            # generations = list(generations.values())
-
             for generation in generations:
                 time = float("{:.1f}".format(generation.get("time")))
                 coverage = float(
                     "{:.1f}".format(generation.get("code_coverage"))
                 )
                 if time - current_time >= 1:
-                    coverages.append((time, coverage))
+                    contract_coverage.append(coverage)
                     current_time = time
-            return coverages
 
-        except ValueError:
-            return []
+            coverage_json_obj = {
+                "name" : contract,
+                "coverage": contract_coverage
+            }
+            contract_coverage_list.append(coverage_json_obj)
+
+        results_json_obj = {
+            "contract_coverages" : contract_coverage_list
+        }
+        results_json_obj_str = json.dumps(results_json_obj, indent=2)
+        write_file.write(results_json_obj_str)
+        write_file.close()
+        return coverage_file
+

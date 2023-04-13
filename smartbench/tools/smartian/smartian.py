@@ -242,7 +242,7 @@ class Smartian(Tool):
                 return []
 
         current_time = 0
-        contract_coverage = [(0)]
+        contract_coverage = [0]
         contract_coverage_list = []
         contract_name = ""
 
@@ -257,14 +257,14 @@ class Smartian(Tool):
                 contract = fuzz_match.group()
                 contract_name = contract.removeprefix("Fuzzing contract: ")
                 # Results of new contract
-                if contract_coverage != [(0)]:
+                if contract_coverage != [0]:
                     coverage_json_obj = {
                         "name" : contract_name,
                         "coverage": contract_coverage
                     }
                     contract_coverage_list.append(coverage_json_obj)
 
-                contract_coverage = [(0)]
+                contract_coverage = [0]
                 current_time = 0
 
             if match_str and time_str:
@@ -282,7 +282,7 @@ class Smartian(Tool):
                     current_time = duration
 
         # Append the last list if it is not empty
-        if contract_coverage != [(0)]:
+        if contract_coverage != [0]:
             coverage_json_obj = {
                 "name" : contract_name,
                 "coverage": contract_coverage
@@ -292,7 +292,7 @@ class Smartian(Tool):
         results_json_obj = {
             "contract_coverages" : contract_coverage_list
         }
-        results_json_obj_str = json.dumps(results_json_obj, indent=4)
+        results_json_obj_str = json.dumps(results_json_obj, indent=2)
         write_file.write(results_json_obj_str)
         write_file.close()
         return coverage_file

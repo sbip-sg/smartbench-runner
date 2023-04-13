@@ -175,7 +175,7 @@ class Sfuzz(Tool):
                 warning("Failed to parse sFuzz log file:", log_file)
                 return []
 
-        contract_coverage = [(0)]
+        contract_coverage = [0]
         contract_coverage_list = []
         contract_name = ""
 
@@ -186,13 +186,13 @@ class Sfuzz(Tool):
                 contract = fuzz_match.group()
                 contract_name = contract.removeprefix(">> Fuzz ")
                 print(f"contract: {contract_name}")
-                if contract_coverage != [(0)]:
+                if contract_coverage != [0]:
                     coverage_json_obj = {
                         "name" : contract_name,
                         "coverage": contract_coverage
                     }
                     contract_coverage_list.append(coverage_json_obj)
-                    contract_coverage = [(0)]
+                    contract_coverage = [0]
 
             if match_str:
                 coverage = match_str.group()
@@ -200,7 +200,7 @@ class Sfuzz(Tool):
                 contract_coverage.append(int(coverage))
 
         # Add the results of the last contract
-        if contract_coverage != [(0)]:
+        if contract_coverage != [0]:
             coverage_json_obj = {
                 "name" : contract_name,
                 "coverage": contract_coverage
@@ -210,7 +210,7 @@ class Sfuzz(Tool):
         results_json_obj = {
             "contract_coverages" : contract_coverage_list
         }
-        results_json_obj_str = json.dumps(results_json_obj)
+        results_json_obj_str = json.dumps(results_json_obj, indent=2)
         write_file.write(results_json_obj_str)
         write_file.close()
         return coverage_file
