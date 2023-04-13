@@ -6,6 +6,7 @@
 import math
 import os
 import re
+import json
 
 from typing import List, Optional, Tuple, Union
 
@@ -165,6 +166,8 @@ class Sfuzz(Tool):
         """Parse instruction coverage of sFuzz"""
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)
+        coverage_file = os.path.join(test_output_dir, "sfuzz_coverage.json")
+        write_file = open(coverage_file, "w")
         with open(log_file, "r", encoding="utf-8") as file:
             try:
                 lines = [line.rstrip() for line in file]
@@ -174,12 +177,20 @@ class Sfuzz(Tool):
 
         contract_coverage = [(0)]
         contract_coverage_list = []
+        contract_name = ""
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
-            fuzz_match = re.search(r">> Fuzz", line)
+            fuzz_match = re.search(r">> Fuzz [a-zA-Z]+", line)
             if fuzz_match:
+                contract = fuzz_match.group()
+                contract_name = contract.removeprefix(">> Fuzz ")
+                print(f"contract: {contract_name}")
                 if contract_coverage != [(0)]:
-                    contract_coverage_list.append(contract_coverage)
+                    coverage_json_obj = {
+                        "name" : contract_name,
+                        "coverage": contract_coverage
+                    }
+                    contract_coverage_list.append(coverage_json_obj)
                     contract_coverage = [(0)]
 
             if match_str:
@@ -189,7 +200,17 @@ class Sfuzz(Tool):
 
         # Add the results of the last contract
         if contract_coverage != [(0)]:
-            contract_coverage_list.append(contract_coverage)
+            coverage_json_obj = {
+                "name" : contract_name,
+                "coverage": contract_coverage
+            }
+            contract_coverage_list.append(coverage_json_obj)
 
-        return contract_coverage_list
+        results_json_obj = {
+            "contract_coverages" : contract_coverage_list
+        }
+        results_json_obj_str = json.dumps(results_json_obj)
+        write_file.write(results_json_obj_str)
+        write_file.close()
+        return coverage_file
 
