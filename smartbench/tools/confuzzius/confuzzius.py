@@ -61,7 +61,7 @@ class Confuzzius(Tool):
             cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
 
         # Input file must be the first argument to be run by docker
-        cmd = cmd + " -f " + test_file
+        cmd += f" -f {test_file}"
 
         # Pass arguments
         if self.default_arguments:

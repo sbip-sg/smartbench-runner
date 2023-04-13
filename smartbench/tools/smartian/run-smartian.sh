@@ -10,7 +10,7 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-smartian.sh <test-file> -c <contract-names> [options] [smartial-arguments]"
+    echo "  run-smartian.sh -f <test-file> -c <contract-names> [options] [smartial-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."

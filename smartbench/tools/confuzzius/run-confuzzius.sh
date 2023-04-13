@@ -10,7 +10,7 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-confuzzius.sh <test-file> [confuzzius-arguments]"
+    echo "  run-confuzzius.sh -f <test-file> [confuzzius-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
