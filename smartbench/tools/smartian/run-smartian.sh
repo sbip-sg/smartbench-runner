@@ -1,13 +1,7 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-smartian.sh -f <test-file> [-c <contract names>] [additional-smartian-arguments]
-#
-# NOTE:
-#   - Test file must be the first argument
-#   - Contract names are whitespace-separated
-#   - This script must be configured so that it can be used both to run
-#     in a Docker container as well as to run locally.
+#   ./run-smartian.sh -f <test-file> -c <contract-names> [options] [smartian-arguments]
 #
 
 ################################################
@@ -16,7 +10,7 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-smartian.sh -f <test-file> [options] [additional-smartial-arguments]"
+    echo "  run-smartian.sh -f <test-file> -c <contract-names> [options] [smartial-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
@@ -25,12 +19,12 @@ print_usage () {
     echo "  -t <timeout>          Timeout for each contract of the test file."
     echo "  -h, --help            Print this usage."
     echo ""
-    echo "Note: arguments not matching the above list will be passed directy to Smartian."
+    echo "Addtional arguments passing to Smartian can be put at the end of this command."
 }
 
-print_run_help () {
+print_help () {
     echo ""
-    echo "Please run this command again with '-h' to see help messages!"
+    echo "Please run with '-h' to see the command usage."
 }
 
 ################################################
@@ -40,7 +34,6 @@ TEST_FILE=""
 CONTRACT_NAMES=()
 TIMEOUT=0
 OUTPUT_DIR=""
-RESULT_FILE=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -86,17 +79,24 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Checking test file
+if [[ $TEST_FILE == "" ]]; then
+    echo "Error: test file is not specified!"
+    print_help
+    exit 1
+fi
+
 # Checking output dir
 if [[ $OUTPUT_DIR == "" ]]; then
     echo "Error: output dir is not specified!"
-    print_run_help
+    print_help
     exit 1
 fi
 
 # Checking timeout
 if [[ $TIMEOUT -lt 0 ]]; then
-    echo "Error: timeout is not specified or invalid!"
-    print_run_help
+    echo "Error: timeout is invalid or not specified!"
+    print_help
     exit 1
 fi
 

@@ -6,14 +6,14 @@
 import json
 import os
 
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 # Library
-from smartbench import logger, solc
-from smartbench.docker import DockerContainer, AnalysisJob
+from smartbench import logger
+from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
-from smartbench.printer import debug, warning
+from smartbench.printer import debug, safe_print, warning
 from smartbench.tools.tool import Tool
 
 
@@ -23,7 +23,7 @@ SLITHER_DIR = os.path.dirname(__file__)
 class Slither(Tool):
     def __init__(
         self,
-        id: str,
+        tool_id: str,
         name: str,
         executable: str,
         default_arguments: str,
@@ -32,7 +32,7 @@ class Slither(Tool):
     ):
         Tool.__init__(
             self,
-            id,
+            tool_id,
             name,
             executable,
             default_arguments,
@@ -56,6 +56,8 @@ class Slither(Tool):
         else:
             cmd = os.path.join(SLITHER_DIR, self.executable)
 
+        cmd += f" -f {test_file}"
+
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_args:
@@ -63,7 +65,7 @@ class Slither(Tool):
 
         output_file = self.configure_output_file(test_output_dir)
 
-        return f"{cmd} {test_file} --json {output_file}"
+        return f"{cmd} --json {output_file}"
 
     def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by Slither."""
@@ -257,18 +259,21 @@ class Slither(Tool):
     ) -> List[Issue]:
         """Parse output of Slither"""
 
+        if self.json_output_file is None:
+            raise ValueError("Slither's JSON output file is not specified!")
         output_file = os.path.join(test_output_dir, self.json_output_file)
         log_file = os.path.join(test_output_dir, self.log_file)
 
         output = None
 
         debug("Slither parse file: ", output_file)
-        with open(output_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-            except ValueError:
-                warning("Failed to parse Slither output file:", output_file)
-                return []
+        except Exception as err:
+            warning("Failed to parse Slither output file:", output_file)
+            safe_print(f"{err}")
+            return []
 
         if output is None:
             warning("Failed to parse Slither's output file:", output_file)

@@ -7,19 +7,13 @@ This is the shared interface for all tools.
 
 # Standard Library
 import os
-import sys
 
 from abc import abstractmethod
-from typing import List, Optional, Tuple
-
-# Third Party
-import tomli
+from typing import List, Optional
 
 # Library
-import smartbench
-
 from smartbench.annotation import BugAnnot
-from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.issue import Issue
 from smartbench.loc import Location
 from smartbench.tools.ilf import ilf
 from smartbench.tools.smartfuzz import smartfuzz
@@ -30,7 +24,7 @@ class Tool:
 
     def __init__(
         self,
-        id: str,
+        tool_id: str,
         name: str,
         executable: str,
         default_arguments: str,
@@ -39,7 +33,7 @@ class Tool:
         random_seed: int = 0,
     ):
         """Constructor"""
-        self.id: str = str(id)
+        self.id: str = str(tool_id)
         self.name: str = str(name)
         self.executable: str = str(executable)
         self.default_arguments: str = default_arguments
@@ -50,11 +44,13 @@ class Tool:
 
         # Output file in JSON format, some tools may not support this output
         self.json_output_file = (
-            None if id in ["smartian", "mythril", "sfuzz"] else f"{id}_result.json"
+            None
+            if tool_id in ["smartian", "mythril", "sfuzz"]
+            else f"{tool_id}_result.json"
         )
 
         # Log file for capturing execution log
-        self.log_file: str = f"{id}_execution.log"
+        self.log_file: str = f"{tool_id}_execution.log"
 
     def __str__(self):
         """Printing to string."""
@@ -92,6 +88,7 @@ class Tool:
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
 
+    # FIXME: make this function abstract, implement in each tool instead.
     def make_analysis_command(
         self,
         test_file: str,
@@ -109,9 +106,7 @@ class Tool:
         timeout = timeout if timeout is not None else self.default_timeout
 
         make_command = None
-        if self.is_ilf():
-            make_command = ilf.make_analysis_command
-        elif self.is_smartfuzz():
+        if self.is_smartfuzz():
             make_command = smartfuzz.make_analysis_command
             arguments += " --seed " + str(self.random_seed)
         else:
@@ -159,8 +154,7 @@ class Tool:
         # Pass all criteria to match an issue with a bug annotation
         return True
 
+    @abstractmethod
     def parse_instruction_coverage(self, test_output_dir: str):
-        """Default function to parse instruction coverage of analysis results."""
-
-        # When the tool does not support generating instruction coverage
-        return []
+        """Parse instruction coverage of analysis results.
+        This function should be implemented by each analysis tool."""
