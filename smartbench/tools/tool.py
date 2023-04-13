@@ -50,11 +50,17 @@ class Tool:
 
         # Output file in JSON format, some tools may not support this output
         self.json_output_file = (
-            None if id in ["smartian", "sfuzz"] else f"{id}_result.json"
+            None if id in ["smartian", " sFuzz"] else f"{id}_result.json"
         )
 
         # Log file for capturing execution log
         self.log_file: str = f"{id}_execution.log"
+
+        # Output file of the coverage in JSON format, some tools may not support this output
+        self.coverage_json_file = (
+            f"{id}_coverage.json" if id in ["sFuzz", "confuzzius", "smartian"] else None
+        )
+
 
     def __str__(self):
         """Printing to string."""

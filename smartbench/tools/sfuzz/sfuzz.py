@@ -166,7 +166,7 @@ class Sfuzz(Tool):
         """Parse instruction coverage of sFuzz"""
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)
-        coverage_file = os.path.join(test_output_dir, "sfuzz_coverage.json")
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
         write_file = open(coverage_file, "w")
         with open(log_file, "r", encoding="utf-8") as file:
             try:
