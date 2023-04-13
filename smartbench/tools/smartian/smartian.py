@@ -15,7 +15,7 @@ from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
-from smartbench.printer import debug, warning
+from smartbench.printer import debug, warning, error
 from smartbench.tools.tool import Tool
 
 
@@ -231,12 +231,12 @@ class Smartian(Tool):
         log_file = os.path.join(test_output_dir, self.log_file)
 
         lines = None
-        with open(log_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
-            except ValueError:
-                warning("Failed to parse Smartian log file:", log_file)
-                return []
+        except Exception as err:
+            error(f"Failed to parse Smartian log file: {log_file}\n\n{err}")
+            return []
 
         current_time = 0
         contract_coverage = [(0, 0)]

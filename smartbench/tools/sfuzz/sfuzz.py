@@ -7,7 +7,7 @@ import math
 import os
 import re
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 # Library
 from smartbench import logger, solc
@@ -15,8 +15,9 @@ from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
-from smartbench.printer import debug, warning
+from smartbench.printer import debug, error
 from smartbench.tools.tool import Tool
+
 
 SFUZZ_DIR = os.path.dirname(__file__)
 
@@ -65,7 +66,6 @@ class Sfuzz(Tool):
         # Pass contract names to Smartian
         if len(contracts) > 0:
             cmd = cmd + " -c " + " ".join(contracts)
-
 
         # Pass arguments
         if self.default_arguments:
@@ -118,15 +118,11 @@ class Sfuzz(Tool):
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)
         debug("sFuzz log_file: ", log_file)
-        with open(log_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
-            except ValueError:
-                warning("Failed to parse sFuzz log file:", log_file)
-                return []
-
-        if lines is None:
-            warning("Failed to parse sFuzz log file:", log_file)
+        except Exception as err:
+            error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
             return []
 
         kinds = []
@@ -165,12 +161,12 @@ class Sfuzz(Tool):
         """Parse instruction coverage of sFuzz"""
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)
-        with open(log_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
-            except ValueError:
-                warning("Failed to parse sFuzz log file:", log_file)
-                return []
+        except Exception as err:
+            error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
+            return []
 
         results = [(0, 0)]
         count = 1
@@ -183,4 +179,3 @@ class Sfuzz(Tool):
                 count += 1
 
         return results
-

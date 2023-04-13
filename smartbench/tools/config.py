@@ -10,7 +10,7 @@ from typing import Callable, List, Optional
 import tomli
 
 # Library
-from smartbench.printer import warning
+from smartbench.printer import error, warning
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
@@ -117,7 +117,7 @@ def configure_analysis_tools(tool_names: List[str]) -> List[Tool]:
     for tool_name in tool_names:
         config = load_tool_configuration(tool_name)
         if config is None:
-            warning("Failed to read configuration of: " + tool_name)
+            error("Failed to read configuration of: " + tool_name)
         else:
             all_tool_configs.append(config)
 

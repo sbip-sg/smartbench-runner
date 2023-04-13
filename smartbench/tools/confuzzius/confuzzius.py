@@ -15,7 +15,7 @@ from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
-from smartbench.printer import debug, warning
+from smartbench.printer import debug, error, warning
 from smartbench.tools.tool import Tool
 
 
@@ -157,15 +157,11 @@ class Confuzzius(Tool):
         log_file = os.path.join(test_output_dir, self.log_file)
 
         debug("Confuzzius parse file: ", output_file)
-        with open(output_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-            except ValueError:
-                warning("Failed to parse Confuzzius output file:", output_file)
-                return []
-
-        if output is None:
-            warning("Failed to parse Confuzzius's output file:", output_file)
+        except Exception as err:
+            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
             return []
 
         checker = Checker("Confuzzius", "fuzzing")
@@ -174,11 +170,11 @@ class Confuzzius(Tool):
 
             all_results = list(output.values())
             results = all_results[0]
-            error_list = results.get("errors")
-            errors = list(error_list.values())
+            bug_list = results.get("errors")
+            bugs = list(bug_list.values())
 
-            for error_desc in errors:
-                error = error_desc[0]
+            for bug in bugs:
+                error = bug[0]
                 kind = self.parse_issue_kind(error.get("type"))
                 location = self.parse_source_location(
                     log_file, error.get("line"), error.get("column")
@@ -204,15 +200,11 @@ class Confuzzius(Tool):
         output = None
 
         debug("Confuzzius parse file: ", output_file)
-        with open(output_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-            except ValueError:
-                warning("Failed to parse Confuzzius output file:", output_file)
-                return []
-
-        if output is None:
-            warning("Failed to parse Confuzzius's output file:", output_file)
+        except Exception as err:
+            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
             return []
 
         try:

@@ -8,8 +8,7 @@ from subprocess import CalledProcessError
 from typing import List, Optional
 
 # Library
-from smartbench.printer import safe_print
-from smartbench.printer import error
+from smartbench.printer import error, safe_print
 from smartbench.tools.tool import Tool
 
 
@@ -34,7 +33,8 @@ class DockerContainer:
                 check=True,
             )
         except CalledProcessError as err:
-            error(f"Failed to start Docker container: {self}!\n" f"Log: {err}")
+            error(f"Failed to start Docker container: {self}!\n")
+            raise err
 
     def stop(self):
         """Stop the docker container"""
@@ -48,7 +48,8 @@ class DockerContainer:
                 check=True,
             )
         except CalledProcessError as err:
-            error(f"Failed to stop Docker container: {self}!\n" f"Log: {err}")
+            error(f"Failed to stop Docker container: {self}!\n")
+            raise err
 
 
 class AnalysisJob:

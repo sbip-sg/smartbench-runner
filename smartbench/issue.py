@@ -159,7 +159,7 @@ class Issue:
         description: str,
         severity: Severity,
         confidence: Confidence,
-        location: Location,
+        location: Optional[Location],
         checker: Checker,
     ):
         """Constructor."""
@@ -168,7 +168,7 @@ class Issue:
         self.description: str = description
         self.severity: Severity = severity
         self.confidence: Confidence = confidence
-        self.location: Location = location
+        self.location: Optional[Location] = location
         self.checker: Checker = checker
         self.sbc: Optional[SBC] = classify_issue_kind_to_sbc(issue_kind)
 
