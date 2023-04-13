@@ -36,12 +36,13 @@ TIMEOUT=0
 OUTPUT_DIR=""
 ADDITIONAL_ARGS=()
 
-# Arguments of smartian
-TEST_FILE=$(realpath $1)
-shift  # Past test file
-
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -f)
+            TEST_FILE=$(realpath $2)
+            shift # past argument
+            shift # past value
+            ;;
         -c)
             shift # past argument
             # Parse contract names
