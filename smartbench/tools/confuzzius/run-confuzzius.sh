@@ -30,10 +30,6 @@ print_help () {
 TEST_FILE=""
 ADDITIONAL_ARGS=()
 
-# Arguments of smartian
-TEST_FILE=$(realpath $1)
-shift  # Past test file
-
 while [[ $# -gt 0 ]]; do
     case $1 in
         -f)
