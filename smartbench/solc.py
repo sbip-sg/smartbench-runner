@@ -19,7 +19,7 @@ import solc_detect
 
 # Library
 from smartbench.printer import debug
-
+from solc_json_parser.parser import SolidityAst
 
 SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
 
@@ -106,50 +106,5 @@ def configure_local_solc_path(test_file: str) -> str:
 def get_candidate_testing_contracts(test_file: str) -> List[str]:
     """Detect Solidity version in a smart contacts"""
 
-    solc_path = configure_local_solc_path(test_file)
-
-    cmd = [solc_path, "--standard-json", "--allow-paths", ".,/"]
-    settings = {
-        "optimizer": {"enabled": False},
-        "outputSelection": {
-            "*": {
-                "*": ["evm.deployedBytecode"],
-            }
-        },
-    }
-
-    input_json = json.dumps(
-        {
-            "language": "Solidity",
-            "sources": {test_file: {"urls": [test_file]}},
-            "settings": settings,
-        }
-    )
-
-    p = Popen(
-        cmd,
-        stdin=PIPE,
-        stdout=PIPE,
-        stderr=PIPE,
-    )
-
-    stdout, stderr = p.communicate(bytes(input_json, "utf8"))
-    out = stdout.decode("UTF-8")
-    result = json.loads(out)
-
-    for error in result.get("errors", []):
-        if error["severity"] == "error":
-            error_msg = error["formattedMessage"]
-            print(f"Failed to get contract names: {error_msg}")
-
-    contracts = result["contracts"][test_file]
-
-    contract_names = []
-    for contract in contracts.keys():
-        # print(f"\n\n====== CONTRACT {contract} =====\n {contracts[contract]}")
-        # Remove empty contracts
-        if len(contracts[contract]["evm"]["deployedBytecode"]["object"]) == 0:
-            continue
-        contract_names.append(contract)
-
-    return contract_names
+    ast = SolidityAst(test_file)
+    return ast.all_contract_names

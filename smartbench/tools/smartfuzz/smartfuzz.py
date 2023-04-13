@@ -16,9 +16,9 @@ import toml
 # Library
 from smartbench import logger
 from smartbench.annotation import BugAnnot
-from smartbench.printer import debug, warning
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
+from smartbench.printer import debug, error, warning
 
 
 # Tool name
@@ -140,26 +140,22 @@ def parse_analysis_output(
     output_file = os.path.join(test_output_dir, self.output_file)
 
     debug("Smartfuzz parse file: ", output_file)
-    with open(output_file, "r", encoding="utf-8") as file:
-        try:
+    try:
+        with open(output_file, "r", encoding="utf-8") as file:
             output = json.load(file)
-        except ValueError:
-            warning("Failed to parse Smartfuzz output file:", output_file)
-            return []
-
-    if output is None:
-        warning("Failed to parse Smartfuzz's output file:", output_file)
+    except Exception as err:
+        error(f"Failed to parse Smartfuzz output file: {output_file}\n\n{err}")
         return []
 
     try:
         issues = []
 
-        errors = list(output.values())
-        debug("errors: ", errors)
-        for error in errors:
+        bugs = list(output.values())
+        debug("errors: ", bugs)
+        for bug in bugs:
             checker = parse_rule("fuzzing")
-            kind = parse_issue_kind(error.get("bug_type"))
-            location = parse_source_location(error.get("line_number"))
+            kind = parse_issue_kind(bug.get("bug_type"))
+            location = parse_source_location(bug.get("line_number"))
             issue = Issue(
                 kind,
                 "",

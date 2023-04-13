@@ -19,13 +19,7 @@ from typing import List, Optional
 from smartbench import annotation, printer, result, solc, validator
 from smartbench.docker import AnalysisJob, DockerContainer
 from smartbench.issue import Issue
-from smartbench.printer import (
-    debug,
-    print_unless,
-    safe_print,
-    safe_warning,
-    warning,
-)
+from smartbench.printer import debug, error, print_unless, safe_print, warning
 from smartbench.result import AnalysisResult
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
@@ -63,8 +57,7 @@ def log_analysis_command(
             file.write(f"{command}\n\n")
         return True
     except Exception as err:
-        warning(f"Failed to log analysis command to: {log_file}")
-        safe_print(f"{err}")
+        error(f"Failed to log analysis command to: {log_file}\n\n{err}")
         return False
 
 
@@ -127,9 +120,7 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        runner = (
-            "local-runner" if container is None else f"docker:{container.name}"
-        )
+        runner = "local" if container is None else f"docker:{container.name}"
         safe_print(f"{runner}: {test_file}\n")
     else:
         printer.print_medium_single_horizontal_line()
@@ -137,9 +128,9 @@ def analyze_test_file(
 
     try:
         contracts = solc.get_candidate_testing_contracts(test_file)
-    except Exception as err:
-        warning(f"Failed to get testing contract names from: {test_file}")
-        safe_print(f"{err}")
+    except Exception:
+        error(f"Failed to get contract names: {test_file}")
+        traceback.print_exc()
         return None
 
     # safe_print("Test contracts:", contracts)
@@ -175,12 +166,12 @@ def analyze_test_file(
 
         log_analysis_output(tool, stdout, test_output_dir)
 
-    except SubprocessError as err:
+    except Exception as err:
+        runner = "local" if container is None else f"docker:{container.name}"
         if parallel_mode and container:
-            safe_warning(f"{container.name}: failed to run command: {cmd}\n")
+            error(f"{container.name}: failed to run command: {cmd}\n\n{err}")
         else:
-            warning(f"Failed to run command: {cmd}\n")
-            safe_print(f"** Error: {err}")
+            error(f"Failed to run command: {cmd}\n\n{err}")
             traceback.print_exc()
         return None
 

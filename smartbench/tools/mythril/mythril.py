@@ -15,7 +15,7 @@ from smartbench.docker import DockerContainer
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Location
-from smartbench.printer import debug, warning
+from smartbench.printer import debug, error, warning
 from smartbench.tools.tool import Tool
 
 
@@ -160,12 +160,12 @@ class Mythril(Tool):
         output_file = os.path.join(test_output_dir, self.json_output_file)
         log_file = os.path.join(test_output_dir, self.log_file)
         debug("Mythril parse file: ", output_file)
-        with open(output_file, "r", encoding="utf-8") as file:
-            try:
+        try:
+            with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-            except ValueError:
-                warning("Failed to parse Mythril output file:", output_file)
-                return []
+        except Exception as err:
+            error(f"Failed to parse Mythril output: {output_file}\n\n{err}")
+            return []
 
         try:
             issues = output.get("issues")
