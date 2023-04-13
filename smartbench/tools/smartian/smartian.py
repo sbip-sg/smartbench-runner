@@ -6,6 +6,7 @@
 import math
 import os
 import re
+import json
 
 from typing import List, Optional, Tuple, Union
 
@@ -229,6 +230,8 @@ class Smartian(Tool):
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
         log_file = os.path.join(test_output_dir, self.log_file)
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        write_file = open(coverage_file, "w")
 
         lines = None
         with open(log_file, "r", encoding="utf-8") as file:
@@ -239,14 +242,31 @@ class Smartian(Tool):
                 return []
 
         current_time = 0
-        contract_coverage = [(0, 0)]
+        contract_coverage = [(0)]
         contract_coverage_list = []
+        contract_name = ""
 
         for line in lines:
             match_str = re.search(r"Covered Instructions: [0-9]+", line)
             time_str = re.search(
                 "(\d{2})[/.:](\d{2})[/.:](\d{2})[/.:](\d{2})", line
             )
+            fuzz_match = re.search(r"Fuzzing contract: [a-zA-Z]+", line)
+
+            if fuzz_match:
+                contract = fuzz_match.group()
+                contract_name = contract.removeprefix("Fuzzing contract: ")
+                # Results of new contract
+                if contract_coverage != [(0)]:
+                    coverage_json_obj = {
+                        "name" : contract_name,
+                        "coverage": contract_coverage
+                    }
+                    contract_coverage_list.append(coverage_json_obj)
+
+                contract_coverage = [(0)]
+                current_time = 0
+
             if match_str and time_str:
                 time = time_str.group()
                 seconds = int(time[9:11])
@@ -254,33 +274,25 @@ class Smartian(Tool):
                 hours = int(time[3:5])
                 duration = hours * 3600 + minutes * 60 + seconds
 
-                # Results of new contract
-                if duration < current_time:
-                    if contract_coverage != []:
-                        contract_coverage_list.append(contract_coverage)
-
-                    current_time = duration
-                    contract_coverage = [(0,0)]
-
                 # Add a new pair every second
                 if duration - current_time >= 1:
                     current_coverage = match_str.group()
                     current_coverage = current_coverage.removeprefix("Covered Instructions: ")
-                    contract_coverage.append((duration, int(current_coverage)))
+                    contract_coverage.append(int(current_coverage))
                     current_time = duration
 
         # Append the last list if it is not empty
-        if contract_coverage != []:
-            contract_coverage_list.append(contract_coverage)
+        if contract_coverage != [(0)]:
+            coverage_json_obj = {
+                "name" : contract_name,
+                "coverage": contract_coverage
+            }
+            contract_coverage_list.append(coverage_json_obj)
 
-        prev_contract_time = 0
-        prev_contract_instrs = 0
-        results = []
-        for contract_coverage in contract_coverage_list:
-            for (time, instr) in contract_coverage:
-                results.append((time + prev_contract_time, instr + prev_contract_instrs))
-
-            prev_contract_time += contract_coverage[-1][0]
-            prev_contract_instrs += contract_coverage[-1][1]
-
-        return results
+        results_json_obj = {
+            "contract_coverages" : contract_coverage_list
+        }
+        results_json_obj_str = json.dumps(results_json_obj, indent=4)
+        write_file.write(results_json_obj_str)
+        write_file.close()
+        return coverage_file

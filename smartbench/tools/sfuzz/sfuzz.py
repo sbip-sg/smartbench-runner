@@ -178,6 +178,7 @@ class Sfuzz(Tool):
         contract_coverage = [(0)]
         contract_coverage_list = []
         contract_name = ""
+
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
             fuzz_match = re.search(r">> Fuzz [a-zA-Z]+", line)
