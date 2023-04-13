@@ -55,4 +55,4 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-myth analyze $TEST_FILE --execution-timeout $TIMEOUT -o json > $OUTPUT_FILE
+myth analyze $TEST_FILE --solv $SOLC_VER --execution-timeout $TIMEOUT -o json > $OUTPUT_FILE
