@@ -32,7 +32,9 @@
   GOPATH=/path/to/ILF/go/path/ python3 script/extract.py --proj example/project/ --port 8545
   ```
 
-- Run IFL to fuzz the new contract:
+  If port `8545` is used by `ganache-cli` previously, run `killall node` to kill it.
+
+- Run ILF to fuzz the new contract:
 
   ```sh
   python3 -m ilf --proj ./example/project/ --contract <ContractName> \

@@ -23,7 +23,7 @@ print_usage () {
 
 print_run_help () {
     echo ""
-    echo "Please run the command again with '-h' to see help message!"
+    echo "Please run this command again with '-h' to see help messages!"
 }
 
 ################################################

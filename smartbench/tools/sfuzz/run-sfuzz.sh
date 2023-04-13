@@ -57,16 +57,16 @@ fi
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
-    TOOL_ROOT_PATH="/root/sfuzz"
+    TOOL_DIR="/root/sfuzz"
 else
-    TOOL_ROOT_PATH="$(realpath $(dirname "$0"))/repo/sfuzz"
+    TOOL_DIR="$(realpath $(dirname "$0"))/repo/sfuzz"
 fi
 
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
 # Run sFuzz insider the `build/fuzzer` repository
-cd $TOOL_ROOT_PATH/build/fuzzer
+cd $TOOL_DIR/build/fuzzer
 rm -rf contracts
 mkdir contracts
 rm -rf output
@@ -87,4 +87,3 @@ solc-select use $SOLC_VER
 ./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker 2>&1
 chmod +x fuzzMe
 ./fuzzMe
-

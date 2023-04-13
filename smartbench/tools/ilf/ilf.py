@@ -29,9 +29,7 @@ def make_analysis_command(
     timeout=int,
 ):
     """Function to make analysis command for `ILF`. This function should
-    have the same signature with other tools.
-
-    """
+    have the same signature with other tools."""
     # TODO
     print("MAKE ILF COMMAND!")
     pass

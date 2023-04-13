@@ -21,12 +21,16 @@ print_usage () {
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
     echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
-    echo "                        as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
     echo "  -o <output-dir>       Output directory containing analysis results."
     echo "  -t <timeout>          Timeout for each contract of the test file."
     echo "  -h, --help            Print this usage."
     echo ""
     echo "Note: arguments not matching the above list will be passed directy to Smartian."
+}
+
+print_run_help () {
+    echo ""
+    echo "Please run this command again with '-h' to see help messages!"
 }
 
 ################################################
@@ -85,14 +89,14 @@ done
 # Checking output dir
 if [[ $OUTPUT_DIR == "" ]]; then
     echo "Error: output dir is not specified!"
-    print_usage
+    print_run_help
     exit 1
 fi
 
 # Checking timeout
 if [[ $TIMEOUT -lt 0 ]]; then
     echo "Error: timeout is not specified or invalid!"
-    print_usage
+    print_run_help
     exit 1
 fi
 
@@ -101,9 +105,9 @@ fi
 
 # Configure tool path when running inside or outside a Docker container.
 if [ -f /.dockerenv ]; then
-    TOOL_ROOT_PATH="/root/smartian"
+    TOOL_DIR="/root/smartian"
 else
-    TOOL_ROOT_PATH="$(realpath $(dirname "$0"))/repo/smartian"
+    TOOL_DIR="$(realpath $(dirname "$0"))/repo/smartian"
 fi
 
 ################################################
@@ -112,19 +116,19 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
-rm -rf $CONTRACTS_DIR
-mkdir $CONTRACTS_DIR
+COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
+rm -rf $COMPILED_CONTRACTS_DIR
+mkdir $COMPILED_CONTRACTS_DIR
 
 SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-    -o $CONTRACTS_DIR --overwrite \
+    -o $COMPILED_CONTRACTS_DIR --overwrite \
     1>/dev/null 2>&1  # Do not capture output of Solc
 
 # If contract names are not specified from the input, analyze all contracts
 # obtained after compilation.
 if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
     CURRENT_DIR=$(pwd)
-    cd $CONTRACTS_DIR
+    cd $COMPILED_CONTRACTS_DIR
     CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
     cd $CURRENT_DIR
 fi
@@ -136,10 +140,10 @@ fi
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================="
     echo "** Fuzzing contract: $CONTRACT"
-    dotnet $TOOL_ROOT_PATH/build/Smartian.dll fuzz \
+    dotnet $TOOL_DIR/build/Smartian.dll fuzz \
         --useothersoracle --checkoptionalbugs --verbose 1 \
-        --program "$CONTRACTS_DIR/$CONTRACT.bin" \
-        --abifile "$CONTRACTS_DIR/$CONTRACT.abi" \
+        --program "$COMPILED_CONTRACTS_DIR/$CONTRACT.bin" \
+        --abifile "$COMPILED_CONTRACTS_DIR/$CONTRACT.abi" \
         --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
         ${ADDITIONAL_ARGS[@]} 2>&1
 done
