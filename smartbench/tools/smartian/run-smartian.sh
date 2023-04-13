@@ -36,7 +36,7 @@ TIMEOUT=0
 OUTPUT_DIR=""
 ADDITIONAL_ARGS=()
 
-# Arguments of sFuzz
+# Arguments of smartian
 TEST_FILE=$(realpath $1)
 shift  # Past test file
 
