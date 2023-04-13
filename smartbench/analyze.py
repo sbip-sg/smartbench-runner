@@ -128,8 +128,9 @@ def analyze_test_file(
 
     try:
         contracts = solc.get_candidate_testing_contracts(test_file)
-    except Exception as err:
-        error(f"Failed to get contract names: {test_file}\n\n{err}")
+    except Exception:
+        error(f"Failed to get contract names: {test_file}")
+        traceback.print_exc()
         return None
 
     # safe_print("Test contracts:", contracts)

@@ -5,6 +5,7 @@
 # Standard Library
 import sys
 import threading
+import traceback
 
 from sys import exit
 
@@ -16,7 +17,7 @@ from smartbench.globals import screen_lock
 def safe_print(*args):
     """Print and move the cursor to the beginning of next line for the next
     printing."""
-    print(*args, end='\n\r')
+    print(*args, end="\n\r")
 
 
 def print_if(condition: bool, *args):
@@ -37,9 +38,11 @@ def warning(*args):
     """Print a warning message"""
     safe_print("\nWARNING: " + " ".join(map(str, args)) + "\n")
 
+
 def error(*args):
     """Print an error message"""
     safe_print("\nERROR: " + " ".join(map(str, args)) + "\n")
+
 
 def debug(*args):
     """Print a debugging message."""
