@@ -13,7 +13,7 @@ from smartbench import logger
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.loc import Localizer, Location
-from smartbench.printer import debug, safe_print, warning
+from smartbench.printer import debug, error, safe_print, warning
 from smartbench.tools.tool import Tool
 
 
@@ -271,19 +271,17 @@ class Slither(Tool):
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception as err:
-            warning("Failed to parse Slither output file:", output_file)
-            safe_print(f"{err}")
+            error(f"Failed to parse Slither output: {output_file}\n\n{err}")
             return []
 
         if output is None:
-            warning("Failed to parse Slither's output file:", output_file)
+            warning("No result is reported by Slither:", output_file)
             return []
 
         try:
             success = output.get("success")
             if not success:
-                warning("An error happened when running Slither!")
-                warning("See output file for more details: " + output_file)
+                error(f"An error happened when running Slither: {output_file}")
                 return []
 
             results = output.get("results")
