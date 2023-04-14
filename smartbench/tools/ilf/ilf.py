@@ -11,7 +11,7 @@ from typing import List, Optional
 # Library
 from smartbench import logger
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.loc import Location
+from smartbench.solidity.loc import Location
 from smartbench.printer import debug, warning
 
 

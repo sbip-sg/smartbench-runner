@@ -10,12 +10,13 @@ import os
 from typing import List, Optional, Tuple
 
 # Library
-from smartbench import annotation, logger, solc
+from smartbench import annotation, logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.loc import Location
+from smartbench.solidity.loc import Location
 from smartbench.printer import debug, error, warning
+from smartbench.solidity import solc
 from smartbench.tools.tool import Tool
 
 

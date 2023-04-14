@@ -11,12 +11,13 @@ import json
 from typing import List, Optional, Tuple, Union
 
 # Library
-from smartbench import logger, solc
+from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.loc import Location
-from smartbench.printer import debug, warning, error
+from smartbench.solidity.loc import Location
+from smartbench.printer import debug, error, warning
+from smartbench.solidity import solc
 from smartbench.tools.tool import Tool
 
 
@@ -127,21 +128,27 @@ class Smartian(Tool):
         blk_dep_matches = re.findall(r"Block state Dependency: [0-9]+", data)
         for blk_dep_match in blk_dep_matches:
             if IssueKind.BLOCK_DEPENDENCY not in kinds:
-                blk_dep_num = blk_dep_match.removeprefix("Block state Dependency: ")
+                blk_dep_num = blk_dep_match.removeprefix(
+                    "Block state Dependency: "
+                )
                 if int(blk_dep_num) > 0:
                     kinds.append(IssueKind.BLOCK_DEPENDENCY)
 
         delegatecall_matches = re.findall(r"Control Hijack: [0-9]+", data)
         for delegatecall_match in delegatecall_matches:
             if IssueKind.UNSAFE_DELEGATECALL not in kinds:
-                delegatecall_num = delegatecall_match.removeprefix("Control Hijack: ")
+                delegatecall_num = delegatecall_match.removeprefix(
+                    "Control Hijack: "
+                )
                 if int(delegatecall_num) > 0:
                     kinds.append(IssueKind.UNSAFE_DELEGATECALL)
 
         leaking_ether_matches = re.findall(r"Ether Leak: [0-9]+", data)
         for leaking_ether_match in leaking_ether_matches:
             if IssueKind.LEAKING_ETHER not in kinds:
-                leaking_ether_num = leaking_ether_match.removeprefix("Ether Leak: ")
+                leaking_ether_num = leaking_ether_match.removeprefix(
+                    "Ether Leak: "
+                )
                 if int(leaking_ether_num) > 0:
                     kinds.append(IssueKind.LEAKING_ETHER)
 
@@ -155,7 +162,9 @@ class Smartian(Tool):
         exception_matches = re.findall(r"Mishandled Exception: [0-9]+", data)
         for exception_match in exception_matches:
             if IssueKind.UNHANDLED_EXCEPTION not in kinds:
-                exception_num = exception_match.removeprefix("Mishandled Exception: ")
+                exception_num = exception_match.removeprefix(
+                    "Mishandled Exception: "
+                )
                 if int(exception_num) > 0:
                     kinds.append(IssueKind.UNHANDLED_EXCEPTION)
 
@@ -274,7 +283,9 @@ class Smartian(Tool):
                 # Add a new pair every second
                 if duration - current_time >= 1:
                     current_coverage = match_str.group()
-                    current_coverage = current_coverage.removeprefix("Covered Instructions: ")
+                    current_coverage = current_coverage.removeprefix(
+                        "Covered Instructions: "
+                    )
                     contract_coverage.append((duration, int(current_coverage)))
                     current_time = duration
 
