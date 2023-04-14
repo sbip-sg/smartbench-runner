@@ -244,11 +244,7 @@ class Smartian(Tool):
         current_time = 0
         contract_coverage_list = []
         contract_name = ""
-
-        first_coverage = {
-            "time": 0,
-            "coverage": 0
-        }
+        first_coverage = (0,0)
         contract_coverage = [first_coverage]
 
         for line in lines:
@@ -263,11 +259,7 @@ class Smartian(Tool):
                 contract_name = contract.removeprefix("Fuzzing contract: ")
                 # Results of new contract
                 if len(contract_coverage) != 1:
-                    coverage_json_obj = {
-                        "name" : contract_name,
-                        "coverage": contract_coverage
-                    }
-                    contract_coverage_list.append(coverage_json_obj)
+                    contract_coverage_list.append((contract_name, contract_coverage))
 
                 contract_coverage = [first_coverage]
                 current_time = 0
@@ -283,24 +275,19 @@ class Smartian(Tool):
                 if duration - current_time >= 1:
                     current_coverage = match_str.group()
                     current_coverage = current_coverage.removeprefix("Covered Instructions: ")
-                    pair_obj = {
-                        "time": duration,
-                        "coverage": int(current_coverage),
-                    }
-                    contract_coverage.append(pair_obj)
+                    contract_coverage.append((duration, int(current_coverage)))
                     current_time = duration
 
         # Append the last list if it is not empty
         if len(contract_coverage) != 1:
-            coverage_json_obj = {
-                "name" : contract_name,
-                "coverage": contract_coverage
-            }
-            contract_coverage_list.append(coverage_json_obj)
+            contract_coverage_list.append((contract_name, contract_coverage))
 
         results_json_obj = {
-            "contract_coverages" : contract_coverage_list
+            "coverage_interval": -1,
         }
+        for (contract_name, contract_coverage) in contract_coverage_list:
+            results_json_obj[contract_name] = contract_coverage
+
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
         write_file.write(results_json_obj_str)
         debug(f"coverage: {results_json_obj_str}")

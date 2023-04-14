@@ -173,12 +173,8 @@ class Sfuzz(Tool):
 
         contract_coverage_list = []
         contract_name = ""
-        first_coverage = {
-            "time": 0,
-            "coverage": 0
-        }
+        first_coverage = (0)
         contract_coverage = [first_coverage]
-        current_time = 0
 
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
@@ -188,36 +184,25 @@ class Sfuzz(Tool):
                 contract_name = contract.removeprefix(">> Fuzz ")
                 print(f"contract: {contract_name}")
                 if len(contract_coverage) != 1:
-                    coverage_json_obj = {
-                        "name" : contract_name,
-                        "coverage": contract_coverage
-                    }
-                    current_time = 0
-                    contract_coverage_list.append(coverage_json_obj)
+                    contract_coverage_list.append((contract_name, contract_coverage))
                     contract_coverage = [first_coverage]
 
             if match_str:
                 coverage = match_str.group()
                 coverage = coverage.removeprefix("coverage : ")
-                current_time += 1
-                pair_obj = {
-                    "time": current_time,
-                    "coverage": int(coverage),
-                }
-                contract_coverage.append(pair_obj)
+                contract_coverage.append(int(coverage))
 
         # Add the results of the last contract
 
         if contract_coverage != [0]:
-            coverage_json_obj = {
-                "name" : contract_name,
-                "coverage": contract_coverage
-            }
-            contract_coverage_list.append(coverage_json_obj)
+            contract_coverage_list.append((contract_name, contract_coverage))
 
         results_json_obj = {
-            "contract_coverages" : contract_coverage_list
+            "coverage_interval": 1,
         }
+        for (contract_name, contract_coverage) in contract_coverage_list:
+            results_json_obj[contract_name] = contract_coverage
+
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
         write_file.write(results_json_obj_str)
         debug(f"coverage: {results_json_obj_str}")
