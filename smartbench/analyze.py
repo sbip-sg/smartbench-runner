@@ -147,9 +147,12 @@ def analyze_test_file(
         safe_print(f"Analyzing: {test_file}")
 
     contracts = collect_testing_contracts(test_file, test_contracts)
+
     if not contracts:
-        safe_print(f"No input contract is specified for test file: {test_file}")
-        safe_print("Skip analyzing!")
+        safe_print(
+            f"\nNo input contract is specified for test file: {test_file}\n\n"
+            "Skip analyzing it!"
+        )
         return None
 
     # safe_print("Test contracts:", contracts)

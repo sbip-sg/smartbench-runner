@@ -17,9 +17,11 @@ from typing import List
 # Third Party
 import solc_detect
 
-# Library
-from smartbench.printer import debug
 from solc_json_parser.parser import SolidityAst
+
+# Library
+from smartbench.printer import debug, error_traceback
+
 
 SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
 
@@ -104,7 +106,12 @@ def configure_local_solc_path(test_file: str) -> str:
 
 
 def get_candidate_testing_contracts(test_file: str) -> List[str]:
-    """Detect Solidity version in a smart contacts"""
+    """Detect Solidity version in a smart contacts."""
 
-    ast = SolidityAst(test_file)
-    return ast.all_contract_names
+    try:
+        AttributeError
+        ast = SolidityAst(test_file)
+        return ast.all_contract_names
+    except Exception:
+        error_traceback(f"Failed to get contract names from: {test_file}")
+        return []
