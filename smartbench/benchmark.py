@@ -7,8 +7,12 @@
 import os
 import pathlib
 import sys
+import traceback
 
-from typing import List
+from typing import Dict, List
+
+# Library
+from smartbench.printer import error
 
 
 def is_solidity_file(filename) -> bool:
@@ -53,3 +57,22 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
     test_files = sorted(test_files)
 
     return test_files
+
+
+def collect_test_contracts(test_contract_file: str) -> Dict[str, List[str]]:
+    contract_dict = {}
+    try:
+        with open(test_contract_file, "r", encoding="utf-8") as file:
+            while line := file.readline():
+                if (idx := line.find(":")) >= 0:
+                    test_file = line[0:idx]
+                    contract_names = line[(idx + 1) :].split(",")
+                    contract_names = [s.strip() for s in contract_names]
+                    contract_dict[test_file] = contract_names
+
+            return contract_dict
+
+    except Exception:
+        error(f"Failed to get contract list: {test_file}")
+        traceback.print_exc()
+        return contract_dict
