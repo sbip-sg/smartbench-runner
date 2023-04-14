@@ -205,6 +205,7 @@ class Sfuzz(Tool):
             contract_coverage_list.append(coverage_json_obj)
 
         results_json_obj = {
+            "interval" : 1,
             "contract_coverages" : contract_coverage_list
         }
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
