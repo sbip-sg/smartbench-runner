@@ -171,9 +171,14 @@ class Sfuzz(Tool):
             error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
             return None
 
-        contract_coverage = [0]
         contract_coverage_list = []
         contract_name = ""
+        first_coverage = {
+            "time": 0,
+            "coverage": 0
+        }
+        contract_coverage = [first_coverage]
+        current_time = 0
 
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
@@ -182,18 +187,24 @@ class Sfuzz(Tool):
                 contract = fuzz_match.group()
                 contract_name = contract.removeprefix(">> Fuzz ")
                 print(f"contract: {contract_name}")
-                if contract_coverage != [0]:
+                if len(contract_coverage) != 1:
                     coverage_json_obj = {
                         "name" : contract_name,
                         "coverage": contract_coverage
                     }
+                    current_time = 0
                     contract_coverage_list.append(coverage_json_obj)
-                    contract_coverage = [0]
+                    contract_coverage = [first_coverage]
 
             if match_str:
                 coverage = match_str.group()
                 coverage = coverage.removeprefix("coverage : ")
-                contract_coverage.append(int(coverage))
+                current_time += 1
+                pair_obj = {
+                    "time": current_time,
+                    "coverage": int(coverage),
+                }
+                contract_coverage.append(pair_obj)
 
         # Add the results of the last contract
 
@@ -205,10 +216,10 @@ class Sfuzz(Tool):
             contract_coverage_list.append(coverage_json_obj)
 
         results_json_obj = {
-            "interval" : 1,
             "contract_coverages" : contract_coverage_list
         }
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
         write_file.write(results_json_obj_str)
+        debug(f"coverage: {results_json_obj_str}")
         write_file.close()
         return coverage_file

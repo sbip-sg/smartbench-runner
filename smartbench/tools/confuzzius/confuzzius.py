@@ -212,10 +212,14 @@ class Confuzzius(Tool):
 
         contracts = list(output.keys())
         contract_coverage_list = []
+        first_coverage = {
+            "time": 0,
+            "coverage": 0
+        }
         for contract in contracts:
             contract_results = output.get(contract);
             generations = contract_results.get("generations")
-            contract_coverage = [0]
+            contract_coverage = [first_coverage]
             current_time = 0
             for generation in generations:
                 time = float("{:.1f}".format(generation.get("time")))
@@ -223,7 +227,11 @@ class Confuzzius(Tool):
                     "{:.1f}".format(generation.get("code_coverage"))
                 )
                 if time - current_time >= 1:
-                    contract_coverage.append(coverage)
+                    pair_obj = {
+                        "time": time,
+                        "coverage": coverage,
+                    }
+                    contract_coverage.append(pair_obj)
                     current_time = time
 
             coverage_json_obj = {
@@ -233,11 +241,11 @@ class Confuzzius(Tool):
             contract_coverage_list.append(coverage_json_obj)
 
         results_json_obj = {
-            "interval" : 1,
             "contract_coverages" : contract_coverage_list
         }
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
         write_file.write(results_json_obj_str)
+        debug(f"coverage: {results_json_obj_str}")
         write_file.close()
         return coverage_file
 
