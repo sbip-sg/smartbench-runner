@@ -12,7 +12,7 @@ from typing import List, Optional
 from smartbench import logger
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.loc import Localizer, Location
+from smartbench.solidity.loc import Localizer, Location
 from smartbench.printer import debug, error, safe_print, warning
 from smartbench.tools.tool import Tool
 

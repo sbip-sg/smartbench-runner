@@ -12,7 +12,8 @@ from subprocess import CompletedProcess
 from typing import List
 
 # Library
-from smartbench import result, solc
+from smartbench import result
+from smartbench.solidity import solc
 from smartbench.tools.config import DEPLOY_DIR
 from smartbench.tools.tool import Tool
 

@@ -7,7 +7,7 @@ from typing import Optional
 
 # Library
 from smartbench.bugdb.sbc import SBC
-from smartbench.loc import Location
+from smartbench.solidity.loc import Location
 
 
 class IssueKind(Enum):

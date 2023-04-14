@@ -16,11 +16,12 @@ from subprocess import SubprocessError
 from typing import List, Optional
 
 # Library
-from smartbench import annotation, printer, result, solc, validator
+from smartbench import annotation, printer, result, validator
 from smartbench.docker import AnalysisJob, DockerContainer
 from smartbench.issue import Issue
 from smartbench.printer import debug, error, print_unless, safe_print, warning
 from smartbench.result import AnalysisResult
+from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 

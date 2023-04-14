@@ -14,7 +14,7 @@ from typing import List, Optional
 # Library
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue
-from smartbench.loc import Location
+from smartbench.solidity.loc import Location
 from smartbench.tools.ilf import ilf
 from smartbench.tools.smartfuzz import smartfuzz
 

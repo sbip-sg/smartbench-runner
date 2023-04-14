@@ -15,7 +15,7 @@ from smartbench import annotation, issue, result
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
-from smartbench.loc import Location
+from smartbench.solidity.loc import Location
 from smartbench.printer import print_unless, safe_print
 from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
