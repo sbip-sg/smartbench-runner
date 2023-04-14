@@ -22,6 +22,13 @@ def analyze_smart_contracts(args):
     # Prepare analysis tools and test files
     tools = configure_analysis_tools(args.tools)
     test_files = benchmark.collect_test_files(args.input_files_directories)
+    test_contracts = (
+        None
+        if args.input_contracts is None
+        else benchmark.collect_test_contracts(args.input_contracts)
+    )
+
+    print(f"TEST CONTRACT: {test_contracts}")
 
     # Prepare environment
     jobs = 1 if args.jobs is None else args.jobs
@@ -30,6 +37,7 @@ def analyze_smart_contracts(args):
     analyze.perform_analysis(
         tools,
         test_files,
+        test_contracts,
         args.timeout,
         args.docker,
         jobs,

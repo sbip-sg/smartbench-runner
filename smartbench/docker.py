@@ -5,7 +5,7 @@ import shlex
 import subprocess
 
 from subprocess import CalledProcessError
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 # Library
 from smartbench.printer import error, safe_print
@@ -59,6 +59,7 @@ class AnalysisJob:
         self,
         tool: Tool,
         test_files: List[str],
+        test_contracts: Optional[Dict[str, List[str]]],
         job_output_dir: str,
         timeout=None,
         docker_container: Optional[DockerContainer] = None,
@@ -68,6 +69,7 @@ class AnalysisJob:
         # List of test file, which are relative path to the `/root/`
         # folder in a Docker container
         self.test_files: List[str] = list(test_files)
+        self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
 
         # Output directory of a job to store results of all test files
         self.job_output_dir: str = job_output_dir
@@ -75,4 +77,4 @@ class AnalysisJob:
         self.docker_container: Optional[DockerContainer] = docker_container
 
     def __str__(self):
-        return f"{self.container.name}: {len(self.test_files)} tasks"
+        return f"{self.docker_container.name}: {len(self.test_files)} tasks"

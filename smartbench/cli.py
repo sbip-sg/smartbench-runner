@@ -68,12 +68,19 @@ def parse_cli_arguments():
         help="Sub-command to analyze smart contracts",
     )
 
-    # Input files
+    # Input files or directories
     analyze_parser.add_argument(
         "input_files_directories",
-        nargs="+",  # Accept multiple input files or directories
+        nargs="*",  # Accept multiple input files or directories
         type=str,
-        help="Input files or directories (accepts wildcard characters).",
+        help="Input files or directories to look for test file (accepts wildcard characters).",
+    )
+
+    # Input file contract a list of files and contracts
+    analyze_parser.add_argument(
+        "--input-contracts",
+        type=str,
+        help="Input file specifying test files and contract names to be tested.",
     )
 
     # Analysis tool

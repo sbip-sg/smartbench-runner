@@ -13,7 +13,7 @@ import traceback
 from datetime import datetime
 from multiprocessing import Process, Queue
 from subprocess import SubprocessError
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 # Library
 from smartbench import annotation, printer, result, validator
@@ -101,9 +101,28 @@ def log_analysis_info(
             file.write(f"test_files = [\n  {tests_info}\n]\n")
 
 
+def collect_testing_contracts(
+    test_file: str,
+    test_contracts: Optional[Dict[str, List[str]]],
+) -> List[str]:
+    """Collect list of testing contracts directly from the test file or from a
+    contract list file."""
+
+    if test_contracts is None:
+        return solc.get_candidate_testing_contracts(test_file)
+
+    test_file_name = os.path.basename(test_file)
+    contract_names = test_contracts.get(test_file_name)
+    if contract_names is None:
+        return []
+
+    return contract_names
+
+
 def analyze_test_file(
     tool: Tool,
     test_file: str,
+    test_contracts: Optional[Dict[str, List[str]]],
     test_output_dir: str,
     container=Optional[DockerContainer],
     timeout=None,
@@ -127,11 +146,10 @@ def analyze_test_file(
         printer.print_medium_single_horizontal_line()
         safe_print(f"Analyzing: {test_file}")
 
-    try:
-        contracts = solc.get_candidate_testing_contracts(test_file)
-    except Exception:
-        error(f"Failed to get contract names: {test_file}")
-        traceback.print_exc()
+    contracts = collect_testing_contracts(test_file, test_contracts)
+    if not contracts:
+        safe_print(f"No input contract is specified for test file: {test_file}")
+        safe_print("Skip analyzing!")
         return None
 
     # safe_print("Test contracts:", contracts)
@@ -255,6 +273,7 @@ def run_analysis_job(
         if res := analyze_test_file(
             job.tool,
             test_file,
+            job.test_contracts,
             test_output_dir,
             job.docker_container,
             job.timeout,
@@ -270,6 +289,7 @@ def run_analysis_job(
 def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
+    test_contracts: Optional[Dict[str, List[str]]],
     tool_output_dir: str,
     timeout=None,
     use_docker=True,
@@ -326,6 +346,7 @@ def run_analysis_tool(
         analysis_job = AnalysisJob(
             tool,
             test_batches[i],
+            test_contracts,
             tool_output_dir,
             timeout,
             container,
@@ -371,6 +392,7 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
+    test_contracts: Optional[Dict[str, List[str]]],
     timeout=None,
     use_docker=True,
     jobs=1,
@@ -403,6 +425,7 @@ def perform_analysis(
         results = run_analysis_tool(
             tool,
             test_files,
+            test_contracts,
             tool_output_dir,
             timeout,
             use_docker,
