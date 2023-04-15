@@ -8,19 +8,16 @@ import bisect
 import os
 import pathlib
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 # Library
-from smartbench import annotation, logger, validator
+from smartbench import annotation, logger, printer, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
 from smartbench.printer import print_unless, safe_print, warning
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
-from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
-from smartbench.tools.slither.slither import Slither
-from smartbench.tools.smartfuzz import smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
@@ -50,14 +47,14 @@ class AnalysisResult:
         # Validation of detected issues
         self.validation_result = validation_result
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """Compare analysis result by the test file name, case insensitive.
         Used only for the ordering purpose."""
         test_file = self.test_file.casefold()
         other_file = other.test_file.casefold()
         return test_file.__lt__(other_file)
 
-    def print_detailed_summary(self, parallel_mode=False):
+    def print_detailed_summary(self, parallel_mode: bool = False) -> None:
         """Print statistic summary of detected issues for a test file"""
         if not parallel_mode:
             safe_print("-------------------")
@@ -85,17 +82,18 @@ class AnalysisResult:
 
         print_unless(parallel_mode, "")
 
-    def print_benchmarking_summary(self):
+    def print_benchmarking_summary(self) -> None:
         if self.validation_result is None:
             raise ValueError("Results were not validated for benchmarking!")
 
+        num_issues = len(self.issues)
         validation = self.validation_result
         num_correct = len(validation.correct_bugs)
         num_missing = len(validation.missing_bugs)
         num_unlabelled = len(validation.unlabelled_issues)
 
         print(
-            f"{self.test_file} {self.tool.name}, "
+            f"- {self.test_file}: {num_issues}, "
             f"{num_correct}, {num_missing}, {num_unlabelled}"
         )
 
@@ -110,9 +108,9 @@ def verify_tool_result_dir(tool: Tool, test_dir: str) -> bool:
 
 def parse_result_directory(
     results_dir: str,
-    validate=False,
-    benchmarking=False,
-    benchmark_name=None,
+    validate: Optional[bool] = False,
+    benchmarking: Optional[bool] = False,
+    benchmark_name: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
@@ -209,7 +207,7 @@ def parse_result_directory(
     return all_results
 
 
-def parse_instruction_coverage(results_dir: str):
+def parse_instruction_coverage(results_dir: str) -> None:
     """Function to parse code coverage from analysis results of a tool.
 
     The input `result_dir` is the directory containing results of all
@@ -257,7 +255,9 @@ def parse_instruction_coverage(results_dir: str):
     print("Parsing coverage completed!")
 
 
-def print_benchmarking_results(results_dir: str, results: List[AnalysisResult]):
+def print_benchmarking_results(
+    results_dir: str, results: List[AnalysisResult]
+) -> None:
     print("\n========================")
     print("BENCHMARKING RESULT")
     print("========================")
@@ -265,7 +265,9 @@ def print_benchmarking_results(results_dir: str, results: List[AnalysisResult]):
     tools_results = group_analysis_result_by_tools(results)
 
     for tool_id in tools_results.keys():
-        print(f"\n** Result of {tool_id}\n")
+        printer.print_short_dashed_separator_line()
+        print(f"Result of {tool_id}:\n")
+
         for result in tools_results[tool_id]:
             result.print_benchmarking_summary()
 
@@ -290,9 +292,11 @@ def group_analysis_result_by_tools(
 
 def export_benchmarking_results(
     result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
-):
+) -> None:
     """Record analysis log of all tools."""
-    print(f"\n** Exporting benchmarking results...")
+    printer.print_short_dashed_separator_line()
+    print("Exporting benchmarking results...")
+
     for tool_name in tools_results.keys():
         results = tools_results[tool_name]
 
@@ -308,11 +312,12 @@ def export_benchmarking_results(
                     warning(f"Validation result not found: {result.test_file}")
                     continue
 
+                num_issues = len(result.issues)
                 num_correct = len(validation.correct_bugs)
                 num_missing = len(validation.missing_bugs)
                 num_unlabelled = len(validation.unlabelled_issues)
 
                 file.write(
-                    f"{result.test_file}, {num_correct}, "
-                    f"{num_missing}, {num_unlabelled}\n"
+                    f"{result.test_file}: {num_issues}, "
+                    f"{num_correct}, {num_missing}, {num_unlabelled}\n"
                 )
