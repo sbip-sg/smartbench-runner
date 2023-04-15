@@ -109,8 +109,8 @@ def get_candidate_testing_contracts(test_file: str) -> List[str]:
     """Detect Solidity version in a smart contacts."""
 
     try:
-        AttributeError
-        ast = SolidityAst(test_file)
+        solc_version = detect_required_solc_version(test_file)
+        ast = SolidityAst(test_file, version=solc_version)
         return ast.all_contract_names
     except Exception:
         error_traceback(f"Failed to get contract names from: {test_file}")
