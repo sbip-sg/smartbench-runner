@@ -7,12 +7,10 @@ import multiprocessing
 import os
 import shlex
 import subprocess
-import threading
 import traceback
 
 from datetime import datetime
 from multiprocessing import Process, Queue
-from subprocess import SubprocessError
 from typing import Dict, List, Optional
 
 # Library
@@ -83,7 +81,7 @@ def log_analysis_output(
 
 def log_analysis_info(
     tools: List[Tool], test_files: List[str], result_dir: str
-):
+) -> None:
     """Record analysis log of all tools."""
     log_file = os.path.join(result_dir, "smartbench_log.toml")
     with open(log_file, "w", encoding="utf-8") as file:
@@ -125,9 +123,9 @@ def analyze_test_file(
     test_contracts: Optional[Dict[str, List[str]]],
     test_output_dir: str,
     container=Optional[DockerContainer],
-    timeout=None,
-    validate=False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
-    benchmarking=False,
+    timeout: Optional[int] = None,
+    validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
+    benchmarking: bool = False,
     parallel_mode=False,
 ) -> Optional[AnalysisResult]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -143,13 +141,16 @@ def analyze_test_file(
         runner = "local" if container is None else f"docker:{container.name}"
         safe_print(f"{runner}: {test_file}\n")
     else:
-        printer.print_medium_single_horizontal_line()
+        printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}")
 
     contracts = collect_testing_contracts(test_file, test_contracts)
+
     if not contracts:
-        safe_print(f"No input contract is specified for test file: {test_file}")
-        safe_print("Skip analyzing!")
+        safe_print(
+            f"\nNo input contract is specified for test file: {test_file}\n\n"
+            "Skip analyzing it!"
+        )
         return None
 
     # safe_print("Test contracts:", contracts)
@@ -222,7 +223,7 @@ def analyze_test_file(
 
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
     """Start all docker containers to run analysis jobs."""
-    printer.print_short_double_horizontal_line()
+    printer.print_short_double_separator_line()
     safe_print("Preparing docker containers...")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
@@ -239,7 +240,7 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
 
 def stop_docker_containers(containers: List[DockerContainer]):
     """Stop all docker containers after finishing analysis jobs."""
-    printer.print_short_double_horizontal_line()
+    printer.print_short_double_separator_line()
     safe_print("Cleaning docker containers...")
 
     for container in containers:
@@ -306,7 +307,7 @@ def run_analysis_tool(
     Allow launching multiple Docker containers to run in parallel.
     """
 
-    printer.print_long_double_horizontal_line()
+    printer.print_long_double_separator_line()
     safe_print(f"Running analysis tool: {tool.name}")
 
     # When running in Docker mode, use relative path of output directory
@@ -321,7 +322,7 @@ def run_analysis_tool(
     if use_docker:
         docker_containers = start_docker_containers(tool, jobs)
 
-    printer.print_short_double_horizontal_line()
+    printer.print_short_double_separator_line()
     safe_print("Running analysis jobs...")
 
     # Distribute test files to containers
@@ -393,11 +394,11 @@ def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
-    timeout=None,
-    use_docker=True,
-    jobs=1,
-    validate=False,
-    benchmarking=False,
+    timeout: Optional[int] = None,
+    use_docker: bool = True,
+    jobs: int = 1,
+    validate: bool = False,
+    benchmarking: bool = False,
 ) -> List[AnalysisResult]:
     """Function to run all tools to analyze all test files.
 
@@ -436,7 +437,7 @@ def perform_analysis(
 
         all_results.extend(results)
 
-    printer.print_short_double_horizontal_line()
+    printer.print_short_double_separator_line()
     safe_print("Benchmarking completed!\n")
     safe_print(f"Results are recorded at: {results_dir}")
 

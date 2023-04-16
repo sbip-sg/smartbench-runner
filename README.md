@@ -13,7 +13,7 @@
 
   ```sh
   # Install 5 docker containers named: slither-1, ..., slither-5
-  ./install-tool-docker.sh slither --force-install -n 5
+  ./install-tool-docker.sh -t slither --force-install -n 5
   ```
 
 # Usage
@@ -47,9 +47,9 @@
 
 - Sample commands:
 
-  ``` sh
+  ```sh
   # Benchmarking smartbugs dataset using 3 docker jobs, timeout 60s per test file
-  ./smartbench benchmarks/smartbugs -t confuzzius --docker --jobs 3 --timeout 60
+  ./smartbench.sh benchmarks/smartbugs -t confuzzius --docker --jobs 3 --timeout 10
   ```
 
 # Development

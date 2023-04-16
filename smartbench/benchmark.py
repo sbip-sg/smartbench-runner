@@ -50,7 +50,7 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
                 test_files.append(input_path)
 
     if len(test_files) == 0:
-        sys.exit("No input smart contract is found!")
+        sys.exit("No input test file is found!")
     else:
         print(f"Found {len(test_files)} test files!")
 

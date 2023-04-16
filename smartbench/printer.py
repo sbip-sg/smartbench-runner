@@ -3,72 +3,79 @@
 """Module containing some printing utilities."""
 
 # Standard Library
-import sys
-import threading
 import traceback
-
-from sys import exit
 
 # Library
 from smartbench import flags
-from smartbench.globals import screen_lock
 
 
-def safe_print(*args):
+def safe_print(*args: str) -> None:
     """Print and move the cursor to the beginning of next line for the next
     printing."""
     print(*args, end="\n\r")
 
 
-def print_if(condition: bool, *args):
+def print_if(condition: bool, *args: str) -> None:
     """Print if the input condition holds."""
     # screen_lock:
     if condition:
         print(*args)
 
 
-def print_unless(condition: bool, *args):
+def print_unless(condition: bool, *args: str) -> None:
     """Print unless the input condition holds."""
     # screen_lock:
     if not condition:
         print(*args)
 
 
-def warning(*args):
+def warning(*args: str) -> None:
     """Print a warning message"""
-    safe_print("\nWARNING: " + " ".join(map(str, args)) + "\n")
+    safe_print("\n!!WARNING: " + " ".join(map(str, args)) + "\n")
 
 
-def error(*args):
+def error(*args: str) -> None:
     """Print an error message"""
-    safe_print("\nERROR: " + " ".join(map(str, args)) + "\n")
+    safe_print("\n!!ERROR: " + " ".join(map(str, args)) + "\n")
 
 
-def debug(*args):
+def error_traceback(*args: str) -> None:
+    """Print an error message"""
+    safe_print("\n!!ERROR: " + " ".join(map(str, args)) + "\n")
+    traceback.print_exc()
+
+
+def debug(*args: str) -> None:
     """Print a debugging message."""
     if flags.DEBUG_MODE:
         safe_print("!! " + " ".join(map(str, args)) + "\n")
 
 
-def print_short_single_horizontal_line():
-    safe_print(f"\n{'=' * 30}")
+def print_short_dashed_separator_line() -> None:
+    """Print a short separator line: --------"""
+    safe_print(f"\n{'-' * 30}")
 
 
-def print_medium_single_horizontal_line():
+def print_medium_dashed_separator_line() -> None:
+    """Print a medium separator line: --------"""
     safe_print(f"\n{'-' * 45}")
 
 
-def print_long_single_horizontal_line():
+def print_long_dashed_separator_line() -> None:
+    """Print a long separator line: --------"""
     safe_print(f"\n{'-' * 55}")
 
 
-def print_short_double_horizontal_line():
+def print_short_double_separator_line() -> None:
+    """Print a short separator line: ========"""
     safe_print(f"\n{'=' * 30}")
 
 
-def print_medium_double_horizontal_line():
+def print_medium_double_separator_line() -> None:
+    """Print a medium separator line: ========"""
     safe_print(f"\n{'=' * 45}")
 
 
-def print_long_double_horizontal_line():
+def print_long_double_separator_line() -> None:
+    """Print a long separator line: ========"""
     safe_print(f"\n{'=' * 55}")
