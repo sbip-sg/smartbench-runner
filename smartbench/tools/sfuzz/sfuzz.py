@@ -164,7 +164,6 @@ class Sfuzz(Tool):
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)
         coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
-        write_file = open(coverage_file, "w")
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
@@ -205,7 +204,10 @@ class Sfuzz(Tool):
             results_json_obj[contract_name] = contract_coverage
 
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
-        write_file.write(results_json_obj_str)
         debug(f"coverage: {results_json_obj_str}")
-        write_file.close()
+
+        with open(coverage_file, "w", encoding="utf-8") as file:
+            file.write(results_json_obj_str)
+            file.close()
+
         return coverage_file

@@ -172,8 +172,7 @@ class Confuzzius(Tool):
             contracts = list(output.keys())
             for contract in contracts:
                 contract_results = output.get(contract);
-                bug_list = contract_results.get("errors")
-                bugs = list(bug_list.values())
+                bugs = list(contract_results.get("errors").values())
 
                 for bug in bugs:
                     error = bug[0]
@@ -200,7 +199,6 @@ class Confuzzius(Tool):
         """Parse code coverage of Confuzzius"""
         output_file = os.path.join(test_output_dir, self.json_output_file)
         coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
-        write_file = open(coverage_file, "w")
         output = None
 
         debug("Confuzzius parse file: ", output_file)
@@ -237,8 +235,11 @@ class Confuzzius(Tool):
             results_json_obj[contract_name] = contract_coverage
 
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
-        write_file.write(results_json_obj_str)
         debug(f"coverage: {results_json_obj_str}")
-        write_file.close()
+
+        with open(coverage_file, "w", encoding="utf-8") as file:
+            file.write(results_json_obj_str)
+            file.close()
+
         return coverage_file
 
