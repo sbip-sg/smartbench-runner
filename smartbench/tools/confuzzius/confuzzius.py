@@ -146,9 +146,24 @@ class Confuzzius(Tool):
 
         return IssueKind.UNKNOWN
 
+
     def parse_analysis_output(
         self,
         test_output_dir: str,
+    ) -> List[Issue]:
+        issues = []
+        log_file = os.path.join(test_output_dir, self.log_file)
+
+        for (directory, _, _) in os.walk(test_output_dir):
+            issues += self.parse_analysis_output_for_one_contract(directory, log_file)
+
+        return issues
+
+
+    def parse_analysis_output_for_one_contract(
+        self,
+        test_output_dir: str,
+        log_file: str
     ) -> List[Issue]:
         """Parse output of Confuzzius"""
         output = None
@@ -156,8 +171,6 @@ class Confuzzius(Tool):
         output_file = os.path.join(test_output_dir, self.json_output_file)
         if not os.path.exists(output_file):
             return []
-
-        log_file = os.path.join(test_output_dir, self.log_file)
 
         debug("Confuzzius parse file: ", output_file)
         try:
