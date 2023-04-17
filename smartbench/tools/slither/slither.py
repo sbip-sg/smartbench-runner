@@ -155,6 +155,9 @@ class Slither(Tool):
             if checker == "unchecked-lowlevel":
                 return IssueKind.UNCHECKED_LOWLEVEL_CODE
 
+        if "allows anyone to destruct the contract" in description:
+            return IssueKind.UNSAFE_SELFDESTRUCT
+
         if "Low level call" in description:
             return IssueKind.LOW_LEVEL_CALL
 
