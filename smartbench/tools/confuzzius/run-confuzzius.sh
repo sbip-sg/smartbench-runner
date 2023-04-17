@@ -68,9 +68,6 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-# set the solc version
-solc-select use $SOLC_VER
-
 # Run Confuzzius
-python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
+SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
     -s $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1
