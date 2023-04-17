@@ -210,39 +210,16 @@ class Confuzzius(Tool):
         except ValueError:
             return []
 
+
     def parse_instruction_coverage(self, test_output_dir: str):
-        """Parse code coverage of Confuzzius"""
-        output_file = os.path.join(test_output_dir, self.json_output_file)
-        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
-        output = None
-
-        debug("Confuzzius parse file: ", output_file)
-        try:
-            with open(output_file, "r", encoding="utf-8") as file:
-                output = json.load(file)
-        except Exception as err:
-            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
-            return None
-
-        contracts = list(output.keys())
         contract_coverage_list = []
-        first_coverage = (0, 0)
-        for contract in contracts:
-            contract_results = output.get(contract);
-            generations = contract_results.get("generations")
-            contract_coverage = [first_coverage]
-            current_time = 0
-            if generations is not None:
-                for generation in generations:
-                    time = float("{:.1f}".format(generation.get("time")))
-                    coverage = float(
-                        "{:.1f}".format(generation.get("code_coverage"))
-                    )
-                    if time - current_time >= 1:
-                        contract_coverage.append((time, coverage))
-                        current_time = time
+        for (directory, _, _) in os.walk(test_output_dir):
+            output_file = os.path.join(directory, self.json_output_file)
+            contract_coverage_pair = self.parse_instruction_coverage_for_one_contract(output_file)
 
-            contract_coverage_list.append((contract, contract_coverage))
+            if contract_coverage_pair != None:
+                contract_coverage_list.append((contract_coverage_pair[0], contract_coverage_pair[1]))
+
 
         if contract_coverage_list == []:
             return None
@@ -256,8 +233,44 @@ class Confuzzius(Tool):
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
         debug(f"coverage: {results_json_obj_str}")
 
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
         with open(coverage_file, "w", encoding="utf-8") as file:
             file.write(results_json_obj_str)
             file.close()
 
         return coverage_file
+
+
+    def parse_instruction_coverage_for_one_contract(self, output_file: str):
+        """Parse code coverage of Confuzzius"""
+        output = None
+
+        debug("Confuzzius parse file: ", output_file)
+        try:
+            with open(output_file, "r", encoding="utf-8") as file:
+                output = json.load(file)
+        except Exception as err:
+            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
+            return None
+
+        contracts = list(output.keys())
+        if contracts == []:
+            return None
+
+        first_coverage = (0, 0)
+        contract = contracts[0]
+        contract_results = output.get(contract);
+        generations = contract_results.get("generations")
+        contract_coverage = [first_coverage]
+        current_time = 0
+        if generations is not None:
+            for generation in generations:
+                time = float("{:.1f}".format(generation.get("time")))
+                coverage = float(
+                    "{:.1f}".format(generation.get("code_coverage"))
+                )
+                if time - current_time >= 1:
+                    contract_coverage.append((time, coverage))
+                    current_time = time
+
+        return (contract, contract_coverage)
