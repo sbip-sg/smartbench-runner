@@ -64,6 +64,9 @@ class Confuzzius(Tool):
         # Input file must be the first argument to be run by docker
         cmd += f" -f {test_file}"
 
+        if len(contracts) > 0:
+            cmd = cmd + " -c " + " ".join(contracts)
+
         # Pass arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
@@ -217,14 +220,15 @@ class Confuzzius(Tool):
             generations = contract_results.get("generations")
             contract_coverage = [first_coverage]
             current_time = 0
-            for generation in generations:
-                time = float("{:.1f}".format(generation.get("time")))
-                coverage = float(
-                    "{:.1f}".format(generation.get("code_coverage"))
-                )
-                if time - current_time >= 1:
-                    contract_coverage.append((time, coverage))
-                    current_time = time
+            if generations is not None:
+                for generation in generations:
+                    time = float("{:.1f}".format(generation.get("time")))
+                    coverage = float(
+                        "{:.1f}".format(generation.get("code_coverage"))
+                    )
+                    if time - current_time >= 1:
+                        contract_coverage.append((time, coverage))
+                        current_time = time
 
             contract_coverage_list.append((contract, contract_coverage))
 
@@ -242,4 +246,3 @@ class Confuzzius(Tool):
             file.close()
 
         return coverage_file
-
