@@ -293,7 +293,7 @@ class Smartian(Tool):
             contract_coverage_list.append((contract_name, contract_coverage))
 
         results_json_obj = {
-            "coverage_interval": -1,
+            "coverage-interval": -1,
         }
         for (contract_name, contract_coverage) in contract_coverage_list:
             results_json_obj[contract_name] = contract_coverage
