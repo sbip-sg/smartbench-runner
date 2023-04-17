@@ -64,6 +64,9 @@ class Confuzzius(Tool):
         # Input file must be the first argument to be run by docker
         cmd += f" -f {test_file}"
 
+        # Output directory
+        cmd = cmd + " -r " + test_output_dir
+
         if len(contracts) > 0:
             cmd = cmd + " -c " + " ".join(contracts)
 
@@ -79,10 +82,6 @@ class Confuzzius(Tool):
             timeout = self.default_timeout if timeout is None else timeout
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
-
-        # Output file
-        output_file = self.configure_output_file(test_output_dir)
-        cmd = cmd + " -r " + output_file
 
         return cmd
 

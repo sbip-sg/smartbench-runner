@@ -15,6 +15,7 @@ print_usage () {
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
     echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
+    echo "  -r <output-dir>       Output directory."
     echo "  -h, --help            Print this usage."
     echo ""
     echo "Addtional arguments passing to Confuzzius can be put at the end of this command."
@@ -30,12 +31,18 @@ print_help () {
 
 TEST_FILE=""
 CONTRACT_NAMES=()
+OUTPUT_DIR=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         -f)
             TEST_FILE=$(realpath $2)
+            shift # past argument
+            shift # past value
+            ;;
+        -r)
+            OUTPUT_DIR=$2
             shift # past argument
             shift # past value
             ;;
@@ -67,6 +74,13 @@ done
 
 # Checking test file
 if [[ $TEST_FILE == "" ]]; then
+    echo "Error: input file is not specified!"
+    print_help
+    exit 1
+fi
+
+# Checking test file
+if [[ $OUTPUT_DIR == "" ]]; then
     echo "Error: output dir is not specified!"
     print_help
     exit 1
@@ -98,6 +112,10 @@ SOLC_VER=$(solc-detect $TEST_FILE)
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================="
     echo "** Fuzzing contract: $CONTRACT"
+    echo "** OUTPUT: $OUTPUT_DIR/$CONTRACT/confuzzius_result.json"
+    mkdir -p "$OUTPUT_DIR/$CONTRACT"
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
-                           -c $CONTRACT -s $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1
+                           -c $CONTRACT -s $TEST_FILE \
+                           -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
+                           ${ADDITIONAL_ARGS[@]} 2>&1
 done
