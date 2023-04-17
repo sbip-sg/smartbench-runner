@@ -292,6 +292,9 @@ class Smartian(Tool):
         if len(contract_coverage) != 1:
             contract_coverage_list.append((contract_name, contract_coverage))
 
+        if contract_coverage_list == []:
+            return None
+
         results_json_obj = {
             "coverage-interval": -1,
         }

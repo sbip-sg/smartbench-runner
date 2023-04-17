@@ -232,6 +232,9 @@ class Confuzzius(Tool):
 
             contract_coverage_list.append((contract, contract_coverage))
 
+        if contract_coverage_list == []:
+            return None
+
         results_json_obj = {
             "coverage-interval": -1,
         }

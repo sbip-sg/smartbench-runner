@@ -197,6 +197,9 @@ class Sfuzz(Tool):
         if contract_coverage != [0]:
             contract_coverage_list.append((contract_name, contract_coverage))
 
+        if contract_coverage_list == []:
+            return None
+
         results_json_obj = {
             "coverage-interval": 1,
         }
