@@ -68,7 +68,7 @@ class Slither(Tool):
             cmd = cmd + " --solc-version " + solc_version
 
         # Output file
-        if output_file := self.configure_output_file(test_output_dir):
+        if output_file := self.configure_json_output_file(test_output_dir):
             cmd = cmd + " --json " + output_file
 
         # Finally, pass default and additional arguments

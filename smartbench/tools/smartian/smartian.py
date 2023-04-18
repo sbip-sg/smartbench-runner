@@ -3,20 +3,19 @@
 """Module handling Smartian analyzer."""
 
 # Standard Library
+import json
 import math
 import os
 import re
-import json
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 # Library
 from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, warning
-from smartbench.solidity import solc
+from smartbench.printer import debug, error
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
@@ -56,9 +55,7 @@ class Smartian(Tool):
         timeout: Optional[int] = None,
     ) -> str:
         """Function to make analysis command for `Smartian`. This function should
-        have the same signature with other tools.
-
-        """
+        have the same signature with other tools."""
 
         # Executable file
         if container is not None:
@@ -257,7 +254,7 @@ class Smartian(Tool):
         current_time = 0
         contract_coverage_list = []
         contract_name = ""
-        first_coverage = (0,0)
+        first_coverage = (0, 0)
         contract_coverage = [first_coverage]
 
         for line in lines:
@@ -272,7 +269,9 @@ class Smartian(Tool):
                 contract_name = contract.removeprefix("Fuzzing contract: ")
                 # Results of new contract
                 if len(contract_coverage) != 1:
-                    contract_coverage_list.append((contract_name, contract_coverage))
+                    contract_coverage_list.append(
+                        (contract_name, contract_coverage)
+                    )
 
                 contract_coverage = [first_coverage]
                 current_time = 0
@@ -303,7 +302,7 @@ class Smartian(Tool):
         results_json_obj = {
             "coverage-interval": -1,
         }
-        for (contract_name, contract_coverage) in contract_coverage_list:
+        for contract_name, contract_coverage in contract_coverage_list:
             results_json_obj[contract_name] = contract_coverage
 
         results_json_obj_str = json.dumps(results_json_obj, indent=2)

@@ -15,6 +15,7 @@ from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither.slither import Slither
+from smartbench.tools.smartfuzz.smartfuzz import Smartfuzz
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
@@ -82,7 +83,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
             if (default_timeout := command.get(DEFAULT_TIMEOUT)) is None:
                 report_config_error(DEFAULT_TIMEOUT, cfg_fpath)
 
-            ToolConstructor: Callable = Tool
+            ToolConstructor: Callable = None
             if tool_id == "slither":
                 ToolConstructor = Slither
             elif tool_id == "confuzzius":
@@ -93,6 +94,10 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 ToolConstructor = Sfuzz
             elif tool_id == "smartian":
                 ToolConstructor = Smartian
+            elif tool_id == "smartfuzz":
+                ToolConstructor = Smartfuzz
+            else:
+                error_traceback(f"Unknown analysis tool: {tool_id}")
 
             return ToolConstructor(
                 tool_id,

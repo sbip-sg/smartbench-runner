@@ -10,7 +10,6 @@ from typing import Dict, List, Optional
 
 # Library
 from smartbench.printer import debug, error, error_traceback, safe_print
-from smartbench.tools.tool import Tool
 
 
 # Init some paths

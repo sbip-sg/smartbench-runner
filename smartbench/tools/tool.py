@@ -13,10 +13,9 @@ from typing import List, Optional
 
 # Library
 from smartbench.annotation import BugAnnot
+from smartbench.docker import DockerContainer
 from smartbench.issue import Issue
 from smartbench.solidity.loc import Location
-from smartbench.tools.ilf import ilf
-from smartbench.tools.smartfuzz import smartfuzz
 
 
 class Tool:
@@ -59,7 +58,6 @@ class Tool:
             else None
         )
 
-
     def __str__(self):
         """Printing to string."""
         return (
@@ -67,7 +65,7 @@ class Tool:
             f"Arguments: {self.additional_args}}}"
         )
 
-    def configure_output_file(self, result_dir: str) -> Optional[str]:
+    def configure_json_output_file(self, result_dir: str) -> Optional[str]:
         """
         Configure output file of the tool for a test file.
         """
@@ -88,47 +86,17 @@ class Tool:
             os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
 
-    def is_smartfuzz(self):
-        """Check if the current tool is SmartFuzz."""
-        return self.id.casefold() == smartfuzz.TOOL_NAME.casefold()
-
     @abstractmethod
     def make_analysis_command(
         self,
         test_file: str,
-        contract_names: List[str],
+        contracts: List[str],
         test_output_dir: str,
+        solc_version: Optional[str] = None,
+        container: Optional[DockerContainer] = None,
         timeout: Optional[int] = None,
     ) -> str:
         """Make an analysis command for a tool."""
-        # Deterministically increase from seed. Reproducible randomness
-        # TODO: add random seed for fuzzing tools if they support it.
-        self.random_seed += 1
-
-        arguments = self.default_arguments
-        timeout = timeout if timeout is not None else self.default_timeout
-
-        make_command = None
-        if self.is_smartfuzz():
-            make_command = smartfuzz.make_analysis_command
-            arguments += " --seed " + str(self.random_seed)
-        else:
-            raise Exception(f"TODO: implement for tool: {self.id}")
-
-        if self.additional_args:
-            arguments = arguments + " " + self.additional_args
-
-        output_file = self.configure_output_file(test_output_dir)
-
-        cmd = make_command(
-            self.executable, arguments, test_file, output_file, timeout
-        )
-
-        return cmd
-
-    @abstractmethod
-    def make_deployment_command(self, test_file, result_dir) -> str:
-        """Make deployment command for an analyzer."""
 
     @abstractmethod
     def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
