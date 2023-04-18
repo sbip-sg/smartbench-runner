@@ -10,9 +10,11 @@ from smartbench import flags
 
 
 def safe_print(*args: str) -> None:
-    """Print and move the cursor to the beginning of next line for the next
-    printing."""
-    print(*args, end="\n\r")
+    """Print every single line and move the cursor to the beginning of next line
+    for the next printing."""
+    output = format(*args)
+    output = output.replace("\n", "\n\r")
+    print(output, end="\n\r")
 
 
 def print_if(condition: bool, *args: str) -> None:

@@ -92,7 +92,7 @@ class AnalysisResult:
         num_missing = len(validation.missing_bugs)
         num_unlabelled = len(validation.unlabelled_issues)
 
-        print(
+        safe_print(
             f"- {self.test_file}: {num_issues}, "
             f"{num_correct}, {num_missing}, {num_unlabelled}"
         )
@@ -258,15 +258,15 @@ def parse_instruction_coverage(results_dir: str) -> None:
 def print_benchmarking_results(
     results_dir: str, results: List[AnalysisResult]
 ) -> None:
-    print("\n========================")
-    print("BENCHMARKING RESULT")
-    print("========================")
+    safe_print("\n========================")
+    safe_print("BENCHMARKING RESULT")
+    safe_print("========================")
 
     tools_results = group_analysis_result_by_tools(results)
 
     for tool_id in tools_results.keys():
         printer.print_short_dashed_separator_line()
-        print(f"Result of {tool_id}:\n")
+        safe_print(f"Result of {tool_id}:\n")
 
         for result in tools_results[tool_id]:
             result.print_benchmarking_summary()
@@ -295,13 +295,13 @@ def export_benchmarking_results(
 ) -> None:
     """Record analysis log of all tools."""
     printer.print_short_dashed_separator_line()
-    print("Exporting benchmarking results...")
+    safe_print("Exporting benchmarking results...")
 
     for tool_name in tools_results.keys():
         results = tools_results[tool_name]
 
         result_file = os.path.join(result_dir, f"results_{tool_name}.csv")
-        print(f"- {result_file}")
+        safe_print(f"- {result_file}")
         with open(result_file, "w", encoding="utf-8") as file:
             file.write(f"Benchmarking result of {tool_name}\n")
             file.write("======================================\n\n")
