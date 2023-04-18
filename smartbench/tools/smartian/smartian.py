@@ -50,6 +50,7 @@ class Smartian(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
+        solc_version: Optional[str] = None,
         container: Optional[DockerContainer] = None,
         timeout: Optional[int] = None,
     ) -> str:
@@ -63,12 +64,13 @@ class Smartian(Tool):
         else:
             cmd = os.path.join(SMARTIAN_DIR, self.executable)
 
-        # Input file must be the first argument to be run by docker
+        # Input file and contract names
         cmd = cmd + " -f " + test_file
-
-        # Pass contract names to Smartian
         if len(contracts) > 0:
             cmd = cmd + " -c " + " ".join(contracts)
+
+        if solc_version is not None:
+            cmd = cmd + " --solc-version " + solc_version
 
         # Pass arguments
         if self.default_arguments:

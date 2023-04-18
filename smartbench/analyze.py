@@ -159,13 +159,18 @@ def analyze_test_file(
 
     # safe_print("Test contracts:", contracts)
 
+    # print("========== before ")
+
     cmd = tool.make_analysis_command(
         test_file,
         contracts,
         test_output_dir,
+        solc_version,
         container,
         timeout,
     )
+
+    # print("========== after ")
 
     if cmd is None:
         warning(f"Unable to make analysis command for tool: {tool.name}\n")

@@ -13,11 +13,12 @@ print_usage () {
     echo "  run-smartian.sh -f <test-file> -c <contract-names> [options] [smartial-arguments]"
     echo ""
     echo "Options:"
-    echo "  -f <test-file>        Smart contract file to be analyzed."
-    echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
-    echo "  -o <output-dir>       Output directory containing analysis results."
-    echo "  -t <timeout>          Timeout for each contract of the test file."
-    echo "  -h, --help            Print this usage."
+    echo "  -f <test-file>            Smart contract file to be analyzed."
+    echo "  -c <contract-names>       Names of target contracts (whitespace separated)."
+    echo "  -o <output-dir>           Output directory containing analysis results."
+    echo "  -t <timeout>              Timeout for each contract of the test file."
+    echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
+    echo "  -h, --help                Print this usage."
     echo ""
     echo "Addtional arguments passing to Smartian can be put at the end of this command."
 }
@@ -34,6 +35,7 @@ TEST_FILE=""
 CONTRACT_NAMES=()
 TIMEOUT=0
 OUTPUT_DIR=""
+SOLC_VER=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -65,6 +67,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         -t)
             TIMEOUT=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        --solc-version)
+            SOLC_VER=$2
             shift  # past argument
             shift  # past value
             ;;
@@ -113,8 +120,10 @@ fi
 ################################################
 # Compile contracts
 
-# Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
+# Auto-detect Solc version if it wasn't specified
+if [[ $SOLC_VER == "" ]]; then
+    SOLC_VER=$(solc-detect $TEST_FILE)
+fi
 
 COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
 rm -rf $COMPILED_CONTRACTS_DIR
