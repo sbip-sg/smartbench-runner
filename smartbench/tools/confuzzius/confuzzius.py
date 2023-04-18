@@ -243,9 +243,11 @@ class Confuzzius(Tool):
 
     def parse_instruction_coverage_for_one_contract(self, output_file: str):
         """Parse code coverage of Confuzzius"""
-        output = None
+        if not os.path.exists(output_file):
+            return None
 
         debug("Confuzzius parse file: ", output_file)
+        output = None
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
