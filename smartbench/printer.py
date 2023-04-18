@@ -42,7 +42,10 @@ def error(*args: str) -> None:
 def error_traceback(*args: str) -> None:
     """Print an error message"""
     safe_print("\n!!ERROR: " + " ".join(map(str, args)) + "\n")
-    traceback.print_exc()
+    exceptions = traceback.format_exc()
+    safe_print(">>>>>>>>>>>> Error Backtrace >>>>>>>>>>>>\n")
+    safe_print(f"{exceptions}")
+    safe_print("<<<<<<<<< End of Error Backtrace <<<<<<<<\n")
 
 
 def debug(*args: str) -> None:
