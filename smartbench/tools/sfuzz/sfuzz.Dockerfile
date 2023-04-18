@@ -17,18 +17,20 @@ RUN mkdir -p build; cd build; cmake ..
 WORKDIR /root/sfuzz/build/fuzzer
 RUN make
 
-# Add
+# Add template files required by sFuzz for experiment
 RUN rm -rf output
 RUN mkdir -p output
 WORKDIR /root/sfuzz/build/fuzzer
 RUN cp ../../assets . -r
-
+RUN cp ~/.solc-select/artifacts/solc-0.4.16/solc-0.4.16 /bin/
 
 # Copy executable file
 WORKDIR /root/
 ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
 
-RUN cp ~/.solc-select/artifacts/solc-0.4.16/solc-0.4.16 /bin/
+# Finally, install dependencies that are regularly updated in the last step to
+# avoid invalidating Docker cache of previous layers
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
 
 # Entry point when running the container as an executable
 WORKDIR /root/

@@ -11,11 +11,13 @@ WORKDIR /root/
 # Install Slither 0.9.3
 RUN pip install slither-analyzer==0.9.3
 
-# Update additional utilities to the newest version
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
-
 # Copy executable file
 ADD smartbench/tools/slither/run-slither.sh /root/
 
+# Finally, install dependencies that are regularly updated in the last step to
+# avoid invalidating Docker cache of previous layers
+RUN  pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
+
 # Entry point when running the container as an executable
+WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

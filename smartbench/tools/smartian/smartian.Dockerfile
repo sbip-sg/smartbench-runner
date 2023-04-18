@@ -28,5 +28,9 @@ RUN make
 WORKDIR /root/
 ADD smartbench/tools/smartian/run-smartian.sh /root/
 
+# Finally, install dependencies that are regularly updated in the last step to
+# avoid invalidating Docker cache of previous layers
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
+
 # Entry point when running the container as an executable
 ENTRYPOINT [ "/bin/bash" ]
