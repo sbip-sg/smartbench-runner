@@ -142,13 +142,13 @@ def analyze_test_file(
         safe_print(f"{runner}: {test_file}\n")
     else:
         printer.print_medium_dashed_separator_line()
-        safe_print(f"Analyzing: {test_file}")
+        safe_print(f"Analyzing: {test_file}\n")
 
     contracts = collect_testing_contracts(test_file, test_contracts)
 
     if not contracts:
         safe_print(
-            f"\nNo input contract is specified for test file: {test_file}\n\n"
+            f"No input contract is specified for test file: {test_file}\n\n"
             "Skip analyzing it!"
         )
         return None
@@ -171,7 +171,7 @@ def analyze_test_file(
         return None
 
     debug(f"COMMAND: {cmd}")
-    print_unless(parallel_mode, f"Output dir: {test_output_dir}")
+    print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
 
     try:
         # Prepare to run the analyzer

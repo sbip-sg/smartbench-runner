@@ -142,13 +142,9 @@ class Tool:
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
     ) -> bool:
-        """Default function to check whether an issue reported by the
-        tool is related to a bug annotation.
+        """Default function to check whether the location of an issue reported
+        by an analysis tool is related to the location of a bug annotation.
         """
-
-        # Check for issue kind
-        if issue.issue_kind != annot.annot_kind:
-            return False
 
         iloc: Location = issue.location
         # Check whether the issue location is covered by the annotation location.

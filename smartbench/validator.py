@@ -3,30 +3,21 @@
 """Module to validate analysis results with bug annotations."""
 
 # Standard Library
-from dataclasses import dataclass
-from enum import Enum
 from typing import List, Tuple
 
 # Third Party
 import more_itertools as mit
 
 # Library
-from smartbench import annotation, issue, result
 from smartbench.annotation import AnnotFormat, BugAnnot
-from smartbench.bugdb.sbc import SBC
 from smartbench.issue import Issue
+from smartbench.printer import safe_print
 from smartbench.solidity.loc import Location
-from smartbench.printer import print_unless, safe_print
-from smartbench.tools.confuzzius import confuzzius
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
-from smartbench.tools.mythril import mythril
 from smartbench.tools.mythril.mythril import Mythril
-from smartbench.tools.sfuzz import sfuzz
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
-from smartbench.tools.slither import slither
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.smartian import smartian
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
@@ -95,7 +86,7 @@ def match_issue_to_annotation(
 
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
-        if annot.sbc != annot.sbc:
+        if issue.sbc != annot.sbc:
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
@@ -103,44 +94,8 @@ def match_issue_to_annotation(
 
     # Check whether the issue and bug annotation are of the same file.
     iloc: Location = issue.location
-    # Remove unneccessary path information
-    # if iloc.file_path != annot.file_path:
-    #     return False
 
-    match_command = None
-
-    if isinstance(tool, Slither):
-        tool.match_location_of_issue_to_annotation(issue, annot)
-
-    if isinstance(tool, Sfuzz):
-        tool.match_location_of_issue_to_annotation(issue, annot)
-
-    if isinstance(tool, Confuzzius):
-        tool.match_location_of_issue_to_annotation(issue, annot)
-
-    if isinstance(tool, Mythril):
-        tool.match_location_of_issue_to_annotation(issue, annot)
-
-    if isinstance(tool, Smartian):
-        tool.match_location_of_issue_to_annotation(issue, annot)
-
-    if tool.is_smartfuzz():
-        match_command = smartfuzz.match_location_of_issue_to_annotation
-
-    if match_command:
-        return match_command(issue, annot)
-
-    # Check whether the issue location is covered by the annotation location.
-    if iloc.start_line is None or iloc.end_line is None:
-        return False
-    if iloc.start_line < annot.start_line + 1:
-        return False
-    if iloc.end_line > annot.end_line - 1:
-        return False
-
-    # Pass all criteria to match an issue with a bug annotation
-    return True
-
+    return tool.match_location_of_issue_to_annotation(issue, annot)
 
 def validate_issues(
     tool: Tool,

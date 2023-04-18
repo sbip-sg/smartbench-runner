@@ -10,10 +10,11 @@ from typing import List, Optional
 
 # Library
 from smartbench import logger
+from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.solidity.loc import Localizer, Location
 from smartbench.printer import debug, error, safe_print, warning
+from smartbench.solidity.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
 
@@ -154,6 +155,9 @@ class Slither(Tool):
                 return IssueKind.UNCHECKED_SEND
             if checker == "unchecked-lowlevel":
                 return IssueKind.UNCHECKED_LOWLEVEL_CODE
+
+        if "allows anyone to destruct the contract" in description:
+            return IssueKind.UNSAFE_SELFDESTRUCT
 
         if "Low level call" in description:
             return IssueKind.LOW_LEVEL_CALL
@@ -313,3 +317,26 @@ class Slither(Tool):
             return issues
         except ValueError:
             return []
+
+    def match_location_of_issue_to_annotation(
+        self, issue: Issue, annot: BugAnnot
+    ) -> bool:
+        """Matching location of an issue reported by Slither with the location
+        of the bug annotation.
+        """
+
+        if issue.issue_kind != annot.annot_kind:
+            return False
+
+        iloc: Location = issue.location
+
+        # The issue location reported by Slither should cover the location of
+        # the bug annotation.
+        if iloc.start_line is not None and iloc.start_line > annot.start_line:
+            return False
+
+        if iloc.end_line is not None and iloc.end_line < annot.end_line:
+            return False
+
+        # Otherwise, returns True
+        return True
