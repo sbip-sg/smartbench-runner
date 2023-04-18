@@ -197,7 +197,6 @@ def analyze_test_file(
     # safe_print("Test contracts:", contracts)
 
     try:
-        print(f"TOOL: {tool}")
         cmd = tool.make_analysis_command(
             test_file,
             contracts,

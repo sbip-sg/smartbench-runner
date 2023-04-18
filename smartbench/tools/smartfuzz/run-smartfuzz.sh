@@ -122,7 +122,7 @@ fi
 
 # Auto-detect Solc version if it wasn't specified
 if [[ $SOLC_VER == "" ]]; then
-    SOLC_VER=$(solc-detect $TEST_FILE)
+    SOLC_VER=$(solc-detect -q $TEST_FILE)
 fi
 
 COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"

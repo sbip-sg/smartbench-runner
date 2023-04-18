@@ -114,7 +114,8 @@ def get_candidate_testing_contracts(
     try:
         if solc_version is None:
             solc_version = detect_required_solc_version(test_file)
-        print(f"SOLC VERSION: {solc_version}")
+        debug(f"Solc version: {solc_version}")
+
         ast = SolidityAst(test_file, version=solc_version)
         return ast.all_contract_names
     except Exception:

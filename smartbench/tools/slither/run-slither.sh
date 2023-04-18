@@ -59,7 +59,7 @@ fi
 # Analyze test file
 
 # Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
+SOLC_VER=$(solc-detect -q $TEST_FILE)
 
 # Run Slither
 SOLC_VERSION=$SOLC_VER slither $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1

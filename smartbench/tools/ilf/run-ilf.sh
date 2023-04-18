@@ -143,7 +143,7 @@ done
 echo "};" >> $DEPLOY_FILE
 
 # Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
+SOLC_VER=$(solc-detect -q $TEST_FILE)
 
 # Deploy contracts and extract deployment transactions
 SOLC_VERSION=$SOLC_VER GOPATH=$GO_DIR \

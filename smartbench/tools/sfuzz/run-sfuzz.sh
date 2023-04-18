@@ -63,7 +63,7 @@ else
 fi
 
 # Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
+SOLC_VER=$(solc-detect -q $TEST_FILE)
 
 # Run sFuzz insider the `build/fuzzer` repository
 cd $TOOL_DIR/build/fuzzer
@@ -80,7 +80,7 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
 done
 
 # Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
+SOLC_VER=$(solc-detect -q $TEST_FILE)
 
 solc-select use $SOLC_VER
 
