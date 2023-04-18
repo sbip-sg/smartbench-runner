@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Standard Library
+import os
 import shlex
 import subprocess
 
@@ -8,20 +9,25 @@ from subprocess import CalledProcessError
 from typing import Dict, List, Optional
 
 # Library
-from smartbench.printer import error, safe_print
+from smartbench.printer import debug, error, error_traceback, safe_print
 from smartbench.tools.tool import Tool
+
+
+# Init some paths
+SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
+DOCKER_INSTALLER = "install-tool-docker.sh"
 
 
 class DockerContainer:
     """Class modelling a docker container for a job"""
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name.lower()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
-    def start(self):
+    def start(self) -> None:
         """Start the docker container"""
         command = f"docker start {self.name}"
         try:
@@ -36,7 +42,7 @@ class DockerContainer:
             error(f"Failed to start Docker container: {self}!\n")
             raise err
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the docker container"""
         command = f"docker stop {self.name}"
         try:
@@ -52,31 +58,24 @@ class DockerContainer:
             raise err
 
 
-class AnalysisJob:
-    """Class modelling an analysis job, which can run locally or using Docker."""
+def install_docker_containers(tool_id: str, num_containers: int) -> bool:
+    "Install docker containers. Return `True` if the installation succeeds."
+    # Prepare command to install docker containers
+    cmd = os.path.join(SMARTBENCH_ROOT, DOCKER_INSTALLER)
+    cmd += f" -t {tool_id} -n {num_containers} --force-install"
 
-    def __init__(
-        self,
-        tool: Tool,
-        test_files: List[str],
-        test_contracts: Optional[Dict[str, List[str]]],
-        job_output_dir: str,
-        solc_version: Optional[str] = None,
-        timeout=None,
-        docker_container: Optional[DockerContainer] = None,
-    ):
-        self.tool: Tool = tool
+    debug(f"Command: {cmd}")
 
-        # List of test file, which are relative path to the `/root/`
-        # folder in a Docker container
-        self.test_files: List[str] = list(test_files)
-        self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
-        self.solc_version = solc_version
-
-        # Output directory of a job to store results of all test files
-        self.job_output_dir: str = job_output_dir
-        self.timeout: Optional[int] = timeout
-        self.docker_container: Optional[DockerContainer] = docker_container
-
-    def __str__(self):
-        return f"{self.docker_container.name}: {len(self.test_files)} tasks"
+    try:
+        with subprocess.Popen(
+            shlex.split(cmd),
+            # stdout=subprocess.PIPE,
+            # stderr=subprocess.PIPE,
+            shell=False,
+        ) as proc:
+            # Install Docker
+            (stdout, _) = proc.communicate()
+            return True
+    except Exception:
+        error_traceback(f"Failed to install docker container: {cmd}")
+        return False

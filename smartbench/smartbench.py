@@ -5,33 +5,51 @@ import argparse
 import signal
 import sys
 
+from typing import List
+
 # Library
-from smartbench import analyze, annotation, benchmark, deploy, flags, result
+from smartbench import (
+    analyze,
+    annotation,
+    benchmark,
+    deploy,
+    docker,
+    flags,
+    result,
+)
 from smartbench.cli import Command, parse_cli_arguments
-from smartbench.printer import error
+from smartbench.printer import error, safe_print
 from smartbench.tools.config import configure_analysis_tools
+from smartbench.tools.tool import Tool
 
 
-def signal_handler(_sig, _frame):
+def handle_signal_interupt(_sig, _frame) -> None:
+    """Handling signal SIGINT."""
     print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
 
 
 def analyze_smart_contracts(args):
     """Run analyzers to analyze input smart contracts"""
-    # Prepare analysis tools and test files
-    tools = configure_analysis_tools(args.tools)
+    # Configure analysis tools
+    tools: List[Tool] = configure_analysis_tools(args.tools)
+
+    # Prepare docker environment
+    jobs = 1 if args.jobs is None else args.jobs
+    if args.install_docker:
+        for tool in tools:
+            safe_print(f"Install docker {jobs} container(s) for: {tool.id}")
+            if not docker.install_docker_containers(tool.id, jobs):
+                error("Failed to install docker container!")
+                sys.exit(1)
+
+    # Configure test files
     test_files = benchmark.collect_test_files(args.input_files_directories)
     test_contracts = (
         None
         if args.input_contracts is None
         else benchmark.collect_test_contracts(args.input_contracts)
     )
-
-    print(f"TEST CONTRACT: {test_contracts}")
-
-    # Prepare environment
-    jobs = 1 if args.jobs is None else args.jobs
 
     # Perform the analysis
     analyze.perform_analysis(
@@ -126,5 +144,5 @@ def main():
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, handle_signal_interupt)
     main()

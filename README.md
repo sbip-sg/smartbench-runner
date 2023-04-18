@@ -20,18 +20,29 @@
 
 ## Features
 
-- `analyze`: analyze contracts and record results
+### Analysis
+
+- Analyze contracts, validate results, and print benchmarking information.
 
   ```sh
-  ./smartbench.sh analyze examples -t slither
-  ./smartbench.sh analyze examples/*.sol -t slither
+  ./smartbench.sh analyze examples -t slither --validate --benchmarking
   ```
+
+- Install docker container and perform the analysis
+
+  ```sh
+  ./smartbench.sh analyze examples -t confuzzius --docker -jobs 5 --install-docker
+  ```
+
+### Parse result
 
 - `parse-results`: parse existing raw results obtained from previous analyses.
 
   ```sh
   ./smartbench.sh parse-results results/<path_to_results>/
   ```
+
+### Parse bug annotations
 
 - `parse-annots`: parse bug annotations in smart contracts.
 

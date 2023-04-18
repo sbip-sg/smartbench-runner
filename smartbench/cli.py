@@ -106,6 +106,13 @@ def parse_cli_arguments():
         help="Running analysis tools in Docker.",
     )
 
+    # Install Docker containers
+    analyze_parser.add_argument(
+        "--install-docker",
+        action="store_true",
+        help="Install Docker with the newest code.",
+    )
+
     # Timeout for each test file.
     analyze_parser.add_argument(
         "--timeout",

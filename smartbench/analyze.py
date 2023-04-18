@@ -15,7 +15,7 @@ from typing import Dict, List, Optional
 
 # Library
 from smartbench import annotation, printer, result, validator
-from smartbench.docker import AnalysisJob, DockerContainer
+from smartbench.docker import DockerContainer
 from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
@@ -29,6 +29,36 @@ from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
+
+
+class AnalysisJob:
+    """Class modelling an analysis job, which can run locally or using Docker."""
+
+    def __init__(
+        self,
+        tool: Tool,
+        test_files: List[str],
+        test_contracts: Optional[Dict[str, List[str]]],
+        job_output_dir: str,
+        solc_version: Optional[str] = None,
+        timeout: Optional[int] = None,
+        docker_container: Optional[DockerContainer] = None,
+    ):
+        self.tool: Tool = tool
+
+        # List of test file, which are relative path to the `/root/`
+        # folder in a Docker container
+        self.test_files: List[str] = list(test_files)
+        self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
+        self.solc_version = solc_version
+
+        # Output directory of a job to store results of all test files
+        self.job_output_dir: str = job_output_dir
+        self.timeout: Optional[int] = timeout
+        self.docker_container: Optional[DockerContainer] = docker_container
+
+    def __str__(self):
+        return f"{self.docker_container.name}: {len(self.test_files)} tasks"
 
 
 def log_analysis_command(
@@ -62,8 +92,8 @@ def log_analysis_command(
             )
             file.write(f"{command}\n\n")
         return True
-    except Exception as err:
-        error(f"Failed to log analysis command to: {log_file}\n\n{err}")
+    except Exception:
+        error_traceback(f"Failed to log analysis command to: {log_file}")
         return False
 
 
@@ -202,13 +232,12 @@ def analyze_test_file(
 
         log_analysis_output(tool, stdout, test_output_dir)
 
-    except Exception as err:
+    except Exception:
         runner = "local" if container is None else f"docker:{container.name}"
         if parallel_mode and container:
-            error(f"{container.name}: failed to run command: {cmd}\n\n{err}")
+            error_traceback(f"{container.name}: failed to run command: {cmd}")
         else:
-            error(f"Failed to run command: {cmd}\n\n{err}")
-            traceback.print_exc()
+            error_traceback(f"Failed to run command: {cmd}")
         return None
 
     # Process analysis output
