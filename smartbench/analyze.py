@@ -166,11 +166,13 @@ def analyze_test_file(
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
     benchmarking: bool = False,
     parallel_mode: bool = False,
-) -> Optional[AnalysisResult]:
+) -> AnalysisResult:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files."""
+
+    test_name = os.path.basename(test_file)
 
     # Reset issue index counter for the current test file
     Issue.index_counter = 1
@@ -192,7 +194,7 @@ def analyze_test_file(
             f"No input contract is specified for test file: {test_file}\n\n"
             "Skip analyzing it!"
         )
-        return None
+        return AnalysisResult(tool, test_name, False)
 
     # safe_print("Test contracts:", contracts)
 
@@ -207,14 +209,14 @@ def analyze_test_file(
         )
     except Exception:
         error_traceback(f"Failed to make anlaysis command for: {tool.id}")
-        return None
+        return AnalysisResult(tool, test_name, False)
 
     if cmd is None:
         warning(f"Unable to make analysis command for tool: {tool.name}\n")
-        return None
+        return AnalysisResult(tool, test_name, False)
 
     if not log_analysis_command(tool, test_file, cmd, test_output_dir):
-        return None
+        return AnalysisResult(tool, test_name, False)
 
     debug(f"COMMAND: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
@@ -238,7 +240,7 @@ def analyze_test_file(
             error_traceback(f"{container.name}: failed to run command: {cmd}")
         else:
             error_traceback(f"Failed to run command: {cmd}")
-        return None
+        return AnalysisResult(tool, test_name, False)
 
     # Process analysis output
     issues = tool.parse_analysis_output(test_output_dir)
@@ -248,7 +250,6 @@ def analyze_test_file(
 
     # Validating reported issues
     bug_annots = []
-    test_name = os.path.basename(test_file)
     validation = None
     if validate or benchmarking:
         print_unless(parallel_mode, "Bug annotations:")
@@ -258,7 +259,7 @@ def analyze_test_file(
         print_unless(parallel_mode, "")
         validation = validator.validate_issues(tool, issues, bug_annots)
 
-    res = AnalysisResult(tool, test_name, issues, bug_annots, validation)
+    res = AnalysisResult(tool, test_name, True, issues, bug_annots, validation)
 
     # Print benchmarking information
     res.print_detailed_summary(parallel_mode)

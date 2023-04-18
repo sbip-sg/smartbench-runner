@@ -31,12 +31,14 @@ class AnalysisResult:
         self,
         tool: Tool,
         test_file: str,
-        issues: List[Issue],
-        bug_annots: List[BugAnnot],
-        validation_result: Optional[ValidationResult],
+        is_successful: bool,
+        issues: List[Issue] = [],
+        bug_annots: List[BugAnnot] = [],
+        validation_result: Optional[ValidationResult] = None,
     ):
         self.tool: Tool = tool
         self.test_file: str = test_file
+        self.is_successful: bool = is_successful
 
         # All the issues that are reported
         self.issues: List[Issue] = list(issues)
@@ -62,6 +64,7 @@ class AnalysisResult:
             safe_print("-------------------")
             safe_print(f"- Tool: {self.tool.name}")
             safe_print(f"- Test file: {self.test_file}")
+            safe_print(f"- Status: {self.test_file}")
             safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
             safe_print(f"- Detected issues: {len(self.issues)}")
 
@@ -83,6 +86,10 @@ class AnalysisResult:
         print_unless(parallel_mode, "")
 
     def print_benchmarking_summary(self) -> None:
+        if not self.is_successful:
+            safe_print(f"- {self.test_file}: Failed")
+            return
+
         if self.validation_result is None:
             raise ValueError("Results were not validated for benchmarking!")
 
@@ -93,8 +100,8 @@ class AnalysisResult:
         num_unlabelled = len(validation.unlabelled_issues)
 
         safe_print(
-            f"- {self.test_file}: {num_issues}, "
-            f"{num_correct}, {num_missing}, {num_unlabelled}"
+            f"- {self.test_file}: Succeeded, "
+            f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
         )
 
 
@@ -190,8 +197,9 @@ def parse_result_directory(
                     correct_bugs += validation.num_correct_bugs()
                 print("")
 
+            # FIXME: need to check and update the analysis status
             res = AnalysisResult(
-                tool, test_file, issues, bug_annots, validation
+                tool, test_file, True, issues, bug_annots, validation
             )
             res.print_detailed_summary(False)
             all_results.append(res)
@@ -307,6 +315,10 @@ def export_benchmarking_results(
             file.write("======================================\n\n")
 
             for result in results:
+                if not result.is_successful:
+                    safe_print(f"- {result.test_file}: Failed")
+                    continue
+
                 validation = result.validation_result
                 if validation is None:
                     warning(f"Validation result not found: {result.test_file}")
