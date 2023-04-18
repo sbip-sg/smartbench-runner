@@ -64,6 +64,12 @@ class Confuzzius(Tool):
         # Input file must be the first argument to be run by docker
         cmd += f" -f {test_file}"
 
+        # Output directory
+        cmd = cmd + " -r " + test_output_dir
+
+        if len(contracts) > 0:
+            cmd = cmd + " -c " + " ".join(contracts)
+
         # Pass arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
@@ -76,10 +82,6 @@ class Confuzzius(Tool):
             timeout = self.default_timeout if timeout is None else timeout
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
-
-        # Output file
-        output_file = self.configure_output_file(test_output_dir)
-        cmd = cmd + " -r " + output_file
 
         return cmd
 
@@ -144,9 +146,24 @@ class Confuzzius(Tool):
 
         return IssueKind.UNKNOWN
 
+
     def parse_analysis_output(
         self,
         test_output_dir: str,
+    ) -> List[Issue]:
+        issues = []
+        log_file = os.path.join(test_output_dir, self.log_file)
+
+        for (directory, _, _) in os.walk(test_output_dir):
+            issues += self.parse_analysis_output_for_one_contract(directory, log_file)
+
+        return issues
+
+
+    def parse_analysis_output_for_one_contract(
+        self,
+        test_output_dir: str,
+        log_file: str
     ) -> List[Issue]:
         """Parse output of Confuzzius"""
         output = None
@@ -154,8 +171,6 @@ class Confuzzius(Tool):
         output_file = os.path.join(test_output_dir, self.json_output_file)
         if not os.path.exists(output_file):
             return []
-
-        log_file = os.path.join(test_output_dir, self.log_file)
 
         debug("Confuzzius parse file: ", output_file)
         try:
@@ -169,63 +184,95 @@ class Confuzzius(Tool):
         try:
             issues = []
 
-            all_results = list(output.values())
-            results = all_results[0]
-            bug_list = results.get("errors")
-            bugs = list(bug_list.values())
+            contracts = list(output.keys())
+            for contract in contracts:
+                contract_results = output.get(contract);
+                bugs = list(contract_results.get("errors").values())
 
-            for bug in bugs:
-                error = bug[0]
-                kind = self.parse_issue_kind(error.get("type"))
-                location = self.parse_source_location(
-                    log_file, error.get("line"), error.get("column")
-                )
-                severity = self.parse_issue_severity(error.get("severity"))
-                issue = Issue(
-                    kind,
-                    "",
-                    severity,
-                    Confidence.UNKNOWN,
-                    location,
-                    checker,
-                )
-                issues.append(issue)
+                for bug in bugs:
+                    error = bug[0]
+                    kind = self.parse_issue_kind(error.get("type"))
+                    location = self.parse_source_location(
+                        log_file, error.get("line"), error.get("column")
+                    )
+                    severity = self.parse_issue_severity(error.get("severity"))
+                    issue = Issue(
+                        kind,
+                        "",
+                        severity,
+                        Confidence.UNKNOWN,
+                        location,
+                        checker,
+                    )
+                    issues.append(issue)
             return issues
 
         except ValueError:
             return []
 
+
     def parse_instruction_coverage(self, test_output_dir: str):
+        contract_coverage_list = []
+        for (directory, _, _) in os.walk(test_output_dir):
+            output_file = os.path.join(directory, self.json_output_file)
+            contract_coverage_pair = self.parse_instruction_coverage_for_one_contract(output_file)
+
+            if contract_coverage_pair != None:
+                contract_coverage_list.append((contract_coverage_pair[0], contract_coverage_pair[1]))
+
+
+        if contract_coverage_list == []:
+            return None
+
+        results_json_obj = {
+            "coverage-interval": -1,
+        }
+        for (contract_name, contract_coverage) in contract_coverage_list:
+            results_json_obj[contract_name] = contract_coverage
+
+        results_json_obj_str = json.dumps(results_json_obj, indent=2)
+        debug(f"coverage: {results_json_obj_str}")
+
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        with open(coverage_file, "w", encoding="utf-8") as file:
+            file.write(results_json_obj_str)
+            file.close()
+
+        return coverage_file
+
+
+    def parse_instruction_coverage_for_one_contract(self, output_file: str):
         """Parse code coverage of Confuzzius"""
-        output_file = os.path.join(test_output_dir, self.json_output_file)
-        output = None
+        if not os.path.exists(output_file):
+            return None
 
         debug("Confuzzius parse file: ", output_file)
+        output = None
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception as err:
             error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
-            return []
+            return None
 
-        try:
-            coverages = [(0, 0)]
-            current_time = 0
+        contracts = list(output.keys())
+        if contracts == []:
+            return None
 
-            all_results = list(output.values())
-            results = all_results[0]
-            generations = results.get("generations")
-            # generations = list(generations.values())
-
+        first_coverage = (0, 0)
+        contract = contracts[0]
+        contract_results = output.get(contract);
+        generations = contract_results.get("generations")
+        contract_coverage = [first_coverage]
+        current_time = 0
+        if generations is not None:
             for generation in generations:
                 time = float("{:.1f}".format(generation.get("time")))
                 coverage = float(
                     "{:.1f}".format(generation.get("code_coverage"))
                 )
                 if time - current_time >= 1:
-                    coverages.append((time, coverage))
+                    contract_coverage.append((time, coverage))
                     current_time = time
-            return coverages
 
-        except ValueError:
-            return []
+        return (contract, contract_coverage)

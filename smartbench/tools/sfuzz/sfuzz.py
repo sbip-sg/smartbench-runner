@@ -6,6 +6,7 @@
 import math
 import os
 import re
+import json
 
 from typing import List, Optional, Union
 
@@ -162,22 +163,29 @@ class Sfuzz(Tool):
         """Parse instruction coverage of sFuzz"""
         lines = None
         log_file = os.path.join(test_output_dir, self.log_file)
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
         except Exception as err:
             error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
-            return []
+            return None
 
-        contract_coverage = [(0)]
         contract_coverage_list = []
+        contract_name = ""
+        first_coverage = (0)
+        contract_coverage = [first_coverage]
+
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
-            fuzz_match = re.search(r">> Fuzz", line)
+            fuzz_match = re.search(r">> Fuzz [a-zA-Z]+", line)
             if fuzz_match:
-                if contract_coverage != [(0)]:
-                    contract_coverage_list.append(contract_coverage)
-                    contract_coverage = [(0)]
+                contract = fuzz_match.group()
+                contract_name = contract.removeprefix(">> Fuzz ")
+                print(f"contract: {contract_name}")
+                if len(contract_coverage) != 1:
+                    contract_coverage_list.append((contract_name, contract_coverage))
+                    contract_coverage = [first_coverage]
 
             if match_str:
                 coverage = match_str.group()
@@ -185,7 +193,24 @@ class Sfuzz(Tool):
                 contract_coverage.append(int(coverage))
 
         # Add the results of the last contract
-        if contract_coverage != [(0)]:
-            contract_coverage_list.append(contract_coverage)
 
-        return contract_coverage_list
+        if contract_coverage != [0]:
+            contract_coverage_list.append((contract_name, contract_coverage))
+
+        if contract_coverage_list == []:
+            return None
+
+        results_json_obj = {
+            "coverage-interval": 1,
+        }
+        for (contract_name, contract_coverage) in contract_coverage_list:
+            results_json_obj[contract_name] = contract_coverage
+
+        results_json_obj_str = json.dumps(results_json_obj, indent=2)
+        debug(f"coverage: {results_json_obj_str}")
+
+        with open(coverage_file, "w", encoding="utf-8") as file:
+            file.write(results_json_obj_str)
+            file.close()
+
+        return coverage_file

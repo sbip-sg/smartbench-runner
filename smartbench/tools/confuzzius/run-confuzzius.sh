@@ -14,6 +14,8 @@ print_usage () {
     echo ""
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
+    echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
+    echo "  -r <output-dir>       Output directory."
     echo "  -h, --help            Print this usage."
     echo ""
     echo "Addtional arguments passing to Confuzzius can be put at the end of this command."
@@ -28,6 +30,8 @@ print_help () {
 # Parse arguments
 
 TEST_FILE=""
+CONTRACT_NAMES=()
+OUTPUT_DIR=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -36,6 +40,26 @@ while [[ $# -gt 0 ]]; do
             TEST_FILE=$(realpath $2)
             shift # past argument
             shift # past value
+            ;;
+        -r)
+            OUTPUT_DIR=$2
+            shift # past argument
+            shift # past value
+            ;;
+        -c)
+            shift # past argument
+            # Parse contract names
+            while [[ $# -gt 0 ]]; do
+                case $1 in
+                    -*|--*)
+                        break
+                        ;;
+                    *)
+                        CONTRACT_NAMES+=("$1")
+                        shift  # past value
+                        ;;
+                esac
+            done
             ;;
         -h|--help)
             print_usage
@@ -50,9 +74,25 @@ done
 
 # Checking test file
 if [[ $TEST_FILE == "" ]]; then
+    echo "Error: input file is not specified!"
+    print_help
+    exit 1
+fi
+
+# Checking test file
+if [[ $OUTPUT_DIR == "" ]]; then
     echo "Error: output dir is not specified!"
     print_help
     exit 1
+fi
+
+# If contract names are not specified from the input, analyze all contracts
+# obtained after compilation.
+if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
+    CURRENT_DIR=$(pwd)
+    cd $COMPILED_CONTRACTS_DIR
+    CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
+    cd $CURRENT_DIR
 fi
 
 ################################################
@@ -68,6 +108,14 @@ fi
 # Detect Solc version to be used.
 SOLC_VER=$(solc-detect $TEST_FILE)
 
-# Run Confuzzius
-SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
-    -s $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1
+# Run Confuzzius on each candidate contract
+for CONTRACT in ${CONTRACT_NAMES[@]}; do
+    echo "==============================="
+    echo "** Fuzzing contract: $CONTRACT"
+    echo "** OUTPUT: $OUTPUT_DIR/$CONTRACT/confuzzius_result.json"
+    mkdir -p "$OUTPUT_DIR/$CONTRACT"
+    SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
+                           -c $CONTRACT -s $TEST_FILE \
+                           -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
+                           ${ADDITIONAL_ARGS[@]} 2>&1
+done
