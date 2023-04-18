@@ -31,21 +31,20 @@ def print_unless(condition: bool, *args: str) -> None:
 
 def warning(*args: str) -> None:
     """Print a warning message"""
-    safe_print("\n!!WARNING: " + " ".join(map(str, args)) + "\n")
+    safe_print("\n!! WARNING: " + " ".join(map(str, args)) + "\n")
 
 
 def error(*args: str) -> None:
     """Print an error message"""
-    safe_print("\n!!ERROR: " + " ".join(map(str, args)) + "\n")
+    safe_print("\n!! ERROR: " + " ".join(map(str, args)) + "\n")
 
 
 def error_traceback(*args: str) -> None:
     """Print an error message"""
-    safe_print("\n!!ERROR: " + " ".join(map(str, args)) + "\n")
+    safe_print("\n!! ERROR: " + " ".join(map(str, args)) + "\n")
     exceptions = traceback.format_exc()
-    safe_print(">>>>>>>>>>>> Error Backtrace >>>>>>>>>>>>\n")
+    safe_print("*** Backtrace ***\n")
     safe_print(f"{exceptions}")
-    safe_print("<<<<<<<<< End of Error Backtrace <<<<<<<<\n")
 
 
 def debug(*args: str) -> None:

@@ -17,7 +17,14 @@ from typing import Dict, List, Optional
 from smartbench import annotation, printer, result, validator
 from smartbench.docker import AnalysisJob, DockerContainer
 from smartbench.issue import Issue
-from smartbench.printer import debug, error, print_unless, safe_print, warning
+from smartbench.printer import (
+    debug,
+    error,
+    error_traceback,
+    print_unless,
+    safe_print,
+    warning,
+)
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
@@ -159,18 +166,18 @@ def analyze_test_file(
 
     # safe_print("Test contracts:", contracts)
 
-    # print("========== before ")
-
-    cmd = tool.make_analysis_command(
-        test_file,
-        contracts,
-        test_output_dir,
-        solc_version,
-        container,
-        timeout,
-    )
-
-    # print("========== after ")
+    try:
+        cmd = tool.make_analysis_command(
+            test_file,
+            contracts,
+            test_output_dir,
+            solc_version,
+            container,
+            timeout,
+        )
+    except Exception:
+        error_traceback(f"Failed to make anlaysis command for: {tool.id}")
+        return None
 
     if cmd is None:
         warning(f"Unable to make analysis command for tool: {tool.name}\n")
