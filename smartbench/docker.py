@@ -61,6 +61,7 @@ class AnalysisJob:
         test_files: List[str],
         test_contracts: Optional[Dict[str, List[str]]],
         job_output_dir: str,
+        solc_version: Optional[str] = None,
         timeout=None,
         docker_container: Optional[DockerContainer] = None,
     ):
@@ -70,6 +71,7 @@ class AnalysisJob:
         # folder in a Docker container
         self.test_files: List[str] = list(test_files)
         self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
+        self.solc_version = solc_version
 
         # Output directory of a job to store results of all test files
         self.job_output_dir: str = job_output_dir

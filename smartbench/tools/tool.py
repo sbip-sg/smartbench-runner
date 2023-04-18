@@ -88,14 +88,13 @@ class Tool:
         """Check if the current tool is ILF."""
         return self.id.casefold() == ilf.TOOL_NAME.casefold()
 
-    # FIXME: make this function abstract, implement in each tool instead.
+    @abstractmethod
     def make_analysis_command(
         self,
         test_file: str,
         contract_names: List[str],
         test_output_dir: str,
         timeout: Optional[int] = None,
-        use_docker=True,
     ) -> str:
         """Make an analysis command for a tool."""
         # Deterministically increase from seed. Reproducible randomness

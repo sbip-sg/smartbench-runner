@@ -102,12 +102,13 @@ def log_analysis_info(
 def collect_testing_contracts(
     test_file: str,
     test_contracts: Optional[Dict[str, List[str]]],
+    solc_version: Optional[str] = None,
 ) -> List[str]:
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
 
     if test_contracts is None:
-        return solc.get_candidate_testing_contracts(test_file)
+        return solc.get_candidate_testing_contracts(test_file, solc_version)
 
     test_file_name = os.path.basename(test_file)
     contract_names = test_contracts.get(test_file_name)
@@ -122,11 +123,12 @@ def analyze_test_file(
     test_file: str,
     test_contracts: Optional[Dict[str, List[str]]],
     test_output_dir: str,
-    container=Optional[DockerContainer],
+    solc_version: Optional[str] = None,
+    container: Optional[DockerContainer] = None,
     timeout: Optional[int] = None,
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
     benchmarking: bool = False,
-    parallel_mode=False,
+    parallel_mode: bool = False,
 ) -> Optional[AnalysisResult]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
@@ -144,7 +146,9 @@ def analyze_test_file(
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
 
-    contracts = collect_testing_contracts(test_file, test_contracts)
+    contracts = collect_testing_contracts(
+        test_file, test_contracts, solc_version
+    )
 
     if not contracts:
         safe_print(
@@ -250,9 +254,9 @@ def stop_docker_containers(containers: List[DockerContainer]):
 def run_analysis_job(
     job: AnalysisJob,
     result_queue: Queue,
-    validate=False,
-    benchmarking=False,
-    parallel_mode=False,
+    validate: bool = False,
+    benchmarking: bool = False,
+    parallel_mode: bool = False,
 ) -> None:
     """Run an analysis job. Output will be stored in `result_queue`."""
     all_results: List[AnalysisResult] = []
@@ -276,6 +280,7 @@ def run_analysis_job(
             test_file,
             job.test_contracts,
             test_output_dir,
+            job.solc_version,
             job.docker_container,
             job.timeout,
             validate,
@@ -292,11 +297,12 @@ def run_analysis_tool(
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
     tool_output_dir: str,
-    timeout=None,
-    use_docker=True,
-    jobs=1,
-    validate=False,
-    benchmarking=False,
+    solc_version: Optional[str] = None,
+    timeout: Optional[int] = None,
+    use_docker: bool = True,
+    jobs: int = 1,
+    validate: bool = False,
+    benchmarking: bool = False,
 ) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -349,6 +355,7 @@ def run_analysis_tool(
             test_batches[i],
             test_contracts,
             tool_output_dir,
+            solc_version,
             timeout,
             container,
         )
@@ -359,7 +366,7 @@ def run_analysis_tool(
     parallel_mode = jobs > 1
 
     # Use a queue to store all results
-    result_queue: Queue = multiprocessing.Queue()
+    result_queue: Queue[List[AnalysisResult]] = multiprocessing.Queue()
 
     # Run all analysis jobs
     for analysis_job in analysis_jobs:
@@ -394,6 +401,7 @@ def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
+    solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
     use_docker: bool = True,
     jobs: int = 1,
@@ -428,6 +436,7 @@ def perform_analysis(
             test_files,
             test_contracts,
             tool_output_dir,
+            solc_version,
             timeout,
             use_docker,
             jobs,

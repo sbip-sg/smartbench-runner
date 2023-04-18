@@ -83,6 +83,13 @@ def parse_cli_arguments():
         help="Input file specifying test files and contract names to be tested.",
     )
 
+    # Solidity version
+    analyze_parser.add_argument(
+        "--solc-version",
+        type=str,
+        help="Version of the Solidity compiler.",
+    )
+
     # Analysis tool
     analyze_parser.add_argument(
         "-t",

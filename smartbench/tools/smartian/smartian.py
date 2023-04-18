@@ -14,9 +14,9 @@ from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.solidity.loc import Location
 from smartbench.printer import debug, error, warning
 from smartbench.solidity import solc
+from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
@@ -50,7 +50,7 @@ class Smartian(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
-        container=Optional[DockerContainer],
+        container: Optional[DockerContainer] = None,
         timeout: Optional[int] = None,
     ) -> str:
         """Function to make analysis command for `Smartian`. This function should

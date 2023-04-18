@@ -38,6 +38,7 @@ def analyze_smart_contracts(args):
         tools,
         test_files,
         test_contracts,
+        args.solc_version,
         args.timeout,
         args.docker,
         jobs,

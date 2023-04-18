@@ -12,7 +12,7 @@ import subprocess
 import sys
 
 from subprocess import PIPE, Popen
-from typing import List
+from typing import List, Optional
 
 # Third Party
 import solc_detect
@@ -105,11 +105,16 @@ def configure_local_solc_path(test_file: str) -> str:
     return solc_path
 
 
-def get_candidate_testing_contracts(test_file: str) -> List[str]:
+def get_candidate_testing_contracts(
+    test_file: str,
+    solc_version: Optional[str] = None,
+) -> List[str]:
     """Detect Solidity version in a smart contacts."""
 
     try:
-        solc_version = detect_required_solc_version(test_file)
+        if solc_version is None:
+            solc_version = detect_required_solc_version(test_file)
+        print(f"SOLC VERSION: {solc_version}")
         ast = SolidityAst(test_file, version=solc_version)
         return ast.all_contract_names
     except Exception:
