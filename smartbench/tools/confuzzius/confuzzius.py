@@ -7,16 +7,14 @@ import json
 import math
 import os
 
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 # Library
-from smartbench import annotation, logger
-from smartbench.annotation import BugAnnot
+from smartbench import logger
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.printer import debug, error
 from smartbench.solidity.loc import Location
-from smartbench.printer import debug, error, warning
-from smartbench.solidity import solc
 from smartbench.tools.tool import Tool
 
 
@@ -50,6 +48,7 @@ class Confuzzius(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
+        solc_version: Optional[str] = None,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
     ) -> str:
@@ -61,20 +60,17 @@ class Confuzzius(Tool):
         else:
             cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
 
-        # Input file must be the first argument to be run by docker
-        cmd += f" -f {test_file}"
-
-        # Output directory
-        cmd = cmd + " -r " + test_output_dir
-
+        # Input file and contract names
+        cmd = cmd + " -f " + test_file
         if len(contracts) > 0:
             cmd = cmd + " -c " + " ".join(contracts)
 
-        # Pass arguments
-        if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
-        if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+        # Solc version
+        if solc_version is not None:
+            cmd = cmd + " --solc-version " + solc_version
+
+        # Output directory
+        cmd = cmd + " -o " + test_output_dir
 
         # Calculate timeout for each contract if it is not specified in
         # additional arguments of Confuzzius
@@ -82,6 +78,12 @@ class Confuzzius(Tool):
             timeout = self.default_timeout if timeout is None else timeout
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
+
+        # Finally, pass default and additional arguments
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
 
         return cmd
 
@@ -146,7 +148,6 @@ class Confuzzius(Tool):
 
         return IssueKind.UNKNOWN
 
-
     def parse_analysis_output(
         self,
         test_output_dir: str,
@@ -154,16 +155,15 @@ class Confuzzius(Tool):
         issues = []
         log_file = os.path.join(test_output_dir, self.log_file)
 
-        for (directory, _, _) in os.walk(test_output_dir):
-            issues += self.parse_analysis_output_for_one_contract(directory, log_file)
+        for directory, _, _ in os.walk(test_output_dir):
+            issues += self.parse_analysis_output_for_one_contract(
+                directory, log_file
+            )
 
         return issues
 
-
     def parse_analysis_output_for_one_contract(
-        self,
-        test_output_dir: str,
-        log_file: str
+        self, test_output_dir: str, log_file: str
     ) -> List[Issue]:
         """Parse output of Confuzzius"""
         output = None
@@ -186,7 +186,7 @@ class Confuzzius(Tool):
 
             contracts = list(output.keys())
             for contract in contracts:
-                contract_results = output.get(contract);
+                contract_results = output.get(contract)
                 bugs = list(contract_results.get("errors").values())
 
                 for bug in bugs:
@@ -210,16 +210,18 @@ class Confuzzius(Tool):
         except ValueError:
             return []
 
-
     def parse_instruction_coverage(self, test_output_dir: str):
         contract_coverage_list = []
-        for (directory, _, _) in os.walk(test_output_dir):
+        for directory, _, _ in os.walk(test_output_dir):
             output_file = os.path.join(directory, self.json_output_file)
-            contract_coverage_pair = self.parse_instruction_coverage_for_one_contract(output_file)
+            contract_coverage_pair = (
+                self.parse_instruction_coverage_for_one_contract(output_file)
+            )
 
             if contract_coverage_pair != None:
-                contract_coverage_list.append((contract_coverage_pair[0], contract_coverage_pair[1]))
-
+                contract_coverage_list.append(
+                    (contract_coverage_pair[0], contract_coverage_pair[1])
+                )
 
         if contract_coverage_list == []:
             return None
@@ -227,7 +229,7 @@ class Confuzzius(Tool):
         results_json_obj = {
             "coverage-interval": -1,
         }
-        for (contract_name, contract_coverage) in contract_coverage_list:
+        for contract_name, contract_coverage in contract_coverage_list:
             results_json_obj[contract_name] = contract_coverage
 
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
@@ -239,7 +241,6 @@ class Confuzzius(Tool):
             file.close()
 
         return coverage_file
-
 
     def parse_instruction_coverage_for_one_contract(self, output_file: str):
         """Parse code coverage of Confuzzius"""
@@ -261,7 +262,7 @@ class Confuzzius(Tool):
 
         first_coverage = (0, 0)
         contract = contracts[0]
-        contract_results = output.get(contract);
+        contract_results = output.get(contract)
         generations = contract_results.get("generations")
         contract_coverage = [first_coverage]
         current_time = 0

@@ -16,7 +16,7 @@ print_usage () {
     echo "  -f <test-file>            Smart contract file to be analyzed."
     echo "  -c <contract-names>       Names of target contracts (whitespace separated)."
     echo "  -o <output-dir>           Output directory containing analysis results."
-    echo "  -t <timeout>              Timeout for each contract of the test file."
+    echo "  -t <timeout>              Timeout for each target contract."
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
     echo "  -h, --help                Print this usage."
     echo ""

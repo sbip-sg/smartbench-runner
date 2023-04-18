@@ -70,14 +70,12 @@ class Smartian(Tool):
         if len(contracts) > 0:
             cmd = cmd + " -c " + " ".join(contracts)
 
+        # Solc version
         if solc_version is not None:
             cmd = cmd + " --solc-version " + solc_version
 
-        # Pass arguments
-        if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
-        if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+        # Output directory
+        cmd = cmd + " -o " + test_output_dir
 
         # Calculate timeout for each contract if it is not specified in
         # additional arguments of Confuzzius
@@ -89,7 +87,11 @@ class Smartian(Tool):
             contract_timeout = math.ceil(timeout / len(contracts))
             cmd = cmd + " -t " + str(contract_timeout)
 
-        cmd = cmd + " -o " + test_output_dir
+        # Finally, pass default and additional arguments
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
 
         return cmd
 

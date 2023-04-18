@@ -14,8 +14,10 @@ print_usage () {
     echo ""
     echo "Options:"
     echo "  -f <test-file>        Smart contract file to be analyzed."
-    echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
-    echo "  -r <output-dir>       Output directory."
+    echo "  -c <contract-names>   Names of target contracts (whitespace separated)."
+    echo "  -o <output-dir>       Output directory."
+    echo "  -t <timeout>          Timeout for each target contract."
+    echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
     echo "  -h, --help            Print this usage."
     echo ""
     echo "Addtional arguments passing to Confuzzius can be put at the end of this command."
@@ -31,18 +33,15 @@ print_help () {
 
 TEST_FILE=""
 CONTRACT_NAMES=()
+TIMEOUT=0
 OUTPUT_DIR=""
+SOLC_VER=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         -f)
             TEST_FILE=$(realpath $2)
-            shift # past argument
-            shift # past value
-            ;;
-        -r)
-            OUTPUT_DIR=$2
             shift # past argument
             shift # past value
             ;;
@@ -60,6 +59,21 @@ while [[ $# -gt 0 ]]; do
                         ;;
                 esac
             done
+            ;;
+        -o)
+            OUTPUT_DIR="$2"
+            shift  # past argument
+            shift  # past value
+            ;;
+        -t)
+            TIMEOUT=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        --solc-version)
+            SOLC_VER=$2
+            shift  # past argument
+            shift  # past value
             ;;
         -h|--help)
             print_usage
@@ -86,6 +100,40 @@ if [[ $OUTPUT_DIR == "" ]]; then
     exit 1
 fi
 
+# Checking timeout
+if [[ $TIMEOUT -lt 0 ]]; then
+    echo "Error: timeout is invalid or not specified!"
+    print_help
+    exit 1
+fi
+
+
+################################################
+# Configure paths
+
+# Configure tool path when running inside or outside a Docker container.
+if [ -f /.dockerenv ]; then
+    TOOL_DIR="/root/confuzzius"
+else
+    TOOL_DIR="$(realpath $(dirname "$0"))/repo/confuzzius"
+fi
+
+################################################
+# Compile contracts
+
+# Auto-detect Solc version if it wasn't specified
+if [[ $SOLC_VER == "" ]]; then
+    SOLC_VER=$(solc-detect $TEST_FILE)
+fi
+
+COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
+rm -rf $COMPILED_CONTRACTS_DIR
+mkdir $COMPILED_CONTRACTS_DIR
+
+SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
+    -o $COMPILED_CONTRACTS_DIR --overwrite \
+    1>/dev/null 2>&1  # Do not capture output of Solc
+
 # If contract names are not specified from the input, analyze all contracts
 # obtained after compilation.
 if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
@@ -96,17 +144,7 @@ if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
 fi
 
 ################################################
-# Analyze test file
-
-# Configure tool path when running inside or outside a Docker container.
-if [ -f /.dockerenv ]; then
-    TOOL_DIR="/root/confuzzius"
-else
-    TOOL_DIR="$(realpath $(dirname "$0"))/repo/confuzzius"
-fi
-
-# Detect Solc version to be used.
-SOLC_VER=$(solc-detect $TEST_FILE)
+# Analyze contracts
 
 # Run Confuzzius on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
@@ -115,7 +153,7 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "** OUTPUT: $OUTPUT_DIR/$CONTRACT/confuzzius_result.json"
     mkdir -p "$OUTPUT_DIR/$CONTRACT"
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
-                           -c $CONTRACT -s $TEST_FILE \
-                           -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
-                           ${ADDITIONAL_ARGS[@]} 2>&1
+        -s $TEST_FILE -c $CONTRACT -t $TIMEOUT \
+        -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
+        ${ADDITIONAL_ARGS[@]} 2>&1
 done
