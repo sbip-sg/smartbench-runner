@@ -46,27 +46,38 @@ class Slither(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
+        solc_version: Optional[str] = None,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
     ) -> str:
         """
         Function to make an analysis command for Slither.
         """
+
+        # Command
         if container is not None:
             cmd = f"docker exec -it {container.name} /root/{self.executable}"
         else:
             cmd = os.path.join(SLITHER_DIR, self.executable)
 
-        cmd += f" -f {test_file}"
+        # Input file
+        cmd = cmd + " -f " + test_file
 
+        # Solc version
+        if solc_version is not None:
+            cmd = cmd + " --solc-version " + solc_version
+
+        # Output file
+        if output_file := self.configure_output_file(test_output_dir):
+            cmd = cmd + " --json " + output_file
+
+        # Finally, pass default and additional arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
 
-        output_file = self.configure_output_file(test_output_dir)
-
-        return f"{cmd} --json {output_file}"
+        return cmd
 
     def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by Slither."""

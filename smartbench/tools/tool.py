@@ -92,10 +92,6 @@ class Tool:
         """Check if the current tool is SmartFuzz."""
         return self.id.casefold() == smartfuzz.TOOL_NAME.casefold()
 
-    def is_ilf(self):
-        """Check if the current tool is ILF."""
-        return self.id.casefold() == ilf.TOOL_NAME.casefold()
-
     @abstractmethod
     def make_analysis_command(
         self,
