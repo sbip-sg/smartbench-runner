@@ -7,15 +7,24 @@ import shlex
 import signal
 import subprocess
 import sys
+
 from typing import List
 
-from smartbench.tools.config import configure_analysis_tools
-from smartbench.tools.tool import Tool
-
-from smartbench import (analyze, annotation, benchmark, deploy, docker, flags,
-    printer, result)
+# Library
+from smartbench import (
+    analyze,
+    annotation,
+    benchmark,
+    deploy,
+    docker,
+    flags,
+    printer,
+    result,
+)
 from smartbench.cli import Command, parse_cli_arguments
 from smartbench.printer import error, error_traceback, safe_print
+from smartbench.tools.config import configure_analysis_tools
+from smartbench.tools.tool import Tool
 
 
 # Init some paths
@@ -29,7 +38,7 @@ def handle_signal_interupt(_sig, _frame) -> None:
     sys.exit(0)
 
 
-def update_analysis_environment(tools: List[Tool], jobs: int) -> None:
+def update_smartbench_environment() -> None:
     """Update Smartbench environment"""
     printer.print_medium_double_separator_line()
     safe_print("Updating Smartbench environment...\n")
@@ -45,7 +54,9 @@ def update_analysis_environment(tools: List[Tool], jobs: int) -> None:
         error_traceback(f"Failed to install docker container: {cmd}")
         return None
 
-    # Update docker environment
+
+def update_docker_containers(tools: List[Tool], jobs: int) -> None:
+    """Update docker environment"""
     safe_print("Updating Docker containers...\n")
     for tool in tools:
         safe_print(f"Install docker {jobs} container(s) for: {tool.id}")
@@ -62,7 +73,11 @@ def analyze_smart_contracts(args) -> None:
 
     # Update analysis environment
     if args.update_environment:
-        update_analysis_environment(tools, jobs)
+        update_smartbench_environment()
+
+    # Update Docker container
+    if args.update_docker:
+        update_docker_containers(tools, jobs)
 
     # Configure test files
     test_files = benchmark.collect_test_files(args.input_files_directories)

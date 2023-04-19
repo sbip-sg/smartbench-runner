@@ -110,7 +110,14 @@ def parse_cli_arguments():
     analyze_parser.add_argument(
         "--update-environment",
         action="store_true",
-        help="Update analysis environment (Docker, Smartbench, etc).",
+        help="Update Smartbench environment.",
+    )
+
+    # Update
+    analyze_parser.add_argument(
+        "--update-docker",
+        action="store_true",
+        help="Update Docker container.",
     )
 
     # Timeout for each test file.

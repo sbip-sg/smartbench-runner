@@ -237,11 +237,10 @@ def analyze_test_file(
             shell=False,
         ) as proc:
             # Run the analyzer
-            # proc.wait()
             (stdout, _) = proc.communicate()
+            proc.wait()
 
         log_analysis_output(tool, stdout, test_output_dir)
-
     except Exception:
         runner = "local" if container is None else f"docker:{container.name}"
         if parallel_mode and container:
