@@ -70,7 +70,7 @@ class Mythril(Tool):
             + str(timeout)
         )
 
-        output_file = self.configure_json_output_file(test_output_dir)
+        output_file = self.configure_json_output(test_output_dir)
 
         return cmd + " -o " + str(output_file)
 

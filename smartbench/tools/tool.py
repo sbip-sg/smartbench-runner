@@ -65,7 +65,7 @@ class Tool:
             f"Arguments: {self.additional_args}}}"
         )
 
-    def configure_json_output_file(self, result_dir: str) -> Optional[str]:
+    def configure_json_output(self, result_dir: str) -> Optional[str]:
         """
         Configure output file of the tool for a test file.
         """

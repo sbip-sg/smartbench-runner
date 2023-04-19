@@ -13,9 +13,10 @@ from typing import List, Optional, Union
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error
+from smartbench.printer import debug, error, error_traceback
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
+
 
 # Configure some paths
 SMARTFUZZ_DIR = os.path.dirname(__file__)
@@ -72,7 +73,7 @@ class Smartfuzz(Tool):
 
         # Output directory and result file file
         cmd = cmd + " -o " + test_output_dir
-        if output_file := self.configure_json_output_file(test_output_dir):
+        if output_file := self.configure_json_output(test_output_dir):
             cmd += " -r " + output_file
 
         # Calculate timeout for each contract if it is not specified in
@@ -158,56 +159,50 @@ class Smartfuzz(Tool):
     def parse_analysis_output(
         self,
         test_output_dir: str,
-    ) -> List[Issue]:
-        """Parse output of Smartfuzz"""
+    ) -> Optional[List[Issue]]:
+        """Parse output of Smartfuzz. Return a list of detected issues, or
+        `None` if the result parsing fails."""
         output = None
 
-        if (output_file := self.configure_json_output_file(test_output_dir)) is None:
+        if (output_file := self.configure_json_output(test_output_dir)) is None:
             error("Failed to configure Smartfuzz output file!")
+            return None
 
         debug("Smartfuzz parse file: ", output_file)
 
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-        except Exception as err:
-            error(
-                f"Failed to parse Smartfuzz output file: {output_file}\n\n{err}"
+        except Exception:
+            error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
+            return None
+
+        all_issues = []
+        reported_bugs = list(output.values())
+        for bug in reported_bugs:
+            checker = self.parse_rule("fuzzing")
+            kind = self.parse_issue_kind(bug.get("bug_type"))
+            location = self.parse_source_location(bug.get("line_number"))
+            issue = Issue(
+                kind,
+                "",
+                Severity.UNKNOWN,
+                Confidence.UNKNOWN,
+                location,
+                checker,
             )
-            return []
-
-        try:
-            issues = []
-
-            bugs = list(output.values())
-            debug("errors: ", bugs)
-            for bug in bugs:
-                checker = self.parse_rule("fuzzing")
-                kind = self.parse_issue_kind(bug.get("bug_type"))
-                location = self.parse_source_location(bug.get("line_number"))
-                issue = Issue(
-                    kind,
-                    "",
-                    Severity.UNKNOWN,
-                    Confidence.UNKNOWN,
-                    location,
-                    checker,
-                )
-                issues.append(issue)
-            return issues
-
-        except ValueError:
-            return []
+            all_issues.append(issue)
+        return all_issues
 
     def check_issue_kind(
         self, issue_kind: IssueKind, annotation_kind: IssueKind
-    ):
+    ) -> bool:
         """Function to check whether an reported issue is related to a bug"""
         return issue_kind == annotation_kind
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
-    ):
+    ) -> bool:
         """Function to check whether an reported issue is related to a bug
         annotation."""
 

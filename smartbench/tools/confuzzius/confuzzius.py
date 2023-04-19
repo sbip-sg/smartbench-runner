@@ -13,7 +13,7 @@ from typing import List, Optional
 from smartbench import logger
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error
+from smartbench.printer import debug, error, error_traceback
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
@@ -151,16 +151,17 @@ class Confuzzius(Tool):
     def parse_analysis_output(
         self,
         test_output_dir: str,
-    ) -> List[Issue]:
-        issues = []
+    ) -> Optional[List[Issue]]:
+        # Parse Confuzzius result from log file
+        all_issues = []
         log_file = os.path.join(test_output_dir, self.log_file)
 
         for directory, _, _ in os.walk(test_output_dir):
-            issues += self.parse_analysis_output_for_one_contract(
+            all_issues += self.parse_analysis_output_for_one_contract(
                 directory, log_file
             )
 
-        return issues
+        return all_issues
 
     def parse_analysis_output_for_one_contract(
         self, test_output_dir: str, log_file: str
@@ -168,9 +169,9 @@ class Confuzzius(Tool):
         """Parse output of Confuzzius"""
         output = None
 
-        output_file = os.path.join(test_output_dir, self.json_output_file)
-        if not os.path.exists(output_file):
-            return []
+        if (output_file := self.configure_json_output(test_output_dir)) is None:
+            error_traceback("JSON output file is not found!")
+            return None
 
         debug("Confuzzius parse file: ", output_file)
         try:

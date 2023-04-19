@@ -98,8 +98,10 @@ class Smartian(Tool):
         file_path = logger.get_input_test_file(log_file)
         return Location(file_path, 0, 0, 0, 0)
 
-    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
-        """Parse analysis result of Smartian."""
+    def parse_analysis_output(self, test_output_dir: str) -> Optional[List[Issue]]:
+        """Parse analysis result of Smartian. Return a list of detected issues,
+        or `None` if the result parsing fails."""
+
         # Smartian does not write output to any JSON file, so we parse its
         # result from the log file.
         log_file = os.path.join(test_output_dir, self.log_file)

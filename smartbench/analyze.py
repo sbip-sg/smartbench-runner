@@ -6,6 +6,7 @@
 import multiprocessing
 import os
 import shlex
+import signal
 import subprocess
 import traceback
 
@@ -243,7 +244,8 @@ def analyze_test_file(
         return AnalysisResult(tool, test_name, False)
 
     # Process analysis output
-    issues = tool.parse_analysis_output(test_output_dir)
+    if (issues := tool.parse_analysis_output(test_output_dir)) is None:
+        return AnalysisResult(tool, test_name, False)
 
     for issue in issues:
         print_unless(parallel_mode, "- " + str(issue))
@@ -410,6 +412,8 @@ def run_analysis_tool(
     # Use a queue to store all results
     result_queue: Queue[List[AnalysisResult]] = multiprocessing.Queue()
 
+    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+
     # Run all analysis jobs
     for analysis_job in analysis_jobs:
         proc = Process(
@@ -424,6 +428,8 @@ def run_analysis_tool(
         )
         processes.append(proc)
         proc.start()
+
+    signal.signal(signal.SIGINT, original_sigint_handler)
 
     # Get result from queue
     for proc in processes:

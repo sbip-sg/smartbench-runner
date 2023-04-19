@@ -25,7 +25,7 @@ SMARTBENCH_INSTALLER = "install-smartbench-env.sh"
 
 def handle_signal_interupt(_sig, _frame) -> None:
     """Handling signal SIGINT."""
-    print("\nInteruptted by Ctrl+C!")
+    safe_print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
 
 

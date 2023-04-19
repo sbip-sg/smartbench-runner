@@ -13,7 +13,13 @@ from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, safe_print, warning
+from smartbench.printer import (
+    debug,
+    error,
+    error_traceback,
+    safe_print,
+    warning,
+)
 from smartbench.solidity.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
@@ -68,7 +74,7 @@ class Slither(Tool):
             cmd = cmd + " --solc-version " + solc_version
 
         # Output file
-        if output_file := self.configure_json_output_file(test_output_dir):
+        if output_file := self.configure_json_output(test_output_dir):
             cmd = cmd + " --json " + output_file
 
         # Finally, pass default and additional arguments
@@ -271,11 +277,14 @@ class Slither(Tool):
     def parse_analysis_output(
         self,
         test_output_dir: str,
-    ) -> List[Issue]:
-        """Parse output of Slither"""
+    ) -> Optional[List[Issue]]:
+        """Parse output of Slither. Return `None` if result parsing is not
+        successful."""
 
         if self.json_output_file is None:
-            raise ValueError("Slither's JSON output file is not specified!")
+            error_traceback("JSON output file is not found!")
+            return None
+
         output_file = os.path.join(test_output_dir, self.json_output_file)
         log_file = os.path.join(test_output_dir, self.log_file)
 
@@ -287,47 +296,42 @@ class Slither(Tool):
                 output = json.load(file)
         except Exception as err:
             error(f"Failed to parse Slither output: {output_file}\n\n{err}")
-            return []
+            return None
 
-        if output is None:
-            warning("No result is reported by Slither:", output_file)
-            return []
+        success = output.get("success")
+        if not success:
+            error(f"An error happened when running Slither: {output_file}")
+            return None
 
         try:
-            success = output.get("success")
-            if not success:
-                error(f"An error happened when running Slither: {output_file}")
-                return []
-
             results = output.get("results")
             detectors = results.get("detectors")
-
-            issues = []
-
-            for detector in detectors:
-                description = detector.get("description")
-                checker = Checker("Slither", detector.get("check"))
-                kind = self.parse_issue_kind(description, checker.detector)
-                location = self.parse_issue_location(
-                    log_file, detector.get("elements")
-                )
-                severity = self.parse_issue_severity(detector.get("impact"))
-                confidence = self.parse_result_confidence(
-                    detector.get("confidence")
-                )
-                issue = Issue(
-                    kind,
-                    description,
-                    severity,
-                    confidence,
-                    location,
-                    checker,
-                )
-                issues.append(issue)
-
-            return issues
         except ValueError:
-            return []
+            return None
+
+        all_issues = []
+        for detector in detectors:
+            description = detector.get("description")
+            checker = Checker("Slither", detector.get("check"))
+            kind = self.parse_issue_kind(description, checker.detector)
+            location = self.parse_issue_location(
+                log_file, detector.get("elements")
+            )
+            severity = self.parse_issue_severity(detector.get("impact"))
+            confidence = self.parse_result_confidence(
+                detector.get("confidence")
+            )
+            issue = Issue(
+                kind,
+                description,
+                severity,
+                confidence,
+                location,
+                checker,
+            )
+            all_issues.append(issue)
+
+        return all_issues
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
