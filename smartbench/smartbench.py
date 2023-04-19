@@ -39,6 +39,7 @@ def update_analysis_environment(tools: List[Tool], jobs: int) -> None:
             shlex.split(cmd),
             shell=False,
         ) as proc:
+            proc.wait()
             (stdout, _) = proc.communicate()
     except Exception:
         error_traceback(f"Failed to install docker container: {cmd}")

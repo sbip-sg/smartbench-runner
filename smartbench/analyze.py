@@ -37,6 +37,7 @@ class AnalysisJob:
 
     def __init__(
         self,
+        id: int,
         tool: Tool,
         test_files: List[str],
         test_contracts: Optional[Dict[str, List[str]]],
@@ -45,6 +46,7 @@ class AnalysisJob:
         timeout: Optional[int] = None,
         docker_container: Optional[DockerContainer] = None,
     ):
+        self.id = int(id)
         self.tool: Tool = tool
 
         # List of test file, which are relative path to the `/root/`
@@ -162,6 +164,7 @@ def analyze_test_file(
     test_contracts: Optional[Dict[str, List[str]]],
     test_output_dir: str,
     solc_version: Optional[str] = None,
+    job_id: Optional[int] = None,
     container: Optional[DockerContainer] = None,
     timeout: Optional[int] = None,
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
@@ -180,7 +183,10 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        runner = "local" if container is None else f"docker:{container.name}"
+        if container is None:
+            runner = f"local:{tool.id}-{job_id}"
+        else:
+            runner = f"docker:{container.name}"
         safe_print(f"{runner}: {test_file}\n")
     else:
         printer.print_medium_dashed_separator_line()
@@ -231,6 +237,7 @@ def analyze_test_file(
             shell=False,
         ) as proc:
             # Run the analyzer
+            # proc.wait()
             (stdout, _) = proc.communicate()
 
         log_analysis_output(tool, stdout, test_output_dir)
@@ -325,6 +332,7 @@ def run_analysis_job(
             job.test_contracts,
             test_output_dir,
             job.solc_version,
+            job.id,
             job.docker_container,
             job.timeout,
             validate,
@@ -395,6 +403,7 @@ def run_analysis_tool(
     for i in range(jobs):
         container = None if not docker_containers else docker_containers[i]
         analysis_job = AnalysisJob(
+            i,
             tool,
             test_batches[i],
             test_contracts,
@@ -412,8 +421,6 @@ def run_analysis_tool(
     # Use a queue to store all results
     result_queue: Queue[List[AnalysisResult]] = multiprocessing.Queue()
 
-    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-
     # Run all analysis jobs
     for analysis_job in analysis_jobs:
         proc = Process(
@@ -428,8 +435,6 @@ def run_analysis_tool(
         )
         processes.append(proc)
         proc.start()
-
-    signal.signal(signal.SIGINT, original_sigint_handler)
 
     # Get result from queue
     for proc in processes:
