@@ -28,10 +28,10 @@
   ./smartbench.sh analyze examples -t slither --validate --benchmarking
   ```
 
-- Install docker container and perform the analysis
+- Analyze contracts with the latest benchmarking environment.
 
   ```sh
-  ./smartbench.sh analyze examples -t confuzzius --docker -jobs 5 --install-docker
+  ./smartbench.sh analyze examples -t confuzzius --docker -jobs 5 --update-environment
   ```
 
 ### Parse result

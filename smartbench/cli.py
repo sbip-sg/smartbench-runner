@@ -106,11 +106,11 @@ def parse_cli_arguments():
         help="Running analysis tools in Docker.",
     )
 
-    # Install Docker containers
+    # Update environment before analyzing smart contracts
     analyze_parser.add_argument(
-        "--install-docker",
+        "--update-environment",
         action="store_true",
-        help="Install Docker with the newest code.",
+        help="Update analysis environment (Docker, Smartbench, etc).",
     )
 
     # Timeout for each test file.
