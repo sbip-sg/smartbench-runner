@@ -17,7 +17,7 @@ from smartbench.printer import debug, error
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
-
+# Configure some paths
 SMARTFUZZ_DIR = os.path.dirname(__file__)
 
 

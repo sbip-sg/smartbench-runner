@@ -270,7 +270,7 @@ def analyze_test_file(
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
     """Start all docker containers to run analysis jobs."""
     printer.print_short_double_separator_line()
-    safe_print("Preparing docker containers...")
+    safe_print("Preparing docker containers...\n")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
     container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
@@ -287,7 +287,7 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
 def stop_docker_containers(containers: List[DockerContainer]):
     """Stop all docker containers after finishing analysis jobs."""
     printer.print_short_double_separator_line()
-    safe_print("Cleaning docker containers...")
+    safe_print("Cleaning docker containers...\n")
 
     for container in containers:
         container.stop()
@@ -371,7 +371,7 @@ def run_analysis_tool(
         docker_containers = start_docker_containers(tool, jobs)
 
     printer.print_short_double_separator_line()
-    safe_print("Running analysis jobs...")
+    safe_print("Running analysis jobs...\n")
 
     # Distribute test files to containers
     test_batches: List[List[str]] = []
