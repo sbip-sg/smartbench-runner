@@ -10,11 +10,11 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-confuzzius.sh -f <test-file> [confuzzius-arguments]"
+    echo "  run-confuzzius.sh -f <test-file> -c <contract-name> -o <output-dir> -t <timeout> --solc-version <version> [confuzzius-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>            Smart contract file to be analyzed."
-    echo "  -c <contract-names>       Names of target contracts (whitespace separated)."
+    echo "  -c <contract-name>        Name of the target contract."
     echo "  -o <output-dir>           Output directory."
     echo "  -t <timeout>              Timeout for each target contract."
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
