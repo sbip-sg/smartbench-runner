@@ -200,8 +200,8 @@ class Confuzzius(Tool):
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-        except Exception as err:
-            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
+        except Exception:
+            error_traceback(f"Failed to parse Confuzzius output: {output_file}")
             return None
 
         contract_coverage_list = []

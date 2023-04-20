@@ -59,16 +59,33 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
     return test_files
 
 
-def collect_test_contracts(test_contract_file: str) -> Dict[str, List[str]]:
+def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
     contract_dict = {}
     try:
         with open(test_contract_file, "r", encoding="utf-8") as file:
             while line := file.readline():
+                # Parsing Smartbench format: each line contains a test file,
+                # followed by a colon `:`, and then contract names, which are
+                # separated by comma `,`.
+                #
+                # Example: `file_name: contract_name_1, contract_name_2`
                 if (idx := line.find(":")) >= 0:
                     test_file = line[0:idx]
                     contract_names = line[(idx + 1) :].split(",")
                     contract_names = [s.strip() for s in contract_names]
                     contract_dict[test_file] = contract_names
+                    continue
+
+                # Parsing Smartian format: each line contains a test file name,
+                # and contract names, all are separated by comma `,`.
+                #
+                # Example: `file_name, contract_name_1, contract_name_2`
+                if (idx := line.find(",")) >= 0:
+                    test_file = line[0:idx]
+                    contract_names = line[(idx + 1) :].split(",")
+                    contract_names = [s.strip() for s in contract_names]
+                    contract_dict[test_file] = contract_names
+                    continue
 
             return contract_dict
 

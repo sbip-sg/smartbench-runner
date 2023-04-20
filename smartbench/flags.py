@@ -6,7 +6,7 @@
 DEBUG_MODE = False
 
 
-def configure_global_flags(args):
+def configure_global_flags(args) -> None:
     """Configure global flags from command-line arguments"""
     global DEBUG_MODE
     DEBUG_MODE = args.debug
