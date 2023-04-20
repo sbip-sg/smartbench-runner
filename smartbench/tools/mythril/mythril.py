@@ -159,7 +159,7 @@ class Mythril(Tool):
         """Parse output of Mythril"""
         output = None
         output_file = os.path.join(test_output_dir, self.json_output_file)
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
         debug("Mythril parse file: ", output_file)
         try:
             with open(output_file, "r", encoding="utf-8") as file:

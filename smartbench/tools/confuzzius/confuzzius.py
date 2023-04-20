@@ -153,7 +153,7 @@ class Confuzzius(Tool):
         test_output_dir: str,
     ) -> Optional[List[Issue]]:
         """Parse output of Confuzzius"""
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
         output_file = self.configure_json_output(test_output_dir)
 
         if output_file is None:
