@@ -158,7 +158,7 @@ class Confuzzius(Tool):
 
         if output_file is None:
             error_traceback("JSON output file is not found!")
-            return []
+            return None
 
         debug("Confuzzius parse file: ", output_file)
         output = None
@@ -166,10 +166,11 @@ class Confuzzius(Tool):
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception:
+            error_traceback(f"Failed to parse Confuzzius output: {output_file}")
             return []
 
         checker = Checker("Confuzzius", "fuzzing")
-        issues = []
+        issues = None
 
         contracts = list(output.keys())
         for contract in contracts:
