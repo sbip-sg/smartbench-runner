@@ -58,3 +58,7 @@ disable = [
   "too-many-locals",
   "too-many-return-statements",
 ]
+
+# Linting by flake8
+[tool.flake8]
+ignore = ["E203"]

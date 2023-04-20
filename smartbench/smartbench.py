@@ -83,8 +83,8 @@ def analyze_smart_contracts(args) -> None:
     test_files = benchmark.collect_test_files(args.input_files_directories)
     test_contracts = (
         None
-        if args.input_contracts is None
-        else benchmark.collect_test_contracts(args.input_contracts)
+        if args.target_contracts is None
+        else benchmark.collect_target_contracts(args.target_contracts)
     )
 
     # Perform the analysis

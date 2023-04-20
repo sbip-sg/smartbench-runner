@@ -177,8 +177,8 @@ class Confuzzius(Tool):
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
-        except Exception as err:
-            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
+        except Exception:
+            error_traceback(f"Failed to parse Confuzzius output: {output_file}")
             return []
 
         checker = Checker("Confuzzius", "fuzzing")
@@ -219,7 +219,7 @@ class Confuzzius(Tool):
                 self.parse_instruction_coverage_for_one_contract(output_file)
             )
 
-            if contract_coverage_pair != None:
+            if contract_coverage_pair is not None:
                 contract_coverage_list.append(
                     (contract_coverage_pair[0], contract_coverage_pair[1])
                 )

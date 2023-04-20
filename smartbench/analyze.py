@@ -6,7 +6,6 @@
 import multiprocessing
 import os
 import shlex
-import signal
 import subprocess
 import traceback
 
@@ -20,7 +19,6 @@ from smartbench.docker import DockerContainer
 from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
-    error,
     error_traceback,
     print_unless,
     safe_print,
