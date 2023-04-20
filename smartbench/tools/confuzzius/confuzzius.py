@@ -151,64 +151,48 @@ class Confuzzius(Tool):
         self,
         test_output_dir: str,
     ) -> Optional[List[Issue]]:
-        # Parse Confuzzius result from log file
-        all_issues = []
-        log_file = os.path.join(test_output_dir, self.log_file)
-
-        for directory, _, _ in os.walk(test_output_dir):
-            all_issues += self.parse_analysis_output_for_one_contract(
-                directory, log_file
-            )
-
-        return all_issues
-
-    def parse_analysis_output_for_one_contract(
-        self, test_output_dir: str, log_file: str
-    ) -> List[Issue]:
         """Parse output of Confuzzius"""
-        output = None
+        log_file = os.path.join(test_output_dir, self.log_file)
+        output_file = self.configure_json_output(test_output_dir)
 
-        if (output_file := self.configure_json_output(test_output_dir)) is None:
+        if output_file is None:
             error_traceback("JSON output file is not found!")
             return None
 
         debug("Confuzzius parse file: ", output_file)
+        output = None
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception as err:
-            # error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
-            return []
+            error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
+            return None
 
         checker = Checker("Confuzzius", "fuzzing")
-        try:
-            issues = []
+        issues = []
 
-            contracts = list(output.keys())
-            for contract in contracts:
-                contract_results = output.get(contract)
-                bugs = list(contract_results.get("errors").values())
+        contracts = list(output.keys())
+        for contract in contracts:
+            contract_results = output.get(contract)
+            bugs = list(contract_results.get("errors").values())
 
-                for bug in bugs:
-                    error = bug[0]
-                    kind = self.parse_issue_kind(error.get("type"))
-                    location = self.parse_source_location(
-                        log_file, error.get("line"), error.get("column")
-                    )
-                    severity = self.parse_issue_severity(error.get("severity"))
-                    issue = Issue(
-                        kind,
-                        "",
-                        severity,
-                        Confidence.UNKNOWN,
-                        location,
-                        checker,
-                    )
-                    issues.append(issue)
-            return issues
-
-        except ValueError:
-            return []
+            for bug in bugs:
+                error = bug[0]
+                kind = self.parse_issue_kind(error.get("type"))
+                location = self.parse_source_location(
+                    log_file, error.get("line"), error.get("column")
+                )
+                severity = self.parse_issue_severity(error.get("severity"))
+                issue = Issue(
+                    kind,
+                    "",
+                    severity,
+                    Confidence.UNKNOWN,
+                    location,
+                    checker,
+                )
+                issues.append(issue)
+        return issues
 
     def parse_instruction_coverage(self, test_output_dir: str):
         contract_coverage_list = []
