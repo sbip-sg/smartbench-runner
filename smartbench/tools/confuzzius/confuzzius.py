@@ -165,7 +165,6 @@ class Confuzzius(Tool):
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception:
-            error_traceback("Failed to read Confuzzius output file!")
             return None
 
         checker = Checker("Confuzzius", "fuzzing")
