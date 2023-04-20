@@ -14,7 +14,7 @@ from multiprocessing import Process, Queue
 from typing import Dict, List, Optional
 
 # Third Party
-from tools.config import Confuzzius
+from smartbench.tools.config import Confuzzius
 
 # Library
 from smartbench import annotation, printer, result, validator
