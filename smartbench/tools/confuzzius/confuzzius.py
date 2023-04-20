@@ -167,10 +167,10 @@ class Confuzzius(Tool):
                 output = json.load(file)
         except Exception:
             error_traceback(f"Failed to parse Confuzzius output: {output_file}")
-            return []
+            return None
 
         checker = Checker("Confuzzius", "fuzzing")
-        issues = None
+        issues = []
 
         contracts = list(output.keys())
         for contract in contracts:
