@@ -73,14 +73,15 @@ def parse_cli_arguments():
         "input_files_directories",
         nargs="*",  # Accept multiple input files or directories
         type=str,
-        help="Input files or directories for testing (accepts wildcard characters).",
+        help="Input files or directories for testing.",
     )
 
     # List of target contracts in test files
     analyze_parser.add_argument(
-        "--target-contracts",
+        "--target-contracts-file",
         type=str,
-        help="Input file specifying target contracts in each input test file.",
+        help="Configuration file specifying target contracts in test files. \
+        Support both Smartbench and Smartian format.",
     )
 
     # Solidity version

@@ -15,14 +15,16 @@ from smartbench import (
     analyze,
     annotation,
     benchmark,
+    cli,
     deploy,
     docker,
     flags,
     printer,
     result,
 )
-from smartbench.cli import Command, parse_cli_arguments
+from smartbench.cli import Command
 from smartbench.printer import error, error_traceback, safe_print
+from smartbench.result import AnalysisResult
 from smartbench.tools.config import configure_analysis_tools
 from smartbench.tools.tool import Tool
 
@@ -83,8 +85,8 @@ def analyze_smart_contracts(args) -> None:
     test_files = benchmark.collect_test_files(args.input_files_directories)
     test_contracts = (
         None
-        if args.target_contracts is None
-        else benchmark.collect_target_contracts(args.target_contracts)
+        if args.target_contracts_file is None
+        else benchmark.collect_target_contracts(args.target_contracts_file)
     )
 
     # Perform the analysis
@@ -101,7 +103,7 @@ def analyze_smart_contracts(args) -> None:
     )
 
 
-def parse_existing_results(args):
+def parse_existing_results(args) -> None:
     """Parse existing results obtained from previous analyses."""
     for result_dir in args.result_directories:
         result.parse_result_directory(
@@ -112,19 +114,19 @@ def parse_existing_results(args):
         )
 
 
-def parse_instruction_coverage(args):
+def parse_instruction_coverage(args) -> None:
     """Parse instruction coverage from analysis results."""
     for result_dir in args.result_directories:
         result.parse_instruction_coverage(result_dir)
 
 
-def parse_bug_annotations(args):
+def parse_bug_annotations(args) -> None:
     """Parse bug annotation in smart contracts."""
     test_files = benchmark.collect_test_files(args.input_files_directories)
     annotation.collect_bug_annotations(test_files)
 
 
-def deploy_smart_contracts(args):
+def deploy_smart_contracts(args) -> None:
     """Deploy smart contracts for testing."""
     # Prepare analysis tools and test files
     test_files = benchmark.collect_test_files(args.input_files_directories)
@@ -137,7 +139,7 @@ def main():
     """Main function"""
 
     # Parse CLI
-    (parser, args) = parse_cli_arguments()
+    (parser, args) = cli.parse_cli_arguments()
 
     if args.sub_command is None:
         print("Error: no sub-command is specified!\n")
