@@ -151,7 +151,7 @@ def collect_testing_contracts(
         )
 
     # Collect target contracts specified explicitly by users
-    test_file_name = os.path.basename(test_file)
+    test_file_name = os.path.basename(test_file).removesuffix(".sol")
     contract_names = test_contracts.get(test_file_name)
 
     # Checking results
