@@ -157,7 +157,7 @@ class Confuzzius(Tool):
 
         if output_file is None:
             error_traceback("JSON output file is not found!")
-            return None
+            return []
 
         debug("Confuzzius parse file: ", output_file)
         output = None
@@ -165,7 +165,7 @@ class Confuzzius(Tool):
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception:
-            return None
+            return []
 
         checker = Checker("Confuzzius", "fuzzing")
         issues = []
