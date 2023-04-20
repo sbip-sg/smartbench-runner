@@ -62,8 +62,8 @@ class Confuzzius(Tool):
 
         # Input file and contract names
         cmd = cmd + " -f " + test_file
-        if len(contracts) > 0:
-            cmd = cmd + " -c " + " ".join(contracts)
+        if len(contracts) == 1:
+            cmd = cmd + " -c " + contracts[0]
 
         # Solc version
         if solc_version is not None:
@@ -76,8 +76,7 @@ class Confuzzius(Tool):
         # additional arguments of Confuzzius
         if self.additional_args is None or "-t " not in self.additional_args:
             timeout = self.default_timeout if timeout is None else timeout
-            contract_timeout = math.ceil(timeout / len(contracts))
-            cmd = cmd + " -t " + str(contract_timeout)
+            cmd = cmd + " -t " + str(timeout)
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
@@ -178,7 +177,7 @@ class Confuzzius(Tool):
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
         except Exception as err:
-            error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
+            # error(f"Failed to parse Confuzzius output: {output_file}\n\n{err}")
             return []
 
         checker = Checker("Confuzzius", "fuzzing")
