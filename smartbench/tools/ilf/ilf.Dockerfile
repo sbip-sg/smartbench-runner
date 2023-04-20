@@ -40,7 +40,7 @@ ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 # Clone ILF
 WORKDIR $GOPATH/src/
-RUN git clone https://github.com/eth-sri/ilf ilf
+RUN git clone https://github.com/taquangtrung/ilf ilf
 
 # Install Go-Ethereum and apply ILF patch
 RUN mkdir -p $GOPATH/src/github.com/ethereum/

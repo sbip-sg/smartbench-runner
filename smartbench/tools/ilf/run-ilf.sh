@@ -155,8 +155,10 @@ SOLC_VERSION=$SOLC_VER GOPATH=$GO_DIR \
 # Fuzz each contract using the pre-trained model of ILF
 cd $TOOL_DIR
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
+    echo ""
     echo "==============================="
+    echo ""
     echo "** Fuzzing contract: $CONTRACT"
     GOPATH=$GO_DIR python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
-        --limit 2000 --fuzzer imitation --model ./model/
+        --timeout $TIMEOUT --limit 2000 --fuzzer imitation --model ./model/
 done

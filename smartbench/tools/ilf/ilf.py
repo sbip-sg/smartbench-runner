@@ -76,8 +76,7 @@ class Ilf(Tool):
         # Calculate timeout for each contract if it is not specified in
         # additional arguments of Confuzzius
         if self.additional_args is None or (
-            "-t " not in self.additional_args
-            and "--timelimit " not in self.additional_args
+            "--timeout " not in self.additional_args
         ):
             timeout = self.default_timeout if timeout is None else timeout
             contract_timeout = math.ceil(timeout / len(contracts))
@@ -119,7 +118,6 @@ class Ilf(Tool):
     def parse_analysis_output(
         self,
         output_file: str,
-        log_file: str,
     ) -> List[Issue]:
         """Parse output of ILF"""
         # TODO
