@@ -6,12 +6,15 @@
 import multiprocessing
 import os
 import shlex
+import signal
 import subprocess
-import traceback
 
 from datetime import datetime
 from multiprocessing import Process, Queue
 from typing import Dict, List, Optional
+
+# Third Party
+from tools.config import Confuzzius
 
 # Library
 from smartbench import annotation, printer, result, validator
@@ -24,6 +27,7 @@ from smartbench.printer import (
     safe_print,
     warning,
 )
+from smartbench.process import ignore_sigint
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
@@ -138,6 +142,7 @@ def log_analysis_info(
 
 
 def collect_testing_contracts(
+    tool: Tool,
     test_file: str,
     test_contracts: Optional[Dict[str, List[str]]],
     solc_version: Optional[str] = None,
@@ -145,13 +150,23 @@ def collect_testing_contracts(
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
 
+    # Auto detect target contracts if they is not specified explicitly
     if test_contracts is None:
-        return solc.get_candidate_testing_contracts(test_file, solc_version)
+        return solc.get_candidate_testing_contracts(
+            test_file, False, solc_version
+        )
 
+    # Collect target contracts specified explicitly by users
     test_file_name = os.path.basename(test_file)
     contract_names = test_contracts.get(test_file_name)
+
+    # Checking results
     if contract_names is None:
         return []
+    elif isinstance(tool, Confuzzius) and len(contract_names) > 1:
+        raise ValueError(
+            "Confuzzius does not support specifiying multiple target contracts"
+        )
 
     return contract_names
 
@@ -191,7 +206,7 @@ def analyze_test_file(
         safe_print(f"Analyzing: {test_file}\n")
 
     contracts = collect_testing_contracts(
-        test_file, test_contracts, solc_version
+        tool, test_file, test_contracts, solc_version
     )
 
     if not contracts:
@@ -228,16 +243,19 @@ def analyze_test_file(
 
     try:
         # Prepare to run the analyzer
+        old_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
         with subprocess.Popen(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            preexec_fn=ignore_sigint,
             shell=False,
         ) as proc:
             # Run the analyzer
             (stdout, _) = proc.communicate()
             proc.wait()
 
+        # signal.signal(signal.SIGINT, )
         log_analysis_output(tool, stdout, test_output_dir)
     except Exception:
         runner = "local" if container is None else f"docker:{container.name}"

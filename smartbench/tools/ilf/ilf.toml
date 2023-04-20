@@ -3,6 +3,6 @@ id = "ilf"
 name = "ILF"
 
 [command]
-executable = "..."
+executable = "run-ilf.sh"
 default_arguments = ""
 default_timeout = 60

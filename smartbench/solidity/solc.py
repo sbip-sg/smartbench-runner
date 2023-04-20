@@ -107,6 +107,7 @@ def configure_local_solc_path(test_file: str) -> str:
 
 def get_candidate_testing_contracts(
     test_file: str,
+    allow_abstract_contracts: bool = False,
     solc_version: Optional[str] = None,
 ) -> List[str]:
     """Detect Solidity version in a smart contacts."""
@@ -116,8 +117,19 @@ def get_candidate_testing_contracts(
             solc_version = detect_required_solc_version(test_file)
         debug(f"Solc version: {solc_version}")
 
+        # Get AST of the test file
         ast = SolidityAst(test_file, version=solc_version)
-        return ast.all_contract_names
+
+        contract_names = ast.all_contract_names
+
+        if not allow_abstract_contracts:
+            abstract_contracts = ast.all_abstract_contract_names
+            contract_names = [
+                x for x in contract_names if x not in abstract_contracts
+            ]
+
+        return contract_names
+
     except Exception:
         error_traceback(f"Failed to get contract names from: {test_file}")
         return []
