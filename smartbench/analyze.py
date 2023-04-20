@@ -242,13 +242,12 @@ def analyze_test_file(
     print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
 
     try:
-        # Prepare to run the analyzer
-        old_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+        # Run the analyzer
         with subprocess.Popen(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            preexec_fn=ignore_sigint,
+            # preexec_fn=ignore_sigint,
             shell=False,
         ) as proc:
             # Run the analyzer
