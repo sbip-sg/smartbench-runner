@@ -286,7 +286,7 @@ class Slither(Tool):
             return None
 
         output_file = os.path.join(test_output_dir, self.json_output_file)
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
 
         output = None
 

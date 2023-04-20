@@ -118,7 +118,7 @@ class Sfuzz(Tool):
     def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Parse output of sFuzz"""
         lines = None
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
         debug("sFuzz log_file: ", log_file)
         try:
             with open(log_file, "r", encoding="utf-8") as file:
@@ -162,7 +162,7 @@ class Sfuzz(Tool):
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse instruction coverage of sFuzz"""
         lines = None
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
         coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
         try:
             with open(log_file, "r", encoding="utf-8") as file:

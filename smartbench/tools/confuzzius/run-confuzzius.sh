@@ -10,11 +10,11 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-confuzzius.sh -f <test-file> [confuzzius-arguments]"
+    echo "  run-confuzzius.sh -f <test-file> -c <contract-name> -o <output-dir> -t <timeout> --solc-version <version> [confuzzius-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>            Smart contract file to be analyzed."
-    echo "  -c <contract-names>       Names of target contracts (whitespace separated)."
+    echo "  -c <contract-name>        Name of the target contract."
     echo "  -o <output-dir>           Output directory."
     echo "  -t <timeout>              Timeout for each target contract."
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
@@ -32,7 +32,7 @@ print_help () {
 # Parse arguments
 
 TEST_FILE=""
-CONTRACT_NAMES=()
+CONTRACT_NAME=""
 TIMEOUT=0
 OUTPUT_DIR=""
 SOLC_VER=""
@@ -46,19 +46,9 @@ while [[ $# -gt 0 ]]; do
             shift # past value
             ;;
         -c)
-            shift # past argument
-            # Parse contract names
-            while [[ $# -gt 0 ]]; do
-                case $1 in
-                    -*|--*)
-                        break
-                        ;;
-                    *)
-                        CONTRACT_NAMES+=("$1")
-                        shift  # past value
-                        ;;
-                esac
-            done
+            CONTRACT_NAME=$2
+            shift  # past argument
+            shift  # past value
             ;;
         -o)
             OUTPUT_DIR="$2"
@@ -134,26 +124,18 @@ SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
     -o $COMPILED_CONTRACTS_DIR --overwrite \
     1>/dev/null 2>&1  # Do not capture output of Solc
 
-# If contract names are not specified from the input, analyze all contracts
-# obtained after compilation.
-if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
-    CURRENT_DIR=$(pwd)
-    cd $COMPILED_CONTRACTS_DIR
-    CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
-    cd $CURRENT_DIR
-fi
-
 ################################################
 # Analyze contracts
 
-# Run Confuzzius on each candidate contract
-for CONTRACT in ${CONTRACT_NAMES[@]}; do
-    echo "==============================="
-    echo "** Fuzzing contract: $CONTRACT"
-    echo "** OUTPUT: $OUTPUT_DIR/$CONTRACT/confuzzius_result.json"
-    mkdir -p "$OUTPUT_DIR/$CONTRACT"
+if [ $CONTRACT_NAME == ""]
+then
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
-        -s $TEST_FILE -c $CONTRACT -t $TIMEOUT \
+        -s $TEST_FILE -t $TIMEOUT \
         -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
-done
+else
+    SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
+        -s $TEST_FILE  -c $CONTRACT_NAME -t $TIMEOUT \
+        -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
+        ${ADDITIONAL_ARGS[@]} 2>&1
+fi

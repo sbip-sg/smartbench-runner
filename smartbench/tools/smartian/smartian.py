@@ -105,7 +105,7 @@ class Smartian(Tool):
 
         # Smartian does not write output to any JSON file, so we parse its
         # result from the log file.
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
         debug("Smartian log file: ", log_file)
 
         log_file_data = open(log_file, "r", encoding="utf-8")
@@ -243,7 +243,7 @@ class Smartian(Tool):
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
-        log_file = os.path.join(test_output_dir, self.log_file)
+        log_file = self.configure_log_file(test_output_dir)
         coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
 
         lines = None
