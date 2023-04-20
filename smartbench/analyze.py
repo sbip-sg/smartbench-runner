@@ -13,9 +13,6 @@ from datetime import datetime
 from multiprocessing import Process, Queue
 from typing import Dict, List, Optional
 
-# Third Party
-from smartbench.tools.config import Confuzzius
-
 # Library
 from smartbench import annotation, printer, result, validator
 from smartbench.docker import DockerContainer
@@ -30,7 +27,7 @@ from smartbench.printer import (
 from smartbench.process import ignore_sigint
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
-from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
+from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT, Confuzzius
 from smartbench.tools.tool import Tool
 
 
@@ -76,26 +73,25 @@ def log_analysis_command(
     log_file = tool.configure_log_file(result_dir)
     try:
         with open(log_file, "w", encoding="utf-8") as file:
+            separator = "-" * 55
             file.write(f"# Execution log of {tool.name}:\n\n")
 
-            # Log input
-            file.write(
-                "-------------------------------------------------------\n"
-            )
+            # Input file
+            file.write(f"{separator}\n")
             file.write("[input contract]\n")
-            file.write(
-                "-------------------------------------------------------\n\n"
-            )
+            file.write(f"{separator}\n\n")
             file.write(f"{input_file}\n\n")
 
-            file.write(
-                "-------------------------------------------------------\n"
-            )
+            # Analysis command
+            file.write(f"{separator}\n")
             file.write("[command]\n")
-            file.write(
-                "-------------------------------------------------------\n\n"
-            )
+            file.write(f"{separator}\n\n")
             file.write(f"{command}\n\n")
+
+            # Output section
+            file.write(f"{separator}\n")
+            file.write("[output]\n")
+            file.write(f"{separator}\n\n")
         return True
     except Exception:
         error_traceback(f"Failed to log analysis command to: {log_file}")
@@ -104,21 +100,19 @@ def log_analysis_command(
 
 def log_analysis_output(
     tool: Tool,
-    stdout,
+    proc,
     result_dir: str,
 ) -> None:
     """Record execution log of an analysis tool in TOML format.
     `stderr` should be redirected to `stdout` by the executable script.
     """
+    # Read analysis output from process and write to log file
     log_file = tool.configure_log_file(result_dir)
     with open(log_file, "a", encoding="utf-8") as file:
-        file.write("-------------------------------------------------------\n")
-        file.write("[output]\n")
-        file.write(
-            "-------------------------------------------------------\n\n"
-        )
-        output = stdout.decode("utf-8")
-        file.write(f"{output}\n\n")
+        while True:
+            if not (line := proc.stdout.readline()):
+                break
+            file.write(f"{line.decode('utf-8')}")
 
 
 def log_analysis_info(
@@ -250,12 +244,8 @@ def analyze_test_file(
             # preexec_fn=ignore_sigint,
             shell=False,
         ) as proc:
-            # Run the analyzer
-            (stdout, _) = proc.communicate()
-            proc.wait()
-
-        # signal.signal(signal.SIGINT, )
-        log_analysis_output(tool, stdout, test_output_dir)
+            # Read process output and write to log file on the fly
+            log_analysis_output(tool, proc, test_output_dir)
     except Exception:
         runner = "local" if container is None else f"docker:{container.name}"
         if parallel_mode and container:
