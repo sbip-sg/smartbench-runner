@@ -6,28 +6,23 @@
 import multiprocessing
 import os
 import shlex
+import signal
 import subprocess
-import traceback
-
 from datetime import datetime
 from multiprocessing import Process, Queue
 from typing import Dict, List, Optional
 
-# Library
-from smartbench import annotation, printer, result, validator
 from smartbench.docker import DockerContainer
-from smartbench.issue import Issue
-from smartbench.printer import (
-    debug,
-    error_traceback,
-    print_unless,
-    safe_print,
-    warning,
-)
-from smartbench.result import AnalysisResult
-from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
+
+from smartbench import annotation, printer, result, validator
+from smartbench.issue import Issue
+from smartbench.printer import (debug, error_traceback, print_unless,
+    safe_print, warning)
+from smartbench.process import ignore_sigint
+from smartbench.result import AnalysisResult
+from smartbench.solidity import solc
 
 
 class AnalysisJob:
@@ -228,16 +223,19 @@ def analyze_test_file(
 
     try:
         # Prepare to run the analyzer
+        old_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
         with subprocess.Popen(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            preexec_fn=ignore_sigint,
             shell=False,
         ) as proc:
             # Run the analyzer
             (stdout, _) = proc.communicate()
             proc.wait()
 
+        # signal.signal(signal.SIGINT, )
         log_analysis_output(tool, stdout, test_output_dir)
     except Exception:
         runner = "local" if container is None else f"docker:{container.name}"

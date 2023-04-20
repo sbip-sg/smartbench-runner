@@ -34,7 +34,7 @@ SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
 SMARTBENCH_INSTALLER = "install-smartbench-env.sh"
 
 
-def handle_signal_interupt(_sig, _frame) -> None:
+def handle_sigint(_sig, _frame) -> None:
     """Handling signal SIGINT."""
     safe_print("\nInteruptted by Ctrl+C!")
     sys.exit(0)
@@ -182,5 +182,5 @@ def main():
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, handle_signal_interupt)
+    signal.signal(signal.SIGINT, handle_sigint)
     main()

@@ -4,6 +4,7 @@
 
 # Standard Library
 import json
+import math
 import os
 
 from typing import List, Optional
@@ -51,9 +52,44 @@ class Ilf(Tool):
         container: Optional[DockerContainer] = None,
         timeout: Optional[int] = None,
     ) -> str:
-        # TODO
-        print("MAKE ILF COMMAND!")
-        pass
+        """Function to make analysis command for ILF. This function should have
+        the same signature with other tools."""
+
+        # Executable file
+        if container is not None:
+            cmd = f"docker exec -it {container.name} /root/{self.executable}"
+        else:
+            cmd = os.path.join(ILF_DIR, self.executable)
+
+        # Input file and contract names
+        cmd = cmd + " -f " + test_file
+        if len(contracts) > 0:
+            cmd = cmd + " -c " + " ".join(contracts)
+
+        # Solc version
+        if solc_version is not None:
+            cmd = cmd + " --solc-version " + solc_version
+
+        # Output directory
+        cmd = cmd + " -o " + test_output_dir
+
+        # Calculate timeout for each contract if it is not specified in
+        # additional arguments of Confuzzius
+        if self.additional_args is None or (
+            "-t " not in self.additional_args
+            and "--timelimit " not in self.additional_args
+        ):
+            timeout = self.default_timeout if timeout is None else timeout
+            contract_timeout = math.ceil(timeout / len(contracts))
+            cmd = cmd + " -t " + str(contract_timeout)
+
+        # Finally, pass default and additional arguments
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
+
+        return cmd
 
     def parse_confidence(self, confidence: Optional[str]) -> Confidence:
         """Parse confidence level of issue detected by ILF."""
