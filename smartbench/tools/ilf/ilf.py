@@ -245,11 +245,11 @@ class Ilf(Tool):
         if contract_lines != []:
             contract_pairs.append((contract_name, contract_lines))
 
-        current_time = None
-        counter = 0
         contract_coverage_list = []
         for (contract_name, contract_lines) in contract_pairs:
             contract_coverage = []
+            current_time = None
+            counter = 0
             for line in contract_lines:
                 if "fuzzing start" in line:
                     time = self.parse_time(line)
@@ -295,6 +295,3 @@ class Ilf(Tool):
             file.close()
 
         return coverage_file
-
-
-
