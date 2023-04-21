@@ -15,6 +15,7 @@ from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.printer import debug, warning
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
+from smartbench.printer import debug, error_traceback
 
 
 # Configure some paths
@@ -115,10 +116,53 @@ class Ilf(Tool):
         # TODO
         pass
 
-    def parse_analysis_output(
-        self,
-        output_file: str,
-    ) -> List[Issue]:
+    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Parse output of ILF"""
-        # TODO
-        pass
+        lines = None
+        log_file = self.configure_log_file(test_output_dir)
+        debug("sFuzz log_file: ", log_file)
+        try:
+            with open(log_file, "r", encoding="utf-8") as file:
+                lines = [line.rstrip() for line in file]
+        except Exception as err:
+            error_traceback(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
+            return []
+
+        # line = lines[-1]
+        # print(line)
+        # parts = line.split()
+        # print(parts)
+        contract_name = ""
+        contract_lines = []
+        contract_pairs = []
+        for line in lines:
+            if "Fuzzing contract:" in line:
+                if contract_lines != []:
+                    contract_pairs.append((contract_name, contract_lines))
+                    contract_lines = []
+
+                contract_name = line.removeprefix("Fuzzing contract: ")
+                print(f"contract_name: {contract_name}")
+
+            else:
+                contract_lines.append(line)
+
+        if contract_lines != []:
+            contract_pairs.append((contract_name, contract_lines))
+
+        for (contract_name, contract_lines) in contract_pairs:
+            line = contract_lines[-1]
+            parts = line.split()
+            if len(parts) >= 3:
+                line = line.removeprefix(parts[0] + " ")
+                line = line.removeprefix(parts[1] + " ")
+                try:
+                    data = json.loads(line)
+                    bugs = data[contract_name]["bugs"]
+                    if bugs is not None:
+                        print(f"bugs: {bugs}")
+
+                except Exception:
+                    continue
+
+        return []
