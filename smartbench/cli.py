@@ -107,18 +107,25 @@ def parse_cli_arguments():
         help="Running analysis tools in Docker.",
     )
 
-    # Update environment before analyzing smart contracts
+    # Install new environment before analyzing smart contracts
     analyze_parser.add_argument(
-        "--update-environment",
+        "--install-environment",
         action="store_true",
-        help="Update Smartbench environment.",
+        help="Install Smartbench environment before testing.",
     )
 
-    # Update
+    # Install new Docker image container
     analyze_parser.add_argument(
-        "--update-docker",
+        "--install-docker",
         action="store_true",
-        help="Update Docker container.",
+        help="Install relevant Docker images before testing.",
+    )
+
+    # Install new Docker image container
+    analyze_parser.add_argument(
+        "--keep-docker-alive",
+        action="store_true",
+        help="Keep Docker containers alive after testing.",
     )
 
     # Timeout for each test file.

@@ -40,10 +40,10 @@ def handle_sigint(_sig, _frame) -> None:
     sys.exit(0)
 
 
-def update_smartbench_environment() -> None:
-    """Update Smartbench environment"""
+def install_smartbench_environment() -> None:
+    """Install Smartbench environment"""
     printer.print_medium_double_separator_line()
-    safe_print("Updating Smartbench environment...\n")
+    safe_print("Installing Smartbench environment...\n")
     cmd = os.path.join(SMARTBENCH_ROOT, SMARTBENCH_INSTALLER)
     try:
         with subprocess.Popen(
@@ -57,9 +57,9 @@ def update_smartbench_environment() -> None:
         return None
 
 
-def update_docker_containers(tools: List[Tool], jobs: int) -> None:
+def install_docker_containers(tools: List[Tool], jobs: int) -> None:
     """Update docker environment"""
-    safe_print("Updating Docker containers...\n")
+    safe_print("Instralling Docker containers...\n")
     for tool in tools:
         safe_print(f"Install docker {jobs} container(s) for: {tool.id}")
         if not docker.install_docker_containers(tool.id, jobs):
@@ -74,12 +74,12 @@ def analyze_smart_contracts(args) -> None:
     jobs = 1 if args.jobs is None else args.jobs
 
     # Update analysis environment
-    if args.update_environment:
-        update_smartbench_environment()
+    if args.install_environment:
+        install_smartbench_environment()
 
     # Update Docker container
-    if args.update_docker:
-        update_docker_containers(tools, jobs)
+    if args.install_docker:
+        install_docker_containers(tools, jobs)
 
     # Configure test files
     test_files = benchmark.collect_test_files(args.input_files_directories)

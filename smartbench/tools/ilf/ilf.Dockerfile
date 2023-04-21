@@ -65,9 +65,10 @@ RUN go build -o execution.so -buildmode=c-shared export/execution.go
 WORKDIR /root
 ADD smartbench/tools/ilf/run-ilf.sh /root/
 
-# Finally, install dependencies that are regularly updated in the last step to
-# avoid invalidating Docker cache of previous layers
+# Finally, update some dependencies and ILF source code to the latest
 RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
+WORKDIR $GOPATH/src/ilf
+RUN git pull
 
 # Entry point when running the container as an executable
 WORKDIR /root/
