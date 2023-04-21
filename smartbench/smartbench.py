@@ -97,6 +97,7 @@ def analyze_smart_contracts(args) -> None:
         args.solc_version,
         args.timeout,
         args.docker,
+        args.keep_docker_alive,
         jobs,
         args.validate,
         args.benchmarking,

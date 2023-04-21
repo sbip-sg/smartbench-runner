@@ -356,6 +356,7 @@ def run_analysis_tool(
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
     use_docker: bool = True,
+    keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
     benchmarking: bool = False,
@@ -447,7 +448,7 @@ def run_analysis_tool(
     for proc in processes:
         proc.join()
 
-    if use_docker:
+    if use_docker and not keep_docker_alive:
         # Stop Docker containers after analysis
         stop_docker_containers(docker_containers)
 
@@ -461,6 +462,7 @@ def perform_analysis(
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
     use_docker: bool = True,
+    keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
     benchmarking: bool = False,
@@ -496,6 +498,7 @@ def perform_analysis(
             solc_version,
             timeout,
             use_docker,
+            keep_docker_alive,
             jobs,
             validate,
             benchmarking,
