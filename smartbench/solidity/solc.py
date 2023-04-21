@@ -115,7 +115,7 @@ def get_candidate_testing_contracts(
     try:
         if solc_version is None:
             solc_version = detect_required_solc_version(test_file)
-        debug(f"Solc version: {solc_version}")
+        debug(f"Get contract names using Solc version: {solc_version}")
 
         # Get AST of the test file
         ast = SolidityAst(test_file, version=solc_version)

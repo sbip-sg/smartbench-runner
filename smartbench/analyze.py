@@ -232,7 +232,7 @@ def analyze_test_file(
     if not log_analysis_command(tool, test_file, cmd, test_output_dir):
         return AnalysisResult(tool, test_name, False)
 
-    debug(f"COMMAND: {cmd}")
+    debug(f"Analysis Command: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
 
     try:

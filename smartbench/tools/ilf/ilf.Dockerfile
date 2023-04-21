@@ -61,11 +61,7 @@ RUN pip install ethereum
 # Compile ILF
 RUN go build -o execution.so -buildmode=c-shared export/execution.go
 
-# Copy truffle template project
-WORKDIR /root
-ADD smartbench/tools/ilf/template/truffle-project /root/template/truffle-project
-
-# Copy executable file
+# Copy script running ILF
 WORKDIR /root
 ADD smartbench/tools/ilf/run-ilf.sh /root/
 

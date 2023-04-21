@@ -119,16 +119,43 @@ TOOL_DIR="$GO_DIR/src/ilf"
 
 echo "Make truffle project for testing file"
 
-# Copy truffle-based template project
+# Create a fresh truffle-based project to deploy test contracts
 mkdir -p $OUTPUT_DIR
 OUTPUT_DIR="$(realpath $OUTPUT_DIR)"
 PROJECT_DIR="$OUTPUT_DIR/truffle-project"
-cp -r "$TEMPLATE_DIR/truffle-project" $PROJECT_DIR
+rm -rf $PROJECT_DIR
+mkdir -p $PROJECT_DIR
+mkdir -p "$PROJECT_DIR/contracts" "$PROJECT_DIR/build/contracts"
+mkdir -p "$PROJECT_DIR/migrations" "$PROJECT_DIR/test"
 
-# Copy test file
+# Copy test file containing target contracts
 cp $TEST_FILE "$PROJECT_DIR/contracts/"
 
-# Create deployment file for input contracts
+# Create truffle configuration file
+CONFIG_FILE="$PROJECT_DIR/truffle-config.js"
+cat > $CONFIG_FILE <<EOF
+module.exports = {
+  networks: {
+    development: {
+      host: "127.0.0.1",
+      port: 8545,
+      network_id: "*",
+      gas: 1000000000
+    }
+  },
+  compilers: {
+    solc: {
+      version: "native",
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  }
+};
+EOF
+
+# Create deployment file for input contract
 DEPLOY_FILE="$PROJECT_DIR/migrations/2_deploy_contracts.js"
 rm -rf $DEPLOY_FILE
 touch $DEPLOY_FILE
@@ -158,7 +185,8 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo ""
     echo "==============================="
     echo ""
-    echo "** Fuzzing contract: $CONTRACT"
+    echo "Fuzzing contract: $CONTRACT"
+    echo ""
     GOPATH=$GO_DIR python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
         --timeout $TIMEOUT --limit 2000 --fuzzer imitation --model ./model/
 done
