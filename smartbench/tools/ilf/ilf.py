@@ -6,11 +6,13 @@
 import json
 import math
 import os
+from datetime import datetime
 
 from typing import List, Optional, Union
 
 # Library
 from smartbench import logger
+from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.printer import debug, warning
@@ -123,6 +125,7 @@ class Ilf(Tool):
         file_path = logger.get_input_test_file(log_file)
         return Location(file_path, 0, 0, 0, 0)
 
+
     def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
         """Parse output of ILF"""
         lines = None
@@ -140,12 +143,11 @@ class Ilf(Tool):
         contract_pairs = []
         for line in lines:
             if "Fuzzing contract:" in line:
-                if contract_lines != []:
+                if contract_lines != [] and contract_name != "":
                     contract_pairs.append((contract_name, contract_lines))
                     contract_lines = []
 
                 contract_name = line.removeprefix("Fuzzing contract: ")
-                print(f"contract_name: {contract_name}")
 
             else:
                 contract_lines.append(line)
@@ -169,7 +171,6 @@ class Ilf(Tool):
                 except Exception:
                     continue
 
-        print(all_bugs)
         issues = []
         checker = Checker("ILF", "fuzzing")
         location = self.parse_issue_location(log_file)
@@ -187,3 +188,113 @@ class Ilf(Tool):
             issues.append(issue)
 
         return issues
+
+
+    def match_location_of_issue_to_annotation(
+        self, issue: Issue, annot: BugAnnot
+    ):
+        """Function to check whether an reported issue is related to a bug
+        annotation."""
+        # Check for issue kind
+        return issue.issue_kind == annot.annot_kind
+
+
+    def parse_time(self, line:str):
+        parts = line.split()
+        if len(parts) >= 3:
+            date = parts[0]
+            time = parts[1].split(',')[0]
+            date_time = date + " " + time
+            date_time = date_time.removeprefix("[")
+            try:
+                time = datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+                return time
+
+            except Exception:
+                return None
+
+        else:
+            return None
+
+    def parse_instruction_coverage(self, test_output_dir: str):
+        """Parse instruction coverage of ILF"""
+        lines = None
+        log_file = self.configure_log_file(test_output_dir)
+        debug("ILF log_file: ", log_file)
+        try:
+            with open(log_file, "r", encoding="utf-8") as file:
+                lines = [line.rstrip() for line in file]
+        except Exception as err:
+            error_traceback(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
+            return []
+
+        contract_name = ""
+        contract_lines = []
+        contract_pairs = []
+        for line in lines:
+            if "Fuzzing contract:" in line:
+                if contract_lines != [] and contract_name != "":
+                    contract_pairs.append((contract_name, contract_lines))
+                    contract_lines = []
+
+                contract_name = line.removeprefix("Fuzzing contract: ")
+
+            else:
+                contract_lines.append(line)
+
+        if contract_lines != []:
+            contract_pairs.append((contract_name, contract_lines))
+
+        current_time = None
+        counter = 0
+        contract_coverage_list = []
+        for (contract_name, contract_lines) in contract_pairs:
+            contract_coverage = []
+            for line in contract_lines:
+                if "fuzzing start" in line:
+                    time = self.parse_time(line)
+                    if time != None:
+                        current_time = time
+                        contract_coverage.append((counter, 0))
+
+                parts = line.split()
+                if len(parts) >= 3 and current_time != None:
+                    time = self.parse_time(line)
+                    line = line.removeprefix(parts[0] + " ")
+                    line = line.removeprefix(parts[1] + " ")
+
+                    try:
+                        data = json.loads(line)
+                        instr = data[contract_name]["covered_insns"]
+                        duration = (time - current_time).total_seconds()
+                        if duration >= 1:
+                            counter += duration
+                            contract_coverage.append((counter, instr))
+                            current_time = time
+
+                    except Exception:
+                        continue
+
+            contract_coverage_list.append((contract_name, contract_coverage))
+
+        if contract_coverage_list == []:
+            return None
+
+        results_json_obj = {
+            "coverage-interval": -1,
+        }
+        for contract_name, contract_coverage in contract_coverage_list:
+            results_json_obj[contract_name] = contract_coverage
+
+        results_json_obj_str = json.dumps(results_json_obj, indent=2)
+        debug(f"coverage: {results_json_obj_str}")
+
+        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        with open(coverage_file, "w", encoding="utf-8") as file:
+            file.write(results_json_obj_str)
+            file.close()
+
+        return coverage_file
+
+
+
