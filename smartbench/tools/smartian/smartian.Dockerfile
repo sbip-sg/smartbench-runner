@@ -6,9 +6,8 @@
 # Use the base image of Smartbench
 FROM smartbench/base:latest
 
-WORKDIR /root/
-
 # Clone Smartian source code
+WORKDIR /root/
 RUN git clone https://github.com/sbip-sg/Smartian smartian
 WORKDIR /root/smartian
 RUN git submodule update --init --recursive
@@ -24,13 +23,15 @@ RUN apt-get install -y apt-transport-https dotnet-sdk-5.0
 WORKDIR /root/smartian
 RUN make
 
-# Copy executable file
+# Copy script running Smartian
 WORKDIR /root/
 ADD smartbench/tools/smartian/run-smartian.sh /root/
 
-# Finally, install dependencies that are regularly updated in the last step to
-# avoid invalidating Docker cache of previous layers
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
+# Copy some sample contracts
+WORKDIR /root/
+RUN mkdir examples
+ADD examples/*.sol examples/
 
 # Entry point when running the container as an executable
+WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

@@ -27,11 +27,7 @@ RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select in
 
 # Install Solc libraries
 RUN pip install py-solc --force-reinstall
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git --force-reinstall
-
-# Prepare testing environments
-RUN mkdir examples
-ADD examples/*.sol examples/
+RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
 
 # Prepare benchmarking environments
 RUN mkdir benchmarks

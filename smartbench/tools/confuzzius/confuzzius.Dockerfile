@@ -6,19 +6,20 @@
 # Use the base image of Smartbench
 FROM smartbench/base:latest
 
+# Install ConFuzzius
 WORKDIR /root/
+RUN git clone https://github.com/christoftorres/ConFuzzius confuzzius
+WORKDIR /root/confuzzius
+RUN pip install -r fuzzer/requirements.txt
 
-# Install Confuzzius
-ENV TOOL_DIR=confuzzius
-RUN git clone https://github.com/christoftorres/ConFuzzius $TOOL_DIR
-RUN pip install -r $TOOL_DIR/fuzzer/requirements.txt
-
-# Copy executable file
+# Copy script running ConFuzzius
 ADD smartbench/tools/confuzzius/run-confuzzius.sh /root/
 
-# Finally, install dependencies that are regularly updated in the last step to
-# avoid invalidating Docker cache of previous layers
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
+# Copy some sample contracts
+WORKDIR /root/
+RUN mkdir examples
+ADD examples/*.sol examples/
 
 # Entry point when running the container as an executable
+WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

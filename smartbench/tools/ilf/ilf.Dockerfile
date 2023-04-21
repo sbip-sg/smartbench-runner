@@ -7,6 +7,7 @@
 FROM smartbench/base:latest
 
 # Install some libraries
+RUN apt update
 RUN apt -y install libssl-dev curl pkg-config
 
 # Install Nodejs libraries: truffle web3 ganache-cli
@@ -38,9 +39,11 @@ ENV GOPATH=/root/go
 ENV GOROOT=/usr/lib/go-1.10
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-# Clone ILF
+# Clone ILF and pull ILF to ensure the newest code
 WORKDIR $GOPATH/src/
 RUN git clone https://github.com/taquangtrung/ilf ilf
+WORKDIR $GOPATH/src/ilf
+RUN git pull
 
 # Install Go-Ethereum and apply ILF patch
 RUN mkdir -p $GOPATH/src/github.com/ethereum/
@@ -65,10 +68,10 @@ RUN go build -o execution.so -buildmode=c-shared export/execution.go
 WORKDIR /root
 ADD smartbench/tools/ilf/run-ilf.sh /root/
 
-# Finally, update some dependencies and ILF source code to the latest
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
-WORKDIR $GOPATH/src/ilf
-RUN git pull
+# Copy some sample contracts
+WORKDIR /root/
+RUN mkdir examples
+ADD examples/*.sol examples/
 
 # Entry point when running the container as an executable
 WORKDIR /root/

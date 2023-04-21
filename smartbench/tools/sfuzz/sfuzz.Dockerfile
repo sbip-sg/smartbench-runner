@@ -7,6 +7,7 @@
 FROM smartbench/base:latest
 
 # Install sFuzz dependencies
+RUN apt update
 RUN apt -y install cmake libleveldb-dev
 
 # Install sFuzz
@@ -24,13 +25,14 @@ WORKDIR /root/sfuzz/build/fuzzer
 RUN cp ../../assets . -r
 RUN cp ~/.solc-select/artifacts/solc-0.4.16/solc-0.4.16 /bin/
 
-# Copy executable file
+# Copy script running sFuzz
 WORKDIR /root/
 ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
 
-# Finally, install dependencies that are regularly updated in the last step to
-# avoid invalidating Docker cache of previous layers
-RUN pip install git+https://github.com/taquangtrung/solc-detect.git@v0.0.7
+# Copy some sample contracts
+WORKDIR /root/
+RUN mkdir examples
+ADD examples/*.sol examples/
 
 # Entry point when running the container as an executable
 WORKDIR /root/
