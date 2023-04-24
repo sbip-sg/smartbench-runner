@@ -23,5 +23,12 @@ done
 
 # Install utilities
 cd $BASEDIR
-wget https://github.com/taquangtrung/smartbench-binaries/raw/main/solquery/solquery -O solquery
-chmod u+x solquery
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    wget https://github.com/taquangtrung/smartbench-binaries/raw/main/solquery/solquery-linux-x86-64 \
+        -O solquery
+    chmod u+x solquery
+elif [ "$(uname)" == "Darwin" ]; then
+    wget https://github.com/taquangtrung/smartbench-binaries/raw/main/solquery/solquery-darwin \
+        -O solquery
+    chmod u+x solquery
+fi
