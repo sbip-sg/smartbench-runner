@@ -330,6 +330,7 @@ def export_benchmarking_results(
                 num_unlabelled = len(validation.unlabelled_issues)
 
                 file.write(
-                    f"{result.test_file}: {num_issues}, "
-                    f"{num_correct}, {num_missing}, {num_unlabelled}\n"
+                    f"{result.test_file}, Succeeded, "
+                    f"{num_issues}, {num_correct}, "
+                    f"{num_missing}, {num_unlabelled}\n"
                 )
