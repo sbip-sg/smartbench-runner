@@ -38,7 +38,7 @@ def parse_cli_arguments():
     )
 
     # Create sub-parser
-    sub_parsers = arg_parser.add_subparsers(
+    subcommand_parsers = arg_parser.add_subparsers(
         dest="sub_command",
         metavar=None,
         title="List of sub-commands",
@@ -61,7 +61,7 @@ def parse_cli_arguments():
     # Parser for sub-command `analyze`
 
     # Create a parser for the `analyze` sub-command
-    analyze_parser = sub_parsers.add_parser(
+    cmd_analyze_parser = subcommand_parsers.add_parser(
         Command.ANALYZE.value,
         parents=[parent_parser],
         add_help=False,
@@ -69,7 +69,7 @@ def parse_cli_arguments():
     )
 
     # Input files or directories
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "input_files_directories",
         nargs="*",  # Accept multiple input files or directories
         type=str,
@@ -77,7 +77,7 @@ def parse_cli_arguments():
     )
 
     # Input benchmarks
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "-f",
         dest="test_files_directories",
         nargs="*",  # Accept multiple input files or directories
@@ -86,7 +86,7 @@ def parse_cli_arguments():
     )
 
     # List of target contracts in test files
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--target-contracts-file",
         type=str,
         help="Configuration file specifying target contracts in test files. \
@@ -94,14 +94,14 @@ def parse_cli_arguments():
     )
 
     # Solidity version
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--solc-version",
         type=str,
         help="Version of the Solidity compiler.",
     )
 
     # Analysis tool
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "-t",
         "--tools",
         nargs="+",  # Accept multiple tools.
@@ -110,35 +110,35 @@ def parse_cli_arguments():
     )
 
     # Running tools in Docker
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--docker",
         action="store_true",
         help="Running analysis tools in Docker.",
     )
 
     # Install new environment before analyzing smart contracts
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--install-environment",
         action="store_true",
         help="Install Smartbench environment before testing.",
     )
 
     # Install new Docker image container
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--install-docker",
         action="store_true",
         help="Install relevant Docker images before testing.",
     )
 
     # Install new Docker image container
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--keep-docker-alive",
         action="store_true",
         help="Keep Docker containers alive after testing.",
     )
 
     # Timeout for each test file.
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--timeout",
         type=int,
         help="Timeout for each test file. \
@@ -146,7 +146,7 @@ def parse_cli_arguments():
     )
 
     # Timeout for each test contract.
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--contract-timeout",
         type=int,
         help="Timeout for each contract in the test file. \
@@ -154,7 +154,7 @@ def parse_cli_arguments():
     )
 
     # Number of jobs per tool
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "-j",
         "--jobs",
         type=int,
@@ -162,14 +162,14 @@ def parse_cli_arguments():
     )
 
     # Validate analysis result
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
     )
 
     # Validate analysis result for benchmarking purpose
-    analyze_parser.add_argument(
+    cmd_analyze_parser.add_argument(
         "--benchmarking",
         action="store_true",
         help="Validating analysis results for benchmarking.",
@@ -179,7 +179,7 @@ def parse_cli_arguments():
     # Parser for sub-command `parse-results`
 
     # Create a parser for the `parse-result` sub-command
-    result_parser = sub_parsers.add_parser(
+    cmd_parse_result_parser = subcommand_parsers.add_parser(
         Command.PARSE_RESULTS.value,
         parents=[parent_parser],
         add_help=False,
@@ -187,22 +187,31 @@ def parse_cli_arguments():
     )
 
     # Input result directories
-    result_parser.add_argument(
+    cmd_parse_result_parser.add_argument(
         "result_directories",
         nargs="+",  # Accept multiple result directories
         type=str,
         help="Input result directories.",
     )
 
+    # Analysis tool
+    cmd_parse_result_parser.add_argument(
+        "-t",
+        "--tools",
+        nargs="+",  # Accept multiple tools.
+        type=str,
+        help="Analysis tools to be evaluated.",
+    )
+
     # Validate analysis result
-    result_parser.add_argument(
+    cmd_parse_result_parser.add_argument(
         "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
     )
 
     # Validate analysis result for benchmarking purpose
-    result_parser.add_argument(
+    cmd_parse_result_parser.add_argument(
         "--benchmarking",
         action="store_true",
         help="Validating analysis results for benchmarking.",
@@ -210,7 +219,7 @@ def parse_cli_arguments():
 
     # Specify benchmark name for special cases without standard annotation and
     # validation
-    result_parser.add_argument(
+    cmd_parse_result_parser.add_argument(
         "--benchmark-name",
         type=str,
         help=(
@@ -223,7 +232,7 @@ def parse_cli_arguments():
     # Parser for sub-command `parse-coverage`
 
     # Create a parser for the `parse-coverage` sub-command
-    coverage_parser = sub_parsers.add_parser(
+    coverage_parser = subcommand_parsers.add_parser(
         Command.PARSE_COVERAGE.value,
         parents=[parent_parser],
         add_help=False,
@@ -242,7 +251,7 @@ def parse_cli_arguments():
     # Parser for sub-command `parse-annotation`
 
     # Create a parser for the `parse-annotation` sub-command
-    annotation_parser = sub_parsers.add_parser(
+    cmd_parse_annot_parser = subcommand_parsers.add_parser(
         Command.PARSE_ANNOTS.value,
         parents=[parent_parser],
         add_help=False,
@@ -250,39 +259,11 @@ def parse_cli_arguments():
     )
 
     # Input result directories
-    annotation_parser.add_argument(
+    cmd_parse_annot_parser.add_argument(
         "input_files_directories",
         nargs="+",  # Accept multiple input files or directories
         type=str,
         help="Input files or directories (accepts wildcard characters).",
-    )
-
-    ################################
-    # Parser for sub-command `deploy-contracts`
-
-    # Create a parser for the `parse-result` sub-command
-    deploy_parser = sub_parsers.add_parser(
-        Command.DEPLOY_CONTRACTS.value,
-        parents=[parent_parser],
-        add_help=False,
-        help="Sub-command to deploy smart contracts for testing.",
-    )
-
-    # Input files
-    deploy_parser.add_argument(
-        "input_files_directories",
-        nargs="+",  # Accept multiple input files or directories
-        type=str,
-        help="Input files or directories (accepts wildcard characters).",
-    )
-
-    # Analysis tool
-    deploy_parser.add_argument(
-        "-t",
-        "--tools",
-        nargs="+",  # Accept multiple tools.
-        type=str,
-        help="Analysis tools to be evaluated.",
     )
 
     ################################

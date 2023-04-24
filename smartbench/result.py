@@ -38,6 +38,8 @@ class AnalysisResult:
     ):
         self.tool: Tool = tool
         self.test_file: str = test_file
+
+        # Whether the test file is successfully analyzed
         self.is_successful: bool = is_successful
 
         # All the issues that are reported
@@ -64,9 +66,12 @@ class AnalysisResult:
             safe_print("-------------------")
             safe_print(f"- Tool: {self.tool.name}")
             safe_print(f"- Test file: {self.test_file}")
-            safe_print(f"- Status: {self.test_file}")
-            safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
-            safe_print(f"- Detected issues: {len(self.issues)}")
+            safe_print(
+                f"- Status: {'Succeeded' if self.is_successful else 'Failed'}"
+            )
+            if self.is_successful:
+                safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
+                safe_print(f"- Detected issues: {len(self.issues)}")
 
         # Print severity information
         severity_dict: Dict[Severity, int] = {}
@@ -115,6 +120,7 @@ def verify_tool_result_dir(tool: Tool, test_dir: str) -> bool:
 
 def parse_result_directory(
     results_dir: str,
+    tools: Optional[List[Tool]] = None,
     validate: Optional[bool] = False,
     benchmarking: Optional[bool] = False,
     benchmark_name: Optional[str] = None,
@@ -145,7 +151,9 @@ def parse_result_directory(
         tool = load_tool_configuration(tool_id)
 
         if tool is None:
-            warning(f"Unable to load tool configuration: {tool_id}")
+            continue
+
+        if tools is not None and all(tool.id != t.id for t in tools):
             continue
 
         print(f"{'=' * 55}\n")
@@ -173,34 +181,37 @@ def parse_result_directory(
 
             issues = tool.parse_analysis_output(test_output_dir)
 
-            for issue in issues:
-                print(f"- {issue}")
+            if issues is None:
+                res = AnalysisResult(tool, test_file, False)
+            else:
+                for issue in issues:
+                    print(f"- {issue}")
 
-            bug_annots = []
-            validation = None
-            if validate or benchmarking:
-                if test_file is None:
-                    print(f"Unable to read test file: {test_file}")
-                    print("Skip validating results!")
-                else:
-                    print("Bug annotations:")
-                    bug_annots = annotation.parse_bug_annotations(
-                        test_file, annot_format=benchmark_name
-                    )
-                    annotations += len(bug_annots)
-                    for annot in bug_annots:
-                        print(f"- {annot.print_concise()}")
+                bug_annots = []
+                validation = None
+                if validate or benchmarking:
+                    if test_file is None:
+                        print(f"Unable to read test file: {test_file}")
+                        print("Skip validating results!")
+                    else:
+                        print("Bug annotations:")
+                        bug_annots = annotation.parse_bug_annotations(
+                            test_file, annot_format=benchmark_name
+                        )
+                        annotations += len(bug_annots)
+                        for annot in bug_annots:
+                            print(f"- {annot.print_concise()}")
 
-                    validation = validator.validate_issues(
-                        tool, issues, bug_annots
-                    )
-                    correct_bugs += validation.num_correct_bugs()
-                print("")
+                        validation = validator.validate_issues(
+                            tool, issues, bug_annots
+                        )
+                        correct_bugs += validation.num_correct_bugs()
+                    print("")
 
-            # FIXME: need to check and update the analysis status
-            res = AnalysisResult(
-                tool, test_file, True, issues, bug_annots, validation
-            )
+                res = AnalysisResult(
+                    tool, test_file, True, issues, bug_annots, validation
+                )
+
             res.print_detailed_summary(False)
             all_results.append(res)
 

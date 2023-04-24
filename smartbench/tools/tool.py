@@ -99,8 +99,12 @@ class Tool:
         """Make an analysis command for a tool."""
 
     @abstractmethod
-    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
-        """Process analysis result of each tool."""
+    def parse_analysis_output(
+        self, test_output_dir: str
+    ) -> Optional[List[Issue]]:
+        """Process analysis result of each tool. Returns a list of detected
+        issues, or `None` if the corresponding tool failed to analyze the test
+        file."""
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot

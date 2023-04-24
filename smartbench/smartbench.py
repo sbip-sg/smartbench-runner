@@ -8,7 +8,7 @@ import signal
 import subprocess
 import sys
 
-from typing import List
+from typing import List, Optional
 
 # Library
 from smartbench import (
@@ -109,11 +109,17 @@ def analyze_smart_contracts(args) -> None:
     )
 
 
-def parse_existing_results(args) -> None:
+def parse_analysis_results(args) -> None:
     """Parse existing results obtained from previous analyses."""
+    # Configure analysis tools and mode
+    tools: Optional[List[Tool]] = None
+    if args.tools:
+        tools = configure_analysis_tools(args.tools)
+
     for result_dir in args.result_directories:
         result.parse_result_directory(
             result_dir,
+            tools,
             args.validate,
             args.benchmarking,
             args.benchmark_name,
@@ -130,15 +136,6 @@ def parse_bug_annotations(args) -> None:
     """Parse bug annotation in smart contracts."""
     test_files = benchmark.collect_test_files(args.input_files_directories)
     annotation.collect_bug_annotations(test_files)
-
-
-def deploy_smart_contracts(args) -> None:
-    """Deploy smart contracts for testing."""
-    # Prepare analysis tools and test files
-    test_files = benchmark.collect_test_files(args.input_files_directories)
-    tools = configure_analysis_tools(args.tools)
-    # Perform the deployment
-    deploy.perform_deployment(tools, test_files)
 
 
 def main():
@@ -163,7 +160,7 @@ def main():
     # Parse analysis results
     elif args.sub_command == Command.PARSE_RESULTS.value:
         print("Smartbench: running mode parsing benchmarking results...\n")
-        parse_existing_results(args)
+        parse_analysis_results(args)
 
     # Parse the instruction coverage in analysis results
     elif args.sub_command == Command.PARSE_COVERAGE.value:
@@ -174,11 +171,6 @@ def main():
     elif args.sub_command == Command.PARSE_ANNOTS.value:
         print("Smartbench: running mode parsing bug annotations...\n")
         parse_bug_annotations(args)
-
-    # Deploy contracts
-    elif args.sub_command == Command.DEPLOY_CONTRACTS.value:
-        print("Smartbench: running mode deploying contracts...\n")
-        deploy_smart_contracts(args)
 
     else:
         print("Smartbench runner: no sub-command is specified!")

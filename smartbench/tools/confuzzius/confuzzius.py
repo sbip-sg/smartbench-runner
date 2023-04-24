@@ -178,12 +178,12 @@ class Confuzzius(Tool):
             bugs = list(contract_results.get("errors").values())
 
             for bug in bugs:
-                error = bug[0]
-                kind = self.parse_issue_kind(error.get("type"))
+                bug_info = bug[0]
+                kind = self.parse_issue_kind(bug_info.get("type"))
                 location = self.parse_source_location(
-                    log_file, error.get("line"), error.get("column")
+                    log_file, bug_info.get("line"), bug_info.get("column")
                 )
-                severity = self.parse_issue_severity(error.get("severity"))
+                severity = self.parse_issue_severity(bug_info.get("severity"))
                 issue = Issue(
                     kind,
                     "",
@@ -224,9 +224,7 @@ class Confuzzius(Tool):
                         contract_coverage.append((time, coverage))
                         current_time = time
 
-            contract_coverage_list.append(
-                (contract, contract_coverage)
-            )
+            contract_coverage_list.append((contract, contract_coverage))
 
         if contract_coverage_list == []:
             return None
