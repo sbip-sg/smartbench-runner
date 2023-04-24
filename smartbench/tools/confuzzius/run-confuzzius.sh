@@ -111,33 +111,22 @@ fi
 ################################################
 # Compile contracts
 
-# Auto-detect Solc version if it wasn't specified
+# Auto-detect and switch to the suitable Solc version
 if [[ $SOLC_VER == "" ]]; then
     SOLC_VER=$(solc-detect -q $TEST_FILE)
 fi
-
-echo ""
-echo "Using Solc version: $SOLC_VER"
-echo ""
-
-COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
-rm -rf $COMPILED_CONTRACTS_DIR
-mkdir $COMPILED_CONTRACTS_DIR
-
-SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-    -o $COMPILED_CONTRACTS_DIR --overwrite \
-    1>/dev/null 2>&1  # Do not capture output of Solc
+solc-select use $SOLC_VER
 
 ################################################
 # Analyze contracts
 
 if [[ $CONTRACT_NAME == "" ]]; then
-    SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
+    python "$TOOL_DIR/fuzzer/main.py" --evm byzantium --solc "v$SOLC_VER" \
         -s $TEST_FILE -t $TIMEOUT \
         -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
 else
-    SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
+    python "$TOOL_DIR/fuzzer/main.py" --evm byzantium  --solc "v$SOLC_VER" \
         -s $TEST_FILE  -c $CONTRACT_NAME -t $TIMEOUT \
         -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
