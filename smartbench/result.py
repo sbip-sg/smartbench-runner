@@ -327,7 +327,7 @@ def export_benchmarking_results(
 
             for result in results:
                 if not result.is_successful:
-                    safe_print(f"- {result.test_file}: Failed")
+                    file.write(f"- {result.test_file}: Failed")
                     continue
 
                 validation = result.validation_result
