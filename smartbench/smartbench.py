@@ -81,8 +81,13 @@ def analyze_smart_contracts(args) -> None:
     if args.install_docker:
         install_docker_containers(tools, jobs)
 
-    # Configure test files
-    test_files = benchmark.collect_test_files(args.input_files_directories)
+    # Collect test files
+    input_test_files = args.input_files_directories
+    if args.test_files_directories:
+        for file in args.test_files_directories:
+            if file not in input_test_files:
+                input_test_files.append(file)
+    all_test_files = benchmark.collect_test_files(input_test_files)
     test_contracts = (
         None
         if args.target_contracts_file is None
@@ -92,7 +97,7 @@ def analyze_smart_contracts(args) -> None:
     # Perform the analysis
     analyze.perform_analysis(
         tools,
-        test_files,
+        all_test_files,
         test_contracts,
         args.solc_version,
         args.timeout,

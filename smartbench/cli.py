@@ -76,6 +76,15 @@ def parse_cli_arguments():
         help="Input files or directories for testing.",
     )
 
+    # Input benchmarks
+    analyze_parser.add_argument(
+        "-f",
+        dest="test_files_directories",
+        nargs="*",  # Accept multiple input files or directories
+        type=str,
+        help="Test files or directories.",
+    )
+
     # List of target contracts in test files
     analyze_parser.add_argument(
         "--target-contracts-file",
