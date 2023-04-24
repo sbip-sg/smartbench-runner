@@ -116,6 +116,10 @@ if [[ $SOLC_VER == "" ]]; then
     SOLC_VER=$(solc-detect -q $TEST_FILE)
 fi
 
+echo ""
+echo "Using Solc version: $SOLC_VER"
+echo ""
+
 COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
 rm -rf $COMPILED_CONTRACTS_DIR
 mkdir $COMPILED_CONTRACTS_DIR
@@ -127,8 +131,7 @@ SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
 ################################################
 # Analyze contracts
 
-if [ $CONTRACT_NAME == ""]
-then
+if [[ $CONTRACT_NAME == "" ]]; then
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium \
         -s $TEST_FILE -t $TIMEOUT \
         -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
