@@ -8,6 +8,7 @@ Module handling Solc
 # Standard Library
 import json
 import os
+import shlex
 import subprocess
 import sys
 
@@ -17,13 +18,11 @@ from typing import List, Optional
 # Third Party
 import solc_detect
 
-from solc_json_parser.parser import SolidityAst
-
 # Library
 from smartbench.printer import debug, error_traceback
 
 
-SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
+SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 def install_solc_maybe(version) -> str:
@@ -107,7 +106,7 @@ def configure_local_solc_path(test_file: str) -> str:
 
 def get_candidate_testing_contracts(
     test_file: str,
-    allow_abstract_contracts: bool = False,
+    only_deployable_contracts: bool = True,
     solc_version: Optional[str] = None,
 ) -> List[str]:
     """Detect Solidity version in a smart contacts."""
@@ -117,16 +116,33 @@ def get_candidate_testing_contracts(
             solc_version = detect_required_solc_version(test_file)
         debug(f"Get contract names using Solc version: {solc_version}")
 
-        # Get AST of the test file
-        ast = SolidityAst(test_file, version=solc_version)
+        # # Get AST of the test file
+        # ast = SolidityAst(test_file, version=solc_version)
 
-        contract_names = ast.all_contract_names
+        # contract_names = ast.all_contract_names
 
-        if not allow_abstract_contracts:
-            abstract_contracts = ast.all_abstract_contract_names
-            contract_names = [
-                x for x in contract_names if x not in abstract_contracts
-            ]
+        # if only_deployable_contracts:
+        #     abstract_contracts = ast.all_abstract_contract_names
+        #     contract_names = [
+        #         x for x in contract_names if x not in abstract_contracts
+        #     ]
+
+        # Run `solquery` to get contract names
+        cmd = f"{SMARTBENCH_ROOT}/solquery -q get-name {test_file}"
+        if only_deployable_contracts:
+            cmd += " --deployable-contracts"
+        else:
+            cmd += " --all-contracts"
+
+        result = subprocess.run(
+            shlex.split(cmd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        contract_names = result.stdout.decode("utf-8").strip().split(" ")
+
+        debug(f"Target contract names: {contract_names}")
 
         return contract_names
 

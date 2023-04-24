@@ -147,7 +147,7 @@ def collect_testing_contracts(
     # Auto detect target contracts if they is not specified explicitly
     if test_contracts is None:
         return solc.get_candidate_testing_contracts(
-            test_file, False, solc_version
+            test_file, True, solc_version
         )
 
     # Collect target contracts specified explicitly by users

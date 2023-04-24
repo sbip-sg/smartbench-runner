@@ -8,11 +8,17 @@ flycheck_*.py
 
 # Temporary files
 results
-
-
+*.ast
 deploy
+log
 
 # Tools
 repo
 confuzzius_venv
 smartfuzz_venv
+
+# Binary files
+solquery
+
+# Python temporarily files
+.ipynb_checkpoints

@@ -20,3 +20,8 @@ pip install -r $BASEDIR/requirements.txt
 for v in $(echo $(solc-select install) | sed 's/^.*://'); do
     solc-select install $v;
 done
+
+# Install utilities
+cd $BASEDIR
+wget https://github.com/taquangtrung/smartbench-binaries/raw/main/solquery/solquery -O solquery
+chmod u+x solquery
