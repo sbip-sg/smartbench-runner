@@ -188,8 +188,17 @@ def parse_cli_arguments():
 
     # Input result directories
     cmd_parse_result_parser.add_argument(
-        "result_directories",
-        nargs="+",  # Accept multiple result directories
+        "input_result_directories",
+        nargs="*",  # Accept multiple result directories
+        type=str,
+        help="Input result directories.",
+    )
+
+    # Result directories
+    cmd_parse_result_parser.add_argument(
+        "-r",
+        dest="result_directories",
+        nargs="*",  # Accept multiple result directories
         type=str,
         help="Input result directories.",
     )

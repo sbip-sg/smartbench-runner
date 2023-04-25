@@ -116,7 +116,13 @@ def parse_analysis_results(args) -> None:
     if args.tools:
         tools = configure_analysis_tools(args.tools)
 
-    for result_dir in args.result_directories:
+    # Collect result directories
+    result_directories = args.input_result_directories
+    if args.result_directories is not None:
+        result_directories.extend(args.result_directories)
+
+    # Parsing analysis results
+    for result_dir in result_directories:
         result.parse_result_directory(
             result_dir,
             tools,
