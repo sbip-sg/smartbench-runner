@@ -4,7 +4,6 @@
 Module handling Solc
 """
 
-
 # Standard Library
 import json
 import os
@@ -16,7 +15,10 @@ from subprocess import PIPE, Popen
 from typing import List, Optional
 
 # Third Party
+import nodesemver
 import solc_detect
+
+from solc_json_parser.parser import SolidityAst
 
 # Library
 from smartbench.printer import debug, error_traceback
@@ -116,39 +118,41 @@ def get_candidate_testing_contracts(
             solc_version = detect_required_solc_version(test_file)
         debug(f"Get contract names using Solc version: {solc_version}")
 
-        # # Get AST of the test file
-        # ast = SolidityAst(test_file, version=solc_version)
+        if nodesemver.satisfies(solc_version, ">=0.4.11"):
+            # Get contract names using Solc json parser
+            ast = SolidityAst(test_file, version=solc_version)
 
-        # contract_names = ast.all_contract_names
+            contract_names = ast.all_contract_names
+            if only_deployable_contracts:
+                abstract_contracts = ast.all_abstract_contract_names
+                contract_names = [
+                    x for x in contract_names if x not in abstract_contracts
+                ]
 
-        # if only_deployable_contracts:
-        #     abstract_contracts = ast.all_abstract_contract_names
-        #     contract_names = [
-        #         x for x in contract_names if x not in abstract_contracts
-        #     ]
+            debug(f"Solj JSON parser: target contract names: {contract_names}")
+            return contract_names
 
-        # Run `solquery` to get contract names
-        cmd = f"{SMARTBENCH_ROOT}/solquery -q get-name {test_file}"
-        if only_deployable_contracts:
-            cmd += " --deployable-contracts"
         else:
-            cmd += " --all-contracts"
+            # Get contract names using Solquery
+            cmd = f"{SMARTBENCH_ROOT}/solquery -q get-name {test_file}"
+            if only_deployable_contracts:
+                cmd += " --deployable-contracts"
+            else:
+                cmd += " --all-contracts"
 
-        result = subprocess.run(
-            shlex.split(cmd),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-        )
+            result = subprocess.run(
+                shlex.split(cmd),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
 
-        debug("Solquery output:",  result.stdout.decode("utf-8").strip())
+            contract_names = result.stdout.decode("utf-8").strip().split(" ")
+            contract_names = [name for name in contract_names if name]
 
-        contract_names = result.stdout.decode("utf-8").strip().split(" ")
-        contract_names = [name for name in contract_names if name]
+            debug(f"Solquery: target contract names: {contract_names}")
 
-        debug(f"Target contract names: {contract_names}")
-
-        return contract_names
+            return contract_names
 
     except Exception:
         error_traceback(f"Failed to get contract names from: {test_file}")
