@@ -138,9 +138,13 @@ def get_candidate_testing_contracts(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            check=False,
+            check=True,
         )
+
+        debug("Solquery output:",  result.stdout.decode("utf-8").strip())
+
         contract_names = result.stdout.decode("utf-8").strip().split(" ")
+        contract_names = [name for name in contract_names if name]
 
         debug(f"Target contract names: {contract_names}")
 

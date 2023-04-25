@@ -210,8 +210,6 @@ def analyze_test_file(
         )
         return AnalysisResult(tool, test_name, False)
 
-    # safe_print("Test contracts:", contracts)
-
     try:
         cmd = tool.make_analysis_command(
             test_file,
