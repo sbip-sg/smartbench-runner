@@ -3,10 +3,10 @@
 """Module handling sFuzz."""
 
 # Standard Library
+import json
 import math
 import os
 import re
-import json
 
 from typing import List, Optional, Union
 
@@ -15,9 +15,9 @@ from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.solidity.loc import Location
 from smartbench.printer import debug, error
 from smartbench.solidity import solc
+from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
@@ -49,6 +49,7 @@ class Sfuzz(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
+        solc_version: Optional[str] = None,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
     ) -> str:
@@ -173,7 +174,7 @@ class Sfuzz(Tool):
 
         contract_coverage_list = []
         contract_name = ""
-        first_coverage = (0)
+        first_coverage = 0
         contract_coverage = [first_coverage]
 
         for line in lines:
@@ -184,7 +185,9 @@ class Sfuzz(Tool):
                 contract_name = contract.removeprefix(">> Fuzz ")
                 print(f"contract: {contract_name}")
                 if len(contract_coverage) != 1:
-                    contract_coverage_list.append((contract_name, contract_coverage))
+                    contract_coverage_list.append(
+                        (contract_name, contract_coverage)
+                    )
                     contract_coverage = [first_coverage]
 
             if match_str:
@@ -203,7 +206,7 @@ class Sfuzz(Tool):
         results_json_obj = {
             "coverage-interval": 1,
         }
-        for (contract_name, contract_coverage) in contract_coverage_list:
+        for contract_name, contract_coverage in contract_coverage_list:
             results_json_obj[contract_name] = contract_coverage
 
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
