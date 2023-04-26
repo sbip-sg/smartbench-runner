@@ -1,33 +1,60 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-mythril.sh <test-file> -t timeout -o output_file
-#
-# NOTE:
-#   - Test file must be the first argument
-#   - This script must be configured so that it can be used both to run
-#     in a Docker container as well as to run locally.
+#   ./run-mythril.sh -f <test-file> [mythril-arguments]
 #
 
-# Arguments of mythril
-TEST_FILE=$(realpath $1)
-shift  # Past test file
+################################################
+# Print usage and help
 
+print_usage () {
+    echo ""
+    echo "Usage: "
+    echo "  run-mythril.sh -f <test-file> -c <contract-name> -o <output-dir> -t <timeout> --solc-version <version> [confuzzius-arguments]"
+    echo ""
+    echo "Options:"
+    echo "  -f <test-file>            Smart contract file to be analyzed."
+    echo "  -o <output-file>          Output directory."
+    echo "  -t <timeout>              Timeout for each target contract."
+    echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
+    echo "  -h, --help                Print this usage."
+    echo ""
+    echo "Addtional arguments passing to Confuzzius can be put at the end of this command."
+}
+
+print_help () {
+    echo ""
+    echo "Please run with '-h' to see the command usage."
+}
+
+################################################
+# Parse arguments
+
+TEST_FILE=""
 TIMEOUT=0
-RESULT_FILE=""
-OUTPUT_FILE=""
+SOLC_VER=""
 ADDITIONAL_ARGS=()
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -f)
+            TEST_FILE=$(realpath $2)
+            shift # past argument
+            shift # past value
+            ;;
+        -o)
+            OUTPUT_FILE=$2
+            shift  # past argument
+            shift  # past value
+            ;;
         -t)
             TIMEOUT=$2
             shift  # past argument
             shift  # past value
             ;;
-        -o)
-            OUTPUT_FILE=$2
+        --solc-version)
+            SOLC_VER=$2
             shift  # past argument
             shift  # past value
             ;;
@@ -38,20 +65,33 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Checking timeout
-if [[ $TIMEOUT -lt 0 ]]; then
-    echo "mythril: timeout is not specified or invalid!"
+# Checking test file
+if [[ $TEST_FILE == "" ]]; then
+    echo "Error: input file is not specified!"
+    print_help
     exit 1
 fi
 
-# Checking output dir
+# Checking test file
 if [[ $OUTPUT_FILE == "" ]]; then
     echo "Error: output file is not specified!"
+    print_help
     exit 1
 fi
 
+# Checking timeout
+if [[ $TIMEOUT -lt 0 ]]; then
+    echo "Error: timeout is invalid or not specified!"
+    print_help
+    exit 1
+fi
 
-# Detect Solc version to be used.
-SOLC_VER=$(solc-detect -q $TEST_FILE)
+################################################
+# Analyze contracts
+
+# Auto-detect and switch to the suitable Solc version
+if [[ $SOLC_VER == "" ]]; then
+    SOLC_VER=$(solc-detect -q $TEST_FILE)
+fi
 
 myth analyze $TEST_FILE --solv $SOLC_VER --execution-timeout $TIMEOUT -o json > $OUTPUT_FILE

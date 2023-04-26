@@ -115,7 +115,6 @@ fi
 if [[ $SOLC_VER == "" ]]; then
     SOLC_VER=$(solc-detect -q $TEST_FILE)
 fi
-solc-select use $SOLC_VER
 
 ################################################
 # Analyze contracts

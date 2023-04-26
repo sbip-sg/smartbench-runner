@@ -50,6 +50,7 @@ class Mythril(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
+        solc_version: Optional[str] = None,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
     ) -> str:
@@ -62,17 +63,28 @@ class Mythril(Tool):
         else:
             cmd = os.path.join(MYTHRIL_DIR, self.executable)
 
-        cmd = (
-            cmd
-            + " "
-            + test_file
-            + " -t "
-            + str(timeout)
-        )
+        # Input file and contract names
+        cmd = cmd + " -f " + test_file
 
+        # Solc version
+        if solc_version is not None:
+            cmd = cmd + " --solc-version " + solc_version
+
+        # Output file
         output_file = self.configure_json_output(test_output_dir)
+        cmd = cmd + " -o " + output_file
 
-        return cmd + " -o " + str(output_file)
+        # Timeout
+        timeout = self.default_timeout if timeout is None else timeout
+        cmd = cmd + " -t " + str(timeout)
+
+        # Finally, pass default and additional arguments
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
+
+        return cmd
 
     def parse_severity(self, severity: Optional[str]) -> Severity:
         """Parse severity level of issue detected by Mythril."""
