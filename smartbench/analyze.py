@@ -208,7 +208,7 @@ def analyze_test_file(
             f"No input contract is specified for test file: {test_file}\n\n"
             "Skip analyzing it!"
         )
-        return AnalysisResult(tool, test_name, False)
+        return AnalysisResult(tool, test_name, test_output_dir, False)
 
     try:
         cmd = tool.make_analysis_command(
@@ -221,14 +221,14 @@ def analyze_test_file(
         )
     except Exception:
         error_traceback(f"Failed to make anlaysis command for: {tool.id}")
-        return AnalysisResult(tool, test_name, False)
+        return AnalysisResult(tool, test_name, test_output_dir, False)
 
     if cmd is None:
         warning(f"Unable to make analysis command for tool: {tool.name}\n")
-        return AnalysisResult(tool, test_name, False)
+        return AnalysisResult(tool, test_name, test_output_dir, False)
 
     if not log_analysis_command(tool, test_file, cmd, test_output_dir):
-        return AnalysisResult(tool, test_name, False)
+        return AnalysisResult(tool, test_name, test_output_dir, False)
 
     debug(f"Analysis Command: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
@@ -250,11 +250,11 @@ def analyze_test_file(
             error_traceback(f"{container.name}: failed to run command: {cmd}")
         else:
             error_traceback(f"Failed to run command: {cmd}")
-        return AnalysisResult(tool, test_name, False)
+        return AnalysisResult(tool, test_name, test_output_dir, False)
 
     # Process analysis output
     if (issues := tool.parse_analysis_output(test_output_dir)) is None:
-        return AnalysisResult(tool, test_name, False)
+        return AnalysisResult(tool, test_name, test_output_dir, False)
 
     for issue in issues:
         print_unless(parallel_mode, "- " + str(issue))
@@ -270,7 +270,9 @@ def analyze_test_file(
         print_unless(parallel_mode, "")
         validation = validator.validate_issues(tool, issues, bug_annots)
 
-    res = AnalysisResult(tool, test_name, True, issues, bug_annots, validation)
+    res = AnalysisResult(
+        tool, test_name, test_output_dir, True, issues, bug_annots, validation
+    )
 
     # Print benchmarking information
     res.print_detailed_summary(parallel_mode)
