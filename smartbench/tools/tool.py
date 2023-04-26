@@ -54,7 +54,7 @@ class Tool:
         # Output file of the coverage in JSON format, some tools may not support this output
         self.coverage_json_file = (
             f"{tool_id}_coverage.json"
-            if tool_id in ["sFuzz", "confuzzius", "smartian"]
+            if tool_id in ["sFuzz", "confuzzius", "smartian", "ilf"]
             else None
         )
 
