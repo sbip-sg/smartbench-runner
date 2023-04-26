@@ -31,13 +31,26 @@ class AnalysisResult:
         self,
         tool: Tool,
         test_file: str,
+        test_output_dir: str,
         is_successful: bool,
         issues: List[Issue] = [],
         bug_annots: List[BugAnnot] = [],
         validation_result: Optional[ValidationResult] = None,
     ):
         self.tool: Tool = tool
+
+        # Paths of test file and output directory
         self.test_file: str = test_file
+        self.test_output_dir: str = test_output_dir
+
+        # Concise path of test file, which is the longest
+        self.concise_test_file = os.path.commonprefix(
+            [self.test_file[::-1], self.test_output_dir[::-1]]
+        )[::-1][1:]
+
+        print(f"Test file: {self.test_file}")
+        print(f"Test output dir: {self.test_output_dir}")
+        print(f"Concise test file: {self.concise_test_file}")
 
         # Whether the test file is successfully analyzed
         self.is_successful: bool = is_successful
@@ -92,7 +105,7 @@ class AnalysisResult:
 
     def print_benchmarking_summary(self) -> None:
         if not self.is_successful:
-            safe_print(f"- {self.test_file}: Failed")
+            safe_print(f"- {self.concise_test_file}: Failed")
             return
 
         if self.validation_result is None:
@@ -105,12 +118,12 @@ class AnalysisResult:
         num_unlabelled = len(validation.unlabelled_issues)
 
         safe_print(
-            f"- {self.test_file}: Succeeded, "
+            f"- {self.concise_test_file}: Succeeded, "
             f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
         )
 
 
-def verify_tool_result_dir(tool: Tool, test_dir: str) -> bool:
+def is_tool_output_dir(tool: Tool, test_dir: str) -> bool:
     """Check whether `test_dir` containing analysis log of a tool for
     a test file."""
     test_dir = os.path.abspath(test_dir)
@@ -164,7 +177,7 @@ def parse_result_directory(
         correct_bugs = 0
         annotations = 0
         for test_output_dir in test_output_dirs:
-            if not verify_tool_result_dir(tool, test_output_dir):
+            if not is_tool_output_dir(tool, test_output_dir):
                 continue
 
             # Get test file
@@ -182,7 +195,7 @@ def parse_result_directory(
             issues = tool.parse_analysis_output(test_output_dir)
 
             if issues is None:
-                res = AnalysisResult(tool, test_file, False)
+                res = AnalysisResult(tool, test_file, test_output_dir, False)
             else:
                 for issue in issues:
                     print(f"- {issue}")
@@ -209,7 +222,13 @@ def parse_result_directory(
                     print("")
 
                 res = AnalysisResult(
-                    tool, test_file, True, issues, bug_annots, validation
+                    tool,
+                    test_file,
+                    test_output_dir,
+                    True,
+                    issues,
+                    bug_annots,
+                    validation,
                 )
 
             res.print_detailed_summary(False)
@@ -263,7 +282,7 @@ def parse_instruction_coverage(results_dir: str) -> None:
         tool_output_dir = os.path.join(results_dir, tool_id)
         test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
         for test_output_dir in test_output_dirs:
-            if not verify_tool_result_dir(tool, test_output_dir):
+            if not is_tool_output_dir(tool, test_output_dir):
                 continue
 
             if isinstance(tool, (Sfuzz, Confuzzius, Smartian)):
@@ -326,8 +345,10 @@ def export_benchmarking_results(
             file.write("======================================\n\n")
 
             for result in results:
+                file.write(f"{result.test_file}: ")
+
                 if not result.is_successful:
-                    file.write(f"- {result.test_file}: Failed")
+                    file.write("Failed\n")
                     continue
 
                 validation = result.validation_result
@@ -341,7 +362,6 @@ def export_benchmarking_results(
                 num_unlabelled = len(validation.unlabelled_issues)
 
                 file.write(
-                    f"{result.test_file}, Succeeded, "
-                    f"{num_issues}, {num_correct}, "
+                    f"Succeeded, {num_issues}, {num_correct}, "
                     f"{num_missing}, {num_unlabelled}\n"
                 )
