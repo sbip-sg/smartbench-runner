@@ -1,5 +1,5 @@
 [info]
-id = "sFuzz"
+id = "sfuzz"
 name = "sFuzz"
 
 [command]

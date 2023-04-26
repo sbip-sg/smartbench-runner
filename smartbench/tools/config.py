@@ -94,7 +94,7 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                 tool_constructor = Confuzzius
             elif tool_id == "mythril":
                 tool_constructor = Mythril
-            elif tool_id == "sFuzz":
+            elif tool_id == "sfuzz":
                 tool_constructor = Sfuzz
             elif tool_id == "smartian":
                 tool_constructor = Smartian
