@@ -43,14 +43,11 @@ class AnalysisResult:
         self.test_file: str = test_file
         self.test_output_dir: str = test_output_dir
 
-        # Concise path of test file, which is the longest
+        # Concise path of test file, which is the longest common suffix of
+        # the test file path and output directory path
         self.concise_test_file = os.path.commonprefix(
             [self.test_file[::-1], self.test_output_dir[::-1]]
         )[::-1][1:]
-
-        print(f"Test file: {self.test_file}")
-        print(f"Test output dir: {self.test_output_dir}")
-        print(f"Concise test file: {self.concise_test_file}")
 
         # Whether the test file is successfully analyzed
         self.is_successful: bool = is_successful

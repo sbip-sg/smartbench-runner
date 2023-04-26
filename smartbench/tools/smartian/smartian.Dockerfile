@@ -13,11 +13,13 @@ WORKDIR /root/smartian
 RUN git submodule update --init --recursive
 
 # Install Smartian dependencies
+RUN apt update
 RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb \
     -O packages-microsoft-prod.deb
 RUN dpkg -i packages-microsoft-prod.deb
-RUN apt-get update
-RUN apt-get install -y apt-transport-https dotnet-sdk-5.0
+RUN apt update
+RUN apt install -y apt-transport-https
+RUN apt install -y dotnet-sdk-5.0
 
 # Compile Smartian
 WORKDIR /root/smartian
