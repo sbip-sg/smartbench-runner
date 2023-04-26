@@ -21,6 +21,8 @@ print_usage () {
     echo "  -n <number_of_containers>  Number of containers to be installed, which are named"
     echo "                             as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
     echo "  --force-install            Force install new containers."
+    echo "  --base-image-no-cache      Build the base Smartbench Docker image without cache."
+    echo "  --tool-image-no-cache      Build each tool Docker image without cache."
     echo "  --use-git-token            Enable reading GitHub access token during installation."
 }
 
@@ -36,6 +38,8 @@ TOOL_ID=""
 CONTAINER_NAMES=()
 NUM_CONTAINERS=0
 FORCE_INSTALL=false
+BASE_IMAGE_NO_CACHE=false
+TOOL_IMAGE_NO_CACHE=false
 USE_GIT_TOKEN=false
 
 while [[ $# -gt 0 ]]; do
@@ -56,6 +60,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --force-install)
             FORCE_INSTALL=true
+            shift
+            ;;
+        --base-image-no-cache)
+            BASE_IMAGE_NO_CACHE=true
+            shift
+            ;;
+        --tool-image-no-cache)
+            TOOL_IMAGE_NO_CACHE=true
             shift
             ;;
         -h|--help)
@@ -152,13 +164,23 @@ echo "============================================="
 echo "Building base image for all analysis tools..."
 echo ""
 
+BASE_CACHE_ARG=""
+if [[ $BASE_IMAGE_NO_CACHE == true ]]; then
+    BASE_CACHE_ARG="--no-cache"
+fi
+
 cd $SMARTBENCH_ROOT
-docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE .
+docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
 
 echo ""
 echo "============================================="
 echo "Start building docker container(s) for: ${ALL_TOOL_IDS[@]}"
 echo ""
+
+TOOL_CACHE_ARG=""
+if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
+    TOOL_CACHE_ARG="--no-cache"
+fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
 
@@ -178,9 +200,10 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
         echo -n "Enter your Git Access Token: "
         read GIT_TOKEN
-        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN .
+        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE \
+            --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN . $TOOL_CACHE_ARG
     else
-        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE .
+        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE . $TOOL_CACHE_ARG
     fi
 
     # Clear previous containers names if building for many tools
