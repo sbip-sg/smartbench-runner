@@ -182,8 +182,15 @@ if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
     TOOL_CACHE_ARG="--no-cache"
 fi
 
-for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
+GIT_TOKEN_ARG=""
+if [[ $USE_GIT_TOKEN == true ]]; then
+    echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
+    echo -n "Enter your Git Access Token: "
+    read GIT_TOKEN
+    GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
+fi
 
+for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     # Tool directories
     TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
 
@@ -196,15 +203,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     echo "Building Docker image for: $TOOL_ID..."
     echo ""
 
-    if [[ $USE_GIT_TOKEN == true ]]; then
-        echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
-        echo -n "Enter your Git Access Token: "
-        read GIT_TOKEN
-        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE \
-            --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN . $TOOL_CACHE_ARG
-    else
-        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE . $TOOL_CACHE_ARG
-    fi
+    docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
 
     # Clear previous containers names if building for many tools
     if [[ ${#ALL_TOOL_IDS[@]} > 1 ]]; then
