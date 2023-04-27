@@ -205,7 +205,7 @@ fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     # Build Docker image for each tool locally
-    if [[ $USE_GIT_TOKEN == true ]]; then
+    if [[ $INSTALL_LOCALLY == true ]]; then
         # Tool directories
         TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
 

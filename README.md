@@ -44,6 +44,8 @@
                   -f benchmarks/smartbench-dataset/solidity/smartbugs++/access_control
   ```
 
+- Run with `--solc-version` to specify a specific version of the Solc compiler.
+
 - Run with `--install-smartbench-env --install-remote-docker` to update the
   newest Smartbench and Docker environment
 
