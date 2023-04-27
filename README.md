@@ -3,15 +3,25 @@
 
 # Installation
 
-- Download source code and benchmarks:
+## Install each components
 
-  ```sh
-  git clone https://github.com/sbip-sg/smartbench-runner
-  cd smartbench-runner
+- Download source code and benchmarks
 
-  # Update benchmarking and result folders (`benchmarks` and `results`)
-  git submodule update --init --recursive
-  ```
+  + Download source code for the first time:
+
+    ```sh
+    git clone https://github.com/sbip-sg/smartbench-runner
+    cd smartbench-runner
+
+    # Update benchmarking and result folders (`benchmarks` and `results`)
+    git submodule update --init --recursive
+    ```
+
+  + Pull the newest source code of both the main repository and submodules:
+
+    ``` sh
+    git pull --recurse-submodules
+    ```
 
 - Install Python virtual environment and required packages:
 
@@ -23,8 +33,26 @@
 - Install Docker containers for analysis tools:
 
   ```sh
+  # Install 30 docker containers for all tools
+  ./install-tool-docker.sh -t all -n 30 --use-remote-images --force-install
+
   # Install 5 docker containers named: slither-1, ..., slither-5
   ./install-tool-docker.sh -t slither -n 5 --use-remote-images --force-install
+  ```
+
+## Install and update everything
+
+- Run the following scripts
+
+  ```sh
+  git clone https://github.com/sbip-sg/smartbench-runner
+  cd smartbench-runner
+
+  # Update source code and its sub modules
+  ./update-all-source-code.sh
+
+  # Install Smartbench environment and Docker containers for all tools
+  ./install-everything.sh
   ```
 
 # Usage

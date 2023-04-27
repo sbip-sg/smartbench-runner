@@ -227,7 +227,14 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "============================================="
         echo "Pulling Docker image for: $TOOL_ID..."
         echo ""
-        docker pull $TOOL_DOCKER_IMAGE
+
+        if [[ $TOOL_ID == "smartfuzz" ]]; then
+            echo "Smartfuzz docker image is not avaiable publicly!"
+            echo "Skip pulling it..."
+            continue
+        else
+            docker pull $TOOL_DOCKER_IMAGE
+        fi
     fi
 
     # Clear previous containers names if building for many tools
