@@ -16,7 +16,6 @@ from smartbench import (
     annotation,
     benchmark,
     cli,
-    deploy,
     docker,
     flags,
     printer,
