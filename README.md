@@ -1,6 +1,17 @@
 # Smartbench Runner
 
+
 # Installation
+
+- Download source code and benchmarks:
+
+  ```sh
+  git clone https://github.com/sbip-sg/smartbench-runner
+  cd smartbench-runner
+
+  # Update benchmarking and result folders (`benchmarks` and `results`)
+  git submodule update --init --recursive
+  ```
 
 - Install Python virtual environment and required packages:
 
@@ -9,7 +20,7 @@
   ./install-smartbench-env.sh
   ```
 
-- Install Docker containers for each analysis tool:
+- Install Docker locally (optional):
 
   ```sh
   # Install 5 docker containers named: slither-1, ..., slither-5
@@ -22,17 +33,21 @@
 
 ### Analysis
 
-- Analyze contracts, validate results, and print benchmarking information.
+- Benchmarking folder structure:
+  + Test files must be copied to: `smartbench-runner/benchmarks`.
+  + The result will be recorded to `smartbench-runner/results`.
+
+- Sample command to run `confuzzius` against the `access_control` category of `Smartbugs`:
 
   ```sh
-  ./smartbench.sh analyze examples -t slither --validate --benchmarking
+  ./smartbench.sh analyze -t confuzzius --jobs 5 --timeout 10 \
+                  -f benchmarks/smartbench-dataset/solidity/smartbugs++/access_control
   ```
 
-- Analyze contracts with the latest benchmarking environment.
+- Run with `--install-smartbench-env --install-remote-docker` to update the
+  newest Smartbench and Docker environment
 
-  ```sh
-  ./smartbench.sh analyze examples -t confuzzius --docker -jobs 5 --update-environment
-  ```
+- Run with `--validate` and `--benchmarking` to verify the output analysis result.
 
 ### Parse result
 
@@ -48,19 +63,6 @@
 
   ```sh
   ./smartbench.sh parse-annots examples/**.sol
-  ```
-
-## Benchmarking mode
-
-- Benchmarking structure:
-  + Test files must be copied to: `smartbench-runner/benchmarks`.
-  + The result will be recorded to `smartbench-runner/results`.
-
-- Sample commands:
-
-  ```sh
-  # Benchmarking smartbugs dataset using 3 docker jobs, timeout 60s per test file
-  ./smartbench.sh benchmarks/smartbugs -t confuzzius --docker --jobs 3 --timeout 10
   ```
 
 # Development
