@@ -117,7 +117,11 @@ def get_candidate_testing_contracts(
         if solc_version is None:
             solc_version = detect_required_solc_version(test_file)
         debug(f"Get contract names using Solc version: {solc_version}")
+    except Exception:
+        error_traceback(f"Failed to detect Solc version: {test_file}")
+        return []
 
+    try:
         if nodesemver.satisfies(solc_version, ">=0.4.11"):
             # Get contract names using Solc json parser
             ast = SolidityAst(test_file, version=solc_version)
@@ -131,8 +135,8 @@ def get_candidate_testing_contracts(
 
             debug(f"Solj JSON parser: target contract names: {contract_names}")
             return contract_names
-
-        else:
+    except Exception:
+        try:
             # Get contract names using Solquery
             cmd = f"{SMARTBENCH_ROOT}/solquery -q get-name {test_file}"
             if only_deployable_contracts:
@@ -151,9 +155,7 @@ def get_candidate_testing_contracts(
             contract_names = [name for name in contract_names if name]
 
             debug(f"Solquery: target contract names: {contract_names}")
-
             return contract_names
-
-    except Exception:
-        error_traceback(f"Failed to get contract names from: {test_file}")
-        return []
+        except Exception:
+            error_traceback(f"Failed to get contract names from: {test_file}")
+            return []
