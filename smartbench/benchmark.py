@@ -61,6 +61,7 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
 
 def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
     contract_dict = {}
+    version_dict = {}
     try:
         with open(test_contract_file, "r", encoding="utf-8") as file:
             while line := file.readline():
@@ -84,12 +85,14 @@ def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
                     test_file = line[0:idx]
                     contract_names = line[(idx + 1) :].split(",")
                     contract_names = [s.strip() for s in contract_names]
+                    if '.' in contract_names[-1]:
+                        version_dict[test_file] = contract_names[-1]
+                        contract_names = contract_names[:-1]
                     contract_dict[test_file] = contract_names
                     continue
-
-            return contract_dict
+            return contract_dict, version_dict
 
     except Exception:
         error(f"Failed to get contract list: {test_file}")
         traceback.print_exc()
-        return contract_dict
+        return contract_dict, version_dict
