@@ -11,7 +11,7 @@ import subprocess
 
 from datetime import datetime
 from multiprocessing import Process, Queue
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 # Library
 from smartbench import annotation, printer, result, validator
@@ -135,34 +135,40 @@ def log_analysis_info(
             file.write(f"test_files = [\n  {tests_info}\n]\n")
 
 
-def collect_testing_contracts(
+def collect_target_testing_contracts(
     tool: Tool,
     test_file: str,
-    test_contracts: Optional[Dict[str, List[str]]],
+    target_contracts: Optional[Dict[str, List[str]]],
     solc_version: Optional[str] = None,
-) -> List[str]:
+) -> Tuple[List[str], Optional[str]]:
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
 
-    # Auto detect target contracts if they is not specified explicitly
-    if test_contracts is None:
-        return solc.get_candidate_testing_contracts(
+    # Auto detect target contracts if they is not specified explicitly by users
+    if target_contracts is None:
+        return solc.get_target_contracts_and_solc_version(
             test_file, True, solc_version
         )
 
     # Collect target contracts specified explicitly by users
     test_file_name = os.path.basename(test_file).removesuffix(".sol")
-    contract_names = test_contracts.get(test_file_name)
+    contract_names = target_contracts.get(test_file_name)
 
     # Checking results
     if contract_names is None:
-        return []
+        return ([], None)
     elif isinstance(tool, Confuzzius) and len(contract_names) > 1:
         raise ValueError(
             "Confuzzius does not support specifiying multiple target contracts"
         )
 
-    return contract_names
+    # Detect Solc version that can compile the input contracts
+    if solc_version is None:
+        (_, solc_version) = solc.get_target_contracts_and_solc_version(
+            test_file, True, solc_version
+        )
+
+    return (contract_names, solc_version)
 
 
 def analyze_test_file(
@@ -199,13 +205,20 @@ def analyze_test_file(
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
 
-    contracts = collect_testing_contracts(
+    (contracts, solc_version) = collect_target_testing_contracts(
         tool, test_file, test_contracts, solc_version
     )
 
     if not contracts:
-        safe_print(
-            f"No input contract is specified for test file: {test_file}\n\n"
+        warning(
+            f"No target testing contract is specified for: {test_file}\n\n"
+            "Skip analyzing it!"
+        )
+        return AnalysisResult(tool, test_name, test_output_dir, False)
+
+    if solc_version is None:
+        warning(
+            f"No Solc version is specifieed/detected for: {test_file}\n\n"
             "Skip analyzing it!"
         )
         return AnalysisResult(tool, test_name, test_output_dir, False)
@@ -355,7 +368,6 @@ def run_analysis_tool(
     tool_output_dir: str,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
-    use_docker: bool = True,
     keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
@@ -373,17 +385,14 @@ def run_analysis_tool(
     printer.print_long_double_separator_line()
     safe_print(f"Running analysis tool: {tool.name}")
 
-    # When running in Docker mode, use relative path of output directory
-    # mounted to the Docker container so that the container can access to it
-    if use_docker:
-        tool_output_dir = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
+    # Use relative path of output directory to mount to the Docker container so
+    # that the container can access to it
+    tool_output_dir = os.path.relpath(tool_output_dir, SMARTBENCH_ROOT)
 
     all_results: List[AnalysisResult] = []
 
     # Start Docker containers if using Docker mode
-    docker_containers = []
-    if use_docker:
-        docker_containers = start_docker_containers(tool, jobs)
+    docker_containers = start_docker_containers(tool, jobs)
 
     printer.print_short_double_separator_line()
     safe_print("Running analysis jobs...\n")
@@ -396,13 +405,10 @@ def run_analysis_tool(
     for idx, test_file in enumerate(test_files):
         idx = idx % jobs
 
-        if use_docker:
-            # Get relative path of the test file compared to `SMARTBENCH_ROOT`
-            # so that the Docker container can access to it
-            test_file_rel_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
-            test_batches[idx].append(test_file_rel_path)
-        else:
-            test_batches[idx].append(test_file)
+        # Get relative path of the test file compared to `SMARTBENCH_ROOT`
+        # so that the Docker container can access to it
+        test_file_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
+        test_batches[idx].append(test_file_path)
 
     analysis_jobs = []
     for i in range(jobs):
@@ -448,7 +454,7 @@ def run_analysis_tool(
     for proc in processes:
         proc.join()
 
-    if use_docker and not keep_docker_alive:
+    if not keep_docker_alive:
         # Stop Docker containers after analysis
         stop_docker_containers(docker_containers)
 
@@ -461,7 +467,6 @@ def perform_analysis(
     test_contracts: Optional[Dict[str, List[str]]],
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
-    use_docker: bool = True,
     keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
@@ -497,7 +502,6 @@ def perform_analysis(
             tool_output_dir,
             solc_version,
             timeout,
-            use_docker,
             keep_docker_alive,
             jobs,
             validate,

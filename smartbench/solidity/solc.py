@@ -12,7 +12,7 @@ import subprocess
 import sys
 
 from subprocess import PIPE, Popen
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # Third Party
 import nodesemver
@@ -88,38 +88,49 @@ def detect_best_solc_versions(test_file: str) -> List[str]:
     return best_versions
 
 
-def get_candidate_testing_contracts(
+def get_target_contracts_and_solc_version(
     test_file: str,
     only_deployable_contracts: bool = True,
     solc_version: Optional[str] = None,
-) -> List[str]:
-    """Detect Solidity version in a smart contacts."""
+) -> Tuple[List[str], Optional[str]]:
+    """Collect target contracts and the suitable Solc version to compile
+    the input test file."""
 
     try:
         if solc_version is None:
-            solc_version = detect_best_solc_versions(test_file)
-        debug(f"Get contract names using Solc version: {solc_version}")
+            best_solc_versions = detect_best_solc_versions(test_file)
+            debug(f"Detected best Solc versions: {best_solc_versions}")
+        else:
+            debug(f"User-specified Solc version: {solc_version}")
+            best_solc_versions = [solc_version]
     except Exception:
-        error_traceback(f"Failed to detect Solc version: {test_file}")
+        error_traceback(f"Failed to detect best Solc versions: {test_file}")
         return []
 
-    try:
-        if nodesemver.satisfies(solc_version, ">=0.4.11"):
-            # Get contract names using Solc json parser
+    # First, try to get target contracts name using `solc_json_parser`, since
+    # the underlying library `py-solc-x` is also used by other tools. If
+    # `solc_json_parser` can to compile the contracts, then other tools will
+    # also likely to be able to compile the contracts
+    for solc_version in best_solc_versions:
+        try:
             ast = SolidityAst(test_file, version=solc_version)
 
-            contract_names = ast.all_contract_names
+            contracts = ast.all_contract_names
             if only_deployable_contracts:
                 abstract_contracts = ast.all_abstract_contract_names
-                contract_names = [
-                    x for x in contract_names if x not in abstract_contracts
+                contracts = [
+                    s for s in contracts if s not in abstract_contracts
                 ]
 
-            debug(f"Solj JSON parser: target contract names: {contract_names}")
-            return contract_names
-    except Exception:
+            debug(f"SolcJsonParser: target contract names: {contracts}")
+            return (contracts, solc_version)
+        except Exception:
+            pass
+
+    # If `SolcJsonParser` fails to get contract names, then use `SolQuery` to
+    # try get contract names by trying each of the detected best Solc versions.
+    for solc_version in best_solc_versions:
         try:
-            # Get contract names using Solquery
             cmd = f"{SMARTBENCH_ROOT}/solquery -q get-name {test_file}"
             if only_deployable_contracts:
                 cmd += " --deployable-contracts"
@@ -133,11 +144,14 @@ def get_candidate_testing_contracts(
                 check=True,
             )
 
-            contract_names = result.stdout.decode("utf-8").strip().split(" ")
-            contract_names = [name for name in contract_names if name]
+            contracts = result.stdout.decode("utf-8").strip().split(" ")
+            contracts = [name for name in contracts if name]
 
-            debug(f"Solquery: target contract names: {contract_names}")
-            return contract_names
+            debug(f"SolQuery: target contract names: {contracts}")
+            return (contracts, solc_version)
         except Exception:
-            error_traceback(f"Failed to get contract names from: {test_file}")
-            return []
+            pass
+
+    # Report an error if no contract names are found
+    error_traceback(f"Failed to get contract names from: {test_file}")
+    return ([], None)

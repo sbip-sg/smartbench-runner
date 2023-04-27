@@ -109,14 +109,6 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
-    # Running tools using local Docker
-    analyze_argparser.add_argument(
-        "--docker",
-        action="store_true",
-        default="True",
-        help="Running analysis tools using Docker built locally.",
-    )
-
     # Install new environment before analyzing smart contracts
     analyze_argparser.add_argument(
         "--install-smartbench-env",
@@ -126,9 +118,7 @@ def parse_cli_arguments():
 
     # Install new Docker images of analysis tools locally.
     analyze_argparser.add_argument(
-        "--install-docker",
         "--install-local-docker",
-        dest="install_local_docker",
         action="store_true",
         help="Install Docker images of analysis tools locally.",
     )
@@ -136,7 +126,6 @@ def parse_cli_arguments():
     # Install new Docker containers of analysis tools from remote.
     analyze_argparser.add_argument(
         "--install-remote-docker",
-        dest="install_remote_docker",
         action="store_true",
         help="Install Docker containers of analysis tools from remote.",
     )

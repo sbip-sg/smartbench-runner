@@ -92,8 +92,8 @@ class Tool:
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
-        solc_version: Optional[str] = None,
-        container: Optional[DockerContainer] = None,
+        solc_version: str,
+        container: DockerContainer,
         timeout: Optional[int] = None,
     ) -> str:
         """Make an analysis command for a tool."""
