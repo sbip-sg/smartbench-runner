@@ -1,8 +1,0 @@
-[info]
-id = "toolname"
-name = "ToolName"
-
-[command]
-executable = "..."
-default_arguments = ""
-default_timeout = 60

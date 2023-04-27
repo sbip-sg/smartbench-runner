@@ -84,26 +84,8 @@ def install_solc_maybe(version) -> str:
 def detect_best_solc_versions(test_file: str) -> List[str]:
     """Detect best Solc versions to copmile the input smart contacts."""
     pragma = solc_detect.find_pragma_solc_version(test_file)
-    best_version = solc_detect.find_best_solc_version_for_pragma(pragma)
-    return best_version
-
-
-def configure_local_solc_path(test_file: str) -> str:
-    """Configure Solc compiler for a test file.
-
-    Return path to the required Solc compiler."""
-    version = detect_best_solc_versions(test_file)
-    install_solc_maybe(version)
-
-    # Find path to the Solc compiler installed by solc-select
-    pyenv_dir = os.getenv("VIRTUAL_ENV")
-    if pyenv_dir is None:
-        pyenv_dir = os.getenv("HOME")
-    solc_name = f"solc-{version}"
-    solc_dir = os.path.join(pyenv_dir, ".solc-select/artifacts", solc_name)
-    solc_path = os.path.join(solc_dir, solc_name)
-    debug(f"Using Solc: {solc_path}")
-    return solc_path
+    best_versions = solc_detect.find_best_solc_version_for_pragma(pragma)
+    return best_versions
 
 
 def get_candidate_testing_contracts(

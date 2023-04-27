@@ -112,16 +112,9 @@ def parse_cli_arguments():
     # Running tools using local Docker
     analyze_argparser.add_argument(
         "--docker",
-        "--local-docker",
         action="store_true",
+        default="True",
         help="Running analysis tools using Docker built locally.",
-    )
-
-    # Running tools using remote Docker
-    analyze_argparser.add_argument(
-        "--remote-docker",
-        action="store_true",
-        help="Running analysis tools using Docker pulled remotely.",
     )
 
     # Install new environment before analyzing smart contracts
