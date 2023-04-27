@@ -13,8 +13,9 @@ print_usage () {
     echo "  run-slither.sh -f <test-file> [slither-arguments]"
     echo ""
     echo "Options:"
-    echo "  -f <test-file>        Smart contract file to be analyzed."
-    echo "  -h, --help            Print this usage."
+    echo "  -f <test-file>            Smart contract file to be analyzed."
+    echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
+    echo "  -h, --help                Print this usage."
     echo ""
     echo "Addtional arguments passing to Slither can be put at the end of this command."
 }
@@ -37,6 +38,11 @@ while [[ $# -gt 0 ]]; do
             shift # past argument
             shift # past value
             ;;
+        --solc-version)
+            SOLC_VER=$2
+            shift  # past argument
+            shift  # past value
+            ;;
         -h|--help)
             print_usage
             exit 1
@@ -55,11 +61,15 @@ if [[ $TEST_FILE == "" ]]; then
     exit 1
 fi
 
+# Checking Solc version
+if [[ $SOLC_VER == "" ]]; then
+    echo "Error: Solc version is not specified!"
+    print_help
+    exit 1
+fi
+
 ################################################
 # Analyze test file
-
-# Detect Solc version to be used.
-SOLC_VER=$(solc-detect -q $TEST_FILE)
 
 # Run Slither
 SOLC_VERSION=$SOLC_VER slither $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1

@@ -81,8 +81,8 @@ def install_solc_maybe(version) -> str:
         sys.exit()
 
 
-def detect_required_solc_version(test_file: str) -> str:
-    """Detect Solidity version in a smart contacts"""
+def detect_best_solc_versions(test_file: str) -> List[str]:
+    """Detect best Solc versions to copmile the input smart contacts."""
     pragma = solc_detect.find_pragma_solc_version(test_file)
     best_version = solc_detect.find_best_solc_version_for_pragma(pragma)
     return best_version
@@ -92,7 +92,7 @@ def configure_local_solc_path(test_file: str) -> str:
     """Configure Solc compiler for a test file.
 
     Return path to the required Solc compiler."""
-    version = detect_required_solc_version(test_file)
+    version = detect_best_solc_versions(test_file)
     install_solc_maybe(version)
 
     # Find path to the Solc compiler installed by solc-select
@@ -115,7 +115,7 @@ def get_candidate_testing_contracts(
 
     try:
         if solc_version is None:
-            solc_version = detect_required_solc_version(test_file)
+            solc_version = detect_best_solc_versions(test_file)
         debug(f"Get contract names using Solc version: {solc_version}")
     except Exception:
         error_traceback(f"Failed to detect Solc version: {test_file}")

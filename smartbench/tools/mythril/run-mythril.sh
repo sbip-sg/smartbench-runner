@@ -72,6 +72,13 @@ if [[ $TEST_FILE == "" ]]; then
     exit 1
 fi
 
+# Checking Solc version
+if [[ $SOLC_VER == "" ]]; then
+    echo "Error: Solc version is not specified!"
+    print_help
+    exit 1
+fi
+
 # Checking test file
 if [[ $OUTPUT_FILE == "" ]]; then
     echo "Error: output file is not specified!"
@@ -88,10 +95,5 @@ fi
 
 ################################################
 # Analyze contracts
-
-# Auto-detect and switch to the suitable Solc version
-if [[ $SOLC_VER == "" ]]; then
-    SOLC_VER=$(solc-detect -q $TEST_FILE)
-fi
 
 myth analyze $TEST_FILE --solv $SOLC_VER --execution-timeout $TIMEOUT -o json > $OUTPUT_FILE

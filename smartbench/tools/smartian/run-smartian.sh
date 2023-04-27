@@ -93,6 +93,13 @@ if [[ $TEST_FILE == "" ]]; then
     exit 1
 fi
 
+# Checking Solc version
+if [[ $SOLC_VER == "" ]]; then
+    echo "Error: Solc version is not specified!"
+    print_help
+    exit 1
+fi
+
 # Checking output dir
 if [[ $OUTPUT_DIR == "" ]]; then
     echo "Error: output dir is not specified!"
@@ -119,11 +126,6 @@ fi
 
 ################################################
 # Compile contracts
-
-# Auto-detect Solc version if it wasn't specified
-if [[ $SOLC_VER == "" ]]; then
-    SOLC_VER=$(solc-detect -q $TEST_FILE)
-fi
 
 COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
 rm -rf $COMPILED_CONTRACTS_DIR

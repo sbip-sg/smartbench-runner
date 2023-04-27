@@ -13,11 +13,12 @@ print_usage () {
     echo "  run-ilf.sh -f <test-file> -c <contract-names> [options] [ilf-arguments]"
     echo ""
     echo "Options:"
-    echo "  -f <test-file>        Smart contract file to be analyzed."
-    echo "  -c <contract-names>   Names of contracts to be analyzed (whitespace separated)."
-    echo "  -o <output-dir>       Output directory containing analysis results."
-    echo "  -t <timeout>          Timeout for each contract of the test file."
-    echo "  -h, --help            Print this usage."
+    echo "  -f <test-file>            Smart contract file to be analyzed."
+    echo "  -c <contract-names>       Names of contracts to be analyzed (whitespace separated)."
+    echo "  -o <output-dir>           Output directory containing analysis results."
+    echo "  -t <timeout>              Timeout for each contract of the test file."
+    echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
+    echo "  -h, --help                Print this usage."
     echo ""
     echo "Addtional arguments passing to ILF can be put at the end of this command."
 }
@@ -68,6 +69,11 @@ while [[ $# -gt 0 ]]; do
             shift  # past argument
             shift  # past value
             ;;
+        --solc-version)
+            SOLC_VER=$2
+            shift  # past argument
+            shift  # past value
+            ;;
         -h|--help)
             print_usage
             exit 1
@@ -82,6 +88,13 @@ done
 # Checking test file
 if [[ $TEST_FILE == "" ]]; then
     echo "Error: test file is not specified!"
+    print_help
+    exit 1
+fi
+
+# Checking Solc version
+if [[ $SOLC_VER == "" ]]; then
+    echo "Error: Solc version is not specified!"
     print_help
     exit 1
 fi
@@ -168,9 +181,6 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "  deployer.deploy(contract$CONTRACT);"  >> $DEPLOY_FILE
 done
 echo "};" >> $DEPLOY_FILE
-
-# Detect Solc version to be used.
-SOLC_VER=$(solc-detect -q $TEST_FILE)
 
 # Deploy contracts and extract deployment transactions
 SOLC_VERSION=$SOLC_VER GOPATH=$GO_DIR \

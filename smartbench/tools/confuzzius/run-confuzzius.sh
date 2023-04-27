@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-confuzzius.sh -f <test-file> [confuzzius-arguments]
+#   ./run-confuzzius.sh -f <test-file> [options] [confuzzius-arguments]
 #
 
 ################################################
@@ -83,9 +83,16 @@ if [[ $TEST_FILE == "" ]]; then
     exit 1
 fi
 
-# Checking test file
+# Checking Solc version
+if [[ $SOLC_VER == "" ]]; then
+    echo "Error: Solc version is not specified!"
+    print_help
+    exit 1
+fi
+
+# Checking output directory
 if [[ $OUTPUT_DIR == "" ]]; then
-    echo "Error: output dir is not specified!"
+    echo "Error: output directory is not specified!"
     print_help
     exit 1
 fi
@@ -106,14 +113,6 @@ if [ -f /.dockerenv ]; then
     TOOL_DIR="/root/confuzzius"
 else
     TOOL_DIR="$(realpath $(dirname "$0"))/repo/confuzzius"
-fi
-
-################################################
-# Compile contracts
-
-# Auto-detect and switch to the suitable Solc version
-if [[ $SOLC_VER == "" ]]; then
-    SOLC_VER=$(solc-detect -q $TEST_FILE)
 fi
 
 ################################################

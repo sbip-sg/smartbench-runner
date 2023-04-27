@@ -63,24 +63,30 @@ class Sfuzz(Tool):
         else:
             cmd = os.path.join(SFUZZ_DIR, self.executable)
 
-        # Input file must be the first argument to be run by docker
-        cmd = cmd + " " + test_file
+        # Input file and contract names
+        cmd = cmd + " -f " + test_file
+        if len(contracts) == 1:
+            cmd = cmd + " -c " + contracts[0]
 
-        # Pass contract names to Smartian
+        # Solc version
+        if solc_version is not None:
+            cmd = cmd + " --solc-version " + solc_version
+
+        # Pass contract names to sFuzz
         if len(contracts) > 0:
             cmd = cmd + " -c " + " ".join(contracts)
-
-        # Pass arguments
-        if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
-        if self.additional_args:
-            cmd = cmd + " " + self.additional_args
 
         # Timeout
         timeout = self.default_timeout if timeout is None else timeout
         contract_timeout = math.ceil(timeout / len(contracts))
 
         cmd = cmd + " -t " + str(contract_timeout)
+
+        # Pass arguments
+        if self.default_arguments:
+            cmd = cmd + " " + self.default_arguments
+        if self.additional_args:
+            cmd = cmd + " " + self.additional_args
 
         return cmd
 
