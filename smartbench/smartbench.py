@@ -99,17 +99,19 @@ def analyze_smart_contracts(args) -> None:
             if file not in input_test_files:
                 input_test_files.append(file)
     all_test_files = benchmark.collect_test_files(input_test_files)
-    test_contracts = (
-        None
-        if args.target_contracts_file is None
-        else benchmark.collect_target_contracts(args.target_contracts_file)
-    )
+    if args.target_contracts_file is None:
+        test_contracts, compiler_versions = None, None
+    else:
+        test_contracts, compiler_versions = benchmark.collect_target_contracts(args.target_contracts_file)
 
+    print (f"test_contracts: {test_contracts}")
+    print (f"compiler_versions: {compiler_versions}")
     # Perform the analysis
     analyze.perform_analysis(
         tools,
         all_test_files,
         test_contracts,
+        compiler_versions, # override the common compiler version
         args.solc_version,
         args.timeout,
         args.keep_docker_alive,

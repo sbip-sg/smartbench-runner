@@ -40,6 +40,7 @@ class AnalysisJob:
         tool: Tool,
         test_files: List[str],
         test_contracts: Optional[Dict[str, List[str]]],
+        compiler_versions: Optional[Dict[str, str]],
         job_output_dir: str,
         solc_version: Optional[str] = None,
         timeout: Optional[int] = None,
@@ -52,6 +53,7 @@ class AnalysisJob:
         # folder in a Docker container
         self.test_files: List[str] = list(test_files)
         self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
+        self.compiler_versions = compiler_versions
         self.solc_version = solc_version
 
         # Output directory of a job to store results of all test files
@@ -139,6 +141,7 @@ def collect_target_testing_contracts(
     tool: Tool,
     test_file: str,
     target_contracts: Optional[Dict[str, List[str]]],
+    compiler_versions: Optional[Dict[str, str]],
     solc_version: Optional[str] = None,
 ) -> Tuple[List[str], Optional[str]]:
     """Collect list of testing contracts directly from the test file or from a
@@ -161,13 +164,14 @@ def collect_target_testing_contracts(
         raise ValueError(
             "Confuzzius does not support specifiying multiple target contracts"
         )
-
-    # Detect Solc version that can compile the input contracts
-    if solc_version is None:
-        (_, solc_version) = solc.get_target_contracts_and_solc_version(
-            test_file, True, solc_version
-        )
-
+    if compiler_versions is not None:
+        solc_version = compiler_versions.get(test_file_name)
+    else:
+        # Detect Solc version that can compile the input contracts
+        if solc_version is None:
+            (_, solc_version) = solc.get_target_contracts_and_solc_version(
+                test_file, True, solc_version
+            )
     return (contract_names, solc_version)
 
 
@@ -175,6 +179,7 @@ def analyze_test_file(
     tool: Tool,
     test_file: str,
     test_contracts: Optional[Dict[str, List[str]]],
+    compiler_versions: Optional[Dict[str, str]],
     test_output_dir: str,
     solc_version: Optional[str] = None,
     job_id: Optional[int] = None,
@@ -206,7 +211,7 @@ def analyze_test_file(
         safe_print(f"Analyzing: {test_file}\n")
 
     (contracts, solc_version) = collect_target_testing_contracts(
-        tool, test_file, test_contracts, solc_version
+        tool, test_file, test_contracts, compiler_versions, solc_version
     )
 
     if not contracts:
@@ -347,6 +352,7 @@ def run_analysis_job(
             job.tool,
             test_file,
             job.test_contracts,
+            job.compiler_versions,
             test_output_dir,
             job.solc_version,
             job.id,
@@ -365,6 +371,7 @@ def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
+    compiler_versions: Optional[Dict[str, str]],
     tool_output_dir: str,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
@@ -418,6 +425,7 @@ def run_analysis_tool(
             tool,
             test_batches[i],
             test_contracts,
+            compiler_versions,
             tool_output_dir,
             solc_version,
             timeout,
@@ -465,6 +473,7 @@ def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
+    compiler_versions: Optional[Dict[str, str]],
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
     keep_docker_alive: bool = False,
@@ -499,6 +508,7 @@ def perform_analysis(
             tool,
             test_files,
             test_contracts,
+            compiler_versions,
             tool_output_dir,
             solc_version,
             timeout,
