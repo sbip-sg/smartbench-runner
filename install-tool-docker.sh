@@ -24,6 +24,7 @@ print_usage () {
     echo "  --base-image-no-cache      Build the base Smartbench Docker image without cache."
     echo "  --tool-image-no-cache      Build each tool Docker image without cache."
     echo "  --use-git-token            Enable reading GitHub access token during installation."
+    echo "  --use-remote-images        Instrall tool Docker from remote."
 }
 
 print_run_help () {
@@ -41,6 +42,7 @@ FORCE_INSTALL=false
 BASE_IMAGE_NO_CACHE=false
 TOOL_IMAGE_NO_CACHE=false
 USE_GIT_TOKEN=false
+INSTALL_LOCALLY=true
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -68,6 +70,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --tool-image-no-cache)
             TOOL_IMAGE_NO_CACHE=true
+            shift
+            ;;
+        --use-remote-images)
+            INSTALL_LOCALLY=false
             shift
             ;;
         -h|--help)
@@ -160,50 +166,69 @@ DOCKER_RESULTS_DIR="/root/results"
 # Build base Docker image
 echo "Start building docker containers for analysis tools... "
 echo ""
-echo "============================================="
-echo "Building base image for all analysis tools..."
-echo ""
 
-BASE_CACHE_ARG=""
-if [[ $BASE_IMAGE_NO_CACHE == true ]]; then
-    BASE_CACHE_ARG="--no-cache"
+# Install base image of Smartbench locally
+if [[ $INSTALL_LOCALLY == true ]]; then
+    echo "============================================="
+    echo "Building base image for all analysis tools..."
+    echo ""
+
+    BASE_CACHE_ARG=""
+    if [[ $BASE_IMAGE_NO_CACHE == true ]]; then
+        BASE_CACHE_ARG="--no-cache"
+    fi
+
+    cd $SMARTBENCH_ROOT
+    docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
 fi
-
-cd $SMARTBENCH_ROOT
-docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
 
 echo ""
 echo "============================================="
 echo "Start building docker container(s) for: ${ALL_TOOL_IDS[@]}"
 echo ""
 
-TOOL_CACHE_ARG=""
-if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
-    TOOL_CACHE_ARG="--no-cache"
-fi
+# Configure some arguments to build Docker image for each tool locally
+if [[ $INSTALL_LOCALLY == true ]]; then
+    TOOL_CACHE_ARG=""
+    if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
+        TOOL_CACHE_ARG="--no-cache"
+    fi
 
-GIT_TOKEN_ARG=""
-if [[ $USE_GIT_TOKEN == true ]]; then
-    echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
-    echo -n "Enter your Git Access Token: "
-    read GIT_TOKEN
-    GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
+    GIT_TOKEN_ARG=""
+    if [[ $USE_GIT_TOKEN == true ]]; then
+        echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
+        echo -n "Enter your Git Access Token: "
+        read GIT_TOKEN
+        GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
+    fi
 fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
-    # Tool directories
-    TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
+    # Build Docker image for each tool locally
+    if [[ $USE_GIT_TOKEN == true ]]; then
+        # Tool directories
+        TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
 
-    # Docker information
-    TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
-    TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
+        # Docker information
+        TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
+        TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
 
-    # Build Docker image
-    echo "============================================="
-    echo "Building Docker image for: $TOOL_ID..."
-    echo ""
+        # Build Docker image
+        echo "============================================="
+        echo "Building Docker image for: $TOOL_ID..."
+        echo ""
 
-    docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
+        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
+    else # Pull Docker image for each tool from remote
+        # Image name
+        TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
+
+        # Build Docker image
+        echo "============================================="
+        echo "Pulling Docker image for: $TOOL_ID..."
+        echo ""
+        docker pull $TOOL_DOCKER_IMAGE
+    fi
 
     # Clear previous containers names if building for many tools
     if [[ ${#ALL_TOOL_IDS[@]} > 1 ]]; then
@@ -223,6 +248,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
 
     # Create new Docker containers that share the two folders:
     # `benchmarks` and `results` with the host system.
+    echo ""
     echo "============================================="
     echo "Creating docker containers: ${CONTAINER_NAMES[*]}"
     echo ""

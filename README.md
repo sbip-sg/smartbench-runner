@@ -20,11 +20,11 @@
   ./install-smartbench-env.sh
   ```
 
-- Install Docker locally (optional):
+- Install Docker containers for analysis tools:
 
   ```sh
   # Install 5 docker containers named: slither-1, ..., slither-5
-  ./install-tool-docker.sh -t slither --force-install -n 5
+  ./install-tool-docker.sh -t slither -n 5 --use-remote-images --force-install
   ```
 
 # Usage
