@@ -18,9 +18,6 @@ from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
-CONFUZZIUS_DIR = os.path.dirname(__file__)
-
-
 class Confuzzius(Tool):
     def __init__(
         self,
@@ -48,17 +45,16 @@ class Confuzzius(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
-        solc_version: Optional[str] = None,
-        container=Optional[DockerContainer],
+        solc_version: str,
+        container=DockerContainer,
         timeout: Optional[int] = None,
     ) -> str:
         """
         Function to make an analysis command for Slither.
         """
-        if container is not None:
-            cmd = f"docker exec -it {container.name} /root/{self.executable}"
-        else:
-            cmd = os.path.join(CONFUZZIUS_DIR, self.executable)
+
+        # Configure command
+        cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
         cmd = cmd + " -f " + test_file
@@ -72,12 +68,10 @@ class Confuzzius(Tool):
         # Output directory
         cmd = cmd + " -o " + test_output_dir
 
-        # Calculate timeout for each contract if it is not specified in
-        # additional arguments of Confuzzius
-        if self.additional_args is None or "-t " not in self.additional_args:
-            timeout = self.default_timeout if timeout is None else timeout
-            contract_timeout = math.ceil(timeout / len(contracts))
-            cmd = cmd + " -t " + str(contract_timeout)
+        # Timeout for each contract
+        timeout = self.default_timeout if timeout is None else timeout
+        contract_timeout = math.ceil(timeout / len(contracts))
+        cmd = cmd + " -t " + str(contract_timeout)
 
         # Finally, pass default and additional arguments
         if self.default_arguments:

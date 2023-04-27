@@ -6,21 +6,15 @@
 import json
 import os
 
-from subprocess import CompletedProcess
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 # Library
-from smartbench import annotation, logger
-from smartbench.solidity import solc
+from smartbench import logger
 from smartbench.docker import DockerContainer
-from smartbench.annotation import BugAnnot
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.solidity.loc import Location
 from smartbench.printer import debug, error, warning
+from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
-
-
-MYTHRIL_DIR = os.path.dirname(__file__)
 
 
 class Mythril(Tool):
@@ -55,13 +49,10 @@ class Mythril(Tool):
         timeout: Optional[int] = None,
     ) -> str:
         """Function to make analysis command for `Mythril`. This function should
-        have the same signature with other tools.
+        have the same signature with other tools."""
 
-        """
-        if container is not None:
-            cmd = f"docker exec -it {container.name} /root/{self.executable}"
-        else:
-            cmd = os.path.join(MYTHRIL_DIR, self.executable)
+        # Configure command
+        cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
         cmd = cmd + " -f " + test_file
@@ -71,8 +62,8 @@ class Mythril(Tool):
             cmd = cmd + " --solc-version " + solc_version
 
         # Output file
-        output_file = self.configure_json_output(test_output_dir)
-        cmd = cmd + " -o " + output_file
+        if output_file := self.configure_json_output(test_output_dir):
+            cmd = cmd + " -o " + output_file
 
         # Timeout
         timeout = self.default_timeout if timeout is None else timeout
@@ -167,7 +158,9 @@ class Mythril(Tool):
 
         return IssueKind.UNKNOWN
 
-    def parse_analysis_output(self, test_output_dir: str) -> Optional[List[Issue]]:
+    def parse_analysis_output(
+        self, test_output_dir: str
+    ) -> Optional[List[Issue]]:
         """Parse output of Mythril"""
         output = None
         output_file = os.path.join(test_output_dir, self.json_output_file)

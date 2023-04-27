@@ -21,9 +21,6 @@ from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
-SFUZZ_DIR = os.path.dirname(__file__)
-
-
 class Sfuzz(Tool):
     def __init__(
         self,
@@ -58,10 +55,8 @@ class Sfuzz(Tool):
         This function should have the same signature with other tools.
         """
 
-        if container is not None:
-            cmd = f"docker exec -it {container.name} /root/{self.executable}"
-        else:
-            cmd = os.path.join(SFUZZ_DIR, self.executable)
+        # Configure command
+        cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
         cmd = cmd + " -f " + test_file
@@ -79,7 +74,6 @@ class Sfuzz(Tool):
         # Timeout
         timeout = self.default_timeout if timeout is None else timeout
         contract_timeout = math.ceil(timeout / len(contracts))
-
         cmd = cmd + " -t " + str(contract_timeout)
 
         # Pass arguments

@@ -24,9 +24,6 @@ from smartbench.solidity.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
 
-SLITHER_DIR = os.path.dirname(__file__)
-
-
 class Slither(Tool):
     def __init__(
         self,
@@ -56,15 +53,10 @@ class Slither(Tool):
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
     ) -> str:
-        """
-        Function to make an analysis command for Slither.
-        """
+        """Function to make an analysis command for Slither."""
 
-        # Command
-        if container is not None:
-            cmd = f"docker exec -it {container.name} /root/{self.executable}"
-        else:
-            cmd = os.path.join(SLITHER_DIR, self.executable)
+        # Configure command
+        cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file
         cmd = cmd + " -f " + test_file

@@ -18,10 +18,6 @@ from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
-# Configure some paths
-SMARTFUZZ_DIR = os.path.dirname(__file__)
-
-
 class Smartfuzz(Tool):
     def __init__(
         self,
@@ -56,11 +52,8 @@ class Smartfuzz(Tool):
         """Function to make analysis command for `Smartfuzz`. This function
         should have the same signature with other tools."""
 
-        # Executable file
-        if container is not None:
-            cmd = f"docker exec -it {container.name} /root/{self.executable}"
-        else:
-            cmd = os.path.join(SMARTFUZZ_DIR, self.executable)
+        # Configure command
+        cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
         cmd += " -f " + test_file
@@ -76,15 +69,10 @@ class Smartfuzz(Tool):
         if output_file := self.configure_json_output(test_output_dir):
             cmd += " -r " + output_file
 
-        # Calculate timeout for each contract if it is not specified in
-        # additional arguments of Confuzzius
-        if (
-            self.additional_args is None
-            or "--time " not in self.additional_args
-        ):
-            timeout = self.default_timeout if timeout is None else timeout
-            contract_timeout = math.ceil(timeout / len(contracts))
-            cmd += " -t " + str(contract_timeout)
+        # Timeout for each contract
+        timeout = self.default_timeout if timeout is None else timeout
+        contract_timeout = math.ceil(timeout / len(contracts))
+        cmd += " -t " + str(contract_timeout)
 
         # Random seed
         cmd += " --seed " + str(self.random_seed)
