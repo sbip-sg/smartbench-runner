@@ -84,7 +84,7 @@ def install_solc_maybe(version) -> str:
 def detect_best_solc_versions(test_file: str) -> List[str]:
     """Detect best Solc versions to copmile the input smart contacts."""
     pragma = solc_detect.find_pragma_solc_version(test_file)
-    best_versions = solc_detect.find_best_solc_version_for_pragma(pragma)
+    best_versions = solc_detect.find_all_best_solc_versions_for_pragma(pragma)
     return best_versions
 
 
@@ -99,9 +99,9 @@ def get_target_contracts_and_solc_version(
     try:
         if solc_version is None:
             best_solc_versions = detect_best_solc_versions(test_file)
-            debug(f"Detected best Solc versions: {best_solc_versions}")
+            debug(f"Best Solc versions auto-detected: {best_solc_versions}")
         else:
-            debug(f"User-specified Solc version: {solc_version}")
+            debug(f"Solc version specfied from CLI: {solc_version}")
             best_solc_versions = [solc_version]
     except Exception:
         error_traceback(f"Failed to detect best Solc versions: {test_file}")
@@ -122,7 +122,9 @@ def get_target_contracts_and_solc_version(
                     s for s in contracts if s not in abstract_contracts
                 ]
 
-            debug(f"SolcJsonParser: target contract names: {contracts}")
+            debug(f"Target contracts (found by SolcJsonParser): {contracts}")
+
+            debug(f"Using Solc: {solc_version}")
             return (contracts, solc_version)
         except Exception:
             pass
@@ -147,7 +149,9 @@ def get_target_contracts_and_solc_version(
             contracts = result.stdout.decode("utf-8").strip().split(" ")
             contracts = [name for name in contracts if name]
 
-            debug(f"SolQuery: target contract names: {contracts}")
+            debug(f"Target contracts (found by SolQuery): {contracts}")
+
+            debug(f"Using Solc: {solc_version}")
             return (contracts, solc_version)
         except Exception:
             pass
