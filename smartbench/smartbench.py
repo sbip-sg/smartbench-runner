@@ -57,13 +57,23 @@ def install_smartbench_environment() -> None:
         return None
 
 
-def install_docker_containers(tools: List[Tool], jobs: int) -> None:
-    """Update docker environment"""
-    safe_print("Instralling Docker containers...\n")
+def install_local_docker_containers(tools: List[Tool], jobs: int) -> None:
+    """Build and install Docker images of analysis tools locally."""
+    safe_print("Instralling Docker containers locally...\n")
     for tool in tools:
-        safe_print(f"Install docker {jobs} container(s) for: {tool.id}")
-        if not docker.install_docker_containers(tool.id, jobs):
-            error("Failed to install docker container!")
+        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}")
+        if not docker.install_local_docker_containers(tool.id, jobs):
+            error("Failed to install local docker containers!")
+            sys.exit(1)
+
+
+def install_remote_docker_containers(tools: List[Tool], jobs: int) -> None:
+    """Pull and install Docker images of analysis tools from remote."""
+    safe_print("Instralling Docker containers from remote...\n")
+    for tool in tools:
+        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}")
+        if not docker.install_remote_docker_containers(tool.id, jobs):
+            error("Failed to install remote docker containers!")
             sys.exit(1)
 
 
@@ -73,13 +83,15 @@ def analyze_smart_contracts(args) -> None:
     tools: List[Tool] = configure_analysis_tools(args.tools)
     jobs = 1 if args.jobs is None else args.jobs
 
-    # Update analysis environment
-    if args.install_environment:
+    # Install Smartbench environment
+    if args.install_smartbench_env:
         install_smartbench_environment()
 
-    # Update Docker container
-    if args.install_docker:
-        install_docker_containers(tools, jobs)
+    # Install Docker containers
+    if args.install_local_docker:
+        install_local_docker_containers(tools, jobs)
+    if args.install_remote_docker:
+        install_remote_docker_containers(tools, jobs)
 
     # Collect test files
     input_test_files = args.input_files_directories

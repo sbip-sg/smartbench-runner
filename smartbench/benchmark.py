@@ -8,11 +8,10 @@ import os
 import pathlib
 import sys
 import traceback
-
 from typing import Dict, List
 
-# Library
 from smartbench.printer import error
+from smartbench.smartbench import printer
 
 
 def is_solidity_file(filename) -> bool:
@@ -38,6 +37,7 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
     """
     Collect test cases for the analysis.
     """
+    printer.print_long_double_separator_line()
     print("Collecting test cases...")
     test_files = []
 
