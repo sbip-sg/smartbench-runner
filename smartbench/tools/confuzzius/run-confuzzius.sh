@@ -120,12 +120,12 @@ fi
 # Analyze contracts
 
 if [[ $CONTRACT_NAME == "" ]]; then
-    python "$TOOL_DIR/fuzzer/main.py" --evm byzantium --solc "v$SOLC_VER" \
+    SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium --solc "v$SOLC_VER" \
         -s $TEST_FILE -t $TIMEOUT \
         -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
 else
-    python "$TOOL_DIR/fuzzer/main.py" --evm byzantium  --solc "v$SOLC_VER" \
+    SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium  --solc "v$SOLC_VER" \
         -s $TEST_FILE  -c $CONTRACT_NAME -t $TIMEOUT \
         -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
