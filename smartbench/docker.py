@@ -125,13 +125,14 @@ def install_remote_docker_containers(tool_id: str, num_containers: int) -> bool:
             f" {image_name}"
         )
 
-    try:
-        with subprocess.Popen(
-            shlex.split(cmd),
-            shell=False,
-        ) as proc:
-            (stdout, _) = proc.communicate()
-            return True
-    except Exception:
-        error_traceback(f"Failed to create Docker container: {cmd}")
-        return False
+        try:
+            with subprocess.Popen(
+                shlex.split(cmd),
+                shell=False,
+            ) as proc:
+                proc.wait()
+        except Exception:
+            error_traceback(f"Failed to create Docker container: {cmd}")
+            return False
+
+    return True
