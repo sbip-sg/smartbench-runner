@@ -203,6 +203,15 @@ def parse_cli_arguments():
         help="Input result directories.",
     )
 
+    # Result directories
+    result_argparser.add_argument(
+        "-b",
+        dest="benchmark_names",
+        nargs="*",  # Accept multiple benchmark names
+        type=str,
+        help="Benchmark names in the result directory.",
+    )
+
     # Analysis tool
     result_argparser.add_argument(
         "-t",
@@ -219,11 +228,12 @@ def parse_cli_arguments():
         help="Validate analysis results with bug annotations.",
     )
 
-    # Validate analysis result for benchmarking purpose
+    # Validate analysis result
     result_argparser.add_argument(
-        "--benchmarking",
-        action="store_true",
-        help="Validating analysis results for benchmarking.",
+        "--export-summary",
+        type=str,
+        choices=["csv", "json"],
+        help="Export analysis summaries to JSON or CSV files.",
     )
 
     # Specify benchmark name for special cases without standard annotation and

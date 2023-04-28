@@ -125,22 +125,33 @@ def analyze_smart_contracts(args) -> None:
 def parse_analysis_results(args) -> None:
     """Parse existing results obtained from previous analyses."""
     # Configure analysis tools and mode
-    tools: Optional[List[Tool]] = None
+    only_tools = None
     if args.tools:
-        tools = configure_analysis_tools(args.tools)
+        only_tools = configure_analysis_tools(args.tools)
 
     # Collect result directories
     result_directories = args.input_result_directories
     if args.result_directories is not None:
         result_directories.extend(args.result_directories)
 
+    # Collect target benchmark names.
+    benchmark_names = None
+    if args.benchmark_names is not None:
+        benchmark_names = args.benchmark_names
+
+    # Format of summary files to be exported.
+    summary_file_format = None
+    if args.export_summary != "":
+        summary_file_format = args.export_summary
+
     # Parsing analysis results
     for result_dir in result_directories:
         result.parse_result_directory(
             result_dir,
-            tools,
+            only_tools,
+            benchmark_names,
             args.validate,
-            args.benchmarking,
+            summary_file_format,
             args.annot_format,
         )
 

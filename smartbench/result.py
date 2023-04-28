@@ -131,9 +131,10 @@ def is_tool_output_dir(tool: Tool, test_dir: str) -> bool:
 
 def parse_result_directory(
     results_dir: str,
-    tools: Optional[List[Tool]] = None,
+    only_tools: Optional[List[Tool]] = None,
+    benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
-    benchmarking: Optional[bool] = False,
+    export_summary: Optional[str] = None,
     annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
@@ -151,27 +152,39 @@ def parse_result_directory(
     all_results: List[AnalysisResult] = []
 
     # Parse results of each analysis tool
-    items = list(os.listdir(results_dir))
-    for item in items:
-        item_path = os.path.join(results_dir, item)
-        if not os.path.isdir(item_path):
+    tool_result_dirs = list(os.listdir(results_dir))
+    for tool_output_dir in tool_result_dirs:
+        tool_output_dir_path = os.path.join(results_dir, tool_output_dir)
+        if not os.path.isdir(tool_output_dir_path):
             continue
 
-        # Tool ID is assumed to be the same as tool_dir
-        tool_id = item
+        # Tool ID is assumed to be the same as tool_result_dir
+        tool_id = tool_output_dir
         tool = load_tool_configuration(tool_id)
 
-        if tool is None:
-            continue
-
-        if tools is not None and all(tool.id != t.id for t in tools):
+        if tool is None or (
+            only_tools is not None and all(tool.id != t.id for t in only_tools)
+        ):
             continue
 
         print(f"{'=' * 55}\n")
         print(f"Parsing analysis result of: {tool.id}\n")
 
-        tool_output_dir = os.path.join(results_dir, tool_id)
-        test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
+        # Find all output directories for each test file
+        test_output_dirs = [p[0] for p in os.walk(tool_output_dir_path)]
+
+        # Filter them by the benchmark names, and sort alphabetically
+        if benchmark_names is not None:
+            benchmark_result_paths = [
+                os.path.join(tool_output_dir_path, b) for b in benchmark_names
+            ]
+            test_output_dirs = [
+                d
+                for d in test_output_dirs
+                if any([d.startswith(b) for b in benchmark_result_paths])
+            ]
+        test_output_dirs = sorted(test_output_dirs)
+
         correct_bugs = 0
         annotations = 0
         for test_output_dir in test_output_dirs:
@@ -200,7 +213,7 @@ def parse_result_directory(
 
                 bug_annots = []
                 validation = None
-                if validate or benchmarking:
+                if validate:
                     if test_file is None:
                         print(f"Unable to read test file: {test_file}")
                         print("Skip validating results!")
@@ -237,8 +250,7 @@ def parse_result_directory(
 
     print("Parsing result completed!")
 
-    if benchmarking:
-        print_benchmarking_results(results_dir, all_results)
+    print_benchmarking_results(results_dir, all_results)
 
     return all_results
 
@@ -291,6 +303,22 @@ def parse_instruction_coverage(results_dir: str) -> None:
     print("Parsing coverage completed!")
 
 
+def group_analysis_result_by_tools(
+    results: List[AnalysisResult],
+) -> Dict[str, List[AnalysisResult]]:
+    """Group all analysis results by tool name"""
+    tools_results: Dict[str, List[AnalysisResult]] = {}
+
+    for result in results:
+        tool_id = result.tool.id
+        if tool_id in tools_results:
+            bisect.insort(tools_results[tool_id], result)
+        else:
+            tools_results[tool_id] = [result]
+
+    return tools_results
+
+
 def print_benchmarking_results(
     results_dir: str, results: List[AnalysisResult]
 ) -> None:
@@ -308,22 +336,6 @@ def print_benchmarking_results(
             result.print_benchmarking_summary()
 
     export_benchmarking_results(results_dir, tools_results)
-
-
-def group_analysis_result_by_tools(
-    results: List[AnalysisResult],
-) -> Dict[str, List[AnalysisResult]]:
-    """Group all analysis results by tool name"""
-    tools_results: Dict[str, List[AnalysisResult]] = {}
-
-    for result in results:
-        tool_id = result.tool.id
-        if tool_id in tools_results:
-            bisect.insort(tools_results[tool_id], result)
-        else:
-            tools_results[tool_id] = [result]
-
-    return tools_results
 
 
 def export_benchmarking_results(
