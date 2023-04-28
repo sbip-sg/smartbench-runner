@@ -179,7 +179,7 @@ class Sfuzz(Tool):
 
         for line in lines:
             match_str = re.search(r"coverage : [0-9]+", line)
-            fuzz_match = re.search(r">> Fuzz [a-zA-Z]+", line)
+            fuzz_match = re.search(r">> Fuzz [a-zA-Z0-9$_]+", line)
             if fuzz_match:
                 contract = fuzz_match.group()
                 contract_name = contract.removeprefix(">> Fuzz ")
