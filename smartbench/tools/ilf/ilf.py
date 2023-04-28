@@ -119,9 +119,8 @@ class Ilf(Tool):
         log_lines = []
         log_file = self.configure_log_file(test_output_dir)
 
-        has_fuzzing_result = False
-
         debug("ILF log_file: ", log_file)
+        has_fuzzing_result = False
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 while line := file.readline():

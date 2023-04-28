@@ -116,22 +116,35 @@ class Sfuzz(Tool):
 
         return IssueKind.UNKNOWN
 
-    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
+    def parse_analysis_output(
+        self, test_output_dir: str
+    ) -> Optional[List[Issue]]:
         """Parse output of sFuzz"""
-        lines = None
+        log_lines = []
         log_file = self.configure_log_file(test_output_dir)
+
         debug("sFuzz log_file: ", log_file)
+        has_fuzzing_result = False
         try:
             with open(log_file, "r", encoding="utf-8") as file:
-                lines = [line.rstrip() for line in file]
+                while line := file.readline():
+                    line = line.rstrip()
+
+                    if not has_fuzzing_result and "coverage :" in line:
+                        has_fuzzing_result = True
+
+                    log_lines.extend(line)
         except Exception as err:
             error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
-            return []
+            return None
+
+        if not has_fuzzing_result:
+            return None
 
         kinds = []
         checker = Checker("sFuzz", "fuzzing")
 
-        for line in lines:
+        for line in log_lines:
             kind = self.parse_issue_kind(line)
             if kind != IssueKind.UNKNOWN:
                 if kind not in kinds:
