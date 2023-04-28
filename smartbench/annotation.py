@@ -13,7 +13,7 @@ from typing import List, Optional
 # Library
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import IssueKind
-from smartbench.printer import warning
+from smartbench.printer import warning, safe_print
 
 
 # SmartBugs annotations
@@ -303,23 +303,23 @@ def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
 
 def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
     """Parsing bug annotations from test files"""
-    print("\nParsing bug annotations...\n")
+    safe_print("\nParsing bug annotations...\n")
 
     bug_annots = []
 
     for test_file in test_files:
-        print("- Test file: " + test_file)
+        safe_print("- Test file: " + test_file)
         annots = parse_bug_annotations(test_file)
 
         if len(annots) == 0:
-            print("  No bug annotations are found!")
+            safe_print("  No bug annotations are found!")
             continue
 
         for annot in annots:
-            print(f"  {annot.print_concise()}")
+            safe_print(f"  {annot.print_concise()}")
 
         bug_annots += annots
 
-        print("")
+        safe_print("")
 
     return bug_annots

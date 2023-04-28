@@ -105,8 +105,8 @@ def analyze_smart_contracts(args) -> None:
             args.target_contracts_file
         )
 
-    print(f"test_contracts: {test_contracts}")
-    print(f"compiler_versions: {compiler_versions}")
+    safe_print(f"test_contracts: {test_contracts}")
+    safe_print(f"compiler_versions: {compiler_versions}")
     # Perform the analysis
     analyze.perform_analysis(
         tools,
@@ -175,8 +175,8 @@ def main():
     (parser, args) = cli.parse_cli_arguments()
 
     if args.sub_command is None:
-        print("Error: no sub-command is specified!\n")
-        print("Please try again!\n")
+        safe_print("Error: no sub-command is specified!\n")
+        safe_print("Please try again!\n")
         parser.print_help()
         sys.exit(0)
 
@@ -184,26 +184,26 @@ def main():
 
     # Run analysis tools
     if args.sub_command == Command.ANALYZE.value:
-        print("Smartbench: running mode analyzing smart contracts...\n")
+        safe_print("Smartbench: running mode analyzing smart contracts...\n")
         analyze_smart_contracts(args)
 
     # Parse analysis results
     elif args.sub_command == Command.PARSE_RESULTS.value:
-        print("Smartbench: running mode parsing benchmarking results...\n")
+        safe_print("Smartbench: running mode parsing benchmarking results...\n")
         parse_analysis_results(args)
 
     # Parse the instruction coverage in analysis results
     elif args.sub_command == Command.PARSE_COVERAGE.value:
-        print("Smartbench: running mode parsing instruction coverage...\n")
+        safe_print("Smartbench: running mode parsing instruction coverage...\n")
         parse_instruction_coverage(args)
 
     # Parse bug annotations
     elif args.sub_command == Command.PARSE_ANNOTS.value:
-        print("Smartbench: running mode parsing bug annotations...\n")
+        safe_print("Smartbench: running mode parsing bug annotations...\n")
         parse_bug_annotations(args)
 
     else:
-        print("Smartbench runner: no sub-command is specified!")
+        safe_print("Smartbench runner: no sub-command is specified!")
 
     # Finish
     sys.exit(0)

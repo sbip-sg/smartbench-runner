@@ -8,9 +8,11 @@ import os
 import pathlib
 import sys
 import traceback
+
 from typing import Dict, List
 
-from smartbench.printer import error
+# Library
+from smartbench.printer import error, safe_print
 from smartbench.smartbench import printer
 
 
@@ -38,7 +40,7 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
     Collect test cases for the analysis.
     """
     printer.print_long_double_separator_line()
-    print("Collecting test cases...")
+    safe_print("Collecting test cases...")
     test_files = []
 
     for input_path in input_files_directories:
@@ -52,7 +54,7 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
     if len(test_files) == 0:
         sys.exit("No input test file is found!")
     else:
-        print(f"Found {len(test_files)} test files!")
+        safe_print(f"Found {len(test_files)} test files!")
 
     test_files = sorted(test_files)
 
@@ -85,7 +87,7 @@ def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
                     test_file = line[0:idx]
                     contract_names = line[(idx + 1) :].split(",")
                     contract_names = [s.strip() for s in contract_names]
-                    if '.' in contract_names[-1]:
+                    if "." in contract_names[-1]:
                         version_dict[test_file] = contract_names[-1]
                         contract_names = contract_names[:-1]
                     contract_dict[test_file] = contract_names

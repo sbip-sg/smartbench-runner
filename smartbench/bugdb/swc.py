@@ -10,6 +10,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List
 
+# Library
+from smartbench.printer import safe_print
+
 
 SMARTBENCH_DIR = os.path.dirname(__file__)
 PROJECT_ROOT_DIR = os.path.dirname(SMARTBENCH_DIR)
@@ -30,22 +33,22 @@ class SWC:
 
 
 if __name__ == "__main__":
-    print(f"Smartbench dir: {SMARTBENCH_DIR}")
-    print(f"Data dir: {DATA_DIR}")
+    safe_print(f"Smartbench dir: {SMARTBENCH_DIR}")
+    safe_print(f"Data dir: {DATA_DIR}")
 
     swc_file = os.path.join(DATA_DIR, "swc.json")
 
     with open(swc_file, "r", encoding="utf-8") as file:
         try:
             swcs = json.load(file, object_hook=lambda obj: SWC(**obj))
-            print(f"#SWCs: {len(swcs)}")
+            safe_print(f"#SWCs: {len(swcs)}")
             for swc in swcs:
-                print(f"- {swc.id}: {swc.title}")
+                safe_print(f"- {swc.id}: {swc.title}")
         except ValueError:
-            print("Failed to parse SWC file:", swc_file)
+            safe_print("Failed to parse SWC file:", swc_file)
 
     if swcs is None:
-        print("Failed to parse SWC file:", swc_file)
+        safe_print("Failed to parse SWC file:", swc_file)
 
 
 class SWCKind(Enum):

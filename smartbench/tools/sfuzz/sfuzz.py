@@ -15,7 +15,7 @@ from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error
+from smartbench.printer import debug, error, safe_print
 from smartbench.solidity import solc
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
@@ -183,7 +183,7 @@ class Sfuzz(Tool):
             if fuzz_match:
                 contract = fuzz_match.group()
                 contract_name = contract.removeprefix(">> Fuzz ")
-                print(f"contract: {contract_name}")
+                safe_print(f"contract: {contract_name}")
                 if len(contract_coverage) != 1:
                     contract_coverage_list.append(
                         (contract_name, contract_coverage)

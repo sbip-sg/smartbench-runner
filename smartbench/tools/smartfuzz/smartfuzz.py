@@ -13,7 +13,7 @@ from typing import List, Optional, Union
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback
+from smartbench.printer import debug, error, error_traceback, safe_print
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
@@ -141,7 +141,7 @@ class Smartfuzz(Tool):
         if "PossibleIntegerTruncation" in description:
             return IssueKind.INTEGER_BUG
 
-        print("unknown issue kind: ", description)
+        safe_print("unknown issue kind: ", description)
         return IssueKind.UNKNOWN
 
     def parse_analysis_output(

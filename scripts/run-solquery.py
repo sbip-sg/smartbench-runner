@@ -1,10 +1,16 @@
+# Standard Library
 import argparse
 import multiprocessing
 import os
 import pathlib
 import shlex
 import subprocess
+
 from multiprocessing import Process, Queue
+
+# Third Party
+from printer import safe_print
+
 
 SMARTBENCH_ROOT = os.path.dirname(__file__)
 
@@ -62,12 +68,15 @@ def run_solquery(test_files):
             check=False,
         )
 
-        print(f"{test_file}: Solquery output:", result.stdout.decode("utf-8").strip())
+        safe_print(
+            f"{test_file}: Solquery output:",
+            result.stdout.decode("utf-8").strip(),
+        )
 
         contract_names = result.stdout.decode("utf-8").strip().split(" ")
         contract_names = [name for name in contract_names if name]
 
-        print(f"Target contract names: {contract_names}")
+        safe_print(f"Target contract names: {contract_names}")
 
 
 def main():
@@ -91,7 +100,7 @@ def main():
         idx = idx % jobs
         test_batches[idx].append(test_file)
 
-    # print("Test batches: ", test_batches)
+    # safe_print("Test batches: ", test_batches)
 
     processes = []
     for batch in test_batches:

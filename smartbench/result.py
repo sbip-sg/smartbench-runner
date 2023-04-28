@@ -123,7 +123,7 @@ def parse_result_directory(
     The input `result_dir` is the directory containing results of all
     tools.
     """
-    print(f"Parsing result directory: {results_dir}")
+    safe_print(f"Parsing result directory: {results_dir}")
 
     path = pathlib.Path(results_dir)
     if not path.is_dir():
@@ -148,8 +148,8 @@ def parse_result_directory(
         ):
             continue
 
-        print(f"{'=' * 55}\n")
-        print(f"Parsing analysis result of: {tool.id}\n")
+        safe_print(f"{'=' * 55}\n")
+        safe_print(f"Parsing analysis result of: {tool.id}\n")
 
         # Find all output directories for each test file
         test_output_dirs = [p[0] for p in os.walk(tool_output_dir_path)]
@@ -190,28 +190,28 @@ def parse_result_directory(
                 res = AnalysisResult(tool, test_file, test_output_dir, False)
             else:
                 for issue in issues:
-                    print(f"- {issue}")
+                    safe_print(f"- {issue}")
 
                 bug_annots = []
                 validation = None
                 if validate:
                     if test_file is None:
-                        print(f"Unable to read test file: {test_file}")
-                        print("Skip validating results!")
+                        safe_print(f"Unable to read test file: {test_file}")
+                        safe_print("Skip validating results!")
                     else:
-                        print("Bug annotations:")
+                        safe_print("Bug annotations:")
                         bug_annots = annotation.parse_bug_annotations(
                             test_file, annot_format
                         )
                         annotations += len(bug_annots)
                         for annot in bug_annots:
-                            print(f"- {annot.print_concise()}")
+                            safe_print(f"- {annot.print_concise()}")
 
                         validation = validator.validate_issues(
                             tool, issues, bug_annots
                         )
                         correct_bugs += validation.num_correct_bugs()
-                    print("")
+                    safe_print("")
 
                 res = AnalysisResult(
                     tool,
@@ -227,9 +227,9 @@ def parse_result_directory(
             all_results.append(res)
 
         if validate:
-            print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
+            safe_print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
-    print("Parsing result completed!")
+    safe_print("Parsing result completed!")
 
     print_benchmarking_results(results_dir, all_results)
 
@@ -264,11 +264,11 @@ def parse_instruction_coverage(results_dir: str) -> None:
             continue
 
         if not isinstance(tool, (Sfuzz, Confuzzius, Smartian, Ilf)):
-            print(f"Parse coverage is not supported for: {tool.id}")
+            safe_print(f"Parse coverage is not supported for: {tool.id}")
             continue
 
-        print(f"{'=' * 55}\n")
-        print(f"Parsing analysis result of: {tool.id}\n")
+        safe_print(f"{'=' * 55}\n")
+        safe_print(f"Parsing analysis result of: {tool.id}\n")
 
         tool_output_dir = os.path.join(results_dir, tool_id)
         test_output_dirs = sorted([p[0] for p in os.walk(tool_output_dir)])
@@ -278,10 +278,10 @@ def parse_instruction_coverage(results_dir: str) -> None:
 
             if isinstance(tool, (Sfuzz, Confuzzius, Smartian, Ilf)):
                 coverage = tool.parse_instruction_coverage(test_output_dir)
-                print(f"test_output_dir: {test_output_dir}")
-                print(f"coverage: {coverage}")
+                safe_print(f"test_output_dir: {test_output_dir}")
+                safe_print(f"coverage: {coverage}")
 
-    print("Parsing coverage completed!")
+    safe_print("Parsing coverage completed!")
 
 
 def group_analysis_result_by_tools(
@@ -347,13 +347,13 @@ def print_benchmarking_results(
             f"{num_succeeded} succeeded, {num_failed} failed."
         )
 
-    export_benchmarking_results_to_csv(results_dir, tools_results)
+    export_benchmarking_results_to_csv_format(results_dir, tools_results)
 
 
-def export_benchmarking_results_to_csv(
+def export_benchmarking_results_to_csv_format(
     result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
 ) -> None:
-    """Record analysis log of all tools."""
+    """Export benchmarking results to CSV files."""
     printer.print_short_dashed_separator_line()
     safe_print("Exporting benchmarking results to CSV files...")
 
@@ -380,7 +380,7 @@ def export_benchmarking_results_to_csv(
 
                 num_succeeded += 1
                 num_issues = len(result.issues)
-                file.write("Succeeded")
+                file.write(f"Succeeded, {num_issues}")
 
                 validation = result.validation_result
 
@@ -402,3 +402,54 @@ def export_benchmarking_results_to_csv(
                 f"\nOverall result: {tool_id}: "
                 f"{num_succeeded} succeeded, {num_failed} failed."
             )
+
+
+def export_benchmarking_results_to_json_format(
+    result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
+) -> None:
+    """Export benchmarking results to JSON files."""
+    printer.print_short_dashed_separator_line()
+    safe_print("Exporting benchmarking results to JSON files...")
+
+    json_tools_results = {}
+
+    for tool_id in tools_results.keys():
+        tool_results = tools_results[tool_id]
+
+        json_tool_results = []
+
+        # Count number of successful and failed cases
+        num_succeeded = num_failed = 0
+
+        for tool_result in tool_results:
+            json_tool_result = {}
+            json_tool_result["test_file"] = tool_result.concise_test_file
+
+            if not tool_result.is_successful:
+                num_failed += 1
+                json_tool_result["analysis_status"] = "Failed"
+                json_tool_results.append(json_tool_result)
+                continue
+
+            num_succeeded += 1
+            num_issues = len(tool_result.issues)
+            json_tool_result["analysis_status"] = "Succeeded"
+            json_tool_result["num_issues"] = str(num_issues)
+
+            validation = tool_result.validation_result
+
+            if validation is None:
+                json_tool_result["validation_status"] = "Invalidated"
+                json_tool_results.append(json_tool_result)
+                continue
+
+            json_tool_result["validation_status"] = "Validated"
+
+            num_correct = len(validation.correct_bugs)
+            num_missing = len(validation.missing_bugs)
+            num_unlabelled = len(validation.unlabelled_issues)
+
+            json_tool_result["correct_bugs"] = str(num_correct)
+            json_tool_result["missing_bugs"] = str(num_missing)
+            json_tool_result["unlabelled_bugs"] = str(num_unlabelled)
+            json_tool_results.append(json_tool_result)
