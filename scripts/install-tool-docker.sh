@@ -202,13 +202,14 @@ if [[ $INSTALL_LOCALLY == true ]]; then
         GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
     fi
 else
-    echo "Enter your username in SBIP G2 to download Smartfuzz Docker image"
+    echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
     read SBIP_G2_USER
 fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     if [[ $INSTALL_LOCALLY == true ]]; then
         # Build Docker image for each tool locally
+
         echo "============================================="
         echo "Building Docker image for: $TOOL_ID..."
         echo ""
@@ -219,16 +220,21 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     elif [[ $TOOL_ID == "smartfuzz" ]]; then
         # Load Smarfuzz Docker image from SBIP G2 server
         # This command below only works when running in NUS network
+
+        echo "============================================="
+        echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
+        echo ""
         TOOL_IMAGE_FILE="docker_image_smartfuzz.tar"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
         scp "$SBIP_G2_USER@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
             "/tmp/$TOOL_IMAGE_FILE"
-        docker load --input "/users/trung/share/docker/docker_image_smartfuzz.tar"
+        docker load --input "/tmp/$TOOL_IMAGE_FILE"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
     else
         # Pull Docker image of other tools from DockerHub
+
         echo "============================================="
-        echo "Pulling Docker image for: $TOOL_ID..."
+        echo "Pulling Docker image from DockerHub for: $TOOL_ID..."
         echo ""
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
         docker pull $TOOL_DOCKER_IMAGE
