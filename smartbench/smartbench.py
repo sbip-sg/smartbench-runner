@@ -38,6 +38,12 @@ def handle_sigint(_sig, _frame) -> None:
     sys.exit(0)
 
 
+def exiting() -> None:
+    # Reset Shell state which might be changed incorrectly by Python proceses
+    os.system("stty sane")
+    sys.exit(0)
+
+
 def install_smartbench_environment() -> None:
     """Install Smartbench environment"""
     printer.print_medium_double_separator_line()
@@ -205,10 +211,8 @@ def main():
     else:
         safe_print("Smartbench runner: no sub-command is specified!")
 
-    # Finish
-    sys.exit(0)
-
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, handle_sigint)
     main()
+    exiting()
