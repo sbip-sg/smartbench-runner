@@ -6,6 +6,11 @@ venv
 # Emacs files
 flycheck_*.py
 
+# Archive file
+*.tar
+*.zip
+*.tar.gz
+
 # Temporary files
 results
 *.ast
