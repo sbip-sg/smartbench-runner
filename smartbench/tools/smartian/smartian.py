@@ -100,6 +100,10 @@ class Smartian(Tool):
 
         log_file_data = open(log_file, "r", encoding="utf-8")
         data = log_file_data.read()
+
+        if "Fuzzing timeout expired" not in data:
+            return None
+
         kinds = []
 
         assert_failure_matches = re.findall(r"Assertion Failure: [0-9]+", data)
