@@ -51,7 +51,8 @@ class Tool:
         # Log file for capturing execution log
         self.log_file: str = f"{tool_id}_execution.log"
 
-        # Output file of the coverage in JSON format, some tools may not support this output
+        # Output code coverage file in JSON format, some tools may not support
+        # this output
         self.coverage_json_file = (
             f"{tool_id}_coverage.json"
             if tool_id in ["sFuzz", "confuzzius", "smartian", "ilf"]

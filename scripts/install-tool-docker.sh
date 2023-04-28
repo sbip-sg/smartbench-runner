@@ -2,7 +2,16 @@
 
 # This script installs Docker container for smart contract analysis tools
 
-SUPPORTED_TOOLS=("slither" "sfuzz" "confuzzius" "smartian" "smartfuzz" "ilf" "mythril")
+SUPPORTED_TOOLS=(
+    "confuzzius"
+    "confuzzius-sbip"
+    "ilf"
+    "mythril"
+    "sfuzz"
+    "slither"
+    "smartfuzz"
+    "smartian"
+)
 
 SUPPORTED_TOOL_IDS=${SUPPORTED_TOOLS[@]}
 SUPPORTED_TOOL_IDS+=("all")
@@ -17,7 +26,8 @@ print_usage () {
     echo ""
     echo "Options:"
     echo "  -t <tool-id>               ID of analysis tool, currently support the followings:"
-    echo "                             $(echo ${SUPPORTED_TOOL_IDS[@]} | sed 's/ /, /g') "
+    echo "                             confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
+    echo "                             slither, smartfuzz, smartian."
     echo "  -n <number_of_containers>  Number of containers to be installed, which are named"
     echo "                             as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
     echo "  --force-install            Force install new containers."
@@ -151,7 +161,8 @@ trap "clean_up 1" ERR
 ################################################
 
 # Smartbench directories
-SMARTBENCH_ROOT=$(realpath $(dirname "$0"))
+SCRIPT_DIR=$(realpath $(dirname "$0"))
+SMARTBENCH_ROOT=$(dirname "$SCRIPT_DIR")
 SMARTBENCH_BENCHMARKS_DIR="$SMARTBENCH_ROOT/benchmarks"
 SMARTBENCH_EXAMPLES_DIR="$SMARTBENCH_ROOT/examples"
 SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
@@ -182,7 +193,6 @@ if [[ $INSTALL_LOCALLY == true ]]; then
     docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
 fi
 
-echo ""
 echo "============================================="
 echo "Start building docker container(s) for: ${ALL_TOOL_IDS[@]}"
 echo ""
@@ -201,9 +211,6 @@ if [[ $INSTALL_LOCALLY == true ]]; then
         read GIT_TOKEN
         GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
     fi
-else
-    echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
-    read SBIP_G2_USER
 fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
@@ -213,7 +220,14 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "============================================="
         echo "Building Docker image for: $TOOL_ID..."
         echo ""
-        TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
+
+        # Get the root ID of a tool. Tool versions or variants should be
+        # suffixed by `_` or `-`.
+        TOOL_ROOT_ID=$(echo $TOOL_ID | sed 's/-.*//g')
+        TOOL_ROOT_ID=$(echo $TOOL_ROOT_ID | sed 's/_.*//g')
+
+        # Configure tool docker file and image
+        TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ROOT_ID"
         TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
         TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
         docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
@@ -224,6 +238,10 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "============================================="
         echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
+
+        echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
+        read SBIP_G2_USER
+
         TOOL_IMAGE_FILE="docker_image_smartfuzz.tar"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
         scp "$SBIP_G2_USER@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
@@ -265,10 +283,10 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
 
     if $FORCE_INSTALL; then
         echo "Running force-install mode"
+        echo ""
     fi
 
     for CONTAINER in "${CONTAINER_NAMES[@]}"; do
-        echo ""
         echo "Checking container: $CONTAINER"
         if [[ $(docker ps -a -f name=$CONTAINER | grep -e "[ \t]$CONTAINER\$") ]]; then
             if $FORCE_INSTALL; then
@@ -277,10 +295,12 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
             elif [[ $(docker ps -f name=$CONTAINER | grep -e "[ \t]$CONTAINER\$") ]]; then
                 echo "ERROR: a container named \"$CONTAINER\" is already running"
                 echo "Please delete it and run this script again to continue a fresh installation!"
+                echo ""
                 clean_up 1
             else
                 echo "ERROR: a container named \"$CONTAINER\" exists but is not running"
                 echo "Please delete it and run this script again to continue a fresh installation!"
+                echo ""
                 clean_up 1
             fi
         fi
@@ -293,6 +313,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
             -v $SMARTBENCH_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \
             -v $SMARTBENCH_RESULTS_DIR:$DOCKER_RESULTS_DIR \
             $TOOL_DOCKER_IMAGE
+        echo ""
     done
 
     # Clean after installation

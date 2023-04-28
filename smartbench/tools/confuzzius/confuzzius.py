@@ -73,6 +73,9 @@ class Confuzzius(Tool):
         contract_timeout = math.ceil(timeout / len(contracts))
         cmd = cmd + " -t " + str(contract_timeout)
 
+        # Tool ID (Confuzzius has multiple variants)
+        cmd = cmd + " --tool-id " + self.id
+
         # Finally, pass default and additional arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments

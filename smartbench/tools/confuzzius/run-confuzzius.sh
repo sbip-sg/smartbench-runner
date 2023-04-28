@@ -10,9 +10,10 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-confuzzius.sh -f <test-file> -c <contract-name> -o <output-dir> -t <timeout> --solc-version <version> [confuzzius-arguments]"
+    echo "  run-confuzzius.sh -f <test-file> [options] [confuzzius-arguments]"
     echo ""
     echo "Options:"
+    echo "  --tool-id <tool-id>       ID of the analysis tool."
     echo "  -f <test-file>            Smart contract file to be analyzed."
     echo "  -c <contract-name>        Name of the target contract."
     echo "  -o <output-dir>           Output directory."
@@ -31,6 +32,7 @@ print_help () {
 ################################################
 # Parse arguments
 
+TOOL_ID="confuzzius"
 TEST_FILE=""
 CONTRACT_NAME=""
 TIMEOUT=0
@@ -65,6 +67,11 @@ while [[ $# -gt 0 ]]; do
             shift  # past argument
             shift  # past value
             ;;
+        --tool-id)
+            TOOL_ID=$2
+            shift # past argument
+            shift # past value
+            ;;
         -h|--help)
             print_usage
             exit 1
@@ -75,6 +82,13 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Checking tool ID
+if [[ $TOOL_ID == "" ]]; then
+    echo "Error: tool ID must not be empty!"
+    print_help
+    exit 1
+fi
 
 # Checking test file
 if [[ $TEST_FILE == "" ]]; then
@@ -121,11 +135,11 @@ fi
 if [[ $CONTRACT_NAME == "" ]]; then
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium --solc "v$SOLC_VER" \
         -s $TEST_FILE -t $TIMEOUT \
-        -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
+        -r "$OUTPUT_DIR/${TOOL_ID}_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
 else
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium  --solc "v$SOLC_VER" \
         -s $TEST_FILE  -c $CONTRACT_NAME -t $TIMEOUT \
-        -r "$OUTPUT_DIR/$CONTRACT/confuzzius_result.json" \
+        -r "$OUTPUT_DIR/$CONTRACT/${TOOL_ID}_result.json" \
         ${ADDITIONAL_ARGS[@]} 2>&1
 fi

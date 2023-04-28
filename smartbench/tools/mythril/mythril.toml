@@ -1,6 +1,5 @@
 [info]
-id = "mythril"
-name = "mythril"
+name = "Mythril"
 
 [command]
 executable = "run-mythril.sh"

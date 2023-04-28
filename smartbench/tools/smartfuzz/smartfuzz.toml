@@ -1,5 +1,4 @@
 [info]
-id = "smartfuzz"
 name = "SmartFuzz"
 
 [command]

@@ -23,7 +23,6 @@ from smartbench.tools.tool import Tool
 
 # List of keywords in configuration files
 INFO = "info"
-ID = "id"
 NAME = "name"
 COMMAND = "command"
 EXECUTABLE = "executable"
@@ -46,61 +45,67 @@ def report_config_error(
     )
 
 
-def load_tool_configuration(tool_name: str) -> Optional[Tool]:
+def load_tool_configuration(tool_id: str) -> Optional[Tool]:
     """Parse configuration of an analysis tool"""
+    # Normalize tool ID
+    tool_id = tool_id.casefold()
+
+    # Find tool root ID. This is to handle the case where a tool can
+    # have multiple variants, like confuzzius, confuzzius-sbip,
+    tool_root_id = tool_id
+    if (idx := tool_id.find("-")) >= 0:
+        tool_root_id = tool_id[:idx]
 
     # Get path of the configuration file
-    tool_name = tool_name.casefold()
-    cfg_fname = tool_name + ".toml"
-    cfg_fpath = os.path.join(TOOLS_DIR, tool_name, cfg_fname)
+    config_file_name = tool_root_id + ".toml"
+    config_file_path = os.path.join(TOOLS_DIR, tool_root_id, config_file_name)
 
     # Read configuration file
-    with open(cfg_fpath, "r", encoding="utf-8") as file:
+    with open(config_file_path, "r", encoding="utf-8") as file:
         file_content = file.read()
         config = tomli.loads(file_content)
 
         try:
             # Parse tool info
             if (info := config.get(INFO)) is None:
-                report_config_error(tool_name, INFO, cfg_fpath)
+                report_config_error(tool_id, INFO, config_file_path)
 
             assert info is not None
 
-            if (tool_id := info.get(ID)) is None:
-                report_config_error(tool_name, ID, cfg_fpath)
-
             if (tool_name := info.get(NAME)) is None:
-                report_config_error(tool_name, NAME, cfg_fpath)
+                report_config_error(tool_id, NAME, config_file_path)
 
             # Parse tool command
             if (command := config.get(COMMAND)) is None:
-                report_config_error(tool_name, COMMAND, cfg_fpath)
+                report_config_error(tool_id, COMMAND, config_file_path)
 
             assert command is not None
 
             if (executable := command.get(EXECUTABLE)) is None:
-                report_config_error(tool_name, EXECUTABLE, cfg_fpath)
+                report_config_error(tool_id, EXECUTABLE, config_file_path)
 
             if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
-                report_config_error(tool_name, DEFAULT_ARGUMENTS, cfg_fpath)
+                report_config_error(
+                    tool_id, DEFAULT_ARGUMENTS, config_file_path
+                )
 
             if (default_timeout := command.get(DEFAULT_TIMEOUT)) is None:
-                report_config_error(tool_name, DEFAULT_TIMEOUT, cfg_fpath)
+                report_config_error(tool_id, DEFAULT_TIMEOUT, config_file_path)
 
             tool_constructor: Optional[Callable] = None
-            if tool_id == "slither":
+            if tool_root_id == "slither":
                 tool_constructor = Slither
-            elif tool_id == "confuzzius":
+            elif tool_root_id == "confuzzius":
                 tool_constructor = Confuzzius
-            elif tool_id == "mythril":
+            elif tool_root_id == "mythril":
                 tool_constructor = Mythril
-            elif tool_id == "sfuzz":
+            elif tool_root_id == "sfuzz":
                 tool_constructor = Sfuzz
-            elif tool_id == "smartian":
+            elif tool_root_id == "smartian":
                 tool_constructor = Smartian
-            elif tool_id == "smartfuzz":
+            elif tool_root_id == "smartfuzz":
                 tool_constructor = Smartfuzz
-            elif tool_id == "ilf":
+            elif tool_root_id == "ilf":
                 tool_constructor = Ilf
 
             if tool_constructor is None:
@@ -115,22 +120,22 @@ def load_tool_configuration(tool_name: str) -> Optional[Tool]:
                     default_timeout,
                 )
         except AttributeError:
-            warning("Error in configuration of tool: " + str(tool_name))
+            warning("Error in configuration of tool: " + str(tool_id))
             return None
 
 
-def configure_analysis_tools(tool_names: List[str]) -> List[Tool]:
+def configure_analysis_tools(tool_ids: List[str]) -> List[Tool]:
     """Configure all analysis tools."""
     safe_print("Configure analysis tools...")
 
-    if len(tool_names) == 0:
+    if len(tool_ids) == 0:
         sys.exit("No analysis tool is selected!")
 
     all_tool_configs = []
-    for tool_name in tool_names:
-        config = load_tool_configuration(tool_name)
+    for tool_id in tool_ids:
+        config = load_tool_configuration(tool_id)
         if config is None:
-            error("Failed to read configuration of: " + tool_name)
+            error("Failed to read configuration of: " + tool_id)
         else:
             all_tool_configs.append(config)
 

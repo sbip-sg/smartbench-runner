@@ -390,7 +390,7 @@ def run_analysis_tool(
     """
 
     printer.print_long_double_separator_line()
-    safe_print(f"Running analysis tool: {tool.name}")
+    safe_print(f"Running analysis tool: {tool.name} ({tool.id})")
 
     # Use relative path of output directory to mount to the Docker container so
     # that the container can access to it
