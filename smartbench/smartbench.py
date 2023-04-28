@@ -23,7 +23,6 @@ from smartbench import (
 )
 from smartbench.cli import Command
 from smartbench.printer import error, error_traceback, safe_print
-from smartbench.result import AnalysisResult
 from smartbench.tools.config import configure_analysis_tools
 from smartbench.tools.tool import Tool
 
@@ -102,16 +101,18 @@ def analyze_smart_contracts(args) -> None:
     if args.target_contracts_file is None:
         test_contracts, compiler_versions = None, None
     else:
-        test_contracts, compiler_versions = benchmark.collect_target_contracts(args.target_contracts_file)
+        test_contracts, compiler_versions = benchmark.collect_target_contracts(
+            args.target_contracts_file
+        )
 
-    print (f"test_contracts: {test_contracts}")
-    print (f"compiler_versions: {compiler_versions}")
+    print(f"test_contracts: {test_contracts}")
+    print(f"compiler_versions: {compiler_versions}")
     # Perform the analysis
     analyze.perform_analysis(
         tools,
         all_test_files,
         test_contracts,
-        compiler_versions, # override the common compiler version
+        compiler_versions,  # override the common compiler version
         args.solc_version,
         args.timeout,
         args.keep_docker_alive,
@@ -140,7 +141,7 @@ def parse_analysis_results(args) -> None:
             tools,
             args.validate,
             args.benchmarking,
-            args.benchmark_name,
+            args.annot_format,
         )
 
 
