@@ -20,7 +20,6 @@ from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
-
 class Ilf(Tool):
     def __init__(
         self,
@@ -113,24 +112,42 @@ class Ilf(Tool):
         file_path = logger.get_input_test_file(log_file)
         return Location(file_path, 0, 0, 0, 0)
 
-    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
+    def parse_analysis_output(
+        self, test_output_dir: str
+    ) -> Optional[List[Issue]]:
         """Parse output of ILF"""
-        lines = None
+        log_lines = []
         log_file = self.configure_log_file(test_output_dir)
+
+        has_fuzzing_result = False
+
         debug("ILF log_file: ", log_file)
         try:
             with open(log_file, "r", encoding="utf-8") as file:
-                lines = [line.rstrip() for line in file]
+                while line := file.readline():
+                    line = line.rstrip()
+
+                    if (
+                        not has_fuzzing_result
+                        and "tx_count" in line
+                        and "insn_coverage" in line
+                    ):
+                        has_fuzzing_result = True
+
+                    log_lines.extend(line)
         except Exception as err:
             error_traceback(
                 f"Failed to parse ILF log file: {log_file}\n\n{err}"
             )
-            return []
+            return None
+
+        if not has_fuzzing_result:
+            return None
 
         contract_name = ""
         contract_lines = []
         contract_pairs = []
-        for line in lines:
+        for line in log_lines:
             if "Fuzzing contract:" in line:
                 if contract_lines != [] and contract_name != "":
                     contract_pairs.append((contract_name, contract_lines))
