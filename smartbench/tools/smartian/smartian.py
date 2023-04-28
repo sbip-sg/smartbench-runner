@@ -255,7 +255,7 @@ class Smartian(Tool):
             time_str = re.search(
                 "(\d{2})[/.:](\d{2})[/.:](\d{2})[/.:](\d{2})", line
             )
-            fuzz_match = re.search(r"Fuzzing contract: [a-zA-Z]+", line)
+            fuzz_match = re.search(r"Fuzzing contract: [a-zA-Z0-9]+", line)
 
             if fuzz_match:
                 contract = fuzz_match.group()
