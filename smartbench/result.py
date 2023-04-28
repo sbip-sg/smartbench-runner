@@ -322,18 +322,30 @@ def group_analysis_result_by_tools(
 def print_benchmarking_results(
     results_dir: str, results: List[AnalysisResult]
 ) -> None:
-    safe_print("\n========================")
-    safe_print("BENCHMARKING RESULT")
-    safe_print("========================")
+    safe_print(f"\n{'=' * 75}")
+    safe_print("BENCHMARKING SUMMARY")
+    safe_print(f"{'=' * 75}")
 
     tools_results = group_analysis_result_by_tools(results)
 
     for tool_id in tools_results.keys():
-        printer.print_short_dashed_separator_line()
-        safe_print(f"Result of {tool_id}:\n")
+        printer.print_short_double_separator_line()
+        safe_print(f"Detailed result of: {tool_id}\n")
+
+        # Count number of successful and failed cases
+        num_succeeded = num_failed = 0
 
         for result in tools_results[tool_id]:
             result.print_benchmarking_summary()
+            if result.is_successful:
+                num_succeeded += 1
+            else:
+                num_failed += 1
+
+        safe_print(
+            f"\nOverall result: {tool_id}: "
+            f"{num_succeeded} succeeded, {num_failed} failed."
+        )
 
     export_benchmarking_results(results_dir, tools_results)
 

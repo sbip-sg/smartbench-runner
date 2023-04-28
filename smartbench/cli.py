@@ -231,8 +231,7 @@ def parse_cli_arguments():
     # Validate analysis result
     result_argparser.add_argument(
         "--export-summary",
-        type=str,
-        choices=["csv", "json"],
+        action="store_true",
         help="Export analysis summaries to JSON or CSV files.",
     )
 
