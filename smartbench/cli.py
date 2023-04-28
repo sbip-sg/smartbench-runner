@@ -229,12 +229,10 @@ def parse_cli_arguments():
     # Specify benchmark name for special cases without standard annotation and
     # validation
     result_argparser.add_argument(
-        "--benchmark-name",
+        "--annot-format",
         type=str,
-        help=(
-            "Specify benchmark name for special cases "
-            + "without standard annotation and validation e.g. SOLIDIFI"
-        ),
+        choices=["smartbugs", "smartbench", "solidifi"],
+        help=("Type of bug annotation format."),
     )
 
     ################################

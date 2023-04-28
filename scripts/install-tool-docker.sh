@@ -187,7 +187,7 @@ echo "============================================="
 echo "Start building docker container(s) for: ${ALL_TOOL_IDS[@]}"
 echo ""
 
-# Configure some arguments to build Docker image for each tool locally
+# Configure some arguments to build Docker image for each tool locally or remotely
 if [[ $INSTALL_LOCALLY == true ]]; then
     TOOL_CACHE_ARG=""
     if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
@@ -201,40 +201,43 @@ if [[ $INSTALL_LOCALLY == true ]]; then
         read GIT_TOKEN
         GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
     fi
+else
+    echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
+    read SBIP_G2_USER
 fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
-    # Build Docker image for each tool locally
     if [[ $INSTALL_LOCALLY == true ]]; then
-        # Tool directories
-        TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
+        # Build Docker image for each tool locally
 
-        # Docker information
-        TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
-        TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
-
-        # Build Docker image
         echo "============================================="
         echo "Building Docker image for: $TOOL_ID..."
         echo ""
-
+        TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ID"
+        TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
+        TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
         docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
-    else # Pull Docker image for each tool from remote
-        # Image name
-        TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
+    elif [[ $TOOL_ID == "smartfuzz" ]]; then
+        # Load Smarfuzz Docker image from SBIP G2 server
+        # This command below only works when running in NUS network
 
-        # Build Docker image
         echo "============================================="
-        echo "Pulling Docker image for: $TOOL_ID..."
+        echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
+        TOOL_IMAGE_FILE="docker_image_smartfuzz.tar"
+        rm -rf "/tmp/$TOOL_IMAGE_FILE"
+        scp "$SBIP_G2_USER@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
+            "/tmp/$TOOL_IMAGE_FILE"
+        docker load --input "/tmp/$TOOL_IMAGE_FILE"
+        rm -rf "/tmp/$TOOL_IMAGE_FILE"
+    else
+        # Pull Docker image of other tools from DockerHub
 
-        if [[ $TOOL_ID == "smartfuzz" ]]; then
-            echo "Smartfuzz docker image is not avaiable publicly!"
-            echo "Skip pulling it..."
-            continue
-        else
-            docker pull $TOOL_DOCKER_IMAGE
-        fi
+        echo "============================================="
+        echo "Pulling Docker image from DockerHub for: $TOOL_ID..."
+        echo ""
+        TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
+        docker pull $TOOL_DOCKER_IMAGE
     fi
 
     # Clear previous containers names if building for many tools

@@ -17,9 +17,9 @@ from smartbench.issue import Issue, Severity
 from smartbench.printer import print_unless, safe_print, warning
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
+from smartbench.tools.ilf.ilf import Ilf
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.smartian.smartian import Smartian
-from smartbench.tools.ilf.ilf import Ilf
 from smartbench.tools.tool import Tool
 from smartbench.validator import ValidationResult
 
@@ -134,7 +134,7 @@ def parse_result_directory(
     tools: Optional[List[Tool]] = None,
     validate: Optional[bool] = False,
     benchmarking: Optional[bool] = False,
-    benchmark_name: Optional[str] = None,
+    annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
@@ -207,7 +207,7 @@ def parse_result_directory(
                     else:
                         print("Bug annotations:")
                         bug_annots = annotation.parse_bug_annotations(
-                            test_file, annot_format=benchmark_name
+                            test_file, annot_format
                         )
                         annotations += len(bug_annots)
                         for annot in bug_annots:

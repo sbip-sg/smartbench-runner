@@ -27,17 +27,17 @@
 
   ```sh
   cd smartbench-runner
-  ./install-smartbench-env.sh
+  ./scripts/install-smartbench-env.sh
   ```
 
 - Install Docker containers for analysis tools:
 
   ```sh
   # Install 30 docker containers for all tools
-  ./install-tool-docker.sh -t all -n 30 --use-remote-images --force-install
+  ./scripts/install-tool-docker.sh -t all -n 30 --use-remote-images --force-install
 
   # Install 5 docker containers named: slither-1, ..., slither-5
-  ./install-tool-docker.sh -t slither -n 5 --use-remote-images --force-install
+  ./scripts/install-tool-docker.sh -t slither -n 5 --use-remote-images --force-install
   ```
 
 ## Install and update everything
@@ -49,10 +49,10 @@
   cd smartbench-runner
 
   # Update source code and its sub modules
-  ./update-all-source-code.sh
+  ./scripts/update-all-source-code.sh
 
   # Install Smartbench environment and Docker containers for all tools
-  ./install-everything.sh
+  ./scripts/install-everything.sh
   ```
 
 # Usage

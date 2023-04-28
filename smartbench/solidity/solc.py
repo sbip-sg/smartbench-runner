@@ -133,7 +133,7 @@ def get_target_contracts_and_solc_version(
     # try get contract names by trying each of the detected best Solc versions.
     for solc_version in best_solc_versions:
         try:
-            cmd = f"{SMARTBENCH_ROOT}/solquery -q get-name {test_file}"
+            cmd = f"{SMARTBENCH_ROOT}/bin/solquery -q get-name {test_file}"
             if only_deployable_contracts:
                 cmd += " --deployable-contracts"
             else:

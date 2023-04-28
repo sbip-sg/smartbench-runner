@@ -1,13 +1,15 @@
 #!/usr/bin/env sh
 
+SCRIPT_DIR=$(dirname "$0")
+
 echo ""
 echo "======================================================"
 echo "Install Smartbench environment"
 echo ""
-./install-smartbench-env.sh
+$SCRIPT_DIR/install-smartbench-env.sh
 
 echo ""
 echo "======================================================"
 echo "Install all Docker containers"
 echo ""
-./install-tool-docker.sh -t all -n 30 --use-remote-images --force-install
+$SCRIPT_DIR/install-tool-docker.sh -t all -n 30 --use-remote-images --force-install

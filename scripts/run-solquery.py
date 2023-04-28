@@ -52,7 +52,7 @@ def parse_cli_arguments():
 def run_solquery(test_files):
     for test_file in test_files:
         # Run `solquery` to get contract names
-        cmd = f"./solquery -q get-name {test_file}"
+        cmd = f"./bin/solquery -q get-name {test_file}"
         cmd += " --deployable-contracts"
 
         result = subprocess.run(
