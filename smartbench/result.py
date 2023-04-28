@@ -101,25 +101,6 @@ class AnalysisResult:
 
         print_unless(parallel_mode, "")
 
-    def print_benchmarking_summary(self) -> None:
-        if not self.is_successful:
-            safe_print(f"- {self.concise_test_file}: Failed")
-            return
-
-        if self.validation_result is None:
-            raise ValueError("Results were not validated for benchmarking!")
-
-        num_issues = len(self.issues)
-        validation = self.validation_result
-        num_correct = len(validation.correct_bugs)
-        num_missing = len(validation.missing_bugs)
-        num_unlabelled = len(validation.unlabelled_issues)
-
-        safe_print(
-            f"- {self.concise_test_file}: Succeeded, "
-            f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
-        )
-
 
 def is_tool_output_dir(tool: Tool, test_dir: str) -> bool:
     """Check whether `test_dir` containing analysis log of a tool for
@@ -336,54 +317,88 @@ def print_benchmarking_results(
         num_succeeded = num_failed = 0
 
         for result in tools_results[tool_id]:
-            result.print_benchmarking_summary()
-            if result.is_successful:
-                num_succeeded += 1
-            else:
+            if not result.is_successful:
                 num_failed += 1
+                safe_print(f"- {result.concise_test_file}: Failed")
+                continue
+
+            num_succeeded += 1
+            num_issues = len(result.issues)
+
+            if result.validation_result is None:
+                safe_print(
+                    f"- {result.concise_test_file}: Succeeded, ",
+                    f"{num_issues}, <result wasn't validated>",
+                )
+                continue
+
+            validation = result.validation_result
+            num_correct = len(validation.correct_bugs)
+            num_missing = len(validation.missing_bugs)
+            num_unlabelled = len(validation.unlabelled_issues)
+
+            safe_print(
+                f"- {result.concise_test_file}: Succeeded, "
+                f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
+            )
 
         safe_print(
             f"\nOverall result: {tool_id}: "
             f"{num_succeeded} succeeded, {num_failed} failed."
         )
 
-    export_benchmarking_results(results_dir, tools_results)
+    export_benchmarking_results_to_csv(results_dir, tools_results)
 
 
-def export_benchmarking_results(
+def export_benchmarking_results_to_csv(
     result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
 ) -> None:
     """Record analysis log of all tools."""
     printer.print_short_dashed_separator_line()
-    safe_print("Exporting benchmarking results...")
+    safe_print("Exporting benchmarking results to CSV files...")
 
-    for tool_name in tools_results.keys():
-        results = tools_results[tool_name]
+    for tool_id in tools_results.keys():
+        results = tools_results[tool_id]
 
-        result_file = os.path.join(result_dir, f"results_{tool_name}.csv")
+        result_file = os.path.join(result_dir, f"results_{tool_id}.csv")
         safe_print(f"- {result_file}")
+
         with open(result_file, "w", encoding="utf-8") as file:
-            file.write(f"Benchmarking result of {tool_name}\n")
+            file.write(f"Benchmarking result of {tool_id}\n")
             file.write("======================================\n\n")
 
+            # Count number of successful and failed cases
+            num_succeeded = num_failed = 0
+
             for result in results:
-                file.write(f"{result.test_file}: ")
+                file.write(f"- {result.concise_test_file}: ")
 
                 if not result.is_successful:
+                    num_failed += 1
                     file.write("Failed\n")
                     continue
 
+                num_succeeded += 1
+                num_issues = len(result.issues)
+                file.write("Succeeded")
+
                 validation = result.validation_result
+
                 if validation is None:
-                    warning(f"Validation result not found: {result.test_file}")
+                    file.write(
+                        f", {num_issues}, <result wasn't validated>",
+                    )
                     continue
 
-                num_issues = len(result.issues)
                 num_correct = len(validation.correct_bugs)
                 num_missing = len(validation.missing_bugs)
                 num_unlabelled = len(validation.unlabelled_issues)
 
                 file.write(
-                    f"Succeeded, {num_issues}, {num_correct}, "
-                    f"{num_missing}, {num_unlabelled}\n"
+                    f", {num_correct}, {num_missing}, {num_unlabelled}\n"
                 )
+
+            file.write(
+                f"\nOverall result: {tool_id}: "
+                f"{num_succeeded} succeeded, {num_failed} failed."
+            )
