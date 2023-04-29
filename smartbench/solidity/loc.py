@@ -37,6 +37,15 @@ class Location:
             f"-{self.end_line}:{self.end_column}"
         )
 
+    def __eq__(self, other):
+        return (
+            self.file_path == other.file_path
+            and self.start_line == other.start_line
+            and self.start_column == other.start_column
+            and self.end_line == other.end_line
+            and self.end_column == other.end_column
+      )
+
     def get_line_column(self):
         """Print line and column info"""
         return (

@@ -189,7 +189,8 @@ class Confuzzius(Tool):
                     location,
                     checker,
                 )
-                issues.append(issue)
+                if all([issue != x for x in issues]):
+                    issues.append(issue)
         return issues
 
     def parse_instruction_coverage(self, test_output_dir: str):

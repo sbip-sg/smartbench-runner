@@ -107,6 +107,9 @@ class IssueKind(Enum):
     def __str__(self):
         return self.value
 
+    def __eq__(self, other):
+        return self.value == other.value
+
 
 class Severity(Enum):
     """Class representing severity level of an issue."""
@@ -192,6 +195,16 @@ class Issue:
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )
+
+    def __eq__(self, other):
+        return (
+            self.issue_kind == other.issue_kind
+            and self.location == other.location
+            and self.severity == other.severity
+        )
+
+    def __ne__(self, other):
+        return not (self.__eq__(other))
 
 
 def classify_issue_kind_to_sbc(
