@@ -97,10 +97,10 @@ class Sfuzz(Tool):
             return IssueKind.REENTRANCY
 
         if "integer overflow : found" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_OVERFLOW
 
         if "integer underflow : found" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_UNDERFLOW
 
         if "dangerous delegatecall : found" in description:
             return IssueKind.UNSAFE_DELEGATECALL
@@ -171,7 +171,7 @@ class Sfuzz(Tool):
         """Function to check whether an reported issue is related to a bug
         annotation."""
         # Check for issue kind
-        return issue.issue_kind == annot.annot_kind
+        return issue.issue_kind == annot.annot_issue_kind
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse instruction coverage of sFuzz"""

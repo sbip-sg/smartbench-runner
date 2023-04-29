@@ -200,7 +200,7 @@ class Ilf(Tool):
         """Function to check whether an reported issue is related to a bug
         annotation."""
         # Check for issue kind
-        return issue.issue_kind == annot.annot_kind
+        return issue.issue_kind == annot.annot_issue_kind
 
     def parse_time(self, line: str):
         parts = line.split()

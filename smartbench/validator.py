@@ -13,12 +13,6 @@ from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.issue import Issue
 from smartbench.printer import safe_print
 from smartbench.solidity.loc import Location
-from smartbench.tools.confuzzius.confuzzius import Confuzzius
-from smartbench.tools.mythril.mythril import Mythril
-from smartbench.tools.sfuzz.sfuzz import Sfuzz
-from smartbench.tools.slither.slither import Slither
-from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
 
@@ -86,7 +80,11 @@ def match_issue_to_annotation(
 
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
-        if issue.sbc != annot.sbc:
+        if (
+            issue.sbc is not None
+            or annot.sbc is not None
+            or issue.sbc != annot.sbc
+        ):
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
@@ -96,6 +94,7 @@ def match_issue_to_annotation(
     iloc: Location = issue.location
 
     return tool.match_location_of_issue_to_annotation(issue, annot)
+
 
 def validate_issues(
     tool: Tool,

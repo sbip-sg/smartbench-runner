@@ -11,9 +11,10 @@ from enum import Enum
 from typing import List, Optional
 
 # Library
+from smartbench import issue
 from smartbench.bugdb.sbc import SBC
 from smartbench.issue import IssueKind
-from smartbench.printer import warning, safe_print
+from smartbench.printer import safe_print, warning
 
 
 # SmartBugs annotations
@@ -51,14 +52,18 @@ class BugAnnot:
         end_line: int,
     ):
         self.bug_name: str = bug_name
-        self.annot_kind: IssueKind = self.map_bug_annot_to_kind(
+        self.annot_kind: IssueKind = self.map_bug_annot_to_issue_kind(
             bug_name, annot_format
         )
         self.annot_format: AnnotFormat = annot_format
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
-        self.sbc: Optional[SBC] = classify_bug_annot_to_sbc(bug_name)
+        self.sbc: Optional[SBC] = (
+            None
+            if self.annot_kind is None
+            else issue.classify_to_smartbugs_classification(self.annot_kind)
+        )
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -72,9 +77,11 @@ class BugAnnot:
             location = location + "-" + str(self.end_line)
         return f"Bug ({self.index}): {self.bug_name} - {location}"
 
-    def map_bug_annot_to_kind(self, bug_name: str, annot_format: AnnotFormat):
-        """classify bug string in annotation to standard smartbench IssueKind and use annot_format"""
-        # TODO: add more bug types for different benchmarks here
+    def map_bug_annot_to_issue_kind(
+        self, bug_name: str, annot_format: AnnotFormat
+    ) -> IssueKind:
+        """Classify bug string in annotation to issue kind."""
+        # SmartBugs annotations
         if bug_name in ["FRONT_RUNNING", "TRANSACTION_ORDER_DEPENDENCY"]:
             return IssueKind.TRANSACTION_ORDER_DEPENDENCY
         if bug_name == "ACCESS_CONTROL":
@@ -95,7 +102,7 @@ class BugAnnot:
             "BAD_RANDOMNESS",
         ]:
             return IssueKind.BLOCK_VALUE_DEPENDENCY
-        if bug_name == ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
+        if bug_name in ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
             return IssueKind.UNHANDLED_EXCEPTION
         if bug_name == "ADDRESS_VALIDATION":
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
@@ -105,7 +112,8 @@ class BugAnnot:
             return IssueKind.TX_ORIGIN_USAGE
         if bug_name == "UNSAFE_DELEGATECALL":
             return IssueKind.UNSAFE_DELEGATECALL
-        # March 29: Add SOLIDIFI
+
+        # Solidify annotations
         if bug_name == "Overflow-Underflow":
             return IssueKind.INTEGER_BUG
         if bug_name == "Unchecked-Send":
@@ -121,41 +129,6 @@ class BugAnnot:
 
     def __str__(self):
         return self.print_concise()
-
-
-def classify_bug_annot_to_sbc(
-    bug_name: str,
-) -> Optional[SBC]:
-    """Function to classify bug annotation into SmartBug classification SBC."""
-    if bug_name == "ACCESS_CONTROL":
-        return SBC.ACCESS_CONTROL
-
-    if bug_name == "ARITHMETIC":
-        return SBC.ARITHMETIC
-
-    if bug_name == "BAD_RANDOMNESS":
-        return SBC.BAD_RANDOMNESS
-
-    if bug_name == "DENIAL_OF_SERVICE":
-        return SBC.DENIAL_OF_SERVICE
-
-    if bug_name == "FRONT_RUNNING":
-        return SBC.FRONT_RUNNING
-
-    if bug_name == "REENTRANCY":
-        return SBC.REENTRANCY
-
-    if bug_name == "SHORT_ADDRESSES":
-        return SBC.SHORT_ADDRESSES
-
-    if bug_name == "TIME_MANIPULATION":
-        return SBC.TIME_MANIPULATION
-
-    if bug_name == "UNCHECKED_LL_CALLS":
-        return SBC.UNCHECKED_LOW_LEVEL_CALLS
-
-    # Unable to match to a SmartBug issue kind
-    return None
 
 
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:

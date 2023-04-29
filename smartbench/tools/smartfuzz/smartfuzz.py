@@ -100,13 +100,13 @@ class Smartfuzz(Tool):
         """Parse issue kind from issue description reported by Smartfuzz"""
         # print ("parse issue kind description: ", description)
         if "IntegerOverflow" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_OVERFLOW
 
         if "IntegerSubUnderflow" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_UNDERFLOW
 
-        if "IntegerSubUnderflow" in description:
-            return IssueKind.INTEGER_BUG
+        if "PossibleIntegerTruncation" in description:
+            return IssueKind.INTEGER_TRUNCATION
 
         if "AddressValidation" in description:
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
@@ -137,9 +137,6 @@ class Smartfuzz(Tool):
 
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION
-
-        if "PossibleIntegerTruncation" in description:
-            return IssueKind.INTEGER_BUG
 
         safe_print("unknown issue kind: ", description)
         return IssueKind.UNKNOWN
@@ -195,7 +192,7 @@ class Smartfuzz(Tool):
         annotation."""
 
         # Check for issue kind
-        if not self.check_issue_kind(issue.issue_kind, annot.annot_kind):
+        if not self.check_issue_kind(issue.issue_kind, annot.annot_issue_kind):
             return False
         iloc: Location = issue.location
         debug(

@@ -332,7 +332,7 @@ class Slither(Tool):
         of the bug annotation.
         """
 
-        if issue.issue_kind != annot.annot_kind:
+        if issue.issue_kind != annot.annot_issue_kind:
             return False
 
         iloc: Location = issue.location

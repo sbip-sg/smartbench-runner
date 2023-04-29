@@ -117,10 +117,10 @@ class Confuzzius(Tool):
             return IssueKind.ASSERTION_FAILURE
 
         if "Integer Overflow" in type:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_OVERFLOW
 
         if "Integer Underflow" in type:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_UNDERFLOW
 
         if "Transaction Order Dependency" in type:
             return IssueKind.TRANSACTION_ORDER_DEPENDENCY

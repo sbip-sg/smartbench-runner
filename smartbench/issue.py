@@ -86,10 +86,15 @@ class IssueKind(Enum):
     DEPRECATED_SHA3 = "Deprecated SHA3"
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
+    # Integer bugs
+    INTEGER_BUG = "Integer Bug"
+    INTEGER_OVERFLOW = "Integer Overflow"
+    INTEGER_UNDERFLOW = "Integer Underflow"
+    INTEGER_TRUNCATION = "Integer Truncation"
+
     # All issue kinds
     ASSERTION_FAILURE = "Assertion Failure"
     ARBITRARY_WRITE = "Arbitrary Write"
-    INTEGER_BUG = "Integer Bug"
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
     ACCESS_CONTROL = "Access Control"
     LOCKING_ETHER = "Locking Ether"
@@ -167,7 +172,9 @@ class Issue:
         self.confidence: Confidence = confidence
         self.location: Optional[Location] = location
         self.checker: Checker = checker
-        self.sbc: Optional[SBC] = classify_issue_kind_to_sbc(issue_kind)
+        self.sbc: Optional[SBC] = classify_to_smartbugs_classification(
+            issue_kind
+        )
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -201,7 +208,7 @@ class Issue:
         return not (self.__eq__(other))
 
 
-def classify_issue_kind_to_sbc(
+def classify_to_smartbugs_classification(
     issue_kind: IssueKind,
 ) -> Optional[SBC]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
@@ -211,7 +218,7 @@ def classify_issue_kind_to_sbc(
     if issue_kind in [IssueKind.INTEGER_BUG]:
         return SBC.ARITHMETIC
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
         return SBC.BAD_RANDOMNESS
 
     if issue_kind in []:
