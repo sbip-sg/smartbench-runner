@@ -175,6 +175,8 @@ def parse_result_directory(
             # Get test file
             test_output_dir = os.path.abspath(test_output_dir)
             log_file = os.path.join(test_output_dir, tool.log_file)
+            debug(f"Log file: {log_file}")
+
             test_file = logger.get_input_test_file(log_file)
 
             if test_file is None:
@@ -183,8 +185,6 @@ def parse_result_directory(
 
             safe_print(f"{'-' * 45}\n")
             safe_print(f"Test file: {test_file}\n")
-
-            debug(f"Log file: {log_file}")
 
             issues = tool.parse_analysis_output(test_output_dir)
 
