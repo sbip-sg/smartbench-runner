@@ -235,6 +235,13 @@ def parse_cli_arguments():
         help="Export analysis summaries to JSON or CSV files.",
     )
 
+    # Print and exported summary in a more detailed format.
+    result_argparser.add_argument(
+        "--detailed-summary",
+        action="store_true",
+        help="Print and export summary in a more detailed format.",
+    )
+
     # Specify benchmark name for special cases without standard annotation and
     # validation
     result_argparser.add_argument(

@@ -7,10 +7,9 @@
 import bisect
 import os
 import pathlib
-
 from typing import Dict, List, Optional
 
-# Library
+from smartbench.printer import debug
 from smartbench import annotation, logger, printer, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
@@ -117,6 +116,7 @@ def parse_result_directory(
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[str] = None,
+    detailed_summary: bool = False,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
@@ -184,6 +184,8 @@ def parse_result_directory(
             safe_print(f"{'-' * 45}\n")
             safe_print(f"Test file: {test_file}\n")
 
+            debug(f"Log file: {log_file}")
+
             issues = tool.parse_analysis_output(test_output_dir)
 
             if issues is None:
@@ -231,7 +233,7 @@ def parse_result_directory(
 
     safe_print("Parsing result completed!")
 
-    print_benchmarking_results(results_dir, all_results)
+    print_benchmarking_results(results_dir, all_results, detailed_summary)
 
     return all_results
 
@@ -301,7 +303,9 @@ def group_analysis_result_by_tools(
 
 
 def print_benchmarking_results(
-    results_dir: str, results: List[AnalysisResult]
+    results_dir: str,
+    results: List[AnalysisResult],
+    detailed_summary: bool = False,
 ) -> None:
     safe_print(f"\n{'=' * 75}")
     safe_print("BENCHMARKING SUMMARY")
@@ -317,9 +321,14 @@ def print_benchmarking_results(
         num_succeeded = num_failed = 0
 
         for result in tools_results[tool_id]:
+            test_file = (
+                result.test_file
+                if detailed_summary
+                else result.concise_test_file
+            )
             if not result.is_successful:
                 num_failed += 1
-                safe_print(f"- {result.concise_test_file}: Failed")
+                safe_print(f"- {test_file}: Failed")
                 continue
 
             num_succeeded += 1
@@ -327,7 +336,7 @@ def print_benchmarking_results(
 
             if result.validation_result is None:
                 safe_print(
-                    f"- {result.concise_test_file}: Succeeded, ",
+                    f"- {test_file}: Succeeded, ",
                     f"{num_issues}, <result wasn't validated>",
                 )
                 continue
@@ -338,7 +347,7 @@ def print_benchmarking_results(
             num_unlabelled = len(validation.unlabelled_issues)
 
             safe_print(
-                f"- {result.concise_test_file}: Succeeded, "
+                f"- {test_file}: Succeeded, "
                 f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
             )
 
@@ -347,11 +356,15 @@ def print_benchmarking_results(
             f"{num_succeeded} succeeded, {num_failed} failed."
         )
 
-    export_benchmarking_results_to_csv_format(results_dir, tools_results)
+    export_benchmarking_results_to_csv_format(
+        results_dir, tools_results, detailed_summary
+    )
 
 
 def export_benchmarking_results_to_csv_format(
-    result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
+    result_dir: str,
+    tools_results: Dict[str, List[AnalysisResult]],
+    detailed_summary: bool = False,
 ) -> None:
     """Export benchmarking results to CSV files."""
     printer.print_short_dashed_separator_line()
@@ -371,7 +384,13 @@ def export_benchmarking_results_to_csv_format(
             num_succeeded = num_failed = 0
 
             for result in results:
-                file.write(f"- {result.concise_test_file}: ")
+                test_file = (
+                    result.test_file
+                    if detailed_summary
+                    else result.concise_test_file
+                )
+
+                file.write(f"- {test_file}: ")
 
                 if not result.is_successful:
                     num_failed += 1
@@ -405,7 +424,9 @@ def export_benchmarking_results_to_csv_format(
 
 
 def export_benchmarking_results_to_json_format(
-    result_dir: str, tools_results: Dict[str, List[AnalysisResult]]
+    result_dir: str,
+    tools_results: Dict[str, List[AnalysisResult]],
+    detailed_summary: bool = False,
 ) -> None:
     """Export benchmarking results to JSON files."""
     printer.print_short_dashed_separator_line()
@@ -421,35 +442,41 @@ def export_benchmarking_results_to_json_format(
         # Count number of successful and failed cases
         num_succeeded = num_failed = 0
 
-        for tool_result in tool_results:
-            json_tool_result = {}
-            json_tool_result["test_file"] = tool_result.concise_test_file
+        for result in tool_results:
+            test_file = (
+                result.test_file
+                if detailed_summary
+                else result.concise_test_file
+            )
 
-            if not tool_result.is_successful:
+            json_result = {}
+            json_result["test_file"] = test_file
+
+            if not result.is_successful:
                 num_failed += 1
-                json_tool_result["analysis_status"] = "Failed"
-                json_tool_results.append(json_tool_result)
+                json_result["analysis_status"] = "Failed"
+                json_tool_results.append(json_result)
                 continue
 
             num_succeeded += 1
-            num_issues = len(tool_result.issues)
-            json_tool_result["analysis_status"] = "Succeeded"
-            json_tool_result["num_issues"] = str(num_issues)
+            num_issues = len(result.issues)
+            json_result["analysis_status"] = "Succeeded"
+            json_result["num_issues"] = str(num_issues)
 
-            validation = tool_result.validation_result
+            validation = result.validation_result
 
             if validation is None:
-                json_tool_result["validation_status"] = "Invalidated"
-                json_tool_results.append(json_tool_result)
+                json_result["validation_status"] = "Invalidated"
+                json_tool_results.append(json_result)
                 continue
 
-            json_tool_result["validation_status"] = "Validated"
+            json_result["validation_status"] = "Validated"
 
             num_correct = len(validation.correct_bugs)
             num_missing = len(validation.missing_bugs)
             num_unlabelled = len(validation.unlabelled_issues)
 
-            json_tool_result["correct_bugs"] = str(num_correct)
-            json_tool_result["missing_bugs"] = str(num_missing)
-            json_tool_result["unlabelled_bugs"] = str(num_unlabelled)
-            json_tool_results.append(json_tool_result)
+            json_result["correct_bugs"] = str(num_correct)
+            json_result["missing_bugs"] = str(num_missing)
+            json_result["unlabelled_bugs"] = str(num_unlabelled)
+            json_tool_results.append(json_result)

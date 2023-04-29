@@ -150,6 +150,11 @@ def parse_analysis_results(args) -> None:
     if args.export_summary != "":
         summary_file_format = args.export_summary
 
+    # Print detailed summary
+    report_detailed_summary = False
+    if args.detailed_summary:
+        report_detailed_summary = True
+
     # Parsing analysis results
     for result_dir in result_directories:
         result.parse_result_directory(
@@ -159,6 +164,7 @@ def parse_analysis_results(args) -> None:
             args.validate,
             summary_file_format,
             args.annot_format,
+            report_detailed_summary,
         )
 
 
