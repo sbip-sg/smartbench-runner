@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 from smartbench import annotation, logger, printer, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
-from smartbench.printer import debug, print_unless, safe_print, warning
+from smartbench.printer import debug, error, print_unless, safe_print, warning
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.ilf.ilf import Ilf
@@ -144,9 +144,11 @@ def parse_result_directory(
         tool_id = tool_output_dir
         tool = load_tool_configuration(tool_id)
 
-        if tool is None or (
-            only_tools is not None and all(tool.id != t.id for t in only_tools)
-        ):
+        if tool is None:
+            warning(f"Invalid result directory of all tools: {results_dir}")
+            continue
+
+        if only_tools is not None and all(tool.id != t.id for t in only_tools):
             continue
 
         safe_print(f"{'=' * 55}\n")
