@@ -8,6 +8,7 @@ import os
 import shlex
 import signal
 import subprocess
+import re
 
 from datetime import datetime
 from multiprocessing import Process, Queue
@@ -105,16 +106,19 @@ def log_analysis_output(
     proc,
     result_dir: str,
 ) -> None:
-    """Record execution log of an analysis tool in TOML format.
-    `stderr` should be redirected to `stdout` by the executable script.
-    """
+    """Record execution log of an analysis tool. `stderr` should be redirected
+    to `stdout` by the executable script."""
     # Read analysis output from process and write to log file
     log_file = tool.configure_log_file(result_dir)
     with open(log_file, "a", encoding="utf-8") as file:
         while True:
             if not (line := proc.stdout.readline()):
                 break
-            file.write(f"{line.decode('utf-8')}")
+            line = f"{line.decode('utf-8')}"
+            # Remove ansi color from output log
+            ansi_pattern = re.compile(r'\x1B\[\d+(;\d+){0,2}m')
+            line = ansi_pattern.sub('', line)
+            file.write(line)
 
 
 def log_analysis_info(
