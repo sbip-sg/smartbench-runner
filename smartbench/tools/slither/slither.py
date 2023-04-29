@@ -178,7 +178,7 @@ class Slither(Tool):
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
 
         if "sends eth to arbitrary user" in description:
-            return IssueKind.SEND_ETH_TO_ARBITRARY_USER
+            return IssueKind.UNCHECKED_SEND
 
         if "uses a weak PRNG" in description:
             return IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR
@@ -187,7 +187,7 @@ class Slither(Tool):
             return IssueKind.DANGEROUS_STRICT_EQUALITY
 
         if "uses timestamp for comparisons" in description:
-            return IssueKind.USE_BLOCK_TIMESTAMP
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "should emit an event" in description:
             return IssueKind.SHOULD_EMIT_EVENT

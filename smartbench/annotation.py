@@ -94,7 +94,7 @@ class BugAnnot:
             "TIME_MANIPULATION",
             "BAD_RANDOMNESS",
         ]:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
         if bug_name == ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
             return IssueKind.UNHANDLED_EXCEPTION
         if bug_name == "ADDRESS_VALIDATION":
@@ -117,7 +117,7 @@ class BugAnnot:
         if bug_name == "tx.origin":
             return IssueKind.TX_ORIGIN_USAGE
         if bug_name == "Timestamp-Dependency":
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
     def __str__(self):
         return self.print_concise()

@@ -109,10 +109,10 @@ class Sfuzz(Tool):
             return IssueKind.LOCKING_ETHER
 
         if "block number dependency : found" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "timestamp dependency : found" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         return IssueKind.UNKNOWN
 

@@ -126,7 +126,7 @@ class Confuzzius(Tool):
             return IssueKind.TRANSACTION_ORDER_DEPENDENCY
 
         if "Block Dependency" in type:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "Leaking Ether" in type:
             return IssueKind.LEAKING_ETHER
@@ -171,26 +171,28 @@ class Confuzzius(Tool):
 
         contracts = list(output.keys())
         for contract in contracts:
+            print(f"Contract: {contract}")
             contract_results = output.get(contract)
-            bugs = list(contract_results.get("errors").values())
+            errors = list(contract_results.get("errors").values())
 
-            for bug in bugs:
-                bug_info = bug[0]
-                kind = self.parse_issue_kind(bug_info.get("type"))
-                location = self.parse_source_location(
-                    log_file, bug_info.get("line"), bug_info.get("column")
-                )
-                severity = self.parse_issue_severity(bug_info.get("severity"))
-                issue = Issue(
-                    kind,
-                    "",
-                    severity,
-                    Confidence.UNKNOWN,
-                    location,
-                    checker,
-                )
-                if all([issue != x for x in issues]):
-                    issues.append(issue)
+            print(f"  #bugs: {len(errors)}")
+            for error_group in errors:
+                for error in error_group:
+                    kind = self.parse_issue_kind(error.get("type"))
+                    location = self.parse_source_location(
+                        log_file, error.get("line"), error.get("column")
+                    )
+                    severity = self.parse_issue_severity(error.get("severity"))
+                    issue = Issue(
+                        kind,
+                        "",
+                        severity,
+                        Confidence.UNKNOWN,
+                        location,
+                        checker,
+                    )
+                    if all([issue != x for x in issues]):
+                        issues.append(issue)
         return issues
 
     def parse_instruction_coverage(self, test_output_dir: str):

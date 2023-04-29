@@ -85,7 +85,7 @@ class Ilf(Tool):
     def parse_issue_kind(self, bug_name: str) -> IssueKind:
         """Parse issue kind from issue description reported by ILF"""
         if bug_name == "BlockStateDep":
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if bug_name == "DangerousDelegatecall":
             return IssueKind.UNSAFE_DELEGATECALL

@@ -126,12 +126,12 @@ class Smartian(Tool):
 
         blk_dep_matches = re.findall(r"Block state Dependency: [0-9]+", data)
         for blk_dep_match in blk_dep_matches:
-            if IssueKind.BLOCK_DEPENDENCY not in kinds:
+            if IssueKind.BLOCK_VALUE_DEPENDENCY not in kinds:
                 blk_dep_num = blk_dep_match.removeprefix(
                     "Block state Dependency: "
                 )
                 if int(blk_dep_num) > 0:
-                    kinds.append(IssueKind.BLOCK_DEPENDENCY)
+                    kinds.append(IssueKind.BLOCK_VALUE_DEPENDENCY)
 
         delegatecall_matches = re.findall(r"Control Hijack: [0-9]+", data)
         for delegatecall_match in delegatecall_matches:

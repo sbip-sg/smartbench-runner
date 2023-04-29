@@ -115,10 +115,10 @@ class Smartfuzz(Tool):
             return IssueKind.ASSERTION_FAILURE
 
         if "TimestampDependency" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "BlockNumberDependency" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "TxOriginDependency" in description:
             return IssueKind.TX_ORIGIN_USAGE

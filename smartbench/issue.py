@@ -25,13 +25,10 @@ class IssueKind(Enum):
 
     # Unchecked operations
     UNCHECKED_SEND = "Unchecked Send"
-    LEAKING_ETHER = "Unchecked Send"  # alias of the same bug type
-    SEND_ETH_TO_ARBITRARY_USER = "Unchecked Send"  # alias of the same bug type
+    LEAKING_ETHER = "Leaking Ether"
 
     UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
-    UNHANDLED_EXCEPTION = (
-        "Unchecked Low-Level Code"  # alias of the same bug type
-    )
+    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
@@ -55,10 +52,7 @@ class IssueKind(Enum):
     DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
 
     # Weak feature
-    BLOCK_DEPENDENCY = "Block values dependency"
-    USE_BLOCK_TIMESTAMP = (
-        "Block values dependency"  # alias of the same bug type
-    )
+    BLOCK_VALUE_DEPENDENCY = "Block values dependency"
 
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
@@ -93,16 +87,16 @@ class IssueKind(Enum):
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
     # All issue kinds
-    ASSERTION_FAILURE = "ASSERTION_FAILURE"
-    ARBITRARY_WRITE = "ARBITRARY_WRITE"
-    INTEGER_BUG = "ARITHMETIC_BUG"
-    TRANSACTION_ORDER_DEPENDENCY = "TRANSACTION_ORDER_DEPENDENCY"
-    ACCESS_CONTROL = "ACCESS_CONTROL"
-    LOCKING_ETHER = "LOCKING_ETHER"
-    UNSAFE_SELFDESTRUCT = "UNSAFE_SELFDESTRUCT"
-    UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
-    TX_ORIGIN_USAGE = "TX_ORIGIN_USAGE"
-    REQUIREMENT_VIOLATION = "REQUIREMENT_VIOLATION"
+    ASSERTION_FAILURE = "Assertion Failure"
+    ARBITRARY_WRITE = "Arbitrary Write"
+    INTEGER_BUG = "Integer Bug"
+    TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
+    ACCESS_CONTROL = "Access Control"
+    LOCKING_ETHER = "Locking Ether"
+    UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
+    UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
+    TX_ORIGIN_USAGE = "Tx Origin Usage"
+    REQUIREMENT_VIOLATION = "Requirement Violation"
 
     def __str__(self):
         return self.value
@@ -211,10 +205,10 @@ def classify_issue_kind_to_sbc(
     issue_kind: IssueKind,
 ) -> Optional[SBC]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
-    if issue_kind in []:
+    if issue_kind in [IssueKind.ACCESS_CONTROL]:
         return SBC.ACCESS_CONTROL
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.INTEGER_BUG]:
         return SBC.ARITHMETIC
 
     if issue_kind in []:
@@ -233,8 +227,7 @@ def classify_issue_kind_to_sbc(
         return SBC.SHORT_ADDRESSES
 
     if issue_kind in [
-        IssueKind.BLOCK_DEPENDENCY,
-        IssueKind.USE_BLOCK_TIMESTAMP,
+        IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
         return SBC.TIME_MANIPULATION
 
