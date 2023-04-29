@@ -117,7 +117,6 @@ def validate_issues(
             if match_issue_to_annotation(tool, issue, annot):
                 correct_bugs.append((issue, annot))
                 detected = True
-                break
         if not detected:
             missing_bugs.append(annot)
 

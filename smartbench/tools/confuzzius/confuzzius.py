@@ -108,39 +108,39 @@ class Confuzzius(Tool):
         file_path = logger.get_input_test_file(log_file)
         return Location(file_path, line, col, line, col)
 
-    def parse_issue_kind(self, description: str) -> IssueKind:
+    def parse_issue_kind(self, type: str) -> IssueKind:
         """Parse issue kind from issue description reported by Confuzzius"""
-        if "Reentrancy" in description:
+        if "Reentrancy" in type:
             return IssueKind.REENTRANCY
 
-        if "Assertion Failure" in description:
+        if "Assertion Failure" in type:
             return IssueKind.ASSERTION_FAILURE
 
-        if "Integer Overflow" in description:
+        if "Integer Overflow" in type:
             return IssueKind.INTEGER_BUG
 
-        if "Integer Underflow" in description:
+        if "Integer Underflow" in type:
             return IssueKind.INTEGER_BUG
 
-        if "Transaction Order Dependency" in description:
+        if "Transaction Order Dependency" in type:
             return IssueKind.TRANSACTION_ORDER_DEPENDENCY
 
-        if "Block Dependency" in description:
+        if "Block Dependency" in type:
             return IssueKind.BLOCK_DEPENDENCY
 
-        if "Leaking Ether" in description:
+        if "Leaking Ether" in type:
             return IssueKind.LEAKING_ETHER
 
-        if "Locking Ether" in description:
+        if "Locking Ether" in type:
             return IssueKind.LOCKING_ETHER
 
-        if "Unchecked Return Value" in description:
+        if "Unchecked Return Value" in type:
             return IssueKind.UNHANDLED_EXCEPTION
 
-        if "Unprotected Selfdestruct" in description:
+        if "Unprotected Selfdestruct" in type:
             return IssueKind.UNSAFE_SELFDESTRUCT
 
-        if "Unsafe Delegatecall" in description:
+        if "Unsafe Delegatecall" in type:
             return IssueKind.UNSAFE_DELEGATECALL
 
         return IssueKind.UNKNOWN

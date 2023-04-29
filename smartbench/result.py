@@ -33,6 +33,7 @@ class AnalysisResult:
         tool: Tool,
         test_file: str,
         test_output_dir: str,
+        log_file: str,
         is_successful: bool,
         issues: List[Issue] = [],
         bug_annots: List[BugAnnot] = [],
@@ -43,6 +44,7 @@ class AnalysisResult:
         # Paths of test file and output directory
         self.test_file: str = test_file
         self.test_output_dir: str = test_output_dir
+        self.log_file = log_file
 
         # Concise path of test file, which is the longest common suffix of
         # the test file path and output directory path
@@ -117,7 +119,7 @@ def parse_result_directory(
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[str] = None,
-    detailed_summary: bool = False,
+    report_detailed_summary: bool = False,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
@@ -195,7 +197,9 @@ def parse_result_directory(
             issues = tool.parse_analysis_output(test_output_dir)
 
             if issues is None:
-                res = AnalysisResult(tool, test_file, test_output_dir, False)
+                res = AnalysisResult(
+                    tool, test_file, test_output_dir, log_file, False
+                )
             else:
                 for issue in issues:
                     safe_print(f"- {issue}")
@@ -225,6 +229,7 @@ def parse_result_directory(
                     tool,
                     test_file,
                     test_output_dir,
+                    log_file,
                     True,
                     issues,
                     bug_annots,
@@ -239,7 +244,9 @@ def parse_result_directory(
 
     safe_print("Parsing result completed!")
 
-    print_benchmarking_results(results_dir, all_results, detailed_summary)
+    print_benchmarking_results(
+        results_dir, all_results, report_detailed_summary
+    )
 
     return all_results
 
@@ -311,7 +318,7 @@ def group_analysis_result_by_tools(
 def print_benchmarking_results(
     results_dir: str,
     results: List[AnalysisResult],
-    detailed_summary: bool = False,
+    print_detailed_summary: bool = False,
 ) -> None:
     safe_print(f"\n{'=' * 75}")
     safe_print("BENCHMARKING SUMMARY")
@@ -329,12 +336,14 @@ def print_benchmarking_results(
         for result in tools_results[tool_id]:
             test_file = (
                 result.test_file
-                if detailed_summary
+                if print_detailed_summary
                 else result.concise_test_file
             )
             if not result.is_successful:
                 num_failed += 1
                 safe_print(f"- {test_file}: Failed")
+                if print_detailed_summary:
+                    safe_print(f"  Log file: {result.log_file}")
                 continue
 
             num_succeeded += 1
@@ -345,6 +354,8 @@ def print_benchmarking_results(
                     f"- {test_file}: Succeeded, ",
                     f"{num_issues}, <result wasn't validated>",
                 )
+                if print_detailed_summary:
+                    safe_print(f"  Log file: {result.log_file}")
                 continue
 
             validation = result.validation_result
@@ -356,6 +367,8 @@ def print_benchmarking_results(
                 f"- {test_file}: Succeeded, "
                 f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
             )
+            if print_detailed_summary:
+                safe_print(f"  Log file: {result.log_file}")
 
         safe_print(
             f"\nOverall result: {tool_id}: "
@@ -363,14 +376,14 @@ def print_benchmarking_results(
         )
 
     export_benchmarking_results_to_csv_format(
-        results_dir, tools_results, detailed_summary
+        results_dir, tools_results, print_detailed_summary
     )
 
 
 def export_benchmarking_results_to_csv_format(
     result_dir: str,
     tools_results: Dict[str, List[AnalysisResult]],
-    detailed_summary: bool = False,
+    report_detailed_summary: bool = False,
 ) -> None:
     """Export benchmarking results to CSV files."""
     printer.print_short_dashed_separator_line()
@@ -379,7 +392,13 @@ def export_benchmarking_results_to_csv_format(
     for tool_id in tools_results.keys():
         results = tools_results[tool_id]
 
-        result_file = os.path.join(result_dir, f"results_{tool_id}.csv")
+        result_file = (
+            f"results_{tool_id}_detailed.csv"
+            if report_detailed_summary
+            else f"results_{tool_id}.csv"
+        )
+        result_file = os.path.join(result_dir, result_file)
+
         safe_print(f"- {result_file}")
 
         with open(result_file, "w", encoding="utf-8") as file:
@@ -392,7 +411,7 @@ def export_benchmarking_results_to_csv_format(
             for result in results:
                 test_file = (
                     result.test_file
-                    if detailed_summary
+                    if report_detailed_summary
                     else result.concise_test_file
                 )
 
