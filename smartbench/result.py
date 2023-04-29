@@ -7,13 +7,14 @@
 import bisect
 import os
 import pathlib
+
 from typing import Dict, List, Optional
 
-from smartbench.printer import debug
+# Library
 from smartbench import annotation, logger, printer, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
-from smartbench.printer import print_unless, safe_print, warning
+from smartbench.printer import debug, print_unless, safe_print, warning
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.ilf.ilf import Ilf
@@ -156,13 +157,16 @@ def parse_result_directory(
 
         # Filter them by the benchmark names, and sort alphabetically
         if benchmark_names is not None:
-            benchmark_result_paths = [
-                os.path.join(tool_output_dir_path, b) for b in benchmark_names
-            ]
+            benchmark_paths = []
+            for b in benchmark_names:
+                if not b.endswith("/"):
+                    b += "/"
+                benchmark_paths.append(os.path.join(tool_output_dir_path, b))
+
             test_output_dirs = [
                 d
                 for d in test_output_dirs
-                if any([d.startswith(b) for b in benchmark_result_paths])
+                if any([d.startswith(b) for b in benchmark_paths])
             ]
         test_output_dirs = sorted(test_output_dirs)
 
