@@ -38,6 +38,12 @@ def handle_sigint(_sig, _frame) -> None:
     sys.exit(0)
 
 
+def exiting() -> None:
+    # Reset Shell state which might be changed incorrectly by Python proceses
+    os.system("stty sane")
+    sys.exit(0)
+
+
 def install_smartbench_environment() -> None:
     """Install Smartbench environment"""
     printer.print_medium_double_separator_line()
@@ -144,6 +150,11 @@ def parse_analysis_results(args) -> None:
     if args.export_summary != "":
         summary_file_format = args.export_summary
 
+    # Print detailed summary
+    report_detailed_summary = False
+    if args.detailed_summary:
+        report_detailed_summary = True
+
     # Parsing analysis results
     for result_dir in result_directories:
         result.parse_result_directory(
@@ -153,6 +164,7 @@ def parse_analysis_results(args) -> None:
             args.validate,
             summary_file_format,
             args.annot_format,
+            report_detailed_summary,
         )
 
 
@@ -205,10 +217,8 @@ def main():
     else:
         safe_print("Smartbench runner: no sub-command is specified!")
 
-    # Finish
-    sys.exit(0)
-
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, handle_sigint)
     main()
+    exiting()
