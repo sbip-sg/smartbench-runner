@@ -14,7 +14,7 @@ from smartbench import issue, logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback
+from smartbench.printer import debug, error_traceback
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
@@ -208,18 +208,18 @@ class Confuzzius(Tool):
         a bug annotation.
         """
 
-        # Confuzzius reports issue location as a single point: line and column.
-        # If an issue and a bug annotation are relevant, then the bug
-        # annotation's location should cover the issue's location.
-
         if issue.location is None:
             return False
 
         iloc = issue.location
 
-        # The bug line must be reported explicitly by Confuzzius
+        # The bug line number must be reported explicitly by Confuzzius
         if iloc.start_line is None or iloc.end_line is None:
             return False
+
+        # Confuzzius reports issue location as a single point: line and column.
+        # If an issue and a bug annotation are relevant, then the bug
+        # annotation's location should cover the issue's location.
 
         return (
             iloc.start_line >= annot.start_line

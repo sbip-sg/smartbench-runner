@@ -329,23 +329,26 @@ class Slither(Tool):
         self, issue: Issue, annot: BugAnnot
     ) -> bool:
         """Matching location of an issue reported by Slither with the location
-        of the bug annotation.
-        """
+        of the bug annotation."""
 
-        if issue.issue_kind != annot.annot_issue_kind:
+        if issue.location is None:
             return False
 
-        iloc: Location = issue.location
+        iloc = issue.location
 
-        # The issue location reported by Slither should cover the location of
-        # the bug annotation.
-        if iloc.start_line is not None and iloc.start_line > annot.start_line:
+        # The bug line number must be reported explicitly by Silther
+        if iloc.start_line is None or iloc.end_line is None:
             return False
 
-        if iloc.end_line is not None and iloc.end_line < annot.end_line:
-            return False
+        # Slither reports issue location as a range with begin and end
+        # line/colum. If an issue and a bug annotation are relevant, then the
+        # issue's location should cover the bug annotation's location.
 
-        # Otherwise, returns True
+        return (
+            iloc.start_line <= annot.start_line
+            and iloc.end_line >= annot.end_line
+        )
+
         return True
 
     def parse_instruction_coverage(self, test_output_dir: str):
