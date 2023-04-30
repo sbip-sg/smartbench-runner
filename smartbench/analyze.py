@@ -152,7 +152,6 @@ def collect_target_testing_contracts(
 ) -> Tuple[List[str], Optional[str]]:
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
-
     # Auto detect target contracts if they is not specified explicitly by users
     if target_contracts is None:
         return solc.get_target_contracts_and_solc_version(
@@ -170,7 +169,7 @@ def collect_target_testing_contracts(
         raise ValueError(
             "Confuzzius does not support specifiying multiple target contracts"
         )
-    if compiler_versions is not None:
+    if compiler_versions is not None and len(compiler_versions) > 0:
         solc_version = compiler_versions.get(test_file_name)
     else:
         # Detect Solc version that can compile the input contracts

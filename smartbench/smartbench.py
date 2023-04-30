@@ -109,9 +109,6 @@ def analyze_smart_contracts(args) -> None:
             args.target_contracts_file
         )
 
-    # safe_print(f"test_contracts: {test_contracts}")
-    # safe_print(f"compiler_versions: {compiler_versions}")
-
     # Perform the analysis
     analyze.perform_analysis(
         tools,
