@@ -220,5 +220,10 @@ def main():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, handle_sigint)
-    main()
+
+    try:
+        main()
+    except Exception as err:
+        error_traceback(f"{err}")
+
     exiting()

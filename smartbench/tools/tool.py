@@ -112,20 +112,7 @@ class Tool:
         self, issue: Issue, annot: BugAnnot
     ) -> bool:
         """This function must be implemented by each tool, since the bug
-        location reported by each tool are in different format.
-
-        """
-        # iloc: Location = issue.location
-        # # Check whether the issue location is covered by the annotation location.
-        # if iloc.start_line is None or iloc.end_line is None:
-        #     return False
-        # if iloc.start_line < annot.start_line + 1:
-        #     return False
-        # if iloc.end_line > annot.end_line + 1:
-        #     return False
-
-        # # Pass all criteria to match an issue with a bug annotation
-        # return True
+        location reported by each tool are in different format."""
 
     @abstractmethod
     def parse_instruction_coverage(self, test_output_dir: str):
