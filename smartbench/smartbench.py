@@ -61,23 +61,21 @@ def install_smartbench_environment() -> None:
         return None
 
 
-def install_local_docker_containers(tools: List[Tool], jobs: int) -> None:
+def install_docker_containers(
+    tools: List[Tool], jobs: int, use_local_images: bool = True
+) -> None:
     """Build and install Docker images of analysis tools locally."""
-    safe_print("Instralling Docker containers locally...\n")
-    for tool in tools:
-        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}")
-        if not docker.install_local_docker_containers(tool.id, jobs):
-            error("Failed to install local docker containers!")
-            sys.exit(1)
+    if use_local_images:
+        safe_print("Instralling Docker containers locally...\n")
+    else:
+        safe_print("Instralling Docker containers from remote...\n")
 
-
-def install_remote_docker_containers(tools: List[Tool], jobs: int) -> None:
-    """Pull and install Docker images of analysis tools from remote."""
-    safe_print("Instralling Docker containers from remote...\n")
     for tool in tools:
-        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}")
-        if not docker.install_remote_docker_containers(tool.id, jobs):
-            error("Failed to install remote docker containers!")
+        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}\n")
+        if not docker.install_docker_containers(
+            tool.id, jobs, use_local_images
+        ):
+            error(f"Failed to install docker containers for tool: {tool.id}!")
             sys.exit(1)
 
 
@@ -93,9 +91,9 @@ def analyze_smart_contracts(args) -> None:
 
     # Install Docker containers
     if args.install_local_docker:
-        install_local_docker_containers(tools, jobs)
+        install_docker_containers(tools, jobs, True)
     if args.install_remote_docker:
-        install_remote_docker_containers(tools, jobs)
+        install_docker_containers(tools, jobs, False)
 
     # Collect test files
     input_test_files = args.input_files_directories
