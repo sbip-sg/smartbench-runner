@@ -247,6 +247,7 @@ def analyze_test_file(
             solc_version,
             container,
             timeout,
+            annot_format = annot_format,
         )
     except Exception:
         error_traceback(f"Failed to make anlaysis command for: {tool.id}")
