@@ -52,6 +52,7 @@ class Slither(Tool):
         solc_version: Optional[str] = None,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
+        **kwargs,
     ) -> str:
         """Function to make an analysis command for Slither."""
 

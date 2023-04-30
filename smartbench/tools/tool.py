@@ -96,6 +96,7 @@ class Tool:
         solc_version: str,
         container: DockerContainer,
         timeout: Optional[int] = None,
+        **kwargs,
     ) -> str:
         """Make an analysis command for a tool."""
 

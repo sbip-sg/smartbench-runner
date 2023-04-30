@@ -49,6 +49,7 @@ class Sfuzz(Tool):
         solc_version: Optional[str] = None,
         container=Optional[DockerContainer],
         timeout: Optional[int] = None,
+        **kwargs,
     ) -> str:
         """
         Function to make analysis command for Slither.

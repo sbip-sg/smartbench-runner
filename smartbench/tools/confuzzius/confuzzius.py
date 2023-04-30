@@ -49,6 +49,7 @@ class Confuzzius(Tool):
         solc_version: str,
         container=DockerContainer,
         timeout: Optional[int] = None,
+        **kwargs,
     ) -> str:
         """
         Function to make an analysis command for Slither.

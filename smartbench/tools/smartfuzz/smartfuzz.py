@@ -48,41 +48,31 @@ class Smartfuzz(Tool):
         solc_version: Optional[str] = None,
         container: Optional[DockerContainer] = None,
         timeout: Optional[int] = None,
+        **kwargs,
     ) -> str:
         """Function to make analysis command for `Smartfuzz`. This function
         should have the same signature with other tools."""
 
+        annot_format = kwargs.get('annot_format', None)
+        # safe_print(f"annot_format: {annot_format}")
         # Configure command
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
-
-        # Input file and contract names
-        cmd += " -f " + test_file
-        if len(contracts) > 0:
-            cmd += " -c " + " ".join(contracts)
+        # ./benchmark.sh input_file output_file coverage_file timeout[integer] seed[integer] time_distribution[equal or default] [the rest]"
+        timeout = self.default_timeout if timeout is None else timeout
+        cmd = cmd + f" {test_file} {test_output_dir}/smartfuzz_result.json {test_output_dir}/smartfuzz_coverage.json {timeout}" \
+                    + f" {self.random_seed} default"
 
         # Solc version
         if solc_version is not None:
-            cmd += " --solc-version " + solc_version
-
-        # Output directory and result file file
-        cmd = cmd + " -o " + test_output_dir
-        if output_file := self.configure_json_output(test_output_dir):
-            cmd += " -r " + output_file
-
-        # Timeout for each contract
-        timeout = self.default_timeout if timeout is None else timeout
-        contract_timeout = math.ceil(timeout / len(contracts))
-        cmd += " -t " + str(contract_timeout)
-
-        # Random seed
-        cmd += " --seed " + str(self.random_seed)
-
-        # Finally, pass default and additional arguments
+            cmd += f" --solc-version {solc_version}"
+        if annot_format != "solidifi":
+            if len(contracts) == 1 :
+                cmd += f" --contract-name {contracts[0]}"
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
-
+        # safe_print (f"cmd {cmd} ")
         return cmd
 
     def parse_source_location(self, line) -> Union[Location, None]:
