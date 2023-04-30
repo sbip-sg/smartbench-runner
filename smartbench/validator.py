@@ -80,10 +80,10 @@ def match_issue_to_annotation(
     """Function to check whether an reported issue is related to a bug
     annotation."""
 
-    debug(f"** Matching issue: {issue.index}, annot: {annot.index}")
+    # debug(f"** Matching issue: {issue.index}, annot: {annot.index}")
 
-    debug(f" - issue kind: {issue.smartbugs_kind}")
-    debug(f" - annot kind: {annot.smartbugs_kind}")
+    # debug(f" - issue kind: {issue.smartbugs_kind}")
+    # debug(f" - annot kind: {annot.smartbugs_kind}")
 
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:

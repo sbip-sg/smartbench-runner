@@ -5,6 +5,11 @@
 # Standard Library
 import traceback
 
+# Third Party
+import pygments
+import pygments.formatters
+import pygments.lexers
+
 # Library
 from smartbench import flags
 
@@ -44,9 +49,12 @@ def error(*args: str) -> None:
 def error_traceback(*args: str) -> None:
     """Print an error message"""
     safe_print("\n!! ERROR: " + " ".join(map(str, args)) + "\n")
-    exceptions = traceback.format_exc()
+    traceback_info = traceback.format_exc()
     safe_print("*** Backtrace ***\n")
-    safe_print(f"{exceptions}")
+    lexer = pygments.lexers.get_lexer_by_name("pytb", stripall=True)
+    formatter = pygments.formatters.get_formatter_by_name("terminal")
+    traceback_info = pygments.highlight(traceback_info, lexer, formatter)
+    safe_print(f"{traceback_info}")
 
 
 def debug(*args: str) -> None:
