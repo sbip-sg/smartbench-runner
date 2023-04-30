@@ -6,7 +6,7 @@ from enum import Enum
 from typing import List, Optional
 
 # Library
-from smartbench.bugdb.sbc import SmartBugsKind
+from smartbench.bugdb.sbc import SmartBugsPPKind
 from smartbench.solidity.loc import Location
 
 
@@ -173,7 +173,7 @@ class Issue:
         self.location: Location = location
         self.checker: Checker = checker
         self.smartbugs_kind: Optional[
-            SmartBugsKind
+            SmartBugsPPKind
         ] = classify_to_smartbugs_kind(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
@@ -219,39 +219,39 @@ def has_issue_of_kind_and_location(
 
 def classify_to_smartbugs_kind(
     issue_kind: IssueKind,
-) -> Optional[SmartBugsKind]:
+) -> Optional[SmartBugsPPKind]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
     if issue_kind in [IssueKind.ACCESS_CONTROL]:
-        return SmartBugsKind.ACCESS_CONTROL
+        return SmartBugsPPKind.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.INTEGER_BUG]:
-        return SmartBugsKind.ARITHMETIC
+        return SmartBugsPPKind.ARITHMETIC
 
     if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
-        return SmartBugsKind.BAD_RANDOMNESS
+        return SmartBugsPPKind.BAD_RANDOMNESS
 
     if issue_kind in []:
-        return SmartBugsKind.DENIAL_OF_SERVICE
+        return SmartBugsPPKind.DENIAL_OF_SERVICE
 
     if issue_kind in []:
-        return SmartBugsKind.FRONT_RUNNING
+        return SmartBugsPPKind.FRONT_RUNNING
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-        return SmartBugsKind.REENTRANCY
+        return SmartBugsPPKind.REENTRANCY
 
     if issue_kind in []:
-        return SmartBugsKind.SHORT_ADDRESSES
+        return SmartBugsPPKind.SHORT_ADDRESSES
 
     if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SmartBugsKind.TIME_MANIPULATION
+        return SmartBugsPPKind.TIME_MANIPULATION
 
     if issue_kind in [
         IssueKind.UNHANDLED_EXCEPTION,
         IssueKind.UNCHECKED_LOWLEVEL_CODE,
     ]:
-        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
+        return SmartBugsPPKind.UNCHECKED_LOW_LEVEL_CALLS
 
     # Not matching any SmartBugs Classification
     return None
