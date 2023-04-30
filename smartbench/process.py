@@ -11,5 +11,5 @@ from smartbench.printer import safe_print
 
 def ignore_sigint() -> None:
     """Ignore SIGINT signal"""
-    print("== IGNORE SIGINT")
+    safe_print("== IGNORE SIGINT")
     signal.signal(signal.SIGINT, signal.SIG_IGN)

@@ -122,7 +122,7 @@ class Mythril(Tool):
 
         # SWC 116 + 120
         if "Dependence on predictable environment variable" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         # SWC 105
         if "Unprotected Ether Withdrawal" in description:

@@ -5,21 +5,13 @@
 # Standard Library
 from typing import List, Tuple
 
-# Third Party
 import more_itertools as mit
+from smartbench.tools.tool import Tool
 
-# Library
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.issue import Issue
-from smartbench.printer import safe_print
+from smartbench.printer import debug, safe_print
 from smartbench.solidity.loc import Location
-from smartbench.tools.confuzzius.confuzzius import Confuzzius
-from smartbench.tools.mythril.mythril import Mythril
-from smartbench.tools.sfuzz.sfuzz import Sfuzz
-from smartbench.tools.slither.slither import Slither
-from smartbench.tools.smartfuzz import smartfuzz
-from smartbench.tools.smartian.smartian import Smartian
-from smartbench.tools.tool import Tool
 
 
 class ValidationResult:
@@ -47,7 +39,7 @@ class ValidationResult:
 
             # Print correct bugs
             correct_bugs_info = f"{len(self.correct_bugs)}"
-            correct_issue_idxs = [iss.index for (iss, _) in self.correct_bugs]
+            correct_issue_idxs = [i.index for (i, _) in self.correct_bugs]
             if len(correct_issue_idxs) > 0:
                 correct_bugs_info += (
                     f" [Issue IDs: {print_indices(correct_issue_idxs)}]"
@@ -56,7 +48,7 @@ class ValidationResult:
 
             # Print missing bugs
             missing_bug_info = f"{len(self.missing_bugs)}"
-            missing_bug_idxs = [x.index for x in self.missing_bugs]
+            missing_bug_idxs = [b.index for b in self.missing_bugs]
             if len(missing_bug_idxs) > 0:
                 missing_bug_info += (
                     f" [Bug annot IDs: {print_indices(missing_bug_idxs)}]"
@@ -64,9 +56,13 @@ class ValidationResult:
             safe_print(f"  + Missing bugs: {missing_bug_info}")
 
             # Print unlabelled issues
-            safe_print(
-                f"  + Unlabelled issues: {len(self.unlabelled_issues)}",
-            )
+            unlabelled_info = f"{len(self.unlabelled_issues)}"
+            unlabelled_idxs = [i.index for i in self.unlabelled_issues]
+            if len(unlabelled_idxs) > 0:
+                unlabelled_info += (
+                    f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
+                )
+            safe_print(f"  + Unlabelled issues: {unlabelled_info}")
 
 
 def print_indices(indices: List[int]) -> str:
@@ -84,18 +80,28 @@ def match_issue_to_annotation(
     """Function to check whether an reported issue is related to a bug
     annotation."""
 
+    debug(f"** Matching issue: {issue.index}, annot: {annot.index}")
+
+    debug(f" - issue kind: {issue.smartbugs_kind}")
+    debug(f" - annot kind: {annot.smartbugs_kind}")
+
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
-        if issue.sbc != annot.sbc:
+        if (
+            issue.smartbugs_kind is None
+            or annot.smartbugs_kind is None
+            or issue.smartbugs_kind != annot.smartbugs_kind
+        ):
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
         return False
 
-    # Check whether the issue and bug annotation are of the same file.
-    iloc: Location = issue.location
+    debug(f"Checking location: {issue.index}, annot: {annot.index}")
 
+    # Check whether the issue and bug annotation are of the same file.
     return tool.match_location_of_issue_to_annotation(issue, annot)
+
 
 def validate_issues(
     tool: Tool,
@@ -117,7 +123,6 @@ def validate_issues(
             if match_issue_to_annotation(tool, issue, annot):
                 correct_bugs.append((issue, annot))
                 detected = True
-                break
         if not detected:
             missing_bugs.append(annot)
 

@@ -35,6 +35,17 @@ SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(TOOLS_DIR))
 RESULTS_DIR = os.path.join(SMARTBENCH_ROOT, "results")
 DEPLOY_DIR = os.path.join(os.path.dirname(SMARTBENCH_ROOT), "deploy")
 
+# TOOL ID
+SUPPORTED_TOOLS = [
+    "confuzzius",
+    "ilf",
+    "mythril",
+    "sfuzz",
+    "slither",
+    "smartfuzz",
+    "smartian",
+]
+
 
 # Helper function to report configuration error
 def report_config_error(
@@ -55,6 +66,10 @@ def load_tool_configuration(tool_id: str) -> Optional[Tool]:
     tool_root_id = tool_id
     if (idx := tool_id.find("-")) >= 0:
         tool_root_id = tool_id[:idx]
+
+    if tool_root_id not in SUPPORTED_TOOLS:
+        warning(f"Invalid or unspported tool ID: {tool_id}")
+        return None
 
     # Get path of the configuration file
     config_file_name = tool_root_id + ".toml"

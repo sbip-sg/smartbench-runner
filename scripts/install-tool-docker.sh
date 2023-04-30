@@ -243,6 +243,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         read SBIP_G2_USER
 
         TOOL_IMAGE_FILE="docker_image_smartfuzz.tar"
+        TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
         scp "$SBIP_G2_USER@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
             "/tmp/$TOOL_IMAGE_FILE"

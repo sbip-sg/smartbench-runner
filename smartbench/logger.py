@@ -9,7 +9,8 @@ from typing import Optional
 ## REVIEW: consider moving this function to to other module
 def get_input_test_file(log_file: str) -> Optional[str]:
     """Get input test file from a log file"""
-    with open(log_file, "r", encoding="utf-8") as file:
+    # Use "ISO-8859-1" codec instead of utf-8 to decode Chinese characters
+    with open(log_file, "r", encoding="ISO-8859-1") as file:
         while line := file.readline():
             if line.rstrip() == "[input contract]":
                 try:

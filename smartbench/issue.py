@@ -3,10 +3,10 @@
 
 # Standard Library
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 # Library
-from smartbench.bugdb.sbc import SBC
+from smartbench.bugdb.sbc import SmartBugsKind
 from smartbench.solidity.loc import Location
 
 
@@ -25,13 +25,10 @@ class IssueKind(Enum):
 
     # Unchecked operations
     UNCHECKED_SEND = "Unchecked Send"
-    LEAKING_ETHER = "Unchecked Send"  # alias of the same bug type
-    SEND_ETH_TO_ARBITRARY_USER = "Unchecked Send"  # alias of the same bug type
+    LEAKING_ETHER = "Leaking Ether"
 
     UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
-    UNHANDLED_EXCEPTION = (
-        "Unchecked Low-Level Code"  # alias of the same bug type
-    )
+    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
@@ -55,10 +52,7 @@ class IssueKind(Enum):
     DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
 
     # Weak feature
-    BLOCK_DEPENDENCY = "Block values dependency"
-    USE_BLOCK_TIMESTAMP = (
-        "Block values dependency"  # alias of the same bug type
-    )
+    BLOCK_VALUE_DEPENDENCY = "Block values dependency"
 
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
@@ -92,20 +86,28 @@ class IssueKind(Enum):
     DEPRECATED_SHA3 = "Deprecated SHA3"
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
+    # Integer bugs
+    INTEGER_BUG = "Integer Bug"
+    INTEGER_OVERFLOW = "Integer Overflow"
+    INTEGER_UNDERFLOW = "Integer Underflow"
+    INTEGER_TRUNCATION = "Integer Truncation"
+
     # All issue kinds
-    ASSERTION_FAILURE = "ASSERTION_FAILURE"
-    ARBITRARY_WRITE = "ARBITRARY_WRITE"
-    INTEGER_BUG = "ARITHMETIC_BUG"
-    TRANSACTION_ORDER_DEPENDENCY = "TRANSACTION_ORDER_DEPENDENCY"
-    ACCESS_CONTROL = "ACCESS_CONTROL"
-    LOCKING_ETHER = "LOCKING_ETHER"
-    UNSAFE_SELFDESTRUCT = "UNSAFE_SELFDESTRUCT"
-    UNSAFE_DELEGATECALL = "UNSAFE_DELEGATECALL"
-    TX_ORIGIN_USAGE = "TX_ORIGIN_USAGE"
-    REQUIREMENT_VIOLATION = "REQUIREMENT_VIOLATION"
+    ASSERTION_FAILURE = "Assertion Failure"
+    ARBITRARY_WRITE = "Arbitrary Write"
+    TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
+    ACCESS_CONTROL = "Access Control"
+    LOCKING_ETHER = "Locking Ether"
+    UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
+    UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
+    TX_ORIGIN_USAGE = "Tx Origin Usage"
+    REQUIREMENT_VIOLATION = "Requirement Violation"
 
     def __str__(self):
         return self.value
+
+    def __eq__(self, other):
+        return self.value == other.value
 
 
 class Severity(Enum):
@@ -159,7 +161,7 @@ class Issue:
         description: str,
         severity: Severity,
         confidence: Confidence,
-        location: Optional[Location],
+        location: Location,
         checker: Checker,
     ):
         """Constructor."""
@@ -168,9 +170,11 @@ class Issue:
         self.description: str = description
         self.severity: Severity = severity
         self.confidence: Confidence = confidence
-        self.location: Optional[Location] = location
+        self.location: Location = location
         self.checker: Checker = checker
-        self.sbc: Optional[SBC] = classify_issue_kind_to_sbc(issue_kind)
+        self.smartbugs_kind: Optional[
+            SmartBugsKind
+        ] = classify_to_smartbugs_kind(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -188,48 +192,66 @@ class Issue:
         return (
             f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
-            f"  + SmartBugs Classification: {self.sbc}\n"
+            f"  + SmartBugs Classification: {self.smartbugs_kind}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )
 
+    def __eq__(self, other):
+        return (
+            self.issue_kind == other.issue_kind
+            and self.location == other.location
+            and self.severity == other.severity
+        )
 
-def classify_issue_kind_to_sbc(
+    def __ne__(self, other):
+        return not (self.__eq__(other))
+
+
+def has_issue_of_kind_and_location(
+    issues: List[Issue], kind: IssueKind, loc: Location
+) -> bool:
+    for issue in issues:
+        if issue.issue_kind == kind and issue.location == loc:
+            return True
+    return False
+
+
+def classify_to_smartbugs_kind(
     issue_kind: IssueKind,
-) -> Optional[SBC]:
+) -> Optional[SmartBugsKind]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
-    if issue_kind in []:
-        return SBC.ACCESS_CONTROL
+    if issue_kind in [IssueKind.ACCESS_CONTROL]:
+        return SmartBugsKind.ACCESS_CONTROL
+
+    if issue_kind in [IssueKind.INTEGER_BUG]:
+        return SmartBugsKind.ARITHMETIC
+
+    if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
+        return SmartBugsKind.BAD_RANDOMNESS
 
     if issue_kind in []:
-        return SBC.ARITHMETIC
+        return SmartBugsKind.DENIAL_OF_SERVICE
 
     if issue_kind in []:
-        return SBC.BAD_RANDOMNESS
-
-    if issue_kind in []:
-        return SBC.DENIAL_OF_SERVICE
-
-    if issue_kind in []:
-        return SBC.FRONT_RUNNING
+        return SmartBugsKind.FRONT_RUNNING
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-        return SBC.REENTRANCY
+        return SmartBugsKind.REENTRANCY
 
     if issue_kind in []:
-        return SBC.SHORT_ADDRESSES
+        return SmartBugsKind.SHORT_ADDRESSES
 
     if issue_kind in [
-        IssueKind.BLOCK_DEPENDENCY,
-        IssueKind.USE_BLOCK_TIMESTAMP,
+        IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SBC.TIME_MANIPULATION
+        return SmartBugsKind.TIME_MANIPULATION
 
     if issue_kind in [
         IssueKind.UNHANDLED_EXCEPTION,
         IssueKind.UNCHECKED_LOWLEVEL_CODE,
     ]:
-        return SBC.UNCHECKED_LOW_LEVEL_CALLS
+        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
 
     # Not matching any SmartBugs Classification
     return None

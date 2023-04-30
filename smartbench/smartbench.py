@@ -8,7 +8,7 @@ import signal
 import subprocess
 import sys
 
-from typing import List, Optional
+from typing import List
 
 # Library
 from smartbench import (
@@ -38,6 +38,12 @@ def handle_sigint(_sig, _frame) -> None:
     sys.exit(0)
 
 
+def exiting() -> None:
+    # Reset Shell state which might be changed incorrectly by Python proceses
+    os.system("stty sane")
+    sys.exit(0)
+
+
 def install_smartbench_environment() -> None:
     """Install Smartbench environment"""
     printer.print_medium_double_separator_line()
@@ -55,23 +61,21 @@ def install_smartbench_environment() -> None:
         return None
 
 
-def install_local_docker_containers(tools: List[Tool], jobs: int) -> None:
+def install_docker_containers(
+    tools: List[Tool], jobs: int, use_local_images: bool = True
+) -> None:
     """Build and install Docker images of analysis tools locally."""
-    safe_print("Instralling Docker containers locally...\n")
-    for tool in tools:
-        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}")
-        if not docker.install_local_docker_containers(tool.id, jobs):
-            error("Failed to install local docker containers!")
-            sys.exit(1)
+    if use_local_images:
+        safe_print("Instralling Docker containers locally...\n")
+    else:
+        safe_print("Instralling Docker containers from remote...\n")
 
-
-def install_remote_docker_containers(tools: List[Tool], jobs: int) -> None:
-    """Pull and install Docker images of analysis tools from remote."""
-    safe_print("Instralling Docker containers from remote...\n")
     for tool in tools:
-        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}")
-        if not docker.install_remote_docker_containers(tool.id, jobs):
-            error("Failed to install remote docker containers!")
+        safe_print(f"Install {jobs} Docker container(s) for: {tool.id}\n")
+        if not docker.install_docker_containers(
+            tool.id, jobs, use_local_images
+        ):
+            error(f"Failed to install docker containers for tool: {tool.id}!")
             sys.exit(1)
 
 
@@ -87,9 +91,9 @@ def analyze_smart_contracts(args) -> None:
 
     # Install Docker containers
     if args.install_local_docker:
-        install_local_docker_containers(tools, jobs)
+        install_docker_containers(tools, jobs, True)
     if args.install_remote_docker:
-        install_remote_docker_containers(tools, jobs)
+        install_docker_containers(tools, jobs, False)
 
     # Collect test files
     input_test_files = args.input_files_directories
@@ -111,12 +115,14 @@ def analyze_smart_contracts(args) -> None:
         all_test_files,
         test_contracts,
         compiler_versions,  # override the common compiler version
+        args.result_dir,
         args.solc_version,
         args.timeout,
         args.keep_docker_alive,
         jobs,
         args.validate,
         args.benchmarking,
+        args.annot_format,
     )
 
 
@@ -142,6 +148,11 @@ def parse_analysis_results(args) -> None:
     if args.export_summary != "":
         summary_file_format = args.export_summary
 
+    # Print detailed summary
+    report_detailed_summary = False
+    if args.detailed_summary:
+        report_detailed_summary = True
+
     # Parsing analysis results
     for result_dir in result_directories:
         result.parse_result_directory(
@@ -151,6 +162,7 @@ def parse_analysis_results(args) -> None:
             args.validate,
             summary_file_format,
             args.annot_format,
+            report_detailed_summary,
         )
 
 
@@ -173,8 +185,8 @@ def main():
     (parser, args) = cli.parse_cli_arguments()
 
     if args.sub_command is None:
-        print("Error: no sub-command is specified!\n")
-        print("Please try again!\n")
+        safe_print("Error: no sub-command is specified!\n")
+        safe_print("Please try again!\n")
         parser.print_help()
         sys.exit(0)
 
@@ -182,31 +194,34 @@ def main():
 
     # Run analysis tools
     if args.sub_command == Command.ANALYZE.value:
-        print("Smartbench: running mode analyzing smart contracts...\n")
+        safe_print("Smartbench: running mode analyzing smart contracts...\n")
         analyze_smart_contracts(args)
 
     # Parse analysis results
     elif args.sub_command == Command.PARSE_RESULTS.value:
-        print("Smartbench: running mode parsing benchmarking results...\n")
+        safe_print("Smartbench: running mode parsing benchmarking results...\n")
         parse_analysis_results(args)
 
     # Parse the instruction coverage in analysis results
     elif args.sub_command == Command.PARSE_COVERAGE.value:
-        print("Smartbench: running mode parsing instruction coverage...\n")
+        safe_print("Smartbench: running mode parsing instruction coverage...\n")
         parse_instruction_coverage(args)
 
     # Parse bug annotations
     elif args.sub_command == Command.PARSE_ANNOTS.value:
-        print("Smartbench: running mode parsing bug annotations...\n")
+        safe_print("Smartbench: running mode parsing bug annotations...\n")
         parse_bug_annotations(args)
 
     else:
-        print("Smartbench runner: no sub-command is specified!")
-
-    # Finish
-    sys.exit(0)
+        safe_print("Smartbench runner: no sub-command is specified!")
 
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, handle_sigint)
-    main()
+
+    try:
+        main()
+    except Exception as err:
+        error_traceback(f"{err}")
+
+    exiting()

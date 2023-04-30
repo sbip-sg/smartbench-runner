@@ -93,6 +93,13 @@ def parse_cli_arguments():
         Support both Smartbench and Smartian format.",
     )
 
+    # List of target contracts in test files
+    analyze_argparser.add_argument(
+        "--result-dir",
+        type=str,
+        help="Directory to store analysis resutls of all tools",
+    )
+
     # Solidity version
     analyze_argparser.add_argument(
         "--solc-version",
@@ -175,6 +182,15 @@ def parse_cli_arguments():
         help="Validating analysis results for benchmarking.",
     )
 
+    # Specify benchmark name for special cases without standard annotation and
+    # validation
+    analyze_argparser.add_argument(
+        "--annot-format",
+        type=str,
+        choices=["smartbugs", "smartbench", "solidifi"],
+        help=("Type of bug annotation format."),
+    )
+
     ################################
     # Parser for sub-command `parse-results`
 
@@ -233,6 +249,13 @@ def parse_cli_arguments():
         "--export-summary",
         action="store_true",
         help="Export analysis summaries to JSON or CSV files.",
+    )
+
+    # Print and exported summary in a more detailed format.
+    result_argparser.add_argument(
+        "--detailed-summary",
+        action="store_true",
+        help="Print and export summary in a more detailed format.",
     )
 
     # Specify benchmark name for special cases without standard annotation and

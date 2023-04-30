@@ -100,6 +100,10 @@ class Smartian(Tool):
 
         log_file_data = open(log_file, "r", encoding="utf-8")
         data = log_file_data.read()
+
+        if "Fuzzing timeout expired" not in data:
+            return None
+
         kinds = []
 
         assert_failure_matches = re.findall(r"Assertion Failure: [0-9]+", data)
@@ -122,12 +126,12 @@ class Smartian(Tool):
 
         blk_dep_matches = re.findall(r"Block state Dependency: [0-9]+", data)
         for blk_dep_match in blk_dep_matches:
-            if IssueKind.BLOCK_DEPENDENCY not in kinds:
+            if IssueKind.BLOCK_VALUE_DEPENDENCY not in kinds:
                 blk_dep_num = blk_dep_match.removeprefix(
                     "Block state Dependency: "
                 )
                 if int(blk_dep_num) > 0:
-                    kinds.append(IssueKind.BLOCK_DEPENDENCY)
+                    kinds.append(IssueKind.BLOCK_VALUE_DEPENDENCY)
 
         delegatecall_matches = re.findall(r"Control Hijack: [0-9]+", data)
         for delegatecall_match in delegatecall_matches:
@@ -229,7 +233,7 @@ class Smartian(Tool):
     ):
         """Function to check whether an reported issue is related to a bug
         annotation."""
-        return issue.issue_kind == annot.annot_kind
+        return issue.issue_kind == annot.annot_issue_kind
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""

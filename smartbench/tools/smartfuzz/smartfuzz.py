@@ -13,7 +13,7 @@ from typing import List, Optional, Union
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback
+from smartbench.printer import debug, error, error_traceback, safe_print
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
@@ -100,13 +100,13 @@ class Smartfuzz(Tool):
         """Parse issue kind from issue description reported by Smartfuzz"""
         # print ("parse issue kind description: ", description)
         if "IntegerOverflow" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_OVERFLOW
 
         if "IntegerSubUnderflow" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_UNDERFLOW
 
-        if "IntegerSubUnderflow" in description:
-            return IssueKind.INTEGER_BUG
+        if "PossibleIntegerTruncation" in description:
+            return IssueKind.INTEGER_TRUNCATION
 
         if "AddressValidation" in description:
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
@@ -115,10 +115,10 @@ class Smartfuzz(Tool):
             return IssueKind.ASSERTION_FAILURE
 
         if "TimestampDependency" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "BlockNumberDependency" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "TxOriginDependency" in description:
             return IssueKind.TX_ORIGIN_USAGE
@@ -138,10 +138,7 @@ class Smartfuzz(Tool):
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
-        if "PossibleIntegerTruncation" in description:
-            return IssueKind.INTEGER_BUG
-
-        print("unknown issue kind: ", description)
+        safe_print("unknown issue kind: ", description)
         return IssueKind.UNKNOWN
 
     def parse_analysis_output(
@@ -195,7 +192,7 @@ class Smartfuzz(Tool):
         annotation."""
 
         # Check for issue kind
-        if not self.check_issue_kind(issue.issue_kind, annot.annot_kind):
+        if not self.check_issue_kind(issue.issue_kind, annot.annot_issue_kind):
             return False
         iloc: Location = issue.location
         debug(

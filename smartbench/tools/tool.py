@@ -107,24 +107,12 @@ class Tool:
         issues, or `None` if the corresponding tool failed to analyze the test
         file."""
 
+    @abstractmethod
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
     ) -> bool:
-        """Default function to check whether the location of an issue reported
-        by an analysis tool is related to the location of a bug annotation.
-        """
-
-        iloc: Location = issue.location
-        # Check whether the issue location is covered by the annotation location.
-        if iloc.start_line is None or iloc.end_line is None:
-            return False
-        if iloc.start_line < annot.start_line + 1:
-            return False
-        if iloc.end_line > annot.end_line + 1:
-            return False
-
-        # Pass all criteria to match an issue with a bug annotation
-        return True
+        """This function must be implemented by each tool, since the bug
+        location reported by each tool are in different format."""
 
     @abstractmethod
     def parse_instruction_coverage(self, test_output_dir: str):

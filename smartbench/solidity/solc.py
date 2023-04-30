@@ -21,7 +21,7 @@ import solc_detect
 from solc_json_parser.parser import SolidityAst
 
 # Library
-from smartbench.printer import debug, error_traceback
+from smartbench.printer import debug, error_traceback, safe_print
 
 
 SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -39,7 +39,7 @@ def install_solc_maybe(version) -> str:
         check=False,
     )
     current_version = result.stdout.decode("utf-8")
-    # print("Current version:", current_version)
+    # safe_print("Current version:", current_version)
     if version in current_version:
         return
 
@@ -52,7 +52,7 @@ def install_solc_maybe(version) -> str:
     )
     installed_versions = result.stdout.decode("utf-8")
     if not (version in installed_versions):
-        print("Installing Solc", version)
+        safe_print("Installing Solc", version)
         subprocess.run(
             ["solc-select", "install", version],
             stdout=subprocess.PIPE,
@@ -77,7 +77,7 @@ def install_solc_maybe(version) -> str:
     )
     current_version = result.stdout.decode("utf-8")
     if not (version in current_version):
-        print("Unable to install the required Solc:", version)
+        safe_print("Unable to install the required Solc:", version)
         sys.exit()
 
 

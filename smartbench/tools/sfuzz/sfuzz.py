@@ -15,7 +15,7 @@ from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error
+from smartbench.printer import debug, error, safe_print
 from smartbench.solidity import solc
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
@@ -97,10 +97,10 @@ class Sfuzz(Tool):
             return IssueKind.REENTRANCY
 
         if "integer overflow : found" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_OVERFLOW
 
         if "integer underflow : found" in description:
-            return IssueKind.INTEGER_BUG
+            return IssueKind.INTEGER_UNDERFLOW
 
         if "dangerous delegatecall : found" in description:
             return IssueKind.UNSAFE_DELEGATECALL
@@ -109,29 +109,42 @@ class Sfuzz(Tool):
             return IssueKind.LOCKING_ETHER
 
         if "block number dependency : found" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "timestamp dependency : found" in description:
-            return IssueKind.BLOCK_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         return IssueKind.UNKNOWN
 
-    def parse_analysis_output(self, test_output_dir: str) -> List[Issue]:
+    def parse_analysis_output(
+        self, test_output_dir: str
+    ) -> Optional[List[Issue]]:
         """Parse output of sFuzz"""
-        lines = None
+        log_lines = []
         log_file = self.configure_log_file(test_output_dir)
+
         debug("sFuzz log_file: ", log_file)
+        has_fuzzing_result = False
         try:
             with open(log_file, "r", encoding="utf-8") as file:
-                lines = [line.rstrip() for line in file]
+                while line := file.readline():
+                    line = line.rstrip()
+
+                    if not has_fuzzing_result and "coverage :" in line:
+                        has_fuzzing_result = True
+
+                    log_lines.extend(line)
         except Exception as err:
             error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
-            return []
+            return None
+
+        if not has_fuzzing_result:
+            return None
 
         kinds = []
         checker = Checker("sFuzz", "fuzzing")
 
-        for line in lines:
+        for line in log_lines:
             kind = self.parse_issue_kind(line)
             if kind != IssueKind.UNKNOWN:
                 if kind not in kinds:
@@ -158,7 +171,7 @@ class Sfuzz(Tool):
         """Function to check whether an reported issue is related to a bug
         annotation."""
         # Check for issue kind
-        return issue.issue_kind == annot.annot_kind
+        return issue.issue_kind == annot.annot_issue_kind
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse instruction coverage of sFuzz"""
@@ -183,7 +196,7 @@ class Sfuzz(Tool):
             if fuzz_match:
                 contract = fuzz_match.group()
                 contract_name = contract.removeprefix(">> Fuzz ")
-                print(f"contract: {contract_name}")
+                safe_print(f"contract: {contract_name}")
                 if len(contract_coverage) != 1:
                     contract_coverage_list.append(
                         (contract_name, contract_coverage)

@@ -5,6 +5,7 @@
 # Standard Library
 import multiprocessing
 import os
+import re
 import shlex
 import signal
 import subprocess
@@ -42,9 +43,10 @@ class AnalysisJob:
         test_contracts: Optional[Dict[str, List[str]]],
         compiler_versions: Optional[Dict[str, str]],
         job_output_dir: str,
+        docker_container: DockerContainer,
+        annot_format: Optional[str] = None,
         solc_version: Optional[str] = None,
         timeout: Optional[int] = None,
-        docker_container: Optional[DockerContainer] = None,
     ):
         self.id = int(id)
         self.tool: Tool = tool
@@ -53,13 +55,14 @@ class AnalysisJob:
         # folder in a Docker container
         self.test_files: List[str] = list(test_files)
         self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
+        self.job_output_dir: str = job_output_dir
         self.compiler_versions = compiler_versions
+        self.docker_container: DockerContainer = docker_container
         self.solc_version = solc_version
+        self.annot_format: Optional[str] = annot_format
 
         # Output directory of a job to store results of all test files
-        self.job_output_dir: str = job_output_dir
         self.timeout: Optional[int] = timeout
-        self.docker_container: Optional[DockerContainer] = docker_container
 
     def __str__(self):
         return f"{self.docker_container.name}: {len(self.test_files)} tasks"
@@ -105,16 +108,19 @@ def log_analysis_output(
     proc,
     result_dir: str,
 ) -> None:
-    """Record execution log of an analysis tool in TOML format.
-    `stderr` should be redirected to `stdout` by the executable script.
-    """
+    """Record execution log of an analysis tool. `stderr` should be redirected
+    to `stdout` by the executable script."""
     # Read analysis output from process and write to log file
     log_file = tool.configure_log_file(result_dir)
     with open(log_file, "a", encoding="utf-8") as file:
         while True:
             if not (line := proc.stdout.readline()):
                 break
-            file.write(f"{line.decode('utf-8')}")
+            line = f"{line.decode('utf-8')}"
+            # Remove ansi color from output log
+            ansi_pattern = re.compile(r"\x1B\[\d+(;\d+){0,2}m")
+            line = ansi_pattern.sub("", line)
+            file.write(line)
 
 
 def log_analysis_info(
@@ -180,9 +186,10 @@ def analyze_test_file(
     test_contracts: Optional[Dict[str, List[str]]],
     compiler_versions: Optional[Dict[str, str]],
     test_output_dir: str,
+    container: DockerContainer,
+    annot_format: Optional[str] = None,
     solc_version: Optional[str] = None,
     job_id: Optional[int] = None,
-    container: Optional[DockerContainer] = None,
     timeout: Optional[int] = None,
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
     benchmarking: bool = False,
@@ -200,11 +207,7 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        if container is None:
-            runner = f"local:{tool.id}-{job_id}"
-        else:
-            runner = f"docker:{container.name}"
-        safe_print(f"{runner}: {test_file}\n")
+        safe_print(f"docker:{container.name}: {test_file}\n")
     else:
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
@@ -213,19 +216,28 @@ def analyze_test_file(
         tool, test_file, test_contracts, compiler_versions, solc_version
     )
 
+    log_file = os.path.join(test_output_dir, tool.log_file)
+    bug_annots = []
+    if validate:
+        bug_annots = annotation.parse_bug_annotations(test_file)
+
     if not contracts:
         warning(
             f"No target testing contract is specified for: {test_file}\n\n"
             "Skip analyzing it!"
         )
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        return AnalysisResult(
+            tool, test_name, test_output_dir, log_file, bug_annots, False
+        )
 
     if solc_version is None:
         warning(
             f"No Solc version is specifieed/detected for: {test_file}\n\n"
             "Skip analyzing it!"
         )
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        return AnalysisResult(
+            tool, test_name, test_output_dir, log_file, bug_annots, False
+        )
 
     try:
         cmd = tool.make_analysis_command(
@@ -238,14 +250,18 @@ def analyze_test_file(
         )
     except Exception:
         error_traceback(f"Failed to make anlaysis command for: {tool.id}")
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        return AnalysisResult(
+            tool, test_name, test_output_dir, log_file, bug_annots, False
+        )
 
     if cmd is None:
         warning(f"Unable to make analysis command for tool: {tool.name}\n")
         return AnalysisResult(tool, test_name, test_output_dir, False)
 
     if not log_analysis_command(tool, test_file, cmd, test_output_dir):
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        return AnalysisResult(
+            tool, test_name, test_output_dir, log_file, bug_annots, False
+        )
 
     debug(f"Analysis Command: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
@@ -267,11 +283,15 @@ def analyze_test_file(
             error_traceback(f"{container.name}: failed to run command: {cmd}")
         else:
             error_traceback(f"Failed to run command: {cmd}")
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        return AnalysisResult(
+            tool, test_name, test_output_dir, log_file, bug_annots, False
+        )
 
     # Process analysis output
     if (issues := tool.parse_analysis_output(test_output_dir)) is None:
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        return AnalysisResult(
+            tool, test_name, test_output_dir, log_file, bug_annots, False
+        )
 
     for issue in issues:
         print_unless(parallel_mode, "- " + str(issue))
@@ -288,7 +308,14 @@ def analyze_test_file(
         validation = validator.validate_issues(tool, issues, bug_annots)
 
     res = AnalysisResult(
-        tool, test_name, test_output_dir, True, issues, bug_annots, validation
+        tool,
+        test_name,
+        test_output_dir,
+        log_file,
+        bug_annots,
+        True,
+        issues,
+        validation,
     )
 
     # Print benchmarking information
@@ -353,9 +380,10 @@ def run_analysis_job(
             job.test_contracts,
             job.compiler_versions,
             test_output_dir,
+            job.docker_container,
+            job.annot_format,
             job.solc_version,
             job.id,
-            job.docker_container,
             job.timeout,
             validate,
             benchmarking,
@@ -378,6 +406,7 @@ def run_analysis_tool(
     jobs: int = 1,
     validate: bool = False,
     benchmarking: bool = False,
+    annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -418,7 +447,7 @@ def run_analysis_tool(
 
     analysis_jobs = []
     for i in range(jobs):
-        container = None if not docker_containers else docker_containers[i]
+        container = docker_containers[i]
         analysis_job = AnalysisJob(
             i,
             tool,
@@ -426,9 +455,10 @@ def run_analysis_tool(
             test_contracts,
             compiler_versions,
             tool_output_dir,
+            container,
+            annot_format,
             solc_version,
             timeout,
-            container,
         )
         analysis_jobs.append(analysis_job)
 
@@ -473,12 +503,14 @@ def perform_analysis(
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
     compiler_versions: Optional[Dict[str, str]],
+    result_dir: Optional[str] = None,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
     keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
     benchmarking: bool = False,
+    annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Function to run all tools to analyze all test files.
 
@@ -489,20 +521,21 @@ def perform_analysis(
     """
     # Prepare output directory for all tests and all tools in this run
     safe_print("Start analyzing all test cases...")
-    results_dir = os.path.join(
-        RESULTS_DIR,
-        datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
-    )
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+    if result_dir is None:
+        result_dir = os.path.join(
+            RESULTS_DIR,
+            datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+        )
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
 
     # Record the analysis details to a log file
-    log_analysis_info(tools, test_files, results_dir)
+    log_analysis_info(tools, test_files, result_dir)
 
     # Perform the analysis
     all_results = []
     for tool in tools:
-        tool_output_dir = os.path.join(results_dir, tool.id)
+        tool_output_dir = os.path.join(result_dir, tool.id)
         results = run_analysis_tool(
             tool,
             test_files,
@@ -515,15 +548,16 @@ def perform_analysis(
             jobs,
             validate,
             benchmarking,
+            annot_format,
         )
 
         all_results.extend(results)
 
     printer.print_short_double_separator_line()
     safe_print("Benchmarking completed!\n")
-    safe_print(f"Results are recorded at: {results_dir}")
+    safe_print(f"Results are recorded at: {result_dir}")
 
     if benchmarking:
-        result.print_benchmarking_results(results_dir, all_results)
+        result.print_benchmarking_results(result_dir, all_results)
 
     return all_results

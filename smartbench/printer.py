@@ -21,14 +21,14 @@ def print_if(condition: bool, *args: str) -> None:
     """Print if the input condition holds."""
     # screen_lock:
     if condition:
-        print(*args)
+        safe_print(*args)
 
 
 def print_unless(condition: bool, *args: str) -> None:
     """Print unless the input condition holds."""
     # screen_lock:
     if not condition:
-        print(*args)
+        safe_print(*args)
 
 
 def warning(*args: str) -> None:
