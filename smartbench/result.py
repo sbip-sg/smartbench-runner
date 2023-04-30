@@ -34,9 +34,9 @@ class AnalysisResult:
         test_file: str,
         test_output_dir: str,
         log_file: str,
+        bug_annots: List[BugAnnot],
         is_successful: bool,
         issues: List[Issue] = [],
-        bug_annots: List[BugAnnot] = [],
         validation_result: Optional[ValidationResult] = None,
     ):
         self.tool: Tool = tool
@@ -174,15 +174,13 @@ def parse_result_directory(
             ]
         test_output_dirs = sorted(test_output_dirs)
 
-        correct_bugs = 0
-        annotations = 0
-        for test_output_dir in test_output_dirs:
-            if not is_tool_output_dir(tool, test_output_dir):
+        for output_dir in test_output_dirs:
+            if not is_tool_output_dir(tool, output_dir):
                 continue
 
             # Get test file
-            test_output_dir = os.path.abspath(test_output_dir)
-            log_file = os.path.join(test_output_dir, tool.log_file)
+            output_dir = os.path.abspath(output_dir)
+            log_file = os.path.join(output_dir, tool.log_file)
             debug(f"Log file: {log_file}")
 
             test_file = logger.get_input_test_file(log_file)
@@ -194,53 +192,60 @@ def parse_result_directory(
             safe_print(f"{'-' * 45}\n")
             safe_print(f"Test file: {test_file}\n")
 
-            issues = tool.parse_analysis_output(test_output_dir)
+            # Parse bug annotations in test file
+            bug_annots = annotation.parse_bug_annotations(
+                test_file, annot_format
+            )
+            if len(bug_annots) > 0:
+                safe_print("** Bug annotations **\n")
+                for annot in bug_annots:
+                    safe_print(f"- {annot.print_concise()}")
+                safe_print("")
+            else:
+                safe_print("No bug annotation is found!\n")
+
+            # Rest issue index counter
+            Issue.index_counter = 1
+            issues = tool.parse_analysis_output(output_dir)
 
             if issues is None:
                 res = AnalysisResult(
-                    tool, test_file, test_output_dir, log_file, False
+                    tool,
+                    test_file,
+                    output_dir,
+                    log_file,
+                    bug_annots,
+                    False,
                 )
             else:
+                safe_print("** Detected issues **\n")
                 for issue in issues:
                     safe_print(f"- {issue}")
 
-                bug_annots = []
                 validation = None
                 if validate:
                     if test_file is None:
                         safe_print(f"Unable to read test file: {test_file}")
                         safe_print("Skip validating results!")
                     else:
-                        safe_print("Bug annotations:")
-                        bug_annots = annotation.parse_bug_annotations(
-                            test_file, annot_format
-                        )
-                        annotations += len(bug_annots)
-                        for annot in bug_annots:
-                            safe_print(f"- {annot.print_concise()}")
-
                         validation = validator.validate_issues(
                             tool, issues, bug_annots
                         )
-                        correct_bugs += validation.num_correct_bugs()
                     safe_print("")
 
                 res = AnalysisResult(
                     tool,
                     test_file,
-                    test_output_dir,
+                    output_dir,
                     log_file,
+                    bug_annots,
                     True,
                     issues,
-                    bug_annots,
                     validation,
                 )
 
             res.print_detailed_summary(False)
             all_results.append(res)
-
-        if validate:
-            safe_print(f"Result for {tool_id} is {correct_bugs}/{annotations}")
 
     safe_print("Parsing result completed!")
 
@@ -339,9 +344,10 @@ def print_benchmarking_results(
                 if print_detailed_summary
                 else result.concise_test_file
             )
+            num_annots = len(result.bug_annots)
             if not result.is_successful:
                 num_failed += 1
-                safe_print(f"- {test_file}: Failed")
+                safe_print(f"- {test_file}: Failed, {num_annots}")
                 if print_detailed_summary:
                     safe_print(f"  Log file: {result.log_file}")
                 continue
@@ -351,7 +357,7 @@ def print_benchmarking_results(
 
             if result.validation_result is None:
                 safe_print(
-                    f"- {test_file}: Succeeded, ",
+                    f"- {test_file}: Succeeded, {num_annots}, ",
                     f"{num_issues}, <result wasn't validated>",
                 )
                 if print_detailed_summary:
@@ -364,7 +370,7 @@ def print_benchmarking_results(
             num_unlabelled = len(validation.unlabelled_issues)
 
             safe_print(
-                f"- {test_file}: Succeeded, "
+                f"- {test_file}: Succeeded, {num_annots}, "
                 f"{num_issues}, {num_correct}, {num_missing}, {num_unlabelled}"
             )
             if print_detailed_summary:

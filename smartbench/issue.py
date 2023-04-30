@@ -3,7 +3,7 @@
 
 # Standard Library
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 # Library
 from smartbench.bugdb.sbc import SBC
@@ -206,6 +206,15 @@ class Issue:
 
     def __ne__(self, other):
         return not (self.__eq__(other))
+
+
+def has_issue_of_kind_and_location(
+    issues: List[Issue], kind: IssueKind, loc: Location
+) -> bool:
+    for issue in issues:
+        if issue.issue_kind == kind and issue.location == loc:
+            return True
+    return False
 
 
 def classify_to_smartbugs_classification(
