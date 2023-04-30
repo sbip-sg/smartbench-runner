@@ -10,7 +10,7 @@ from enum import Enum
 from typing import List
 
 
-class SBC(Enum):
+class SmartBugsKind(Enum):
     """Class representing bug kind in SmartBugs Classification."""
 
     ACCESS_CONTROL = "Access Control"
@@ -26,4 +26,4 @@ class SBC(Enum):
     @staticmethod
     def elements():
         """Return all elements of SmartBugs Classification"""
-        return [c.value for c in SBC]
+        return [c.value for c in SmartBugsKind]

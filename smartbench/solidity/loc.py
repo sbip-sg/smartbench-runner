@@ -46,7 +46,7 @@ class Location:
             and self.end_column == other.end_column
       )
 
-    def get_line_column(self):
+    def print_line_column(self):
         """Print line and column info"""
         return (
             f"{self.start_line}:{self.start_column}"
@@ -56,7 +56,7 @@ class Location:
     def print_concise(self):
         """Print location in concise format."""
         file_name = os.path.basename(self.file_path)
-        return f"{file_name}:{self.get_line_column()}"
+        return f"{file_name}:{self.print_line_column()}"
 
 
 class Localizer:

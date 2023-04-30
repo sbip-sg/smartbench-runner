@@ -11,6 +11,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import issue, logger
+from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.printer import debug, error, error_traceback
@@ -199,6 +200,31 @@ class Confuzzius(Tool):
                     # if all([issue != x for x in all_issues]):
                     #     all_issues.append(issue)
         return all_issues
+
+    def match_location_of_issue_to_annotation(
+        self, issue: Issue, annot: BugAnnot
+    ) -> bool:
+        """Check whether the location of an issue is relevant to the location of
+        a bug annotation.
+        """
+
+        # Confuzzius reports issue location as a single point: line and column.
+        # If an issue and a bug annotation are relevant, then the bug
+        # annotation's location should cover the issue's location.
+
+        if issue.location is None:
+            return False
+
+        iloc = issue.location
+
+        # The bug line must be reported explicitly by Confuzzius
+        if iloc.start_line is None or iloc.end_line is None:
+            return False
+
+        return (
+            iloc.start_line >= annot.start_line
+            and iloc.end_line <= annot.end_line
+        )
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Confuzzius"""

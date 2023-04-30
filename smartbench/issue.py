@@ -6,7 +6,7 @@ from enum import Enum
 from typing import List, Optional
 
 # Library
-from smartbench.bugdb.sbc import SBC
+from smartbench.bugdb.sbc import SmartBugsKind
 from smartbench.solidity.loc import Location
 
 
@@ -161,7 +161,7 @@ class Issue:
         description: str,
         severity: Severity,
         confidence: Confidence,
-        location: Optional[Location],
+        location: Location,
         checker: Checker,
     ):
         """Constructor."""
@@ -170,11 +170,11 @@ class Issue:
         self.description: str = description
         self.severity: Severity = severity
         self.confidence: Confidence = confidence
-        self.location: Optional[Location] = location
+        self.location: Location = location
         self.checker: Checker = checker
-        self.sbc: Optional[SBC] = classify_to_smartbugs_classification(
-            issue_kind
-        )
+        self.smartbugs_kind: Optional[
+            SmartBugsKind
+        ] = classify_to_smartbugs_kind(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -192,7 +192,7 @@ class Issue:
         return (
             f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
-            f"  + SmartBugs Classification: {self.sbc}\n"
+            f"  + SmartBugs Classification: {self.smartbugs_kind}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
             f"  + Location: {location}\n"
         )
@@ -217,41 +217,41 @@ def has_issue_of_kind_and_location(
     return False
 
 
-def classify_to_smartbugs_classification(
+def classify_to_smartbugs_kind(
     issue_kind: IssueKind,
-) -> Optional[SBC]:
+) -> Optional[SmartBugsKind]:
     """Classify an issue kind to a bug kind in SmartBugs classification."""
     if issue_kind in [IssueKind.ACCESS_CONTROL]:
-        return SBC.ACCESS_CONTROL
+        return SmartBugsKind.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.INTEGER_BUG]:
-        return SBC.ARITHMETIC
+        return SmartBugsKind.ARITHMETIC
 
     if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
-        return SBC.BAD_RANDOMNESS
+        return SmartBugsKind.BAD_RANDOMNESS
 
     if issue_kind in []:
-        return SBC.DENIAL_OF_SERVICE
+        return SmartBugsKind.DENIAL_OF_SERVICE
 
     if issue_kind in []:
-        return SBC.FRONT_RUNNING
+        return SmartBugsKind.FRONT_RUNNING
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-        return SBC.REENTRANCY
+        return SmartBugsKind.REENTRANCY
 
     if issue_kind in []:
-        return SBC.SHORT_ADDRESSES
+        return SmartBugsKind.SHORT_ADDRESSES
 
     if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SBC.TIME_MANIPULATION
+        return SmartBugsKind.TIME_MANIPULATION
 
     if issue_kind in [
         IssueKind.UNHANDLED_EXCEPTION,
         IssueKind.UNCHECKED_LOWLEVEL_CODE,
     ]:
-        return SBC.UNCHECKED_LOW_LEVEL_CALLS
+        return SmartBugsKind.UNCHECKED_LOW_LEVEL_CALLS
 
     # Not matching any SmartBugs Classification
     return None

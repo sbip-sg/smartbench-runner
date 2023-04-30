@@ -178,6 +178,8 @@ def parse_result_directory(
             if not is_tool_output_dir(tool, output_dir):
                 continue
 
+            printer.print_medium_dashed_separator_line()
+
             # Get test file
             output_dir = os.path.abspath(output_dir)
             log_file = os.path.join(output_dir, tool.log_file)
@@ -189,7 +191,6 @@ def parse_result_directory(
                 warning(f"Unable to get test file: {test_file}")
                 continue
 
-            safe_print(f"{'-' * 45}\n")
             safe_print(f"Test file: {test_file}\n")
 
             # Parse bug annotations in test file
@@ -344,6 +345,7 @@ def print_benchmarking_results(
                 if print_detailed_summary
                 else result.concise_test_file
             )
+
             num_annots = len(result.bug_annots)
             if not result.is_successful:
                 num_failed += 1
@@ -358,7 +360,7 @@ def print_benchmarking_results(
             if result.validation_result is None:
                 safe_print(
                     f"- {test_file}: Succeeded, {num_annots}, ",
-                    f"{num_issues}, <result wasn't validated>",
+                    f"{num_issues}, <no validation>",
                 )
                 if print_detailed_summary:
                     safe_print(f"  Log file: {result.log_file}")
@@ -421,32 +423,29 @@ def export_benchmarking_results_to_csv_format(
                     else result.concise_test_file
                 )
 
+                num_annots = len(result.bug_annots)
                 file.write(f"- {test_file}: ")
 
                 if not result.is_successful:
                     num_failed += 1
-                    file.write("Failed\n")
+                    file.write(f"Failed, {num_annots}\n")
                     continue
 
                 num_succeeded += 1
                 num_issues = len(result.issues)
-                file.write(f"Succeeded, {num_issues}")
+                file.write(f"Succeeded, {num_annots}, {num_issues}")
 
                 validation = result.validation_result
 
                 if validation is None:
+                    file.write(",  <no validation>\n")
+                else:
+                    num_correct = len(validation.correct_bugs)
+                    num_missing = len(validation.missing_bugs)
+                    num_unlabelled = len(validation.unlabelled_issues)
                     file.write(
-                        f", {num_issues}, <result wasn't validated>",
+                        f", {num_correct}, {num_missing}, {num_unlabelled}\n"
                     )
-                    continue
-
-                num_correct = len(validation.correct_bugs)
-                num_missing = len(validation.missing_bugs)
-                num_unlabelled = len(validation.unlabelled_issues)
-
-                file.write(
-                    f", {num_correct}, {num_missing}, {num_unlabelled}\n"
-                )
 
             file.write(
                 f"\nOverall result: {tool_id}: "

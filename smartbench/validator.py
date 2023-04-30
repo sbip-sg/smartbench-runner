@@ -5,15 +5,13 @@
 # Standard Library
 from typing import List, Tuple
 
-# Third Party
 import more_itertools as mit
+from smartbench.tools.tool import Tool
 
-# Library
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.issue import Issue
-from smartbench.printer import safe_print
+from smartbench.printer import debug, safe_print
 from smartbench.solidity.loc import Location
-from smartbench.tools.tool import Tool
 
 
 class ValidationResult:
@@ -82,21 +80,26 @@ def match_issue_to_annotation(
     """Function to check whether an reported issue is related to a bug
     annotation."""
 
+    debug(f"** Matching issue: {issue.index}, annot: {annot.index}")
+
+    debug(f" - issue kind: {issue.smartbugs_kind}")
+    debug(f" - annot kind: {annot.smartbugs_kind}")
+
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
         if (
-            issue.sbc is not None
-            or annot.sbc is not None
-            or issue.sbc != annot.sbc
+            issue.smartbugs_kind is None
+            or annot.smartbugs_kind is None
+            or issue.smartbugs_kind != annot.smartbugs_kind
         ):
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
         return False
 
-    # Check whether the issue and bug annotation are of the same file.
-    iloc: Location = issue.location
+    debug(f"Checking location: {issue.index}, annot: {annot.index}")
 
+    # Check whether the issue and bug annotation are of the same file.
     return tool.match_location_of_issue_to_annotation(issue, annot)
 
 

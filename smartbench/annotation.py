@@ -12,7 +12,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import issue
-from smartbench.bugdb.sbc import SBC
+from smartbench.bugdb.sbc import SmartBugsKind
 from smartbench.issue import IssueKind
 from smartbench.printer import safe_print, warning
 
@@ -59,10 +59,10 @@ class BugAnnot:
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
-        self.sbc: Optional[SBC] = (
+        self.smartbugs_kind: Optional[SBC] = (
             None
             if self.annot_kind is None
-            else issue.classify_to_smartbugs_classification(self.annot_kind)
+            else issue.classify_to_smartbugs_kind(self.annot_kind)
         )
 
         # Assign an index to the issue. This index is unique for all issues in
