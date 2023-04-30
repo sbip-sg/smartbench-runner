@@ -8,7 +8,7 @@ import signal
 import subprocess
 import sys
 
-from typing import List, Optional
+from typing import List
 
 # Library
 from smartbench import (
@@ -109,14 +109,16 @@ def analyze_smart_contracts(args) -> None:
             args.target_contracts_file
         )
 
-    safe_print(f"test_contracts: {test_contracts}")
-    safe_print(f"compiler_versions: {compiler_versions}")
+    # safe_print(f"test_contracts: {test_contracts}")
+    # safe_print(f"compiler_versions: {compiler_versions}")
+
     # Perform the analysis
     analyze.perform_analysis(
         tools,
         all_test_files,
         test_contracts,
         compiler_versions,  # override the common compiler version
+        args.result_dir,
         args.solc_version,
         args.timeout,
         args.keep_docker_alive,

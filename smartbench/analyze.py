@@ -498,6 +498,7 @@ def perform_analysis(
     test_files: List[str],
     test_contracts: Optional[Dict[str, List[str]]],
     compiler_versions: Optional[Dict[str, str]],
+    result_dir: Optional[str] = None,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
     keep_docker_alive: bool = False,
@@ -514,20 +515,21 @@ def perform_analysis(
     """
     # Prepare output directory for all tests and all tools in this run
     safe_print("Start analyzing all test cases...")
-    results_dir = os.path.join(
-        RESULTS_DIR,
-        datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
-    )
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+    if result_dir is None:
+        result_dir = os.path.join(
+            RESULTS_DIR,
+            datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+        )
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
 
     # Record the analysis details to a log file
-    log_analysis_info(tools, test_files, results_dir)
+    log_analysis_info(tools, test_files, result_dir)
 
     # Perform the analysis
     all_results = []
     for tool in tools:
-        tool_output_dir = os.path.join(results_dir, tool.id)
+        tool_output_dir = os.path.join(result_dir, tool.id)
         results = run_analysis_tool(
             tool,
             test_files,
@@ -546,9 +548,9 @@ def perform_analysis(
 
     printer.print_short_double_separator_line()
     safe_print("Benchmarking completed!\n")
-    safe_print(f"Results are recorded at: {results_dir}")
+    safe_print(f"Results are recorded at: {result_dir}")
 
     if benchmarking:
-        result.print_benchmarking_results(results_dir, all_results)
+        result.print_benchmarking_results(result_dir, all_results)
 
     return all_results

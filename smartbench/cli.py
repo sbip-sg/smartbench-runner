@@ -93,6 +93,13 @@ def parse_cli_arguments():
         Support both Smartbench and Smartian format.",
     )
 
+    # List of target contracts in test files
+    analyze_argparser.add_argument(
+        "--result-dir",
+        type=str,
+        help="Directory to store analysis resutls of all tools",
+    )
+
     # Solidity version
     analyze_argparser.add_argument(
         "--solc-version",
