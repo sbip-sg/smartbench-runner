@@ -182,6 +182,15 @@ def parse_cli_arguments():
         help="Validating analysis results for benchmarking.",
     )
 
+    # Specify benchmark name for special cases without standard annotation and
+    # validation
+    analyze_argparser.add_argument(
+        "--annot-format",
+        type=str,
+        choices=["smartbugs", "smartbench", "solidifi"],
+        help=("Type of bug annotation format."),
+    )
+
     ################################
     # Parser for sub-command `parse-results`
 

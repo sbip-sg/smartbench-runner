@@ -44,6 +44,7 @@ class AnalysisJob:
         compiler_versions: Optional[Dict[str, str]],
         job_output_dir: str,
         docker_container: DockerContainer,
+        annot_format: Optional[str] = None,
         solc_version: Optional[str] = None,
         timeout: Optional[int] = None,
     ):
@@ -54,12 +55,13 @@ class AnalysisJob:
         # folder in a Docker container
         self.test_files: List[str] = list(test_files)
         self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
+        self.job_output_dir: str = job_output_dir
         self.compiler_versions = compiler_versions
         self.docker_container: DockerContainer = docker_container
         self.solc_version = solc_version
+        self.annot_format: Optional[str] = annot_format
 
         # Output directory of a job to store results of all test files
-        self.job_output_dir: str = job_output_dir
         self.timeout: Optional[int] = timeout
 
     def __str__(self):
@@ -186,6 +188,7 @@ def analyze_test_file(
     compiler_versions: Optional[Dict[str, str]],
     test_output_dir: str,
     container: DockerContainer,
+    annot_format: Optional[str] = None,
     solc_version: Optional[str] = None,
     job_id: Optional[int] = None,
     timeout: Optional[int] = None,
@@ -379,6 +382,7 @@ def run_analysis_job(
             job.compiler_versions,
             test_output_dir,
             job.docker_container,
+            job.annot_format,
             job.solc_version,
             job.id,
             job.timeout,
@@ -403,6 +407,7 @@ def run_analysis_tool(
     jobs: int = 1,
     validate: bool = False,
     benchmarking: bool = False,
+    annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
     to `tool_output_dir`.
@@ -452,6 +457,7 @@ def run_analysis_tool(
             compiler_versions,
             tool_output_dir,
             container,
+            annot_format,
             solc_version,
             timeout,
         )
@@ -505,6 +511,7 @@ def perform_analysis(
     jobs: int = 1,
     validate: bool = False,
     benchmarking: bool = False,
+    annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Function to run all tools to analyze all test files.
 
@@ -542,6 +549,7 @@ def perform_analysis(
             jobs,
             validate,
             benchmarking,
+            annot_format,
         )
 
         all_results.extend(results)

@@ -125,6 +125,7 @@ def analyze_smart_contracts(args) -> None:
         jobs,
         args.validate,
         args.benchmarking,
+        args.annot_format,
     )
 
 
