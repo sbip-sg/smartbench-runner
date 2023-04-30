@@ -56,7 +56,7 @@ class AnalysisResult:
         self.is_successful: bool = is_successful
 
         # All the issues that are reported
-        self.issues: List[Issue] = list(issues)
+        self.issues: List[Issue] = list(issues) if issues else []
 
         # Bug annotations specified for the test files.
         self.bug_annots: List[BugAnnot] = list(bug_annots)

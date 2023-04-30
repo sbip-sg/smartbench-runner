@@ -50,6 +50,7 @@ class Smartian(Tool):
         solc_version: str,
         container: DockerContainer,
         timeout: Optional[int] = None,
+        **kwargs,
     ) -> str:
         """Function to make analysis command for `Smartian`. This function should
         have the same signature with other tools."""
