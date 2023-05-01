@@ -10,7 +10,7 @@ from enum import Enum
 from typing import List
 
 
-class SmartBugsPPKind(Enum):
+class SmartBugsPP(Enum):
     """Class representing bug kind in SmartBugs++ Classification."""
 
     ACCESS_CONTROL = "Access Control"
@@ -33,4 +33,4 @@ class SmartBugsPPKind(Enum):
     @staticmethod
     def elements():
         """Return all elements of SmartBugs Classification"""
-        return [c.value for c in SmartBugsPPKind]
+        return [c.value for c in SmartBugsPP]

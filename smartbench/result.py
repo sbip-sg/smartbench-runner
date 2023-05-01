@@ -200,13 +200,12 @@ def parse_result_directory(
             bug_annots = annotation.parse_bug_annotations(
                 test_file, annot_format
             )
+            safe_print_underline("Bug annotations")
             if len(bug_annots) > 0:
-                safe_print_underline("Bug annotations")
-                for annot in bug_annots:
-                    safe_print(f"- {annot.print_concise()}")
+                safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
                 safe_print("")
             else:
-                safe_print("No bug annotation is found!\n")
+                safe_print("- No bug annotations are found!\n")
 
             # Rest issue index counter
             Issue.index_counter = 1
@@ -223,7 +222,10 @@ def parse_result_directory(
                 )
             else:
                 safe_print_underline("Detected issues")
-                safe_print("\n\n".join([format(f"- {x}") for x in issues]))
+                if len(issues) > 0:
+                    safe_print("\n\n".join([format(f"- {x}") for x in issues]))
+                else:
+                    safe_print("- No issues are detected!\n")
 
                 validation = None
                 if validate:

@@ -6,7 +6,8 @@ from enum import Enum
 from typing import List, Optional
 
 # Library
-from smartbench.bugdb.sbc import SmartBugsPPKind
+from smartbench.bugdb.sbc import SmartBugsPP
+from smartbench.bugdb.swc import SWCKind
 from smartbench.solidity.loc import Location
 
 
@@ -92,9 +93,12 @@ class IssueKind(Enum):
     INTEGER_UNDERFLOW = "Integer Underflow"
     INTEGER_TRUNCATION = "Integer Truncation"
 
-    # SWC issues
+    # SWC-110, assertion
     ASSERTION_FAILURE = "Assertion Failure"
-    ARBITRARY_WRITE = "Arbitrary Write"  # SWC-124
+
+    # SWC-124
+    WRITE_TO_ARBITRARY_STORAGE_LOCATION = "Write To Arbitrary Storage Location"
+
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
     ACCESS_CONTROL = "Access Control"
     LOCKING_ETHER = "Locking Ether"
@@ -172,9 +176,14 @@ class Issue:
         self.confidence: Confidence = confidence
         self.location: Location = location
         self.checker: Checker = checker
-        self.smartbugs_kind: Optional[
-            SmartBugsPPKind
-        ] = classify_to_smartbugs_kind(issue_kind)
+
+        # Classify to SWC classification
+        self.swc_kind: Optional[SWCKind] = classify_to_swc_kind(issue_kind)
+
+        # Classify to SmartBugs++ classification
+        self.smartbugs_pp_kind: Optional[
+            SmartBugsPP
+        ] = classify_to_smartbugs_pp_kind(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -192,8 +201,8 @@ class Issue:
         return (
             f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
-            f"  + SmartBugs Classification: {self.smartbugs_kind}\n"
-            f"  + Severity: {self.severity}, {self.confidence}\n"
+            f"  + SWC Kind: {self.smartbugs_pp_kind}\n"
+            f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
             f"  + Location: {location}"
         )
 
@@ -217,41 +226,163 @@ def has_issue_of_kind_and_location(
     return False
 
 
-def classify_to_smartbugs_kind(
+def classify_to_smartbugs_pp_kind(
     issue_kind: IssueKind,
-) -> Optional[SmartBugsPPKind]:
-    """Classify an issue kind to a bug kind in SmartBugs classification."""
+) -> Optional[SmartBugsPP]:
+    """Classify an issue kind to a bug kind in SmartBugs++ classification."""
     if issue_kind in [IssueKind.ACCESS_CONTROL]:
-        return SmartBugsPPKind.ACCESS_CONTROL
+        return SmartBugsPP.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.INTEGER_BUG]:
-        return SmartBugsPPKind.ARITHMETIC
+        return SmartBugsPP.ARITHMETIC
 
     if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
-        return SmartBugsPPKind.BAD_RANDOMNESS
+        return SmartBugsPP.BAD_RANDOMNESS
 
     if issue_kind in []:
-        return SmartBugsPPKind.DENIAL_OF_SERVICE
+        return SmartBugsPP.DENIAL_OF_SERVICE
 
     if issue_kind in []:
-        return SmartBugsPPKind.FRONT_RUNNING
+        return SmartBugsPP.FRONT_RUNNING
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
-        return SmartBugsPPKind.REENTRANCY
+        return SmartBugsPP.REENTRANCY
 
     if issue_kind in []:
-        return SmartBugsPPKind.SHORT_ADDRESSES
+        return SmartBugsPP.SHORT_ADDRESSES
 
     if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SmartBugsPPKind.TIME_MANIPULATION
+        return SmartBugsPP.TIME_MANIPULATION
 
     if issue_kind in [
         IssueKind.UNHANDLED_EXCEPTION,
         IssueKind.UNCHECKED_LOWLEVEL_CODE,
     ]:
-        return SmartBugsPPKind.UNCHECKED_LOW_LEVEL_CALLS
+        return SmartBugsPP.UNCHECKED_LOW_LEVEL_CALLS
 
-    # Not matching any SmartBugs Classification
+    # Not matching any SmartBugs++ Kind
+    return None
+
+
+def classify_to_swc_kind(
+    issue_kind: IssueKind,
+) -> Optional[SWCKind]:
+    """Classify an issue kind to a bug kind in SmartBugs++ classification."""
+    if issue_kind in []:
+        return SWCKind.FUNCTION_DEFAULT_VISIBILITY
+
+    if issue_kind in [
+        IssueKind.INTEGER_OVERFLOW,
+        IssueKind.INTEGER_UNDERFLOW,
+        IssueKind.INTEGER_TRUNCATION,
+    ]:
+        return SWCKind.INTEGER_OVERFLOW_UNDERFLOW
+
+    if issue_kind in []:
+        return SWCKind.OUTDATED_COMPILER_VERSION
+
+    if issue_kind in []:
+        return SWCKind.FLOATING_PRAGMA
+
+    if issue_kind in []:
+        return SWCKind.UNCHECKED_CALL_RETURN_VALUE
+
+    if issue_kind in [IssueKind.LEAKING_ETHER]:
+        return SWCKind.UNPROTECTED_ETHER_WITHDRAWAL
+
+    if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
+        return SWCKind.UNPROTECTED_SELFDESTRUCT_INSTRUCTION
+
+    if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
+        return SWCKind.REENTRANCY
+
+    if issue_kind in []:
+        return SWCKind.STATE_VARIABLE_DEFAULT_VISIBILITY
+
+    if issue_kind in []:
+        return SWCKind.UNINITIALIZED_STORAGE_POINTER
+
+    if issue_kind in [IssueKind.ASSERTION_FAILURE]:
+        return SWCKind.ASSERT_VIOLATION
+
+    if issue_kind in []:
+        return SWCKind.USE_OF_DEPRECATED_SOLIDITY_FUNCTIONS
+
+    if issue_kind in []:
+        return SWCKind.DELEGATECALL_TO_UNTRUSTED_CALLEE
+
+    if issue_kind in []:
+        return SWCKind.DOS_WITH_FAILED_CALL
+
+    if issue_kind in [IssueKind.TRANSACTION_ORDER_DEPENDENCY]:
+        return SWCKind.TRANSACTION_ORDER_DEPENDENCE
+
+    if issue_kind in []:
+        return SWCKind.AUTHORIZATION_THROUGH_TX_ORIGIN
+
+    if issue_kind in []:
+        return SWCKind.BLOCK_VALUES_AS_A_PROXY_FOR_TIME
+
+    if issue_kind in []:
+        return SWCKind.SIGNATURE_MALLEABILITY
+
+    if issue_kind in []:
+        return SWCKind.INCORRECT_CONSTRUCTOR_NAME
+
+    if issue_kind in []:
+        return SWCKind.SHADOWING_STATE_VARIABLES
+
+    if issue_kind in []:
+        return SWCKind.WEAK_SOURCES_OF_RANDOMNESS_FROM_CHAIN_ATTRIBUTES
+
+    if issue_kind in []:
+        return SWCKind.MISSING_PROTECTION_AGAINST_SIGNATURE_REPLAY_ATTACKS
+
+    if issue_kind in []:
+        return SWCKind.LACK_OF_PROPER_SIGNATURE_VERIFICATION
+
+    if issue_kind in []:
+        return SWCKind.REQUIREMENT_VIOLATION
+
+    if issue_kind in []:
+        return SWCKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION
+
+    if issue_kind in []:
+        return SWCKind.INCORRECT_INHERITANCE_ORDER
+
+    if issue_kind in []:
+        return SWCKind.INSUFFICIENT_GAS_GRIEFING
+
+    if issue_kind in []:
+        return SWCKind.ARBITRARY_JUMP_WITH_FUNCTION_TYPE_VARIABLE
+
+    if issue_kind in []:
+        return SWCKind.DOS_WITH_BLOCK_GAS_LIMIT
+
+    if issue_kind in []:
+        return SWCKind.TYPOGRAPHICAL_ERROR
+
+    if issue_kind in []:
+        return SWCKind.RIGHT_TO_LEFT_OVERRIDE_CONTROL_CHARACTER
+
+    if issue_kind in []:
+        return SWCKind.PRESENCE_OF_UNUSED_VARIABLES
+
+    if issue_kind in []:
+        return SWCKind.UNEXPECTED_ETHER_BALANCE
+
+    if issue_kind in []:
+        return SWCKind.HASH_COLLISIONS_WITH_MULTIPLE_VARIABLE_LENGTH_ARGUMENTS
+
+    if issue_kind in []:
+        return SWCKind.MESSAGE_CALL_WITH_HARDCODED_GAS_AMOUNT
+
+    if issue_kind in []:
+        return SWCKind.CODE_WITH_NO_EFFECTS
+
+    if issue_kind in []:
+        return SWCKind.UNENCRYPTED_PRIVATE_DATA_ON_CHAIN
+
     return None

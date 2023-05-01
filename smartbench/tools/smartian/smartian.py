@@ -119,10 +119,10 @@ class Smartian(Tool):
 
         matches = re.findall(r"Arbitrary Write: [0-9]+", data)
         for match in matches:
-            if IssueKind.ARBITRARY_WRITE not in kinds:
+            if IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION not in kinds:
                 num_bugs = match.removeprefix("Arbitrary Write: ")
                 if int(num_bugs) > 0:
-                    kinds.append(IssueKind.ARBITRARY_WRITE)
+                    kinds.append(IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION)
 
         matches = re.findall(r"Block state Dependency: [0-9]+", data)
         for match in matches:

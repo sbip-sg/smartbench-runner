@@ -111,7 +111,7 @@ class Mythril(Tool):
 
         # SWC 124
         if "Write to an arbitrary storage location" in description:
-            return IssueKind.ARBITRARY_WRITE
+            return IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION
 
         # SWC 112
         if "Delegatecall to user-supplied address" in description:

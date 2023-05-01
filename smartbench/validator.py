@@ -85,9 +85,9 @@ def match_issue_to_annotation(
     # Check whether the issue kind and bug annotation kind are related
     if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
         if (
-            issue.smartbugs_kind is None
+            issue.smartbugs_pp_kind is None
             or annot.smartbugs_kind is None
-            or issue.smartbugs_kind != annot.smartbugs_kind
+            or issue.smartbugs_pp_kind != annot.smartbugs_kind
         ):
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
