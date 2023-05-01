@@ -17,25 +17,30 @@ class IssueKind(Enum):
     + Different bug names can map to the same issue
     """
 
-    # Unknown
-    UNKNOWN = "Unknown Issue"
+    ##############################
+    # Security Vulnerabilities
 
-    # Reentrancy
+    # Reentrancy, SWC-107
     REENTRANCY = "Reentrancy"
     REENTRANCY_READ_ONLY = "Reentrancy on Read-Only State"
 
     # Unchecked calls
     UNCHECKED_SEND_ETHER = "Unchecked Send Ether"
-
+    UNCHECKED_TRANSFER_ETHER = "Unchecked Transfer Ether"
     UNCHECKED_CALL_RETURN_VALUE = "Unchecked Call Return Value"
     UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low-Level Calls"
+    UNUSED_RETURN_VALUE = "Unused Return Value"
 
     # Leaking Ether
     LEAKING_ETHER = "Leaking Ether"
 
-    # Unchecked code
+    # Locking Ether
+    LOCKING_ETHER = "Locking Ether"
+
+    # Exceptions
     UNHANDLED_EXCEPTION = "Unhandled Exception"
 
+    # Validation
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
     # Low-level code
@@ -63,10 +68,11 @@ class IssueKind(Enum):
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
 
-    # Uninitialized varaibles
+    # Initialization
     UNINITIALIZED_STATE_VARIABLE = "Uninitialized State Variable"
     UNINITIALIZED_STORAGE_VARIABLE = "Uninitialized Storage Variable"
     UNINITIALIZED_LOCAL_VARIABLE = "Uninitialized Local Variable"
+    FUNCTION_INIT_NON_CONSTANT_STATE = "Function Init with Non-Constant State"
 
     # Inheritance
     MISSING_INHERITANCE = "Missing Inheritance"
@@ -74,27 +80,8 @@ class IssueKind(Enum):
     # Backdoor
     BACKDOOR_FUNCTION = "Backdoor Function"
 
-    # Coding style
-    PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
-    VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
-    FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
-    MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
-    CONSTANT_NAME_NOT_IN_UPPER_CASE = "Constant Name Not in Upper Case"
-    SHADOWING_LOCAL_VARIABLE = "Shadowing Variable"
-
-    # Code optimization
-    MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
-    POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
-    UNUSED_FUNCTION = "Unused Function"
-    UNUSED_VARIABLE = "Unused Variable"
-    USE_LITERALS_WITH_TOO_MANY_DIGITS = "Literal with Too Many Digits"
-    USE_CONSTANT_INSTEAD_OF_VARIABLE = "Use Constant Instead of Variable"
-    FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = (
-        "Function Should Be Declared External"
-    )
-    COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
-    COSTLY_LOOP = "Costly Loop"
-    TAUTOLOGY_OR_CONTRADICTION = "Tautology or Contradiction"
+    # Code complexity
+    EXTERNAL_CALLS_INSIDE_LOOP = "External Calls Inside Loop"
 
     # Deprecated features
     DEPRECATED_THROW = "Deprecated Throw"
@@ -130,14 +117,55 @@ class IssueKind(Enum):
 
     ACCESS_CONTROL = "Access Control"
 
-    LOCKING_ETHER = "Locking Ether"
-
     UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
 
     # SWC-112
     UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
 
     REQUIREMENT_VIOLATION = "Requirement Violation"
+
+    VIEW_FUNCTION_CONTAIN_ASM = "View Function Contains Assembly Code"
+
+    ##############################
+    # Coding style
+
+    PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
+    VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
+    FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
+    MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
+    CONSTANT_NAME_NOT_IN_UPPER_CASE = "Constant Name Not in Upper Case"
+    CONTRACT_NAME_NOT_IN_CAP_WORDS = "Contract Name Not in CapWords"
+    STRUCT_NAME_NOT_IN_CAP_WORDS = "Struct Name Not in CapWords"
+    EVENT_NAME_NOT_IN_CAP_WORDS = "Event Name Not in CapWords"
+
+    SHADOWING_LOCAL_VARIABLE = "Shadowing Local Variable"
+    SHADOWING_STATE_VARIABLE = "Shadowing State Variable"
+    SHADOWING_ABSTRACT_FUNCTION = "Shadowing Abstract Function"
+    SHADOWING_BUILTIN_SYMBOL = "Shadowing Built-in Symbol"
+
+    SIMILAR_VARIABLE_NAME = "Similar Variable Name"
+
+    ##############################
+    # Code optimization
+
+    MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
+    POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
+    UNUSED_FUNCTION = "Unused Function"
+    UNUSED_VARIABLE = "Unused Variable"
+    USE_LITERALS_WITH_TOO_MANY_DIGITS = "Literal with Too Many Digits"
+    USE_CONSTANT_INSTEAD_OF_VARIABLE = "Use Constant Instead of Variable"
+    FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = (
+        "Function Should Be Declared External"
+    )
+    COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
+    COSTLY_LOOP = "Costly Loop"
+    TAUTOLOGY_OR_CONTRADICTION = "Tautology or Contradiction"
+    REDUNDANT_EXPRESSION = "Redundant Expression"
+
+    ##############################
+    # Unknown
+
+    UNKNOWN = "Unknown Issue"
 
     def __str__(self):
         return self.value

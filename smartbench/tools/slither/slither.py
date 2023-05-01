@@ -163,6 +163,10 @@ class Slither(Tool):
         if "ignores return value by" in description:
             if "send" in description:
                 return IssueKind.UNCHECKED_SEND_ETHER
+            if "transfer" in description:
+                return IssueKind.UNCHECKED_TRANSFER_ETHER
+            if checker == "unused-return":
+                return IssueKind.UNCHECKED_TRANSFER_ETHER
             if checker == "unchecked-lowlevel":
                 return IssueKind.UNCHECKED_LOW_LEVEL_CODE
 
@@ -226,8 +230,21 @@ class Slither(Tool):
         if "is a local variable never initialized" in description:
             return IssueKind.UNINITIALIZED_STATE_VARIABLE
 
+        if "is set pre-construction with a non-constant" in description:
+            if checker == "function-init-state":
+                return IssueKind.FUNCTION_INIT_NON_CONSTANT_STATE
+
         if "should inherit from" in description:
             return IssueKind.MISSING_INHERITANCE
+
+        if "has external calls inside a loop" in description:
+            return IssueKind.EXTERNAL_CALLS_INSIDE_LOOP
+
+        if (
+            "has payable functions" in description
+            and "But does not have a function to withdraw" in description
+        ):
+            return IssueKind.LOCKING_ETHER
 
         if "Backdoor function found in" in description:
             return IssueKind.BACKDOOR_FUNCTION
@@ -244,6 +261,10 @@ class Slither(Tool):
             if 'Usage of "block.blockhash()" should be replaced' in description:
                 return IssueKind.DEPRECATED_BLOCK_DOT_BLOCKHASH
 
+        if "is declared view but contains assembly code" in description:
+            return IssueKind.VIEW_FUNCTION_CONTAIN_ASM
+
+        ####################################
         # Coding style
 
         if "not in mixedCase" in description:
@@ -260,9 +281,29 @@ class Slither(Tool):
             if "Constant" in description:
                 return IssueKind.CONSTANT_NAME_NOT_IN_UPPER_CASE
 
-        if "shadows:" in description and checker == "shadowing-local":
-            return IssueKind.SHADOWING_LOCAL_VARIABLE
+        if "not in CapWords" in description:
+            if "Contract" in description:
+                return IssueKind.CONTRACT_NAME_NOT_IN_CAP_WORDS
+            if "Struct" in description:
+                return IssueKind.STRUCT_NAME_NOT_IN_CAP_WORDS
+            if "Event" in description:
+                return IssueKind.STRUCT_NAME_NOT_IN_CAP_WORDS
 
+        if "shadows" in description:
+            if checker == "shadowing-local":
+                return IssueKind.SHADOWING_LOCAL_VARIABLE
+            if checker == "shadowing-state":
+                return IssueKind.SHADOWING_STATE_VARIABLE
+            if checker == "shadowing-abstract":
+                return IssueKind.SHADOWING_ABSTRACT_FUNCTION
+            if checker == "shadowing-builtin":
+                return IssueKind.SHADOWING_BUILTIN_SYMBOL
+
+        if "is too similar to" in description:
+            if "Variable" in description:
+                return IssueKind.SIMILAR_VARIABLE_NAME
+
+        ####################################
         # Code optimization
 
         if "compares to a boolean constant" in description:
@@ -294,6 +335,9 @@ class Slither(Tool):
 
         if "contains a tautology or contradiction" in description:
             return IssueKind.TAUTOLOGY_OR_CONTRADICTION
+
+        if "Redundant expression" in description:
+            return IssueKind.REDUNDANT_EXPRESSION
 
         return IssueKind.UNKNOWN
 
