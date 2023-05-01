@@ -232,13 +232,26 @@ class Issue:
         return not (self.__eq__(other))
 
 
-def has_issue_of_kind_and_location(
-    issues: List[Issue], kind: IssueKind, loc: Location
-) -> bool:
-    for issue in issues:
-        if issue.issue_kind == kind and issue.location == loc:
-            return True
-    return False
+def update_new_issue(
+    existing_issues: List[Issue],
+    issue_kind: IssueKind,
+    description: str,
+    severity: Severity,
+    confidence: Confidence,
+    location: Location,
+    checker: Checker,
+):
+    # Check if the new issue is already reported
+    for issue in existing_issues:
+        if issue.issue_kind == issue_kind and issue.location == location:
+            return existing_issues
+
+    # Create new issue and collect it
+    issue = Issue(
+        issue_kind, description, severity, confidence, location, checker
+    )
+    existing_issues.append(issue)
+    return existing_issues
 
 
 def classify_to_smartbugs_pp_kind(

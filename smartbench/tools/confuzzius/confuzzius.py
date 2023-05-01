@@ -188,21 +188,17 @@ class Confuzzius(Tool):
                         bug.get("column"),
                     )
                     severity = self.parse_issue_severity(bug.get("severity"))
-                    if not issue.has_issue_of_kind_and_location(
-                        all_issues, kind, location
-                    ):
-                        all_issues.append(
-                            Issue(
-                                kind,
-                                "",
-                                severity,
-                                Confidence.UNKNOWN,
-                                location,
-                                checker,
-                            )
-                        )
-                    # if all([issue != x for x in all_issues]):
-                    #     all_issues.append(issue)
+
+                    # Do not add duplicated issues
+                    all_issues = issue.update_new_issue(
+                        all_issues,
+                        kind,
+                        "",
+                        severity,
+                        Confidence.UNKNOWN,
+                        location,
+                        checker,
+                    )
         return all_issues
 
     def match_location_of_issue_to_annotation(
