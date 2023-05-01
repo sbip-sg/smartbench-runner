@@ -44,19 +44,31 @@ class Location:
             and self.start_column == other.start_column
             and self.end_line == other.end_line
             and self.end_column == other.end_column
-      )
-
-    def print_line_column(self):
-        """Print line and column info"""
-        return (
-            f"{self.start_line}:{self.start_column}"
-            f"-{self.end_line}:{self.end_column}"
         )
+
+    def print_line_column(self) -> Optional[str]:
+        """Print line and column info"""
+        if self.start_line is None or self.end_line is None:
+            return None
+
+        start_line = f"{self.start_line}"
+        if self.start_column is not None:
+            start_line += f":{self.start_column}"
+
+        end_line = f"{self.end_line}"
+        if self.end_column is not None:
+            end_line += f":{self.end_column}"
+
+        return f"{start_line}-{end_line}"
 
     def print_concise(self):
         """Print location in concise format."""
-        file_name = os.path.basename(self.file_path)
-        return f"{file_name}:{self.print_line_column()}"
+        location = os.path.basename(self.file_path)
+
+        if (line_column := self.print_line_column()) is not None:
+            location += f":{line_column}"
+
+        return location
 
 
 class Localizer:
