@@ -22,6 +22,15 @@ def safe_print(*args: str) -> None:
     print(output, end="\n\r")
 
 
+def safe_print_underline(*args: str) -> None:
+    """Print and underline text."""
+    output = format(*args)
+    output = output.replace("\n", "\n\r")
+    print(output, end="\n\r")
+    underline_length = min(75, len(output) + 1)
+    print("-" * underline_length, end="\n\r\n\r")
+
+
 def print_if(condition: bool, *args: str) -> None:
     """Print if the input condition holds."""
     # screen_lock:
@@ -65,29 +74,29 @@ def debug(*args: str) -> None:
 
 def print_short_dashed_separator_line() -> None:
     """Print a short separator line: --------"""
-    safe_print(f"\n{'-' * 30}")
+    safe_print(f"\n{'-' * 30}\n")
 
 
 def print_medium_dashed_separator_line() -> None:
     """Print a medium separator line: --------"""
-    safe_print(f"\n{'-' * 45}")
+    safe_print(f"\n{'-' * 45}\n")
 
 
 def print_long_dashed_separator_line() -> None:
     """Print a long separator line: --------"""
-    safe_print(f"\n{'-' * 55}")
+    safe_print(f"\n{'-' * 55}\n")
 
 
 def print_short_double_separator_line() -> None:
     """Print a short separator line: ========"""
-    safe_print(f"\n{'=' * 30}")
+    safe_print(f"\n{'=' * 30}\n")
 
 
 def print_medium_double_separator_line() -> None:
     """Print a medium separator line: ========"""
-    safe_print(f"\n{'=' * 45}")
+    safe_print(f"\n{'=' * 45}\n")
 
 
 def print_long_double_separator_line() -> None:
     """Print a long separator line: ========"""
-    safe_print(f"\n{'=' * 55}")
+    safe_print(f"\n{'=' * 55}\n")

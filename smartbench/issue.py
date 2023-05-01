@@ -194,7 +194,7 @@ class Issue:
             f"  + Checker: {analyzer} --> {detector}\n"
             f"  + SmartBugs Classification: {self.smartbugs_kind}\n"
             f"  + Severity: {self.severity}, {self.confidence}\n"
-            f"  + Location: {location}\n"
+            f"  + Location: {location}"
         )
 
     def __eq__(self, other):

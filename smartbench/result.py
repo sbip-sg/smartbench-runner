@@ -14,7 +14,14 @@ from typing import Dict, List, Optional
 from smartbench import annotation, logger, printer, validator
 from smartbench.annotation import BugAnnot
 from smartbench.issue import Issue, Severity
-from smartbench.printer import debug, error, print_unless, safe_print, warning
+from smartbench.printer import (
+    debug,
+    error,
+    print_unless,
+    safe_print,
+    safe_print_underline,
+    warning,
+)
 from smartbench.tools.config import load_tool_configuration
 from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.ilf.ilf import Ilf
@@ -74,9 +81,7 @@ class AnalysisResult:
     def print_detailed_summary(self, parallel_mode: bool = False) -> None:
         """Print statistic summary of detected issues for a test file"""
         if not parallel_mode:
-            safe_print("-------------------")
-            safe_print("ANALYSIS RESULT")
-            safe_print("-------------------")
+            safe_print_underline("ANALYSIS RESULT")
             safe_print(f"- Tool: {self.tool.name}")
             safe_print(f"- Test file: {self.test_file}")
             safe_print(
@@ -100,8 +105,6 @@ class AnalysisResult:
         # Print validation results
         if self.validation_result is not None:
             self.validation_result.print_summary(parallel_mode)
-
-        print_unless(parallel_mode, "")
 
 
 def is_tool_output_dir(tool: Tool, test_dir: str) -> bool:
@@ -153,8 +156,8 @@ def parse_result_directory(
         if only_tools is not None and all(tool.id != t.id for t in only_tools):
             continue
 
-        safe_print(f"{'=' * 55}\n")
-        safe_print(f"Parsing analysis result of: {tool.id}\n")
+        printer.print_long_double_separator_line()
+        safe_print(f"Parsing analysis result of: {tool.id}")
 
         # Find all output directories for each test file
         test_output_dirs = [p[0] for p in os.walk(tool_output_dir_path)]
@@ -198,7 +201,7 @@ def parse_result_directory(
                 test_file, annot_format
             )
             if len(bug_annots) > 0:
-                safe_print("** Bug annotations **\n")
+                safe_print_underline("Bug annotations")
                 for annot in bug_annots:
                     safe_print(f"- {annot.print_concise()}")
                 safe_print("")
@@ -219,9 +222,8 @@ def parse_result_directory(
                     False,
                 )
             else:
-                safe_print("** Detected issues **\n")
-                for issue in issues:
-                    safe_print(f"- {issue}")
+                safe_print_underline("Detected issues")
+                safe_print("\n\n".join([format(f"- {x}") for x in issues]))
 
                 validation = None
                 if validate:
@@ -394,7 +396,7 @@ def export_benchmarking_results_to_csv_format(
     report_detailed_summary: bool = False,
 ) -> None:
     """Export benchmarking results to CSV files."""
-    printer.print_short_dashed_separator_line()
+    printer.print_short_double_separator_line()
     safe_print("Exporting benchmarking results to CSV files...")
 
     for tool_id in tools_results.keys():
@@ -459,7 +461,7 @@ def export_benchmarking_results_to_json_format(
     detailed_summary: bool = False,
 ) -> None:
     """Export benchmarking results to JSON files."""
-    printer.print_short_dashed_separator_line()
+    printer.print_short_double_separator_line()
     safe_print("Exporting benchmarking results to JSON files...")
 
     json_tools_results = {}
