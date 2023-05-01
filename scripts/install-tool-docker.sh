@@ -57,6 +57,7 @@ TOOL_IMAGE_NO_CACHE=false
 USE_GIT_TOKEN=false
 INSTALL_LOCALLY=true
 INSTALL_USING_G2=false
+SBIP_G2_USER=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -93,6 +94,11 @@ while [[ $# -gt 0 ]]; do
         --use-g2-images)
             INSTALL_LOCALLY=false
             INSTALL_USING_G2=true
+            shift
+            ;;
+        --g2-user-name)
+            SBIP_G2_USER="$2"
+            shift
             shift
             ;;
         -h|--help)
@@ -222,6 +228,11 @@ if [[ $INSTALL_LOCALLY == true ]]; then
     fi
 fi
 
+if [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]] && [[ $SBIP_G2_USER == "" ]]; then
+    echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
+    read SBIP_G2_USER
+fi
+
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     if [[ $INSTALL_LOCALLY == true ]]; then
         # Build Docker image for each tool locally
@@ -247,9 +258,6 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "============================================="
         echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
-
-        echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
-        read SBIP_G2_USER
 
         TOOL_IMAGE_FILE="docker_image_smartfuzz.tar"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
