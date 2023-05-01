@@ -116,6 +116,9 @@ class Confuzzius(Tool):
         if "Assertion Failure" in type:
             return IssueKind.ASSERTION_FAILURE
 
+        if "Arbitrary Memory Access" in type:
+            return IssueKind.ARBITRARY_WRITE
+
         if "Integer Overflow" in type:
             return IssueKind.INTEGER_OVERFLOW
 

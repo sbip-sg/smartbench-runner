@@ -92,9 +92,9 @@ class IssueKind(Enum):
     INTEGER_UNDERFLOW = "Integer Underflow"
     INTEGER_TRUNCATION = "Integer Truncation"
 
-    # All issue kinds
+    # SWC issues
     ASSERTION_FAILURE = "Assertion Failure"
-    ARBITRARY_WRITE = "Arbitrary Write"
+    ARBITRARY_WRITE = "Arbitrary Write"  # SWC-124
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
     ACCESS_CONTROL = "Access Control"
     LOCKING_ETHER = "Locking Ether"
