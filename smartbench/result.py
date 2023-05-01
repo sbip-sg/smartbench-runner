@@ -205,7 +205,7 @@ def parse_result_directory(
                 safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
                 safe_print("")
             else:
-                safe_print("- No bug annotations are found!\n")
+                safe_print("- No bug annotation is found!\n")
 
             # Rest issue index counter
             Issue.index_counter = 1
@@ -225,7 +225,7 @@ def parse_result_directory(
                 if len(issues) > 0:
                     safe_print("\n\n".join([format(f"- {x}") for x in issues]))
                 else:
-                    safe_print("- No issues are detected!\n")
+                    safe_print("- No issue is detected!\n")
 
                 validation = None
                 if validate:

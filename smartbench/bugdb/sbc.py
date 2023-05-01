@@ -30,6 +30,9 @@ class SmartBugsPP(Enum):
     UNPROTECTED_SELFDESTRUCT = "Unprotected Selfdestruct"
     UNSAFE_DELEGATECALL = "Unsafe Delegatecall"
 
+    def __str__(self) -> str:
+        return self.value
+
     @staticmethod
     def elements():
         """Return all elements of SmartBugs Classification"""

@@ -79,58 +79,92 @@ class BugAnnot:
 
     def map_bug_annot_to_issue_kind(
         self, annot_name: str, annot_format: AnnotFormat
-    ) -> IssueKind:
-        """Classify bug string in annotation to issue kind."""
-        # SmartBugs annotations
+    ) -> Optional[IssueKind]:
+        """Classify bug annotation string to issue kind."""
         if annot_format == AnnotFormat.SMARTBUGS_FORMAT:
-            if annot_name in ["FRONT_RUNNING", "TRANSACTION_ORDER_DEPENDENCY"]:
-                return IssueKind.TRANSACTION_ORDER_DEPENDENCY
-            if annot_name == "ACCESS_CONTROL":
-                return IssueKind.ACCESS_CONTROL
-            if annot_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
-                return IssueKind.INTEGER_BUG
-            if annot_name in ["LEAKING_ETHER", "UNCHECKED_SEND"]:
-                return IssueKind.LEAKING_ETHER
-            if annot_name == "LOCKING_ETHER":
-                return IssueKind.LOCKING_ETHER
-            if annot_name == "REENTRANCY":
-                return IssueKind.REENTRANCY
-            if annot_name == "ASSERTION_FAILURE":
-                return IssueKind.ASSERTION_FAILURE
-            if annot_name in [
-                "BLOCK_DEPENDENCY",
-                "TIME_MANIPULATION",
-                "BAD_RANDOMNESS",
-            ]:
-                return IssueKind.BLOCK_VALUE_DEPENDENCY
-            if annot_name in ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
-                return IssueKind.UNHANDLED_EXCEPTION
-            if annot_name == "ADDRESS_VALIDATION":
-                return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
-            if annot_name in [
-                "UNPROTECTED_SELFDESTRUCT",
-                "UNSAFE_SELFDESTRUCT",
-            ]:
-                return IssueKind.UNSAFE_SELFDESTRUCT
-            if annot_name in ["TX_ORIGIN_USAGE", "tx.origin"]:
-                return IssueKind.TX_ORIGIN_USAGE
-            if annot_name == "UNSAFE_DELEGATECALL":
-                return IssueKind.UNSAFE_DELEGATECALL
+            return self.map_smartbugs_annot_to_issue_kind(annot_name)
+        elif annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+            return self.map_solidifi_bug_annot_to_issue_kind(annot_name)
+        else:
+            warning(f"Unknown bug annotation format: {annot_format}")
+            return None
 
-        # Solidifi annotations
-        if annot_format == AnnotFormat.SOLIDIFI_FORMAT:
-            if annot_name == "Overflow-Underflow":
-                return IssueKind.INTEGER_BUG
-            if annot_name == "Unchecked-Send":
-                return IssueKind.LEAKING_ETHER
-            if annot_name == "Unhandled-Exceptions":
-                return IssueKind.UNHANDLED_EXCEPTION
-            if annot_name == "Re-erntrancy":
-                return IssueKind.REENTRANCY
-            if annot_name == "tx.origin":
-                return IssueKind.TX_ORIGIN_USAGE
-            if annot_name == "Timestamp-Dependency":
-                return IssueKind.BLOCK_VALUE_DEPENDENCY
+    def map_smartbugs_annot_to_issue_kind(
+        self, annot_name: str
+    ) -> Optional[IssueKind]:
+        """Classify bug annotation string in SmartBugs++ format to issue kind."""
+        # SmartBugs annotations
+        if annot_name in ["FRONT_RUNNING", "TRANSACTION_ORDER_DEPENDENCY"]:
+            return IssueKind.TRANSACTION_ORDER_DEPENDENCY
+
+        if annot_name == "ACCESS_CONTROL":
+            return IssueKind.ACCESS_CONTROL
+
+        if annot_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
+            return IssueKind.INTEGER_BUG
+
+        if annot_name in ["LEAKING_ETHER", "UNCHECKED_SEND"]:
+            return IssueKind.LEAKING_ETHER
+
+        if annot_name == "LOCKING_ETHER":
+            return IssueKind.LOCKING_ETHER
+
+        if annot_name == "REENTRANCY":
+            return IssueKind.REENTRANCY
+
+        if annot_name == "ASSERTION_FAILURE":
+            return IssueKind.ASSERTION_FAILURE
+
+        if annot_name in [
+            "BLOCK_DEPENDENCY",
+            "TIME_MANIPULATION",
+            "BAD_RANDOMNESS",
+        ]:
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
+
+        if annot_name in ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
+            return IssueKind.UNHANDLED_EXCEPTION
+
+        if annot_name == "ADDRESS_VALIDATION":
+            return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
+
+        if annot_name in [
+            "UNPROTECTED_SELFDESTRUCT",
+            "UNSAFE_SELFDESTRUCT",
+        ]:
+            return IssueKind.UNSAFE_SELFDESTRUCT
+
+        if annot_name in ["TX_ORIGIN_USAGE", "tx.origin"]:
+            return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
+
+        if annot_name == "UNSAFE_DELEGATECALL":
+            return IssueKind.UNSAFE_DELEGATECALL
+
+        return None
+
+    def map_solidifi_bug_annot_to_issue_kind(
+        self, annot_name: str
+    ) -> Optional[IssueKind]:
+        """Classify bug annotation string in Solidifi++ format to issue kind."""
+        if annot_name == "Overflow-Underflow":
+            return IssueKind.INTEGER_BUG
+
+        if annot_name == "Unchecked-Send":
+            return IssueKind.LEAKING_ETHER
+
+        if annot_name == "Unhandled-Exceptions":
+            return IssueKind.UNHANDLED_EXCEPTION
+
+        if annot_name == "Re-erntrancy":
+            return IssueKind.REENTRANCY
+
+        if annot_name == "tx.origin":
+            return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
+
+        if annot_name == "Timestamp-Dependency":
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
+
+        return None
 
     def __str__(self):
         return self.print_concise()

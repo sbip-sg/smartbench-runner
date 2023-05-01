@@ -42,7 +42,7 @@ class SWCKind(Enum):
 
     # SWC-106
     UNPROTECTED_SELFDESTRUCT_INSTRUCTION = (
-        "Unprotected SELFDESTRUCT Instruction"
+        "Unprotected SelfDestruct Instruction"
     )
 
     # SWC-107
@@ -75,7 +75,7 @@ class SWCKind(Enum):
     AUTHORIZATION_THROUGH_TX_ORIGIN = "Authorization through tx.origin"
 
     # SWC-116
-    BLOCK_VALUES_AS_A_PROXY_FOR_TIME = "Block values as a proxy for time"
+    BLOCK_VALUES_AS_A_PROXY_FOR_TIME = "Block Values as a Proxy for Time"
 
     # SWC-117
     SIGNATURE_MALLEABILITY = "Signature Malleability"
@@ -111,7 +111,7 @@ class SWCKind(Enum):
     INCORRECT_INHERITANCE_ORDER = "Incorrect Inheritance Order"
 
     # SWC-126
-    INSUFFICIENT_GAS_GRIEFING = "Insufficient G as Griefing"
+    INSUFFICIENT_GAS_GRIEFING = "Insufficient Gas Griefing"
 
     # SWC-127
     ARBITRARY_JUMP_WITH_FUNCTION_TYPE_VARIABLE = (
@@ -130,10 +130,10 @@ class SWCKind(Enum):
     )
 
     # SWC-131
-    PRESENCE_OF_UNUSED_VARIABLES = "Presence of unused variables"
+    PRESENCE_OF_UNUSED_VARIABLES = "Presence of Unused Variables"
 
     # SWC-132
-    UNEXPECTED_ETHER_BALANCE = "Unexpected Ether balance"
+    UNEXPECTED_ETHER_BALANCE = "Unexpected Ether Balance"
 
     # SWC-133
     HASH_COLLISIONS_WITH_MULTIPLE_VARIABLE_LENGTH_ARGUMENTS = (
@@ -142,14 +142,17 @@ class SWCKind(Enum):
 
     # SWC-134
     MESSAGE_CALL_WITH_HARDCODED_GAS_AMOUNT = (
-        "Message call with hardcoded gas amount"
+        "Message Call with Hardcoded Gas Amount"
     )
 
     # SWC-135
-    CODE_WITH_NO_EFFECTS = "Code With No Effects"
+    CODE_WITH_NO_EFFECTS = "Code with No Effects"
 
     # SWC-136
     UNENCRYPTED_PRIVATE_DATA_ON_CHAIN = "Unencrypted Private Data On-Chain"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 @dataclass

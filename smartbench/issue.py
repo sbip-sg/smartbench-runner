@@ -97,14 +97,20 @@ class IssueKind(Enum):
     ASSERTION_FAILURE = "Assertion Failure"
 
     # SWC-124
-    WRITE_TO_ARBITRARY_STORAGE_LOCATION = "Write To Arbitrary Storage Location"
+    WRITE_TO_ARBITRARY_STORAGE_LOCATION = "Write to Arbitrary Storage Location"
+
+    # SWC-113
+    DENIAL_OF_SERVICE_WITH_FAILED_CALL = "Denial of Service with Failed Call"
+
+    # SWC-115
+    AUTHORIZATION_THROUGH_TX_ORIGIN = "Authorization through tx.origin"
 
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
     ACCESS_CONTROL = "Access Control"
     LOCKING_ETHER = "Locking Ether"
     UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
     UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
-    TX_ORIGIN_USAGE = "Tx Origin Usage"
+
     REQUIREMENT_VIOLATION = "Requirement Violation"
 
     def __str__(self):
@@ -201,7 +207,7 @@ class Issue:
         return (
             f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
-            f"  + SWC Kind: {self.smartbugs_pp_kind}\n"
+            f"  + SWC Kind: {self.swc_kind}\n"
             f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
             f"  + Location: {location}"
         )
@@ -270,6 +276,7 @@ def classify_to_swc_kind(
     issue_kind: IssueKind,
 ) -> Optional[SWCKind]:
     """Classify an issue kind to a bug kind in SmartBugs++ classification."""
+
     if issue_kind in []:
         return SWCKind.FUNCTION_DEFAULT_VISIBILITY
 
@@ -277,6 +284,7 @@ def classify_to_swc_kind(
         IssueKind.INTEGER_OVERFLOW,
         IssueKind.INTEGER_UNDERFLOW,
         IssueKind.INTEGER_TRUNCATION,
+        IssueKind.INTEGER_BUG,
     ]:
         return SWCKind.INTEGER_OVERFLOW_UNDERFLOW
 
@@ -310,10 +318,10 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.USE_OF_DEPRECATED_SOLIDITY_FUNCTIONS
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
         return SWCKind.DELEGATECALL_TO_UNTRUSTED_CALLEE
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL]:
         return SWCKind.DOS_WITH_FAILED_CALL
 
     if issue_kind in [IssueKind.TRANSACTION_ORDER_DEPENDENCY]:
@@ -322,7 +330,7 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.BLOCK_VALUE_DEPENDENCY]:
         return SWCKind.BLOCK_VALUES_AS_A_PROXY_FOR_TIME
 
     if issue_kind in []:
@@ -346,7 +354,7 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.REQUIREMENT_VIOLATION
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION]:
         return SWCKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION
 
     if issue_kind in []:

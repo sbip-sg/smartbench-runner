@@ -119,7 +119,7 @@ class Mythril(Tool):
 
         # SWC 115
         if "Dependence on tx.origin" in description:
-            return IssueKind.TX_ORIGIN_USAGE
+            return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
         # SWC 116 + 120
         if "Dependence on predictable environment variable" in description:
@@ -141,9 +141,9 @@ class Mythril(Tool):
         if "Integer Arithmetic Bugs" in description:
             return IssueKind.INTEGER_BUG
 
-        # # SWC 113
-        # if "Multiple Calls in a Single Transaction" in description:
-        #     return IssueKind.MULTIPLE_CALLS
+        # SWC 113
+        if "Multiple Calls in a Single Transaction" in description:
+            return IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL
 
         # SWC 107
         if "State access after external call" in description:

@@ -53,20 +53,24 @@ class Smartfuzz(Tool):
         """Function to make analysis command for `Smartfuzz`. This function
         should have the same signature with other tools."""
 
-        annot_format = kwargs.get('annot_format', None)
+        annot_format = kwargs.get("annot_format", None)
         # safe_print(f"annot_format: {annot_format}")
         # Configure command
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
         # ./benchmark.sh input_file output_file coverage_file timeout[integer] seed[integer] time_distribution[equal or default] [the rest]"
+
         timeout = self.default_timeout if timeout is None else timeout
-        cmd = cmd + f" {test_file} {test_output_dir}/smartfuzz_result.json {test_output_dir}/smartfuzz_coverage.json {timeout}" \
-                    + f" {self.random_seed} default"
+        cmd = (
+            cmd
+            + f" {test_file} {test_output_dir}/smartfuzz_result.json {test_output_dir}/smartfuzz_coverage.json {timeout}"
+            + f" {self.random_seed} default"
+        )
 
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
         if annot_format != "solidifi":
-            if len(contracts) == 1 :
+            if len(contracts) == 1:
                 cmd += f" --contract-name {contracts[0]}"
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
@@ -111,7 +115,7 @@ class Smartfuzz(Tool):
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "TxOriginDependency" in description:
-            return IssueKind.TX_ORIGIN_USAGE
+          return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
         if "REENTRANCY" in description:
             return IssueKind.REENTRANCY
