@@ -138,7 +138,7 @@ class Confuzzius(Tool):
             return IssueKind.LOCKING_ETHER
 
         if "Unchecked Return Value" in type:
-            return IssueKind.UNHANDLED_EXCEPTION
+            return IssueKind.UNCHECKED_CALL_RETURN_VALUE
 
         if "Unprotected Selfdestruct" in type:
             return IssueKind.UNSAFE_SELFDESTRUCT
