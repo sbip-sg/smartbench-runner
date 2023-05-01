@@ -37,7 +37,7 @@ print_usage () {
     echo "  --use-git-token         Enable reading GitHub access token during installation."
     echo "  --use-remote-images     Install tool Docker from the suitable remote (G2 or DockerHub)."
     echo "  --use-g2-images         Install tool Docker from images in G2."
-
+    echo "  --g2-user-name          Specify your user name in SBIP G2 server."
 }
 
 print_run_help () {
@@ -57,7 +57,7 @@ TOOL_IMAGE_NO_CACHE=false
 USE_GIT_TOKEN=false
 INSTALL_LOCALLY=true
 INSTALL_USING_G2=false
-SBIP_G2_USER=""
+G2_USER_NAME=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -97,7 +97,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --g2-user-name)
-            SBIP_G2_USER="$2"
+            G2_USER_NAME="$2"
             shift
             shift
             ;;
@@ -228,9 +228,9 @@ if [[ $INSTALL_LOCALLY == true ]]; then
     fi
 fi
 
-if [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]] && [[ $SBIP_G2_USER == "" ]]; then
+if [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]] && [[ $G2_USER_NAME == "" ]]; then
     echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
-    read SBIP_G2_USER
+    read G2_USER_NAME
 fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
@@ -262,7 +262,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
-        scp "$SBIP_G2_USER@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
+        scp "$G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
             "/tmp/$TOOL_IMAGE_FILE"
         docker load --input "/tmp/$TOOL_IMAGE_FILE"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
