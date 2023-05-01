@@ -28,8 +28,11 @@ class IssueKind(Enum):
     UNCHECKED_SEND = "Unchecked Send"
     LEAKING_ETHER = "Leaking Ether"
 
-    UNCHECKED_LOWLEVEL_CODE = "Unchecked Low-Level Code"
     UNHANDLED_EXCEPTION = "Unhandled Exception"
+
+    UNCHECKED_CALL_RETURN_VALUE = "Unchecked Call Return Value"
+    UNCHECKED_LOW_LEVEL_CODE = "Unchecked Low-Level Code"
+    UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low-Level Calls"
 
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
@@ -98,6 +101,7 @@ class IssueKind(Enum):
 
     # SWC-113
     DENIAL_OF_SERVICE_WITH_FAILED_CALL = "Denial of Service with Failed Call"
+    DENIAL_OF_SERVICE = "Denial of Service"
 
     # SWC-115
     AUTHORIZATION_THROUGH_TX_ORIGIN = "Authorization through tx.origin"
@@ -105,6 +109,7 @@ class IssueKind(Enum):
     # SWC-116
     BLOCK_VALUE_DEPENDENCY = "Block Values Dependency"
 
+    FRONT_RUNNING = "Front Running"
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
 
     ACCESS_CONTROL = "Access Control"
@@ -257,10 +262,16 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
         return SmartBugsPP.BAD_RANDOMNESS
 
-    if issue_kind in [IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL]:
+    if issue_kind in [
+        IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL,
+        IssueKind.DENIAL_OF_SERVICE,
+    ]:
         return SmartBugsPP.DENIAL_OF_SERVICE
 
-    if issue_kind in []:
+    if issue_kind in [
+        IssueKind.FRONT_RUNNING,
+        IssueKind.TRANSACTION_ORDER_DEPENDENCY,
+    ]:
         return SmartBugsPP.FRONT_RUNNING
 
     if issue_kind in [IssueKind.LEAKING_ETHER]:
@@ -281,8 +292,8 @@ def classify_to_smartbugs_pp_kind(
         return SmartBugsPP.TIME_MANIPULATION
 
     if issue_kind in [
-        IssueKind.UNHANDLED_EXCEPTION,
-        IssueKind.UNCHECKED_LOWLEVEL_CODE,
+        IssueKind.UNCHECKED_LOW_LEVEL_CALLS,
+        IssueKind.UNCHECKED_CALL_RETURN_VALUE,
     ]:
         return SmartBugsPP.UNCHECKED_LOW_LEVEL_CALLS
 
@@ -318,7 +329,7 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.FLOATING_PRAGMA
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.UNCHECKED_CALL_RETURN_VALUE]:
         return SWCKind.UNCHECKED_CALL_RETURN_VALUE
 
     if issue_kind in [IssueKind.LEAKING_ETHER]:
@@ -345,10 +356,16 @@ def classify_to_swc_kind(
     if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
         return SWCKind.DELEGATECALL_TO_UNTRUSTED_CALLEE
 
-    if issue_kind in [IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL]:
+    if issue_kind in [
+        IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL,
+        IssueKind.DENIAL_OF_SERVICE,
+    ]:
         return SWCKind.DOS_WITH_FAILED_CALL
 
-    if issue_kind in [IssueKind.TRANSACTION_ORDER_DEPENDENCY]:
+    if issue_kind in [
+        IssueKind.TRANSACTION_ORDER_DEPENDENCY,
+        IssueKind.FRONT_RUNNING,
+    ]:
         return SWCKind.TRANSACTION_ORDER_DEPENDENCE
 
     if issue_kind in [IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN]:

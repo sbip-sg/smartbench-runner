@@ -164,7 +164,7 @@ class Slither(Tool):
             if "send" in description:
                 return IssueKind.UNCHECKED_SEND
             if checker == "unchecked-lowlevel":
-                return IssueKind.UNCHECKED_LOWLEVEL_CODE
+                return IssueKind.UNCHECKED_LOW_LEVEL_CODE
 
         if "allows anyone to destruct the contract" in description:
             return IssueKind.UNSAFE_SELFDESTRUCT

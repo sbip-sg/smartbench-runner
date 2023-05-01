@@ -155,7 +155,7 @@ class Mythril(Tool):
 
         # SWC 104
         if "Unchecked return value from external call" in description:
-            return IssueKind.UNHANDLED_EXCEPTION
+            return IssueKind.UNCHECKED_CALL_RETURN_VALUE
 
         return IssueKind.UNKNOWN
 

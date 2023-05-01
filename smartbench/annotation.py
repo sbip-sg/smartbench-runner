@@ -94,25 +94,31 @@ class BugAnnot:
     ) -> Optional[IssueKind]:
         """Classify bug annotation string in SmartBugs++ format to issue kind."""
         # SmartBugs annotations
-        if annot_name in ["FRONT_RUNNING", "TRANSACTION_ORDER_DEPENDENCY"]:
+        if annot_name in "FRONT_RUNNING":
+            return IssueKind.FRONT_RUNNING
+
+        if annot_name in ["TRANSACTION_ORDER_DEPENDENCY"]:
             return IssueKind.TRANSACTION_ORDER_DEPENDENCY
 
-        if annot_name == "ACCESS_CONTROL":
+        if annot_name in ["ACCESS_CONTROL"]:
             return IssueKind.ACCESS_CONTROL
 
         if annot_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
             return IssueKind.INTEGER_BUG
 
+        if annot_name in ["DENIAL_OF_SERVICE"]:
+            return IssueKind.DENIAL_OF_SERVICE
+
         if annot_name in ["LEAKING_ETHER", "UNCHECKED_SEND"]:
             return IssueKind.LEAKING_ETHER
 
-        if annot_name == "LOCKING_ETHER":
+        if annot_name in ["LOCKING_ETHER"]:
             return IssueKind.LOCKING_ETHER
 
-        if annot_name == "REENTRANCY":
+        if annot_name in ["REENTRANCY"]:
             return IssueKind.REENTRANCY
 
-        if annot_name == "ASSERTION_FAILURE":
+        if annot_name in ["ASSERTION_FAILURE"]:
             return IssueKind.ASSERTION_FAILURE
 
         if annot_name in [
@@ -122,10 +128,13 @@ class BugAnnot:
         ]:
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
-        if annot_name in ["UNHANDLED_EXCEPTION", "UNCHECKED_LL_CALLS"]:
+        if annot_name in ["UNHANDLED_EXCEPTION"]:
             return IssueKind.UNHANDLED_EXCEPTION
 
-        if annot_name == "ADDRESS_VALIDATION":
+        if annot_name in ["UNCHECKED_LL_CALLS"]:
+            return IssueKind.UNCHECKED_LOW_LEVEL_CALLS
+
+        if annot_name in ["ADDRESS_VALIDATION"]:
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
 
         if annot_name in [
@@ -137,7 +146,7 @@ class BugAnnot:
         if annot_name in ["TX_ORIGIN_USAGE", "tx.origin"]:
             return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
-        if annot_name == "UNSAFE_DELEGATECALL":
+        if annot_name in ["UNSAFE_DELEGATECALL"]:
             return IssueKind.UNSAFE_DELEGATECALL
 
         return None
@@ -146,22 +155,22 @@ class BugAnnot:
         self, annot_name: str
     ) -> Optional[IssueKind]:
         """Classify bug annotation string in Solidifi++ format to issue kind."""
-        if annot_name == "Overflow-Underflow":
+        if annot_name in ["Overflow-Underflow"]:
             return IssueKind.INTEGER_BUG
 
-        if annot_name == "Unchecked-Send":
+        if annot_name in ["Unchecked-Send"]:
             return IssueKind.LEAKING_ETHER
 
-        if annot_name == "Unhandled-Exceptions":
+        if annot_name in ["Unhandled-Exceptions"]:
             return IssueKind.UNHANDLED_EXCEPTION
 
-        if annot_name == "Re-erntrancy":
+        if annot_name in ["Re-erntrancy"]:
             return IssueKind.REENTRANCY
 
-        if annot_name == "tx.origin":
+        if annot_name in ["tx.origin"]:
             return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
-        if annot_name == "Timestamp-Dependency":
+        if annot_name in ["Timestamp-Dependency"]:
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         return None
