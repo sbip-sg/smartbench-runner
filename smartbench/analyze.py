@@ -521,7 +521,7 @@ def perform_analysis(
     When `jobs` > 1, the analysis can be performed concurrently.
     """
     # Prepare output directory for all tests and all tools in this run
-    safe_print("Start analyzing all test cases...")
+    safe_print(f"Start analyzing {len(test_files)} test files...")
     if result_dir is None:
         result_dir = os.path.join(
             RESULTS_DIR,

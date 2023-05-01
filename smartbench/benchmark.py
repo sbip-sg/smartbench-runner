@@ -9,7 +9,7 @@ import pathlib
 import sys
 import traceback
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 # Library
 from smartbench.printer import error, safe_print
@@ -53,15 +53,15 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
 
     if len(test_files) == 0:
         sys.exit("No input test file is found!")
-    else:
-        safe_print(f"Found {len(test_files)} test files!")
 
     test_files = sorted(test_files)
 
     return test_files
 
 
-def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
+def collect_target_contracts(
+    test_contract_file: str,
+) -> Tuple[Dict[str, List[str]], Dict[str, List[str]]]:
     contract_dict = {}
     version_dict = {}
     try:
@@ -73,7 +73,12 @@ def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
                 #
                 # Example: `file_name: contract_name_1, contract_name_2`
                 if (idx := line.find(":")) >= 0:
+                    # Get test file base name
                     test_file = line[0:idx]
+                    if test_file.endswith(".sol"):
+                        test_file = test_file.removesuffix(".sol")
+
+                    # Get contract names
                     contract_names = line[(idx + 1) :].split(",")
                     contract_names = [s.strip() for s in contract_names]
                     contract_dict[test_file] = contract_names
@@ -84,7 +89,12 @@ def collect_target_contracts(test_contract_file: str) -> Dict[str, List[str]]:
                 #
                 # Example: `file_name, contract_name_1, contract_name_2`
                 if (idx := line.find(",")) >= 0:
+                    # Get test file base name
                     test_file = line[0:idx]
+                    if test_file.endswith(".sol"):
+                        test_file = test_file.removesuffix(".sol")
+
+                    # Get contract names
                     contract_names = line[(idx + 1) :].split(",")
                     contract_names = [s.strip() for s in contract_names]
                     if "." in contract_names[-1]:

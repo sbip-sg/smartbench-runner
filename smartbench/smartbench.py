@@ -8,7 +8,7 @@ import signal
 import subprocess
 import sys
 
-from typing import List
+from typing import Dict, List, Optional
 
 # Library
 from smartbench import (
@@ -102,12 +102,23 @@ def analyze_smart_contracts(args) -> None:
             if file not in input_test_files:
                 input_test_files.append(file)
     all_test_files = benchmark.collect_test_files(input_test_files)
-    if args.target_contracts_file is None:
-        test_contracts, compiler_versions = None, None
-    else:
+
+    # Collect test contracts
+    test_contracts: Optional[Dict[str, List[str]]] = None
+    compiler_versions: Optional[Dict[str, str]] = None
+    if args.target_contracts_file is not None:
         test_contracts, compiler_versions = benchmark.collect_target_contracts(
             args.target_contracts_file
         )
+
+    # Refine test files based on the test contract lists
+    if test_contracts is not None:
+        new_test_files = []
+        for test_file in all_test_files:
+            test_file_name = os.path.basename(test_file).removesuffix(".sol")
+            if test_file_name in test_contracts:
+              new_test_files.append(test_file)
+        all_test_files = new_test_files
 
     # Perform the analysis
     analyze.perform_analysis(
