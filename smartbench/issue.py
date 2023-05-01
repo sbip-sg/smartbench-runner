@@ -52,9 +52,6 @@ class IssueKind(Enum):
     WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR = "Weak Pseudo Random Number Generator"
     DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
 
-    # Weak feature
-    BLOCK_VALUE_DEPENDENCY = "Block values dependency"
-
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
 
@@ -105,10 +102,17 @@ class IssueKind(Enum):
     # SWC-115
     AUTHORIZATION_THROUGH_TX_ORIGIN = "Authorization through tx.origin"
 
+    # SWC-116
+    BLOCK_VALUE_DEPENDENCY = "Block Values Dependency"
+
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
+
     ACCESS_CONTROL = "Access Control"
+
     LOCKING_ETHER = "Locking Ether"
+
     UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
+
     UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
 
     REQUIREMENT_VIOLATION = "Requirement Violation"
@@ -239,17 +243,31 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [IssueKind.ACCESS_CONTROL]:
         return SmartBugsPP.ACCESS_CONTROL
 
-    if issue_kind in [IssueKind.INTEGER_BUG]:
+    if issue_kind in [
+        IssueKind.INTEGER_BUG,
+        IssueKind.INTEGER_OVERFLOW,
+        IssueKind.INTEGER_UNDERFLOW,
+        IssueKind.INTEGER_TRUNCATION,
+    ]:
         return SmartBugsPP.ARITHMETIC
+
+    if issue_kind in [IssueKind.ASSERTION_FAILURE]:
+        return SmartBugsPP.ASSERTION_FAILURE
 
     if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
         return SmartBugsPP.BAD_RANDOMNESS
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL]:
         return SmartBugsPP.DENIAL_OF_SERVICE
 
     if issue_kind in []:
         return SmartBugsPP.FRONT_RUNNING
+
+    if issue_kind in [IssueKind.LEAKING_ETHER]:
+        return SmartBugsPP.LEAKING_ETHER
+
+    if issue_kind in [IssueKind.LOCKING_ETHER]:
+        return SmartBugsPP.LOCKING_ETHER
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
         return SmartBugsPP.REENTRANCY
@@ -267,6 +285,12 @@ def classify_to_smartbugs_pp_kind(
         IssueKind.UNCHECKED_LOWLEVEL_CODE,
     ]:
         return SmartBugsPP.UNCHECKED_LOW_LEVEL_CALLS
+
+    if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
+        return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
+
+    if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
+        return SmartBugsPP.UNSAFE_DELEGATECALL
 
     # Not matching any SmartBugs++ Kind
     return None
@@ -327,7 +351,7 @@ def classify_to_swc_kind(
     if issue_kind in [IssueKind.TRANSACTION_ORDER_DEPENDENCY]:
         return SWCKind.TRANSACTION_ORDER_DEPENDENCE
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN]:
         return SWCKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
     if issue_kind in [IssueKind.BLOCK_VALUE_DEPENDENCY]:

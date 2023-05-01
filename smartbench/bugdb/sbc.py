@@ -14,20 +14,35 @@ class SmartBugsPP(Enum):
     """Class representing bug kind in SmartBugs++ Classification."""
 
     ACCESS_CONTROL = "Access Control"
+
     ASSERTION_FAILURE = "Assertion Failure"
+
     ARITHMETIC = "Arithmetic"
+
     BAD_RANDOMNESS = "Bad Randomness"
+
     DENIAL_OF_SERVICE = "Denial Of Service"
+
     FRONT_RUNNING = "Front Running"
+
     LEAKING_ETHER = "Leaking Ether"
+
     LOCKING_ETHER = "Locking Ether"
+
     REENTRANCY = "Reentrancy"
+
     SHORT_ADDRESSES = "Short Addresses"
+
     TIME_MANIPULATION = "Time Manipulation"
+
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
+
     UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low Level Calls"
+
     UNHANDLED_EXCEPTION = "Unhandled Exception"
+
     UNPROTECTED_SELFDESTRUCT = "Unprotected Selfdestruct"
+
     UNSAFE_DELEGATECALL = "Unsafe Delegatecall"
 
     def __str__(self) -> str:
