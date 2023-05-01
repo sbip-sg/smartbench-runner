@@ -226,18 +226,23 @@ class Slither(Tool):
         if "is a local variable never initialized" in description:
             return IssueKind.UNINITIALIZED_STATE_VARIABLE
 
+        if "should inherit from" in description:
+            return IssueKind.MISSING_INHERITANCE
+
+        if "Backdoor function found in" in description:
+            return IssueKind.BACKDOOR_FUNCTION
+
         if "Deprecated" in description:
             if "THROW" in description:
                 return IssueKind.DEPRECATED_THROW
-            if "suicide()" in description:
-                return IssueKind.DEPRECATED_THROW
+            if 'Usage of "suicide()" should be replaced with' in description:
+                return IssueKind.DEPRECATED_SUICIDE
+            if 'Usage of "msg.gas" should be replaced with' in description:
+                return IssueKind.DEPRECATED_MSG_GAS
             if 'Usage of "sha3()" should be replaced' in description:
                 return IssueKind.DEPRECATED_SHA3
             if 'Usage of "block.blockhash()" should be replaced' in description:
                 return IssueKind.DEPRECATED_BLOCK_DOT_BLOCKHASH
-
-        if "compares to a boolean constant" in description:
-            return IssueKind.COMPARE_TO_BOOLEAN_CONSTANT
 
         # Coding style
 
@@ -259,6 +264,9 @@ class Slither(Tool):
             return IssueKind.SHADOWING_LOCAL_VARIABLE
 
         # Code optimization
+
+        if "compares to a boolean constant" in description:
+            return IssueKind.COMPARE_TO_BOOLEAN_CONSTANT
 
         if "does not always execute" in description:
             return IssueKind.POSIBLE_UNREACHABLE_CODE

@@ -68,6 +68,12 @@ class IssueKind(Enum):
     UNINITIALIZED_STORAGE_VARIABLE = "Uninitialized Storage Variable"
     UNINITIALIZED_LOCAL_VARIABLE = "Uninitialized Local Variable"
 
+    # Inheritance
+    MISSING_INHERITANCE = "Missing Inheritance"
+
+    # Backdoor
+    BACKDOOR_FUNCTION = "Backdoor Function"
+
     # Coding style
     PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
     VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
@@ -92,6 +98,8 @@ class IssueKind(Enum):
 
     # Deprecated features
     DEPRECATED_THROW = "Deprecated Throw"
+    DEPRECATED_SUICIDE = "Deprecated Suicide"
+    DEPRECATED_MSG_GAS = "Deprecated msg.gas"
     DEPRECATED_SHA3 = "Deprecated SHA3"
     DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
 
