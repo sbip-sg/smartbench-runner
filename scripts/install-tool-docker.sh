@@ -259,7 +259,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
 
-        TOOL_IMAGE_FILE="docker_image_smartfuzz.tar"
+        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
         rm -rf "/tmp/$TOOL_IMAGE_FILE"
         scp "$SBIP_G2_USER@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
