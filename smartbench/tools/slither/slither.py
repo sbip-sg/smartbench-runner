@@ -187,6 +187,9 @@ class Slither(Tool):
         if "uses assembly" in description:
             return IssueKind.USE_ASSEMBLY
 
+        if "uses delegatecall to a input-controlled function" in description:
+            return IssueKind.UNSAFE_DELEGATECALL
+
         if "uses a weak PRNG" in description:
             return IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR
 
@@ -208,15 +211,25 @@ class Slither(Tool):
         if "Pragma version" in description:
             if "allows old version" in description:
                 return IssueKind.OUTDATED_COMPILER_VERSION
+            if "is known to contain severe issues" in description:
+                return IssueKind.VULNERABLE_COMPILER_VERSION
 
         if "is not recommended for deployment" in description:
             return IssueKind.COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT
 
+        if "is never initialized. It is used in" in description:
+            return IssueKind.UNINITIALIZED_STATE_VARIABLE
+
         if "is a storage variable never initialized" in description:
-            return IssueKind.UNINITIALIZED_STORAGE
+            return IssueKind.UNINITIALIZED_STORAGE_VARIABLE
+
+        if "is a local variable never initialized" in description:
+            return IssueKind.UNINITIALIZED_STATE_VARIABLE
 
         if "Deprecated" in description:
             if "THROW" in description:
+                return IssueKind.DEPRECATED_THROW
+            if "suicide()" in description:
                 return IssueKind.DEPRECATED_THROW
             if 'Usage of "sha3()" should be replaced' in description:
                 return IssueKind.DEPRECATED_SHA3
@@ -270,6 +283,9 @@ class Slither(Tool):
 
         if "has costly operations inside a loop" in description:
             return IssueKind.COSTLY_LOOP
+
+        if "contains a tautology or contradiction" in description:
+            return IssueKind.TAUTOLOGY_OR_CONTRADICTION
 
         return IssueKind.UNKNOWN
 

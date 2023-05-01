@@ -51,6 +51,7 @@ class IssueKind(Enum):
 
     # Compiler
     OUTDATED_COMPILER_VERSION = "Outdated Compiler Version"
+    VULNERABLE_COMPILER_VERSION = "Vulnerable Compiler Version"
     COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT = (
         "Compiler Not Recommended for Deployment"
     )
@@ -62,8 +63,10 @@ class IssueKind(Enum):
     # User input
     USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
 
-    # Initialization
-    UNINITIALIZED_STORAGE = "Uninitialized Storage"
+    # Uninitialized varaibles
+    UNINITIALIZED_STATE_VARIABLE = "Uninitialized State Variable"
+    UNINITIALIZED_STORAGE_VARIABLE = "Uninitialized Storage Variable"
+    UNINITIALIZED_LOCAL_VARIABLE = "Uninitialized Local Variable"
 
     # Coding style
     PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
@@ -85,6 +88,7 @@ class IssueKind(Enum):
     )
     COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
     COSTLY_LOOP = "Costly Loop"
+    TAUTOLOGY_OR_CONTRADICTION = "Tautology or Contradiction"
 
     # Deprecated features
     DEPRECATED_THROW = "Deprecated Throw"
@@ -122,6 +126,7 @@ class IssueKind(Enum):
 
     UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
 
+    # SWC-112
     UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
 
     REQUIREMENT_VIOLATION = "Requirement Violation"
