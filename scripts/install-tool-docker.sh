@@ -25,16 +25,18 @@ print_usage () {
     echo "  install-tool-docker.sh -t <tool-ids> [options] [container_1, ... , container_n]"
     echo ""
     echo "Options:"
-    echo "  -t <tool-id>               ID of analysis tool, currently support the followings:"
-    echo "                             confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
-    echo "                             slither, smartfuzz, smartian."
-    echo "  -n <number_of_containers>  Number of containers to be installed, which are named"
-    echo "                             as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
-    echo "  --force-install            Force install new containers."
-    echo "  --base-image-no-cache      Build the base Smartbench Docker image without cache."
-    echo "  --tool-image-no-cache      Build each tool Docker image without cache."
-    echo "  --use-git-token            Enable reading GitHub access token during installation."
-    echo "  --use-remote-images        Instrall tool Docker from remote."
+    echo "  -t <tool-id>            ID of analysis tool, currently support the followings:"
+    echo "                          confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
+    echo "                          slither, smartfuzz, smartian."
+    echo "  -n <num_of_containers>  Number of containers to be installed, which are named"
+    echo "                          as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
+    echo "  --force-install         Force install new containers."
+    echo "  --base-image-no-cache   Build the base Smartbench Docker image without cache."
+    echo "  --tool-image-no-cache   Build each tool Docker image without cache."
+    echo "  --use-git-token         Enable reading GitHub access token during installation."
+    echo "  --use-remote-images     Install tool Docker from the suitable remote (G2 or DockerHub)."
+    echo "  --use-g2-images         Install tool Docker from images in G2."
+
 }
 
 print_run_help () {
@@ -53,6 +55,7 @@ BASE_IMAGE_NO_CACHE=false
 TOOL_IMAGE_NO_CACHE=false
 USE_GIT_TOKEN=false
 INSTALL_LOCALLY=true
+INSTALL_USING_G2=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -84,6 +87,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --use-remote-images)
             INSTALL_LOCALLY=false
+            shift
+            ;;
+        --use-g2-images)
+            INSTALL_LOCALLY=false
+            INSTALL_USING_G2=true
             shift
             ;;
         -h|--help)
@@ -231,8 +239,8 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
         TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
         docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
-    elif [[ $TOOL_ID == "smartfuzz" ]]; then
-        # Load Smarfuzz Docker image from SBIP G2 server
+    elif [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]]; then
+        # Load Docker image from SBIP G2 server
         # This command below only works when running in NUS network
 
         echo "============================================="
