@@ -24,20 +24,24 @@ class IssueKind(Enum):
     REENTRANCY = "Reentrancy"
     REENTRANCY_READ_ONLY = "Reentrancy on Read-Only State"
 
-    # Unchecked operations
-    UNCHECKED_SEND = "Unchecked Send"
-    LEAKING_ETHER = "Leaking Ether"
-
-    UNHANDLED_EXCEPTION = "Unhandled Exception"
+    # Unchecked calls
+    UNCHECKED_SEND_ETHER = "Unchecked Send Ether"
 
     UNCHECKED_CALL_RETURN_VALUE = "Unchecked Call Return Value"
-    UNCHECKED_LOW_LEVEL_CODE = "Unchecked Low-Level Code"
     UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low-Level Calls"
+
+    # Leaking Ether
+    LEAKING_ETHER = "Leaking Ether"
+
+    # Unchecked code
+    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
     # Low-level code
+    UNCHECKED_LOW_LEVEL_CODE = "Unchecked Low-Level Code"
     LOW_LEVEL_CALL = "Low-Level Call"
+    USE_ASSEMBLY = "Use Assembly"
 
     # Event operations
     SHOULD_EMIT_EVENT = "Should Emit Event"
@@ -307,6 +311,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.UNCHECKED_LOW_LEVEL_CALLS,
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
+        IssueKind.UNCHECKED_LOW_LEVEL_CODE,
     ]:
         return SmartBugsPP.UNCHECKED_LOW_LEVEL_CALLS
 
@@ -342,7 +347,10 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.FLOATING_PRAGMA
 
-    if issue_kind in [IssueKind.UNCHECKED_CALL_RETURN_VALUE]:
+    if issue_kind in [
+        IssueKind.UNCHECKED_CALL_RETURN_VALUE,
+        IssueKind.UNCHECKED_SEND_ETHER,
+    ]:
         return SWCKind.UNCHECKED_CALL_RETURN_VALUE
 
     if issue_kind in [IssueKind.LEAKING_ETHER]:

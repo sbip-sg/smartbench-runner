@@ -162,7 +162,7 @@ class Slither(Tool):
 
         if "ignores return value by" in description:
             if "send" in description:
-                return IssueKind.UNCHECKED_SEND
+                return IssueKind.UNCHECKED_SEND_ETHER
             if checker == "unchecked-lowlevel":
                 return IssueKind.UNCHECKED_LOW_LEVEL_CODE
 
@@ -179,7 +179,13 @@ class Slither(Tool):
             return IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION
 
         if "sends eth to arbitrary user" in description:
-            return IssueKind.UNCHECKED_SEND
+            return IssueKind.UNCHECKED_SEND_ETHER
+
+        if "uses tx.origin for authorization" in description:
+            return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
+
+        if "uses assembly" in description:
+            return IssueKind.USE_ASSEMBLY
 
         if "uses a weak PRNG" in description:
             return IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR

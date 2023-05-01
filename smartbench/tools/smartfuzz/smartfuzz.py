@@ -121,7 +121,7 @@ class Smartfuzz(Tool):
             return IssueKind.REENTRANCY
 
         if "UnauthorizedSend" in description:
-            return IssueKind.UNCHECKED_SEND
+            return IssueKind.UNCHECKED_SEND_ETHER
 
         if "UNSAFE_SELFDESTRUCT" in description:
             return IssueKind.UNSAFE_SELFDESTRUCT
