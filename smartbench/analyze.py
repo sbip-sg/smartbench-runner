@@ -205,7 +205,7 @@ def analyze_test_file(
 
     # Run the analysis
     if parallel_mode:
-        safe_print(f"docker:{container.name}: {test_file}\n")
+        safe_print(f"\ndocker:{container.name}: {test_file}")
     else:
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
@@ -384,7 +384,7 @@ def run_analysis_tool(
     docker_containers = start_docker_containers(tool, jobs)
 
     printer.print_short_double_separator_line()
-    safe_print("Running analysis jobs...\n")
+    safe_print("Running analysis jobs...")
 
     # Distribute test files to containers
     test_batches: List[List[str]] = []
@@ -455,6 +455,7 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
+    # TODO: merge `test_contracts` and `compiler_versions` as 1 parameter
     test_contracts: Optional[Dict[str, List[str]]],
     compiler_versions: Optional[Dict[str, str]],
     result_dir: Optional[str] = None,
@@ -508,7 +509,7 @@ def perform_analysis(
     safe_print("Benchmarking completed!\n")
     safe_print(f"Results are recorded at: {result_dir}")
 
-    if benchmarking:
+    if jobs < 1 and benchmarking:
         result.print_benchmarking_results(result_dir, all_results)
 
     return all_results

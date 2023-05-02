@@ -119,7 +119,6 @@ def parse_test_file_output_dir(
     tool: Tool,
     test_file: str,
     test_output_dir: str,
-    log_file: str,
     benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
@@ -368,9 +367,8 @@ def print_benchmarking_results(
     results: List[AnalysisResult],
     print_detailed_summary: bool = False,
 ) -> None:
-    safe_print(f"\n{'=' * 75}")
+    printer.print_long_double_separator_line()
     safe_print("BENCHMARKING SUMMARY")
-    safe_print(f"{'=' * 75}")
 
     tools_results = group_analysis_result_by_tools(results)
 
@@ -400,7 +398,7 @@ def print_benchmarking_results(
             if result.validation_result is None:
                 safe_print(
                     f"- {test_file}: Succeeded, {num_annots}, "
-                    f"{num_issues}, <no validation>"
+                    f"{num_issues}, [results were not validated]"
                 )
                 continue
 
@@ -474,7 +472,7 @@ def export_benchmarking_results_to_csv_format(
                 validation = result.validation_result
 
                 if validation is None:
-                    file.write(",  <no validation>\n")
+                    file.write(",  [results were not validated]\n")
                 else:
                     num_correct = len(validation.correct_bugs)
                     num_missing = len(validation.missing_bugs)
