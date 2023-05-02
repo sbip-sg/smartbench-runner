@@ -123,26 +123,6 @@ def log_analysis_output(
             file.write(line)
 
 
-def log_analysis_info(
-    tools: List[Tool], test_files: List[str], result_dir: str
-) -> None:
-    """Record analysis log of all tools."""
-    log_file = os.path.join(result_dir, "smartbench_log.toml")
-    with open(log_file, "w", encoding="utf-8") as file:
-        file.write("# Smartbench benchmarking log \n\n")
-
-        # Log tools
-        tools_info = ", ".join([f'"{tool.id}"' for tool in tools])
-        file.write(f"tools = [{tools_info}]\n\n")
-
-        # Log test files
-        if test_files is None or len(test_files) == 0:
-            file.write("test_files = []\n")
-        else:
-            tests_info = ",\n  ".join([f'"{test}"' for test in test_files])
-            file.write(f"test_files = [\n  {tests_info}\n]\n")
-
-
 def collect_target_testing_contracts(
     tool: Tool,
     test_file: str,
@@ -247,7 +227,7 @@ def analyze_test_file(
             solc_version,
             container,
             timeout,
-            annot_format = annot_format,
+            annot_format=annot_format,
         )
     except Exception:
         error_traceback(f"Failed to make anlaysis command for: {tool.id}")
@@ -529,9 +509,6 @@ def perform_analysis(
         )
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
-
-    # Record the analysis details to a log file
-    log_analysis_info(tools, test_files, result_dir)
 
     # Perform the analysis
     all_results = []
