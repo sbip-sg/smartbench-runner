@@ -20,16 +20,6 @@ class Command(Enum):
     DEPLOY_CONTRACTS = "deploy-contracts"
 
 
-# def preprocess_remainder_arguments(args):
-#     """Preprocess arguments parsed by `nargs=argparse.REMAINDER` to concatenate
-#     them into a string."""
-
-#     if args.additional_args is not None:
-#         args.additional_args = " ".join(args.additional_args)
-
-#     return args
-
-
 def parse_cli_arguments():
     """Configure command arguments line."""
     arg_parser = argparse.ArgumentParser(
@@ -68,7 +58,6 @@ def parse_cli_arguments():
         help="Sub-command to analyze smart contracts",
     )
 
-    # Input files or directories
     analyze_argparser.add_argument(
         "input_files_directories",
         nargs="*",  # Accept multiple input files or directories
@@ -76,7 +65,6 @@ def parse_cli_arguments():
         help="Input files or directories for testing.",
     )
 
-    # Input benchmarks
     analyze_argparser.add_argument(
         "-f",
         dest="test_files_directories",
@@ -85,7 +73,13 @@ def parse_cli_arguments():
         help="Test files or directories.",
     )
 
-    # List of target contracts in test files
+    analyze_argparser.add_argument(
+        "--benchmark-dir",
+        type=str,
+        help="Configuration file specifying target contracts in test files. \
+        Support both Smartbench and Smartian format.",
+    )
+
     analyze_argparser.add_argument(
         "--target-contracts-file",
         type=str,
@@ -93,21 +87,18 @@ def parse_cli_arguments():
         Support both Smartbench and Smartian format.",
     )
 
-    # List of target contracts in test files
     analyze_argparser.add_argument(
         "--result-dir",
         type=str,
         help="Directory to store analysis resutls of all tools",
     )
 
-    # Solidity version
     analyze_argparser.add_argument(
         "--solc-version",
         type=str,
         help="Version of the Solidity compiler.",
     )
 
-    # Analysis tool
     analyze_argparser.add_argument(
         "-t",
         "--tools",
@@ -116,42 +107,6 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
-    # Install new environment before analyzing smart contracts
-    analyze_argparser.add_argument(
-        "--install-smartbench-env",
-        action="store_true",
-        help="Install Smartbench environment before testing.",
-    )
-
-    # Install new Docker images of analysis tools locally.
-    analyze_argparser.add_argument(
-        "--install-local-docker",
-        action="store_true",
-        help="Install Docker images of analysis tools locally.",
-    )
-
-    # Install new Docker containers of analysis tools from remote.
-    analyze_argparser.add_argument(
-        "--install-remote-docker",
-        action="store_true",
-        help="Install Docker containers of analysis tools from remote.",
-    )
-
-    # Install new Docker containers of analysis tools from remote.
-    analyze_argparser.add_argument(
-        "--only-create-containers",
-        action="store_true",
-        help="Automatically create Docker containers for analysis tools.",
-    )
-
-    # Install new Docker image container
-    analyze_argparser.add_argument(
-        "--keep-docker-alive",
-        action="store_true",
-        help="Keep Docker containers alive after testing.",
-    )
-
-    # Timeout for each test file.
     analyze_argparser.add_argument(
         "--timeout",
         type=int,
@@ -159,7 +114,6 @@ def parse_cli_arguments():
         This is the total timeout for all contracts in the same test file.",
     )
 
-    # Timeout for each test contract.
     analyze_argparser.add_argument(
         "--contract-timeout",
         type=int,
@@ -167,7 +121,6 @@ def parse_cli_arguments():
         One file may contain multiple contracts",
     )
 
-    # Number of jobs per tool
     analyze_argparser.add_argument(
         "-j",
         "--jobs",
@@ -175,27 +128,53 @@ def parse_cli_arguments():
         help="Number of jobs to be run concurrently for each tool.",
     )
 
-    # Validate analysis result
     analyze_argparser.add_argument(
         "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
     )
 
-    # Validate analysis result for benchmarking purpose
     analyze_argparser.add_argument(
         "--benchmarking",
         action="store_true",
         help="Validating analysis results for benchmarking.",
     )
 
-    # Specify benchmark name for special cases without standard annotation and
-    # validation
     analyze_argparser.add_argument(
         "--annot-format",
         type=str,
         choices=["smartbugs", "smartbench", "solidifi"],
         help=("Type of bug annotation format."),
+    )
+
+    analyze_argparser.add_argument(
+        "--install-smartbench-env",
+        action="store_true",
+        help="Install Smartbench environment before testing.",
+    )
+
+    analyze_argparser.add_argument(
+        "--install-local-docker",
+        action="store_true",
+        help="Install Docker images of analysis tools locally.",
+    )
+
+    analyze_argparser.add_argument(
+        "--install-remote-docker",
+        action="store_true",
+        help="Install Docker containers of analysis tools from remote.",
+    )
+
+    analyze_argparser.add_argument(
+        "--only-create-containers",
+        action="store_true",
+        help="Automatically create Docker containers for analysis tools.",
+    )
+
+    analyze_argparser.add_argument(
+        "--keep-docker-alive",
+        action="store_true",
+        help="Keep Docker containers alive after testing.",
     )
 
     ################################
@@ -316,6 +295,5 @@ def parse_cli_arguments():
     # Parse all arguments
 
     args = arg_parser.parse_args()
-    # args = preprocess_remainder_arguments(args)
 
     return (arg_parser, args)
