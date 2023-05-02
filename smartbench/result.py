@@ -57,7 +57,7 @@ class AnalysisResult:
         # the test file path and output directory path
         self.concise_test_file = os.path.commonprefix(
             [self.test_file[::-1], self.test_output_dir[::-1]]
-        )[::-1][1:]
+        )[::-1]
 
         # Whether the test file is successfully analyzed
         self.is_successful: bool = is_successful
