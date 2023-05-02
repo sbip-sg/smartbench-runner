@@ -117,9 +117,12 @@ def get_target_contracts_and_solc_version(
 
             contracts = ast.all_contract_names
             if only_deployable_contracts:
+                library_names = ast.all_libraries_names
                 abstract_contracts = ast.all_abstract_contract_names
                 contracts = [
-                    s for s in contracts if s not in abstract_contracts
+                    s
+                    for s in contracts
+                    if s not in abstract_contracts and s not in library_names
                 ]
 
             debug(f"Target contracts (found by SolcJsonParser): {contracts}")
