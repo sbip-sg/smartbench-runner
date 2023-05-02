@@ -14,7 +14,6 @@ RUN apt -y install cmake libleveldb-dev
 WORKDIR /root/
 RUN git clone --recursive https://github.com/thanhtoantnt/sFuzz.git sfuzz
 WORKDIR /root/sfuzz
-RUN git pull
 RUN mkdir -p build; cd build; cmake ..
 WORKDIR /root/sfuzz/build/fuzzer
 RUN make
