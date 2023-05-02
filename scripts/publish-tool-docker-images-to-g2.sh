@@ -88,7 +88,7 @@ fi
 # Publishing tool docker images
 
 if [[ $G2_USER_NAME == "" ]]; then
-    echo -n "Enter your username in SBIP G2 to publish all tools' Docker images: "
+    echo -n "Enter your username in SBIP G2: "
     read G2_USER_NAME
 fi
 

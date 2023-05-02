@@ -66,9 +66,9 @@ def install_docker_containers(
 ) -> None:
     """Build and install Docker images of analysis tools locally."""
     if use_local_images:
-        safe_print("Instralling Docker containers locally...\n")
+        safe_print("Installing Docker containers locally...\n")
     else:
-        safe_print("Instralling Docker containers from remote...\n")
+        safe_print("Installing Docker containers from remote...\n")
 
     for tool in tools:
         safe_print(f"Install {jobs} Docker container(s) for: {tool.id}\n")
