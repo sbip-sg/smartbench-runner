@@ -115,6 +115,107 @@ def is_tool_output_dir(tool: Tool, test_dir: str) -> bool:
     return os.path.exists(log_file)
 
 
+def parse_tool_result(
+    tool_results_dir: str,
+    tool: Tool,
+    benchmark_names: Optional[List[str]] = None,
+    validate: Optional[bool] = False,
+    export_summary: Optional[str] = None,
+    annot_format: Optional[str] = None,
+    report_detailed_summary: bool = False,
+) -> List[AnalysisResult]:
+    printer.print_long_double_separator_line()
+    safe_print(f"Parsing analysis result of: {tool.id}")
+
+    # Find all output directories for each test file
+    test_output_dirs = [p[0] for p in os.walk(tool_results_dir)]
+
+    # Filter them by the benchmark names, and sort alphabetically
+    if benchmark_names is not None:
+        benchmark_paths = []
+        for b in benchmark_names:
+            if not b.endswith("/"):
+                b += "/"
+                benchmark_paths.append(os.path.join(tool_results_dir, b))
+
+        test_output_dirs = [
+            d
+            for d in test_output_dirs
+            if any([d.startswith(b) for b in benchmark_paths])
+        ]
+        test_output_dirs = sorted(test_output_dirs)
+
+    all_results: List[AnalysisResult] = []
+    for output_dir in test_output_dirs:
+        if not is_tool_output_dir(tool, output_dir):
+            continue
+
+        printer.print_medium_dashed_separator_line()
+
+        # Get test file
+        output_dir = os.path.abspath(output_dir)
+        log_file = os.path.join(output_dir, tool.log_file)
+        debug(f"Log file: {log_file}")
+
+        test_file = logger.get_input_test_file(log_file)
+        safe_print(f"Test file: {test_file}\n")
+
+        if test_file is None:
+            warning(f"Unable to get test file: {test_file}")
+            continue
+
+        # Parse bug annotations in test file
+        bug_annots = annotation.parse_bug_annotations(test_file, annot_format)
+        safe_print_underline("Bug annotations")
+        if len(bug_annots) > 0:
+            safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
+            safe_print("")
+        else:
+            safe_print("- No bug annotation is found!\n")
+
+        tool.prepare_parsing_analysis_output()
+        issues = tool.parse_analysis_output(output_dir)
+        validation = None
+
+        if issues is None:
+            is_successful = False
+            issues = []
+        else:
+            is_successful = True
+
+            safe_print_underline("Detected issues")
+            if len(issues) > 0:
+                safe_print("\n\n".join([format(f"- {x}") for x in issues]))
+            else:
+                safe_print("- No issue is detected!\n")
+
+            if validate:
+                if test_file is None:
+                    safe_print(f"Unable to read test file: {test_file}")
+                    safe_print("Skip validating results!")
+                else:
+                    validation = validator.validate_issues(
+                        tool, issues, bug_annots
+                    )
+                    safe_print("")
+
+        res = AnalysisResult(
+            tool,
+            test_file,
+            output_dir,
+            log_file,
+            bug_annots,
+            is_successful,
+            issues,
+            validation,
+        )
+
+        res.print_detailed_summary(False)
+        all_results.append(res)
+
+    return all_results
+
+
 def parse_result_directory(
     results_dir: str,
     only_tools: Optional[List[Tool]] = None,
@@ -156,101 +257,17 @@ def parse_result_directory(
         if only_tools is not None and all(tool.id != t.id for t in only_tools):
             continue
 
-        printer.print_long_double_separator_line()
-        safe_print(f"Parsing analysis result of: {tool.id}")
+        tool_results = parse_tool_result(
+            tool_output_dir_path,
+            tool,
+            benchmark_names,
+            validate,
+            export_summary,
+            annot_format,
+            report_detailed_summary,
+        )
 
-        # Find all output directories for each test file
-        test_output_dirs = [p[0] for p in os.walk(tool_output_dir_path)]
-
-        # Filter them by the benchmark names, and sort alphabetically
-        if benchmark_names is not None:
-            benchmark_paths = []
-            for b in benchmark_names:
-                if not b.endswith("/"):
-                    b += "/"
-                benchmark_paths.append(os.path.join(tool_output_dir_path, b))
-
-            test_output_dirs = [
-                d
-                for d in test_output_dirs
-                if any([d.startswith(b) for b in benchmark_paths])
-            ]
-        test_output_dirs = sorted(test_output_dirs)
-
-        for output_dir in test_output_dirs:
-            if not is_tool_output_dir(tool, output_dir):
-                continue
-
-            printer.print_medium_dashed_separator_line()
-
-            # Get test file
-            output_dir = os.path.abspath(output_dir)
-            log_file = os.path.join(output_dir, tool.log_file)
-            debug(f"Log file: {log_file}")
-
-            test_file = logger.get_input_test_file(log_file)
-
-            if test_file is None:
-                warning(f"Unable to get test file: {test_file}")
-                continue
-
-            safe_print(f"Test file: {test_file}\n")
-
-            # Parse bug annotations in test file
-            bug_annots = annotation.parse_bug_annotations(
-                test_file, annot_format
-            )
-            safe_print_underline("Bug annotations")
-            if len(bug_annots) > 0:
-                safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
-                safe_print("")
-            else:
-                safe_print("- No bug annotation is found!\n")
-
-            # Rest issue index counter
-            Issue.index_counter = 1
-            issues = tool.parse_analysis_output(output_dir)
-
-            if issues is None:
-                res = AnalysisResult(
-                    tool,
-                    test_file,
-                    output_dir,
-                    log_file,
-                    bug_annots,
-                    False,
-                )
-            else:
-                safe_print_underline("Detected issues")
-                if len(issues) > 0:
-                    safe_print("\n\n".join([format(f"- {x}") for x in issues]))
-                else:
-                    safe_print("- No issue is detected!\n")
-
-                validation = None
-                if validate:
-                    if test_file is None:
-                        safe_print(f"Unable to read test file: {test_file}")
-                        safe_print("Skip validating results!")
-                    else:
-                        validation = validator.validate_issues(
-                            tool, issues, bug_annots
-                        )
-                    safe_print("")
-
-                res = AnalysisResult(
-                    tool,
-                    test_file,
-                    output_dir,
-                    log_file,
-                    bug_annots,
-                    True,
-                    issues,
-                    validation,
-                )
-
-            res.print_detailed_summary(False)
-            all_results.append(res)
+        all_results.extend(tool_results)
 
     safe_print("Parsing result completed!")
 
