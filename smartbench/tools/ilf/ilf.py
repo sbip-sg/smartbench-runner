@@ -134,7 +134,7 @@ class Ilf(Tool):
                     ):
                         has_fuzzing_result = True
 
-                    log_lines.extend(line)
+                    log_lines.append(line)
         except Exception as err:
             error_traceback(
                 f"Failed to parse ILF log file: {log_file}\n\n{err}"
