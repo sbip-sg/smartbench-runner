@@ -65,6 +65,7 @@ class DockerContainer:
 def install_docker_containers(
     tool_id: str,
     num_containers: int,
+    result_dir: Optional[str],
     use_local_images: bool = True,
     only_create_containers: bool = False,
 ) -> bool:
@@ -74,6 +75,9 @@ def install_docker_containers(
     # Prepare command to install docker containers
     cmd = os.path.join(SCRIPTS_DIR, DOCKER_INSTALLER)
     cmd += f" -t {tool_id} -n {num_containers} --force-install"
+
+    if result_dir is not None:
+        cmd += f" --result-dir {result_dir}"
 
     if not use_local_images:
         cmd += " --use-remote-images"
