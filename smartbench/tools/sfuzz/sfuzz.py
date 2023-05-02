@@ -178,6 +178,8 @@ class Sfuzz(Tool):
         """Parse instruction coverage of sFuzz"""
         lines = None
         log_file = self.configure_log_file(test_output_dir)
+        print(f"test_output_dir: {test_output_dir}")
+        print(f"json_file: {self.coverage_json_file}")
         coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
         try:
             with open(log_file, "r", encoding="utf-8") as file:

@@ -32,6 +32,7 @@ class Tool:
         random_seed: int = 0,
     ):
         """Constructor"""
+        tool_id = tool_id.lower()
         self.id: str = str(tool_id)
         self.name: str = str(name)
         self.executable: str = str(executable)
@@ -55,7 +56,7 @@ class Tool:
         # this output
         self.coverage_json_file = (
             f"{tool_id}_coverage.json"
-            if tool_id in ["sFuzz", "confuzzius", "smartian", "ilf"]
+            if tool_id in ["sfuzz", "confuzzius", "smartian", "ilf"]
             else None
         )
 
