@@ -92,6 +92,37 @@ class Smartian(Tool):
 
         return Location(file_path, None, None, None, None)
 
+    def parse_issue_kind(self, description) -> Optional[IssueKind]:
+        issue_kind = None
+
+        if re.search(r"Tx#.* found AssertionFailure "):
+            issue_kind = IssueKind.ASSERTION_FAILURE
+        elif re.search(r"Tx#.* found ArbitraryWrite "):
+            issue_kind = IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION
+        elif re.search(r"Tx#.* found BlockstateDependency "):
+            issue_kind = IssueKind.BLOCK_VALUE_DEPENDENCY
+        elif re.search(r"Tx#.* found ControlHijack "):
+            # TODO: Review this classification
+            issue_kind = IssueKind.UNSAFE_DELEGATECALL
+        elif re.search(r"Tx#.* found EtherLeak "):
+            issue_kind = IssueKind.LEAKING_ETHER
+        elif re.search(r"Tx#.* found IntegerBug "):
+            issue_kind = IssueKind.INTEGER_BUG
+        elif re.search(r"Tx#.* found MishandledException "):
+            issue_kind = IssueKind.UNHANDLED_EXCEPTION
+        elif re.search(r"Tx#.* found Reentrancy "):
+            issue_kind = IssueKind.REENTRANCY
+        elif re.search(r"Tx#.* found SuicidalContract "):
+            issue_kind = IssueKind.UNSAFE_SELFDESTRUCT
+        elif re.search(r"Tx#.* found TransactionOriginUse "):
+            issue_kind = IssueKind.TRANSACTION_ORDER_DEPENDENCY
+        elif re.search(r"Tx#.* found FreezingEther "):
+            issue_kind = IssueKind.LOCKING_ETHER
+        elif re.search(r"Tx#.* found RequirementViolation "):
+            issue_kind = IssueKind.REQUIREMENT_VIOLATION
+
+        return issue_kind
+
     def parse_analysis_output(
         self, test_output_dir: str
     ) -> Optional[List[Issue]]:
@@ -106,97 +137,32 @@ class Smartian(Tool):
         log_file = self.configure_log_file(test_output_dir)
         debug("Smartian log file: ", log_file)
 
-        log_file_data = open(log_file, "r", encoding="utf-8")
-        data = log_file_data.read()
+        all_issues = []
+        with open(log_file, "r", encoding="utf-8") as file:
+            contract_name = None
+            while line := file.readline():
+                line = line.strip()
 
-        if "Fuzzing timeout expired" not in data:
-            return None
+                if match := re.search(r"\\*\\* Fuzzing contract: (.*)"):
+                    contract_name = match.groups(1)
+                    continue
+                elif issue_kind := self.parse_issue_kind(line):
+                    # Parse name of function causing the bug
+                    func_name = None
+                    while line2 := file.readline():
+                        line2 = line2.strip()
+                        if not line2:
+                            break
+                        elif match := re.search(r"TX .* Function: (.*)\\()"):
+                            func_name = match.groups(1)
+                        else:
+                            continue
 
-        kinds = []
+                    if contract_name is not None and func_name is not None:
+                        location =
 
-        matches = re.findall(r"Assertion Failure: [0-9]+", data)
-        for match in matches:
-            if IssueKind.ASSERTION_FAILURE not in kinds:
-                num_bugs = match.removeprefix("Assertion Failure: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.ASSERTION_FAILURE)
-
-        matches = re.findall(r"Arbitrary Write: [0-9]+", data)
-        for match in matches:
-            if IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION not in kinds:
-                num_bugs = match.removeprefix("Arbitrary Write: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION)
-
-        matches = re.findall(r"Block state Dependency: [0-9]+", data)
-        for match in matches:
-            if IssueKind.BLOCK_VALUE_DEPENDENCY not in kinds:
-                num_bugs = match.removeprefix("Block state Dependency: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.BLOCK_VALUE_DEPENDENCY)
-
-        matches = re.findall(r"Control Hijack: [0-9]+", data)
-        for match in matches:
-            if IssueKind.UNSAFE_DELEGATECALL not in kinds:
-                num_bugs = match.removeprefix("Control Hijack: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.UNSAFE_DELEGATECALL)
-
-        matches = re.findall(r"Ether Leak: [0-9]+", data)
-        for match in matches:
-            if IssueKind.LEAKING_ETHER not in kinds:
-                num_bugs = match.removeprefix("Ether Leak: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.LEAKING_ETHER)
-
-        matches = re.findall(r"Integer Bug: [0-9]+", data)
-        for match in matches:
-            if IssueKind.INTEGER_BUG not in kinds:
-                num_bugs = match.removeprefix("Integer Bug: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.INTEGER_BUG)
-
-        matches = re.findall(r"Mishandled Exception: [0-9]+", data)
-        for match in matches:
-            if IssueKind.UNHANDLED_EXCEPTION not in kinds:
-                num_bugs = match.removeprefix("Mishandled Exception: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.UNHANDLED_EXCEPTION)
-
-        matches = re.findall(r"Reentrancy: [0-9]+", data)
-        for match in matches:
-            if IssueKind.REENTRANCY not in kinds:
-                num_bugs = match.removeprefix("Reentrancy: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.REENTRANCY)
-
-        matches = re.findall(r"Suicidal Contract: [0-9]+", data)
-        for match in matches:
-            if IssueKind.UNSAFE_SELFDESTRUCT not in kinds:
-                num_bugs = match.removeprefix("Suicidal Contract: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.UNSAFE_SELFDESTRUCT)
-
-        matches = re.findall(r"Transaction Origin Use: [0-9]+", data)
-        for match in matches:
-            if IssueKind.TRANSACTION_ORDER_DEPENDENCY not in kinds:
-                num_bugs = match.removeprefix("Transaction Origin Use: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.TRANSACTION_ORDER_DEPENDENCY)
-
-        matches = re.findall(r"Freezing Ether: [0-9]+", data)
-        for match in matches:
-            if IssueKind.LOCKING_ETHER not in kinds:
-                num_bugs = match.removeprefix("Freezing Ether: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.LOCKING_ETHER)
-
-        matches = re.findall(r"Requirement Violation: [0-9]+", data)
-        for match in matches:
-            if IssueKind.REQUIREMENT_VIOLATION not in kinds:
-                num_bugs = match.removeprefix("Requirement Violation: ")
-                if int(num_bugs) > 0:
-                    kinds.append(IssueKind.REQUIREMENT_VIOLATION)
+                else:
+                    continue
 
         checker = Checker("Smartian", "fuzzing")
         issues = []
@@ -213,6 +179,128 @@ class Smartian(Tool):
             issues.append(issue)
 
         return issues
+
+    # def parse_analysis_output(
+    #         self, test_output_dir: str
+    # ) -> Optional[List[Issue]]:
+    #     """Parse analysis result of Smartian. Return a list of detected issues,
+    #     or `None` if the result parsing fails.
+
+    #     Descriptions of some bugs are described in Smartian's paper:
+    #     https://dl.acm.org/doi/abs/10.1109/ASE51524.2021.9678888"""
+
+    #     # Smartian does not write output to any JSON file, so we parse its
+    #     # result from the log file.
+    #     log_file = self.configure_log_file(test_output_dir)
+    #     debug("Smartian log file: ", log_file)
+
+    #     log_file_data = open(log_file, "r", encoding="utf-8")
+    #     data = log_file_data.read()
+
+    #     if "Fuzzing timeout expired" not in data:
+    #         return None
+
+    #     kinds = []
+
+    #     matches = re.findall(r"Assertion Failure: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.ASSERTION_FAILURE not in kinds:
+    #             num_bugs = match.removeprefix("Assertion Failure: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.ASSERTION_FAILURE)
+
+    #     matches = re.findall(r"Arbitrary Write: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION not in kinds:
+    #             num_bugs = match.removeprefix("Arbitrary Write: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION)
+
+    #     matches = re.findall(r"Block state Dependency: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.BLOCK_VALUE_DEPENDENCY not in kinds:
+    #             num_bugs = match.removeprefix("Block state Dependency: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.BLOCK_VALUE_DEPENDENCY)
+
+    #     matches = re.findall(r"Control Hijack: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.UNSAFE_DELEGATECALL not in kinds:
+    #             num_bugs = match.removeprefix("Control Hijack: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.UNSAFE_DELEGATECALL)
+
+    #     matches = re.findall(r"Ether Leak: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.LEAKING_ETHER not in kinds:
+    #             num_bugs = match.removeprefix("Ether Leak: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.LEAKING_ETHER)
+
+    #     matches = re.findall(r"Integer Bug: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.INTEGER_BUG not in kinds:
+    #             num_bugs = match.removeprefix("Integer Bug: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.INTEGER_BUG)
+
+    #     matches = re.findall(r"Mishandled Exception: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.UNHANDLED_EXCEPTION not in kinds:
+    #             num_bugs = match.removeprefix("Mishandled Exception: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.UNHANDLED_EXCEPTION)
+
+    #     matches = re.findall(r"Reentrancy: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.REENTRANCY not in kinds:
+    #             num_bugs = match.removeprefix("Reentrancy: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.REENTRANCY)
+
+    #     matches = re.findall(r"Suicidal Contract: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.UNSAFE_SELFDESTRUCT not in kinds:
+    #             num_bugs = match.removeprefix("Suicidal Contract: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.UNSAFE_SELFDESTRUCT)
+
+    #     matches = re.findall(r"Transaction Origin Use: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.TRANSACTION_ORDER_DEPENDENCY not in kinds:
+    #             num_bugs = match.removeprefix("Transaction Origin Use: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.TRANSACTION_ORDER_DEPENDENCY)
+
+    #     matches = re.findall(r"Freezing Ether: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.LOCKING_ETHER not in kinds:
+    #             num_bugs = match.removeprefix("Freezing Ether: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.LOCKING_ETHER)
+
+    #     matches = re.findall(r"Requirement Violation: [0-9]+", data)
+    #     for match in matches:
+    #         if IssueKind.REQUIREMENT_VIOLATION not in kinds:
+    #             num_bugs = match.removeprefix("Requirement Violation: ")
+    #             if int(num_bugs) > 0:
+    #                 kinds.append(IssueKind.REQUIREMENT_VIOLATION)
+
+    #     checker = Checker("Smartian", "fuzzing")
+    #     issues = []
+    #     location = self.parse_issue_location(log_file)
+    #     for kind in kinds:
+    #         issue = Issue(
+    #             kind,
+    #             "",
+    #             Severity.UNKNOWN,
+    #             Confidence.UNKNOWN,
+    #             location,
+    #             checker,
+    #         )
+    #         issues.append(issue)
+
+    #     return issues
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
