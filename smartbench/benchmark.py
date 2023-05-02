@@ -9,11 +9,22 @@ import pathlib
 import sys
 import traceback
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 # Library
-from smartbench.printer import error, safe_print
+from smartbench.printer import error, error_traceback, safe_print
 from smartbench.smartbench import printer
+
+
+# TODO: rename to a better name
+class TestConfig:
+    """Class representing the configuration for an input test file."""
+
+    def __init__(
+        self, target_contracts: List[str], compiler_version: Optional[str]
+    ):
+        self.target_contracts: List[str] = target_contracts
+        self.compiler_version: Optional[str] = compiler_version
 
 
 def is_solidity_file(filename) -> bool:
@@ -59,14 +70,15 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
     return test_files
 
 
-def collect_target_contracts(
-    test_contract_file: str,
-) -> Tuple[Dict[str, List[str]], Dict[str, List[str]]]:
-    contract_dict = {}
-    version_dict = {}
+def collect_test_configs(
+    test_config_file: str,
+) -> Dict[str, TestConfig]:
+    test_config_dict: Dict[str, TestConfig] = {}
     try:
-        with open(test_contract_file, "r", encoding="utf-8") as file:
+        with open(test_config_file, "r", encoding="utf-8") as file:
             while line := file.readline():
+                configure_items = []
+
                 # Parsing Smartbench format: each line contains a test file,
                 # followed by a colon `:`, and then contract names, which are
                 # separated by comma `,`.
@@ -79,32 +91,39 @@ def collect_target_contracts(
                         test_file = test_file.removesuffix(".sol")
 
                     # Get contract names
-                    contract_names = line[(idx + 1) :].split(",")
-                    contract_names = [s.strip() for s in contract_names]
-                    contract_dict[test_file] = contract_names
-                    continue
+                    configure_items = line[(idx + 1) :].split(",")
+                    configure_items = [s.strip() for s in configure_items]
 
                 # Parsing Smartian format: each line contains a test file name,
                 # and contract names, all are separated by comma `,`.
                 #
                 # Example: `file_name, contract_name_1, contract_name_2`
-                if (idx := line.find(",")) >= 0:
+                elif (idx := line.find(",")) >= 0:
                     # Get test file base name
                     test_file = line[0:idx]
                     if test_file.endswith(".sol"):
                         test_file = test_file.removesuffix(".sol")
 
                     # Get contract names
-                    contract_names = line[(idx + 1) :].split(",")
-                    contract_names = [s.strip() for s in contract_names]
-                    if "." in contract_names[-1]:
-                        version_dict[test_file] = contract_names[-1]
-                        contract_names = contract_names[:-1]
-                    contract_dict[test_file] = contract_names
-                    continue
-            return contract_dict, version_dict
+                    configure_items = line[(idx + 1) :].split(",")
+                    configure_items = [s.strip() for s in configure_items]
+
+                # Extract compiler version
+                if "." in configure_items[-1]:
+                    compiler_version = configure_items[-1]
+                    target_contracts = configure_items[:-1]
+                else:
+                    compiler_version = None
+                    target_contracts = configure_items
+
+                test_config = TestConfig(target_contracts, compiler_version)
+                test_config_dict[test_file] = test_config
+
+            return test_config_dict
 
     except Exception:
-        error(f"Failed to get contract list: {test_file}")
-        traceback.print_exc()
-        return contract_dict, version_dict
+        error_traceback(
+            f"Failed to get target contracts and compiler version "
+            f"from: {test_config_file}"
+        )
+        return test_config_dict

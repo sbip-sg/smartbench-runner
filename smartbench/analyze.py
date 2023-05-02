@@ -16,8 +16,8 @@ from typing import Dict, List, Optional, Tuple
 
 # Library
 from smartbench import annotation, printer, result, validator
+from smartbench.benchmark import TestConfig
 from smartbench.docker import DockerContainer
-from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
     error_traceback,
@@ -25,7 +25,6 @@ from smartbench.printer import (
     safe_print,
     warning,
 )
-from smartbench.process import ignore_sigint
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT, Confuzzius
@@ -40,8 +39,7 @@ class AnalysisJob:
         id: int,
         tool: Tool,
         test_files: List[str],
-        test_contracts: Optional[Dict[str, List[str]]],
-        compiler_versions: Optional[Dict[str, str]],
+        test_configs: Optional[Dict[str, TestConfig]],
         job_output_dir: str,
         docker_container: DockerContainer,
         annot_format: Optional[str] = None,
@@ -54,9 +52,8 @@ class AnalysisJob:
         # List of test file, which are relative path to the `/root/`
         # folder in a Docker container
         self.test_files: List[str] = list(test_files)
-        self.test_contracts: Optional[Dict[str, List[str]]] = test_contracts
+        self.test_configs: Optional[Dict[str, TestConfig]] = test_configs
         self.job_output_dir: str = job_output_dir
-        self.compiler_versions = compiler_versions
         self.docker_container: DockerContainer = docker_container
         self.solc_version = solc_version
         self.annot_format: Optional[str] = annot_format
@@ -143,48 +140,47 @@ def log_analysis_output(
         return False
 
 
-def collect_target_testing_contracts(
+def collect_target_contracts_and_solc_version(
     tool: Tool,
     test_file: str,
-    target_contracts: Optional[Dict[str, List[str]]],
-    compiler_versions: Optional[Dict[str, str]],
+    test_configs: Optional[Dict[str, TestConfig]],
     solc_version: Optional[str] = None,
 ) -> Tuple[List[str], Optional[str]]:
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
     # Auto detect target contracts if they is not specified explicitly by users
-    if target_contracts is None:
-        return solc.get_target_contracts_and_solc_version(
-            test_file, True, solc_version
-        )
+    if test_configs is not None:
+        # Collect target contracts specified explicitly by users
+        test_file_name = os.path.basename(test_file).removesuffix(".sol")
 
-    # Collect target contracts specified explicitly by users
-    test_file_name = os.path.basename(test_file).removesuffix(".sol")
-    contract_names = target_contracts.get(test_file_name)
+        test_config = test_configs[test_file_name]
+        if test_config is None:
+            raise ([], None)
 
-    # Checking results
-    if contract_names is None:
-        return ([], None)
-    elif isinstance(tool, Confuzzius) and len(contract_names) > 1:
-        raise ValueError(
-            "Confuzzius does not support specifiying multiple target contracts"
-        )
-    if compiler_versions is not None and len(compiler_versions) > 0:
-        solc_version = compiler_versions.get(test_file_name)
-    else:
-        # Detect Solc version that can compile the input contracts
+        contract_names = test_config.target_contracts
+        solc_version = test_config.compiler_version
+
+        # Checking results
+        if isinstance(tool, Confuzzius) and len(contract_names) > 1:
+            raise ValueError(
+                "Confuzzius does not support specifiying multiple target contracts"
+            )
+
         if solc_version is None:
             (_, solc_version) = solc.get_target_contracts_and_solc_version(
                 test_file, True, solc_version
             )
-    return (contract_names, solc_version)
+        return (contract_names, solc_version)
+    else:
+        return solc.get_target_contracts_and_solc_version(
+            test_file, True, solc_version
+        )
 
 
 def analyze_test_file(
     tool: Tool,
     test_file: str,
-    test_contracts: Optional[Dict[str, List[str]]],
-    compiler_versions: Optional[Dict[str, str]],
+    test_configs: Optional[Dict[str, TestConfig]],
     test_output_dir: str,
     container: DockerContainer,
     annot_format: Optional[str] = None,
@@ -210,8 +206,8 @@ def analyze_test_file(
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
 
-    (contracts, solc_version) = collect_target_testing_contracts(
-        tool, test_file, test_contracts, compiler_versions, solc_version
+    (contracts, solc_version) = collect_target_contracts_and_solc_version(
+        tool, test_file, test_configs, solc_version
     )
 
     if not contracts:
@@ -330,8 +326,7 @@ def run_analysis_job(
         if res := analyze_test_file(
             job.tool,
             test_file,
-            job.test_contracts,
-            job.compiler_versions,
+            job.test_configs,
             test_output_dir,
             job.docker_container,
             job.annot_format,
@@ -351,8 +346,7 @@ def run_analysis_job(
 def run_analysis_tool(
     tool: Tool,
     test_files: List[str],
-    test_contracts: Optional[Dict[str, List[str]]],
-    compiler_versions: Optional[Dict[str, str]],
+    test_configs: Optional[Dict[str, TestConfig]],
     tool_output_dir: str,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
@@ -406,8 +400,7 @@ def run_analysis_tool(
             i,
             tool,
             test_batches[i],
-            test_contracts,
-            compiler_versions,
+            test_configs,
             tool_output_dir,
             container,
             annot_format,
@@ -455,9 +448,7 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
-    # TODO: merge `test_contracts` and `compiler_versions` as 1 parameter
-    test_contracts: Optional[Dict[str, List[str]]],
-    compiler_versions: Optional[Dict[str, str]],
+    test_configs: Optional[Dict[str, TestConfig]],
     result_dir: Optional[str] = None,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
@@ -491,8 +482,7 @@ def perform_analysis(
         results = run_analysis_tool(
             tool,
             test_files,
-            test_contracts,
-            compiler_versions,
+            test_configs,
             tool_output_dir,
             solc_version,
             timeout,

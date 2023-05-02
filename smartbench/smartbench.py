@@ -99,13 +99,13 @@ def analyze_smart_contracts(args) -> None:
     elif args.install_remote_docker:
         install_docker_containers(tools, jobs, False, only_create_containers)
 
-    if args.benchmark_dir is None and args.target_contracts_file is not None:
+    if args.benchmark_dir is None and args.test_config_file is not None:
         error(
             f"Benchmark directory is not specified for "
             f"target contracts file: {args.target_contracts_file}"
         )
         return None
-    elif args.benchmark_dir is not None and args.target_contracts_file is None:
+    elif args.benchmark_dir is not None and args.test_config_file is None:
         error(
             f"Target contracts file is not specified for "
             f"benchmark directory: {args.benchmark_dir}"
@@ -118,11 +118,8 @@ def analyze_smart_contracts(args) -> None:
     test_contracts: Optional[Dict[str, List[str]]] = None
     if args.benchmark_dir is not None:
         # Collect test contracts
-        (
-            test_contracts,
-            compiler_versions,
-        ) = benchmark.collect_target_contracts(args.target_contracts_file)
-        for test_file_name in test_contracts:
+        test_configs = benchmark.collect_test_configs(args.test_config_file)
+        for test_file_name in test_configs:
             if not test_file_name.endswith(".sol"):
                 test_file_name += ".sol"
             test_file_name = os.path.join(args.benchmark_dir, test_file_name)
@@ -148,8 +145,7 @@ def analyze_smart_contracts(args) -> None:
     analyze.perform_analysis(
         tools,
         all_test_files,
-        test_contracts,
-        compiler_versions,  # override the common compiler version
+        test_configs
         args.result_dir,
         args.solc_version,
         args.timeout,
