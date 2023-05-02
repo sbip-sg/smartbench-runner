@@ -222,7 +222,6 @@ def parse_tool_results(
             tool,
             test_file,
             test_output_dir,
-            log_file,
             benchmark_names,
             validate,
             export_summary,
