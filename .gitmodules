@@ -1,6 +1,6 @@
 [submodule "benchmarks/smartbench-dataset"]
 	path = benchmarks/smartbench-dataset
-	url = git@github.com:sbip-sg/smartbench-dataset
+	url = https://github.com/sbip-sg/smartbench-dataset.git
 [submodule "results/smartbench-results"]
 	path = results/smartbench-results
-	url = git@github.com:sbip-sg/smartbench-results.git
+	url = https://github.com/sbip-sg/smartbench-results.git
