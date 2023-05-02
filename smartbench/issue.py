@@ -362,6 +362,9 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
         return SmartBugsPP.UNSAFE_DELEGATECALL
 
+    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION]:
+        return SmartBugsPP.UNHANDLED_EXCEPTION
+
     # Not matching any SmartBugs++ Kind
     return None
 
