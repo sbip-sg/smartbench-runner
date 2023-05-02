@@ -134,7 +134,7 @@ class Sfuzz(Tool):
                     if not has_fuzzing_result and "coverage :" in line:
                         has_fuzzing_result = True
 
-                    log_lines.extend(line)
+                    log_lines.append(line)
         except Exception as err:
             error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
             return None
