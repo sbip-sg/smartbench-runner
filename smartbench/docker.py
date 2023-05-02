@@ -75,10 +75,11 @@ def install_docker_containers(
     cmd = os.path.join(SCRIPTS_DIR, DOCKER_INSTALLER)
     cmd += f" -t {tool_id} -n {num_containers} --force-install"
 
+    if not use_local_images:
+        cmd += " --use-remote-images"
+
     if only_create_containers:
         cmd += " --only-create-containers"
-    elif not use_local_images:
-        cmd += " --use-remote-images"
 
     debug(f"COMMAND: {cmd}")
 

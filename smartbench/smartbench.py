@@ -94,10 +94,10 @@ def analyze_smart_contracts(args) -> None:
 
     # Install Docker containers
     only_create_containers = True if args.only_create_containers else False
-    if args.install_remote_docker:
-        install_docker_containers(tools, jobs, False, only_create_containers)
-    elif args.install_local_docker:
+    if args.install_local_docker:
         install_docker_containers(tools, jobs, True, only_create_containers)
+    elif args.install_remote_docker:
+        install_docker_containers(tools, jobs, False, only_create_containers)
 
     # Collect test files
     input_test_files = args.input_files_directories
