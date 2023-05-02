@@ -93,13 +93,11 @@ def analyze_smart_contracts(args) -> None:
         install_smartbench_environment()
 
     # Install Docker containers
-    auto_create_containers = True if args.create_docker_container else False
+    only_create_containers = True if args.only_create_containers else False
     if args.install_remote_docker:
-        install_docker_containers(tools, jobs, False, auto_create_containers)
+        install_docker_containers(tools, jobs, False, only_create_containers)
     elif args.install_local_docker:
-        install_docker_containers(tools, jobs, True, auto_create_containers)
-    elif auto_create_containers:
-        install_docker_containers(tools, jobs, False, True)
+        install_docker_containers(tools, jobs, True, only_create_containers)
 
     # Collect test files
     input_test_files = args.input_files_directories

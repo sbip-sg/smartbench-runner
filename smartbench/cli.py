@@ -139,7 +139,7 @@ def parse_cli_arguments():
 
     # Install new Docker containers of analysis tools from remote.
     analyze_argparser.add_argument(
-        "--create-docker-container",
+        "--only-create-containers",
         action="store_true",
         help="Automatically create Docker containers for analysis tools.",
     )
