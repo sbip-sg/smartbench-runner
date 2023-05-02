@@ -64,6 +64,7 @@ def install_smartbench_environment() -> None:
 def install_docker_containers(
     tools: List[Tool],
     jobs: int,
+    result_dir: Optional[str],
     use_local_images: bool = True,
     only_create_containers: bool = False,
 ) -> None:
@@ -76,7 +77,7 @@ def install_docker_containers(
     for tool in tools:
         safe_print(f"Install {jobs} Docker container(s) for: {tool.id}\n")
         if not docker.install_docker_containers(
-            tool.id, jobs, use_local_images, only_create_containers
+            tool.id, jobs, result_dir, use_local_images, only_create_containers
         ):
             error(f"Failed to install docker containers for tool: {tool.id}!")
             sys.exit(1)
@@ -92,12 +93,24 @@ def analyze_smart_contracts(args) -> None:
     if args.install_smartbench_env:
         install_smartbench_environment()
 
+    # Configure result directory
+    result_dir = args.result_dir
+    if result_dir is not None:
+        result_dir = os.path.abspath(result_dir)
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+
     # Install Docker containers
     only_create_containers = True if args.only_create_containers else False
-    if args.install_local_docker:
-        install_docker_containers(tools, jobs, True, only_create_containers)
-    elif args.install_remote_docker:
-        install_docker_containers(tools, jobs, False, only_create_containers)
+    use_local_images = True if args.install_local_docker else False
+    if args.install_local_docker or args.install_remote_docker:
+        install_docker_containers(
+            tools,
+            jobs,
+            result_dir,
+            use_local_images,
+            only_create_containers,
+        )
 
     if args.benchmark_dir is None and args.test_config_file is not None:
         error(
@@ -114,8 +127,6 @@ def analyze_smart_contracts(args) -> None:
 
     # Collect test files
     all_test_files = []
-    compiler_versions: Optional[Dict[str, str]] = None
-    test_contracts: Optional[Dict[str, List[str]]] = None
     if args.benchmark_dir is not None:
         # Collect test contracts
         test_configs = benchmark.collect_test_configs(args.test_config_file)
@@ -124,14 +135,6 @@ def analyze_smart_contracts(args) -> None:
                 test_file_name += ".sol"
             test_file_name = os.path.join(args.benchmark_dir, test_file_name)
             all_test_files.append(test_file_name)
-        # # Refine test files based on the test contract lists
-        # if test_contracts is not None:
-        #     new_test_files = []
-        #     for test_file in all_test_files:
-        #         test_file_name = os.path.basename(test_file).removesuffix(".sol")
-        #         if test_file_name in test_contracts:
-        #             new_test_files.append(test_file)
-        #             all_test_files = new_test_files
 
     else:
         input_test_files = args.input_files_directories
@@ -145,8 +148,8 @@ def analyze_smart_contracts(args) -> None:
     analyze.perform_analysis(
         tools,
         all_test_files,
-        test_configs
-        args.result_dir,
+        test_configs,
+        result_dir,
         args.solc_version,
         args.timeout,
         args.keep_docker_alive,

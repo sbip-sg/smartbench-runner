@@ -31,6 +31,7 @@ print_usage () {
     echo "                            Use `-t all` to install for all tools."
     echo "  -n <num_of_containers>    Number of containers to be installed, which are named"
     echo "                            as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
+    echo "  --result-dir              Directory to store analysis results."
     echo "  --force-install           Force install new containers."
     echo "  --only-create-containers  Only creating new containers, not build or download images."
     echo "  --base-image-no-cache     Build the base Smartbench Docker image without cache."
@@ -60,6 +61,7 @@ USE_GIT_TOKEN=false
 INSTALL_LOCALLY=true
 INSTALL_USING_G2=false
 G2_USER_NAME=""
+SMARTBENCH_RESULTS_DIR=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -70,6 +72,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         -n)
             NUM_CONTAINERS=$2
+            shift
+            shift
+            ;;
+        --result-dir)
+            SMARTBENCH_RESULTS_DIR="$2"
             shift
             shift
             ;;
@@ -186,7 +193,9 @@ SCRIPT_DIR=$(realpath $(dirname "$0"))
 SMARTBENCH_ROOT=$(dirname "$SCRIPT_DIR")
 SMARTBENCH_BENCHMARKS_DIR="$SMARTBENCH_ROOT/benchmarks"
 SMARTBENCH_EXAMPLES_DIR="$SMARTBENCH_ROOT/examples"
-SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
+if [[ $SMARTBENCH_RESULTS_DIR == "" ]]; then
+   SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
+fi
 SMARTBENCH_DOCKER_FILE="$SMARTBENCH_ROOT/smartbench/tools/smartbench.Dockerfile"
 SMARTBENCH_DOCKER_IMAGE="smartbench/base"
 

@@ -82,6 +82,7 @@ def parse_cli_arguments():
 
     analyze_argparser.add_argument(
         "--test-config-file",
+        "--target-contracts-file",
         type=str,
         help="Configuration file specifying target contracts in test files. \
         Support both Smartbench and Smartian format.",
