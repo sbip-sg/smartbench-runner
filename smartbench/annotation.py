@@ -6,15 +6,13 @@
 import csv
 import os
 import warnings
-
 from enum import Enum
 from typing import List, Optional
 
-# Library
 from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.issue import IssueKind
-from smartbench.printer import safe_print, warning
+from smartbench.printer import debug, safe_print, warning
 
 
 # SmartBugs annotations
@@ -288,7 +286,7 @@ def guess_annotation_type(filename: str) -> Optional[str]:
         return None
 
     # No annotation formats are found
-    warning("Unable to guess annotation format!")
+    debug("Unable to guess annotation format!")
     return None
 
 

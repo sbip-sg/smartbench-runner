@@ -68,6 +68,29 @@ class AnalysisJob:
         return f"{self.docker_container.name}: {len(self.test_files)} tasks"
 
 
+def log_input_test_file(
+    tool: Tool,
+    input_file: str,
+    result_dir: str,
+) -> bool:
+    """Record execution log of an analysis tool in TOML format."""
+    log_file = tool.configure_log_file(result_dir)
+    try:
+        with open(log_file, "w", encoding="utf-8") as file:
+            file.write(f"# Execution log of {tool.name}:\n\n")
+
+            # Input file
+            file.write(f"{'-' * 55}\n")
+            file.write("[input test file]\n")
+            file.write(f"{'-' * 55}\n\n")
+            file.write(f"{input_file}\n\n")
+
+        return True
+    except Exception:
+        error_traceback(f"Failed to log input test file to: {log_file}")
+        return False
+
+
 def log_analysis_command(
     tool: Tool,
     input_file: str,
@@ -77,26 +100,13 @@ def log_analysis_command(
     """Record execution log of an analysis tool in TOML format."""
     log_file = tool.configure_log_file(result_dir)
     try:
-        with open(log_file, "w", encoding="utf-8") as file:
-            separator = "-" * 55
-            file.write(f"# Execution log of {tool.name}:\n\n")
-
-            # Input file
-            file.write(f"{separator}\n")
-            file.write("[input contract]\n")
-            file.write(f"{separator}\n\n")
-            file.write(f"{input_file}\n\n")
-
+        with open(log_file, "a", encoding="utf-8") as file:
             # Analysis command
-            file.write(f"{separator}\n")
+            file.write(f"{'-' * 55}\n")
             file.write("[command]\n")
-            file.write(f"{separator}\n\n")
+            file.write(f"{'-' * 55}\n\n")
             file.write(f"{command}\n\n")
 
-            # Output section
-            file.write(f"{separator}\n")
-            file.write("[output]\n")
-            file.write(f"{separator}\n\n")
         return True
     except Exception:
         error_traceback(f"Failed to log analysis command to: {log_file}")
@@ -107,20 +117,30 @@ def log_analysis_output(
     tool: Tool,
     proc,
     result_dir: str,
-) -> None:
+) -> bool:
     """Record execution log of an analysis tool. `stderr` should be redirected
     to `stdout` by the executable script."""
     # Read analysis output from process and write to log file
     log_file = tool.configure_log_file(result_dir)
-    with open(log_file, "a", encoding="utf-8") as file:
-        while True:
-            if not (line := proc.stdout.readline()):
-                break
-            line = f"{line.decode('utf-8')}"
-            # Remove ansi color from output log
-            ansi_pattern = re.compile(r"\x1B\[\d+(;\d+){0,2}m")
-            line = ansi_pattern.sub("", line)
-            file.write(line)
+    try:
+        with open(log_file, "a", encoding="utf-8") as file:
+            # Analysis output
+            file.write(f"{'-' * 55}\n")
+            file.write("[output]\n")
+            file.write(f"{'-' * 55}\n\n")
+
+            while True:
+                if not (line := proc.stdout.readline()):
+                    break
+                line = f"{line.decode('utf-8')}"
+                # Remove ansi color from output log
+                ansi_pattern = re.compile(r"\x1B\[\d+(;\d+){0,2}m")
+                line = ansi_pattern.sub("", line)
+                file.write(line)
+        return True
+    except Exception:
+        error_traceback(f"Failed to log analysis output to: {log_file}")
+        return False
 
 
 def collect_target_testing_contracts(
@@ -174,16 +194,14 @@ def analyze_test_file(
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
     benchmarking: bool = False,
     parallel_mode: bool = False,
-) -> AnalysisResult:
+) -> Optional[AnalysisResult]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
 
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files."""
 
-    test_name = os.path.basename(test_file)
-
-    # Reset issue index counter for the current test file
-    Issue.index_counter = 1
+    if not log_input_test_file(tool, test_file, test_output_dir):
+        return None
 
     # Run the analysis
     if parallel_mode:
@@ -196,53 +214,37 @@ def analyze_test_file(
         tool, test_file, test_contracts, compiler_versions, solc_version
     )
 
-    log_file = os.path.join(test_output_dir, tool.log_file)
-    bug_annots = []
-    if validate:
-        bug_annots = annotation.parse_bug_annotations(test_file)
-
     if not contracts:
         warning(
-            f"No target testing contract is specified for: {test_file}\n\n"
+            f"No testing contract is specified for: {test_file}\n\n"
             "Skip analyzing it!"
         )
-        return AnalysisResult(
-            tool, test_name, test_output_dir, log_file, bug_annots, False
-        )
+        return None
 
     if solc_version is None:
         warning(
-            f"No Solc version is specifieed/detected for: {test_file}\n\n"
+            f"No Solc version is specifieed or detected for: {test_file}\n\n"
             "Skip analyzing it!"
         )
-        return AnalysisResult(
-            tool, test_name, test_output_dir, log_file, bug_annots, False
-        )
+        return None
 
-    try:
-        cmd = tool.make_analysis_command(
-            test_file,
-            contracts,
-            test_output_dir,
-            solc_version,
-            container,
-            timeout,
-            annot_format=annot_format,
-        )
-    except Exception:
-        error_traceback(f"Failed to make anlaysis command for: {tool.id}")
-        return AnalysisResult(
-            tool, test_name, test_output_dir, log_file, bug_annots, False
-        )
+    cmd = tool.make_analysis_command(
+        test_file,
+        contracts,
+        test_output_dir,
+        solc_version,
+        container,
+        timeout,
+        annot_format=annot_format,
+    )
 
     if cmd is None:
-        warning(f"Unable to make analysis command for tool: {tool.name}\n")
-        return AnalysisResult(tool, test_name, test_output_dir, False)
+        warning(f"Failed to make analysis command for tool: {tool.name}\n")
+        return None
 
     if not log_analysis_command(tool, test_file, cmd, test_output_dir):
-        return AnalysisResult(
-            tool, test_name, test_output_dir, log_file, bug_annots, False
-        )
+        warning(f"Failed to log analysis command for tool: {tool.name}\n")
+        return None
 
     debug(f"Analysis Command: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
@@ -253,54 +255,24 @@ def analyze_test_file(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            # preexec_fn=ignore_sigint,
             shell=False,
         ) as proc:
             # Read process output and write to log file on the fly
             log_analysis_output(tool, proc, test_output_dir)
     except Exception:
-        runner = "local" if container is None else f"docker:{container.name}"
-        if parallel_mode and container:
-            error_traceback(f"{container.name}: failed to run command: {cmd}")
+        error_traceback(f"{container.name}: failed to run command: {cmd}")
+        return None
+
+    res = None
+    if not parallel_mode:
+        res = result.parse_test_file_output_dir(
+            tool, test_file, test_output_dir, None, validate
+        )
+
+        if res is None:
+            safe_print(f"No analysis result for: {test_file}")
         else:
-            error_traceback(f"Failed to run command: {cmd}")
-        return AnalysisResult(
-            tool, test_name, test_output_dir, log_file, bug_annots, False
-        )
-
-    # Process analysis output
-    if (issues := tool.parse_analysis_output(test_output_dir)) is None:
-        return AnalysisResult(
-            tool, test_name, test_output_dir, log_file, bug_annots, False
-        )
-
-    for issue in issues:
-        print_unless(parallel_mode, "- " + str(issue))
-
-    # Validating reported issues
-    bug_annots = []
-    validation = None
-    if validate or benchmarking:
-        print_unless(parallel_mode, "Bug annotations:")
-        bug_annots = annotation.parse_bug_annotations(test_file)
-        for annot in bug_annots:
-            print_unless(parallel_mode, f"- {annot.print_concise()}")
-        print_unless(parallel_mode, "")
-        validation = validator.validate_issues(tool, issues, bug_annots)
-
-    res = AnalysisResult(
-        tool,
-        test_name,
-        test_output_dir,
-        log_file,
-        bug_annots,
-        True,
-        issues,
-        validation,
-    )
-
-    # Print benchmarking information
-    res.print_detailed_summary(parallel_mode)
+            res.print_detailed_summary()
 
     return res
 
@@ -370,7 +342,8 @@ def run_analysis_job(
             benchmarking,
             parallel_mode,
         ):
-            all_results.append(res)
+            if res is not None:
+                all_results.append(res)
 
     result_queue.put(all_results)
 

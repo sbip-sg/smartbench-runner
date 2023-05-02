@@ -12,7 +12,8 @@ def get_input_test_file(log_file: str) -> Optional[str]:
     # Use "ISO-8859-1" codec instead of utf-8 to decode Chinese characters
     with open(log_file, "r", encoding="ISO-8859-1") as file:
         while line := file.readline():
-            if line.rstrip() == "[input contract]":
+            # Check both 2 headers for backward compatiblity
+            if line.rstrip() in ["[input test file]", "[input contract]"]:
                 try:
                     # Skip next 2 lines
                     file.readline()

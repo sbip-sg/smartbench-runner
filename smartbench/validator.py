@@ -35,36 +35,35 @@ class ValidationResult:
     def num_correct_bugs(self) -> int:
         return len(self.correct_bugs)
 
-    def print_summary(self, parallel_mode=False) -> None:
-        if not parallel_mode:
-            safe_print("- Validation:")
+    def print_summary(self) -> None:
+        safe_print("- Validation:")
 
-            # Print correct bugs
-            correct_bugs_info = f"{len(self.correct_bugs)}"
-            correct_issue_idxs = [i.index for (i, _) in self.correct_bugs]
-            if len(correct_issue_idxs) > 0:
-                correct_bugs_info += (
-                    f" [Issue IDs: {print_indices(correct_issue_idxs)}]"
-                )
-            safe_print(f"  + Correct bugs: {correct_bugs_info}")
+        # Print correct bugs
+        correct_bugs_info = f"{len(self.correct_bugs)}"
+        correct_issue_idxs = [i.index for (i, _) in self.correct_bugs]
+        if len(correct_issue_idxs) > 0:
+            correct_bugs_info += (
+                f" [Issue IDs: {print_indices(correct_issue_idxs)}]"
+            )
+        safe_print(f"  + Correct bugs: {correct_bugs_info}")
 
-            # Print missing bugs
-            missing_bug_info = f"{len(self.missing_bugs)}"
-            missing_bug_idxs = [b.index for b in self.missing_bugs]
-            if len(missing_bug_idxs) > 0:
-                missing_bug_info += (
-                    f" [Bug annot IDs: {print_indices(missing_bug_idxs)}]"
-                )
-            safe_print(f"  + Missing bugs: {missing_bug_info}")
+        # Print missing bugs
+        missing_bug_info = f"{len(self.missing_bugs)}"
+        missing_bug_idxs = [b.index for b in self.missing_bugs]
+        if len(missing_bug_idxs) > 0:
+            missing_bug_info += (
+                f" [Bug annot IDs: {print_indices(missing_bug_idxs)}]"
+            )
+        safe_print(f"  + Missing bugs: {missing_bug_info}")
 
-            # Print unlabelled issues
-            unlabelled_info = f"{len(self.unlabelled_issues)}"
-            unlabelled_idxs = [i.index for i in self.unlabelled_issues]
-            if len(unlabelled_idxs) > 0:
-                unlabelled_info += (
-                    f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
-                )
-            safe_print(f"  + Unlabelled issues: {unlabelled_info}")
+        # Print unlabelled issues
+        unlabelled_info = f"{len(self.unlabelled_issues)}"
+        unlabelled_idxs = [i.index for i in self.unlabelled_issues]
+        if len(unlabelled_idxs) > 0:
+            unlabelled_info += (
+                f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
+            )
+        safe_print(f"  + Unlabelled issues: {unlabelled_info}")
 
 
 def print_indices(indices: List[int]) -> str:
