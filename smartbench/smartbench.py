@@ -62,7 +62,10 @@ def install_smartbench_environment() -> None:
 
 
 def install_docker_containers(
-    tools: List[Tool], jobs: int, use_local_images: bool = True
+    tools: List[Tool],
+    jobs: int,
+    use_local_images: bool = True,
+    only_create_containers: bool = False,
 ) -> None:
     """Build and install Docker images of analysis tools locally."""
     if use_local_images:
@@ -73,7 +76,7 @@ def install_docker_containers(
     for tool in tools:
         safe_print(f"Install {jobs} Docker container(s) for: {tool.id}\n")
         if not docker.install_docker_containers(
-            tool.id, jobs, use_local_images
+            tool.id, jobs, use_local_images, only_create_containers
         ):
             error(f"Failed to install docker containers for tool: {tool.id}!")
             sys.exit(1)
@@ -90,10 +93,11 @@ def analyze_smart_contracts(args) -> None:
         install_smartbench_environment()
 
     # Install Docker containers
+    only_create_containers = True if args.only_create_containers else False
     if args.install_local_docker:
-        install_docker_containers(tools, jobs, True)
-    if args.install_remote_docker:
-        install_docker_containers(tools, jobs, False)
+        install_docker_containers(tools, jobs, True, only_create_containers)
+    elif args.install_remote_docker:
+        install_docker_containers(tools, jobs, False, only_create_containers)
 
     # Collect test files
     input_test_files = args.input_files_directories
@@ -117,7 +121,7 @@ def analyze_smart_contracts(args) -> None:
         for test_file in all_test_files:
             test_file_name = os.path.basename(test_file).removesuffix(".sol")
             if test_file_name in test_contracts:
-              new_test_files.append(test_file)
+                new_test_files.append(test_file)
         all_test_files = new_test_files
 
     # Perform the analysis

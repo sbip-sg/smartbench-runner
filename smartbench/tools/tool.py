@@ -100,6 +100,12 @@ class Tool:
     ) -> str:
         """Make an analysis command for a tool."""
 
+    def prepare_parsing_analysis_output(self) -> None:
+        """Reset the environment before parsing analysis results."""
+        # Reset issue index counter
+        Issue.index_counter = 1
+        return None
+
     @abstractmethod
     def parse_analysis_output(
         self, test_output_dir: str

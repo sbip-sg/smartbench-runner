@@ -63,7 +63,10 @@ class DockerContainer:
 
 
 def install_docker_containers(
-    tool_id: str, num_containers: int, use_local_images: bool = True
+    tool_id: str,
+    num_containers: int,
+    use_local_images: bool = True,
+    only_create_containers: bool = False,
 ) -> bool:
     """Build and install docker containers locally. Return `True` if the
     installation succeeds."""
@@ -75,7 +78,10 @@ def install_docker_containers(
     if not use_local_images:
         cmd += " --use-remote-images"
 
-    debug(f"Command: {cmd}")
+    if only_create_containers:
+        cmd += " --only-create-containers"
+
+    debug(f"COMMAND: {cmd}")
 
     try:
         subprocess.run(
