@@ -363,8 +363,7 @@ def print_benchmarking_results(
 
             if result.validation_result is None:
                 safe_print(
-                    f"- {test_file}: Succeeded, {num_annots}, ",
-                    f"{num_issues}, <no validation>",
+                    f"- {test_file}: Succeeded, {num_annots}, {num_issues}, <no validation>",
                 )
                 if print_detailed_summary:
                     safe_print(f"  Log file: {result.log_file}")
