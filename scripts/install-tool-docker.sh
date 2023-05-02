@@ -25,19 +25,20 @@ print_usage () {
     echo "  install-tool-docker.sh -t <tool-ids> [options] [container_1, ... , container_n]"
     echo ""
     echo "Options:"
-    echo "  -t <tool-id>            ID of analysis tool, currently support the followings:"
-    echo "                            confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
-    echo "                            slither, smartfuzz, smartian."
-    echo "                          Use `-t all` to install for all tools."
-    echo "  -n <num_of_containers>  Number of containers to be installed, which are named"
-    echo "                          as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
-    echo "  --force-install         Force install new containers."
-    echo "  --base-image-no-cache   Build the base Smartbench Docker image without cache."
-    echo "  --tool-image-no-cache   Build each tool Docker image without cache."
-    echo "  --use-git-token         Enable reading GitHub access token during installation."
-    echo "  --use-remote-images     Install tool Docker from the suitable remote (G2 or DockerHub)."
-    echo "  --use-g2-images         Install tool Docker from images in G2."
-    echo "  --g2-user-name          Specify your user name in SBIP G2 server."
+    echo "  -t <tool-id>              ID of analysis tool, currently support the followings:"
+    echo "                              confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
+    echo "                              slither, smartfuzz, smartian."
+    echo "                            Use `-t all` to install for all tools."
+    echo "  -n <num_of_containers>    Number of containers to be installed, which are named"
+    echo "                            as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
+    echo "  --force-install           Force install new containers."
+    echo "  --only-create-containers  Only creating new containers, not build or download images."
+    echo "  --base-image-no-cache     Build the base Smartbench Docker image without cache."
+    echo "  --tool-image-no-cache     Build each tool Docker image without cache."
+    echo "  --use-git-token           Enable reading GitHub access token during installation."
+    echo "  --use-remote-images       Install tool Docker from the suitable remote (G2 or DockerHub)."
+    echo "  --use-g2-images           Install tool Docker from images in G2."
+    echo "  --g2-user-name            Specify your user name in SBIP G2 server."
 }
 
 print_run_help () {
@@ -52,6 +53,7 @@ TOOL_ID=""
 CONTAINER_NAMES=()
 NUM_CONTAINERS=0
 FORCE_INSTALL=false
+ONLY_CREATE_CONTAINERS=false
 BASE_IMAGE_NO_CACHE=false
 TOOL_IMAGE_NO_CACHE=false
 USE_GIT_TOKEN=false
@@ -77,6 +79,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --force-install)
             FORCE_INSTALL=true
+            shift
+            ;;
+        --only-create-containers)
+            ONLY_CREATE_CONTAINERS=true
             shift
             ;;
         --base-image-no-cache)
@@ -194,7 +200,7 @@ echo "Start building docker containers for analysis tools... "
 echo ""
 
 # Install base image of Smartbench locally
-if [[ $INSTALL_LOCALLY == true ]]; then
+if [[ $INSTALL_LOCALLY == true && $ONLY_CREATE_CONTAINERS == false ]]; then
     echo "============================================="
     echo "Building base image for all analysis tools..."
     echo ""
@@ -213,24 +219,26 @@ echo "Start building docker container(s) for: ${ALL_TOOL_IDS[@]}"
 echo ""
 
 # Configure some arguments to build Docker image for each tool locally or remotely
-if [[ $INSTALL_LOCALLY == true ]]; then
-    TOOL_CACHE_ARG=""
-    if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
-        TOOL_CACHE_ARG="--no-cache"
+if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
+    if [[ $INSTALL_LOCALLY == true ]]; then
+        TOOL_CACHE_ARG=""
+        if [[ $TOOL_IMAGE_NO_CACHE == true ]]; then
+            TOOL_CACHE_ARG="--no-cache"
+        fi
+
+        GIT_TOKEN_ARG=""
+        if [[ $USE_GIT_TOKEN == true ]]; then
+            echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
+            echo -n "Enter your Git Access Token: "
+            read GIT_TOKEN
+            GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
+        fi
     fi
 
-    GIT_TOKEN_ARG=""
-    if [[ $USE_GIT_TOKEN == true ]]; then
-        echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
-        echo -n "Enter your Git Access Token: "
-        read GIT_TOKEN
-        GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
+    if [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]] && [[ $G2_USER_NAME == "" ]]; then
+        echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
+        read G2_USER_NAME
     fi
-fi
-
-if [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]] && [[ $G2_USER_NAME == "" ]]; then
-    echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
-    read G2_USER_NAME
 fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
@@ -250,7 +258,14 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ROOT_ID"
         TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
         TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
-        docker build -f $TOOL_DOCKER_FILE -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
+
+        if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
+            docker build -f $TOOL_DOCKER_FILE \
+                -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
+        else
+            echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
+        fi
+
     elif [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]]; then
         # Load Docker image from SBIP G2 server
         # This command below only works when running in NUS network
@@ -261,11 +276,16 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
 
         TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
-        rm -rf "/tmp/$TOOL_IMAGE_FILE"
-        scp "$G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
-            "/tmp/$TOOL_IMAGE_FILE"
-        docker load --input "/tmp/$TOOL_IMAGE_FILE"
-        rm -rf "/tmp/$TOOL_IMAGE_FILE"
+
+        if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
+            rm -rf "/tmp/$TOOL_IMAGE_FILE"
+            scp "$G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
+                "/tmp/$TOOL_IMAGE_FILE"
+            docker load --input "/tmp/$TOOL_IMAGE_FILE"
+            rm -rf "/tmp/$TOOL_IMAGE_FILE"
+        else
+            echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
+        fi
     else
         # Pull Docker image of other tools from DockerHub
 
@@ -273,7 +293,12 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "Pulling Docker image from DockerHub for: $TOOL_ID..."
         echo ""
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
-        docker pull $TOOL_DOCKER_IMAGE
+
+        if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
+            docker pull $TOOL_DOCKER_IMAGE
+        else
+            echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
+        fi
     fi
 
     # Clear previous containers names if building for many tools
