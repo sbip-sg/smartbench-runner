@@ -27,8 +27,11 @@ from smartbench.printer import (
 )
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
-from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT, Confuzzius
+from smartbench.tools.config import SMARTBENCH_ROOT, Confuzzius
 from smartbench.tools.tool import Tool
+
+
+RESULTS_DIR_RELATIVE_PATH = "results"
 
 
 class AnalysisJob:
@@ -472,13 +475,13 @@ def perform_analysis(
     """
     # Prepare output directory for all tests and all tools in this run
     safe_print(f"Start analyzing {len(test_files)} test files...")
-    results_dir_docker = "results"
     if result_dir is None:
         results_dir_host = results_dir_docker = os.path.join(
-            RESULTS_DIR,
+            RESULTS_DIR_RELATIVE_PATH,
             datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
         )
     else:
+        results_dir_docker = RESULTS_DIR_RELATIVE_PATH
         results_dir_host = result_dir
 
     if not os.path.exists(results_dir_host):
