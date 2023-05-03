@@ -14,6 +14,7 @@ print_usage () {
     echo ""
     echo "Options:"
     echo "  -f <test-file>            Smart contract file to be analyzed."
+    echo "  -o <output-file>          Output JSON file."
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
     echo "  -h, --help                Print this usage."
     echo ""
@@ -29,6 +30,7 @@ print_help () {
 # Parse arguments
 
 TEST_FILE=""
+OUTPUT_JSON_FILE=""
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -37,6 +39,11 @@ while [[ $# -gt 0 ]]; do
             TEST_FILE=$(realpath $2)
             shift # past argument
             shift # past value
+            ;;
+        -o)
+            OUTPUT_JSON_FILE="$2"
+            shift  # past argument
+            shift  # past value
             ;;
         --solc-version)
             SOLC_VER=$2
@@ -71,5 +78,8 @@ fi
 ################################################
 # Analyze test file
 
+rm -f $OUTPUT_JSON_FILE
+
 # Run Slither
-SOLC_VERSION=$SOLC_VER slither $TEST_FILE ${ADDITIONAL_ARGS[@]} 2>&1
+SOLC_VERSION=$SOLC_VER slither $TEST_FILE --json $OUTPUT_JSON_FILE \
+    ${ADDITIONAL_ARGS[@]} 2>&1

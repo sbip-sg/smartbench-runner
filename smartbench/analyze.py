@@ -9,6 +9,7 @@ import re
 import shlex
 import signal
 import subprocess
+
 from datetime import datetime
 from multiprocessing import Process, Queue
 from typing import Dict, List, Optional, Tuple
@@ -17,11 +18,20 @@ from typing import Dict, List, Optional, Tuple
 from smartbench import annotation, printer, result, validator
 from smartbench.benchmark import TestConfig
 from smartbench.docker import DockerContainer
-from smartbench.printer import debug, error_traceback, print_unless, safe_print, warning
+from smartbench.printer import (
+    debug,
+    error_traceback,
+    print_unless,
+    safe_print,
+    warning,
+)
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
-from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT, Confuzzius
+from smartbench.tools.config import SMARTBENCH_ROOT, Confuzzius
 from smartbench.tools.tool import Tool
+
+
+RESULTS_DIR_RELATIVE_PATH = "results"
 
 
 class AnalysisJob:
@@ -158,14 +168,7 @@ def collect_target_contracts_and_solc_version(
         contract_names = test_config.target_contracts
         solc_version = test_config.compiler_version
 
-        # Checking results
-        if isinstance(tool, Confuzzius) and len(contract_names) > 1:
-            raise ValueError(
-                "Confuzzius does not support specifiying multiple target contracts"
-            )
-
         # If contract names is not specified in test config, auto-detect them
-        solc_version_auto_detected = None
         if contract_names == [] or solc_version is None:
             (
                 contract_names_detected,
@@ -182,7 +185,9 @@ def collect_target_contracts_and_solc_version(
 
         return (contract_names, solc_version)
     else:
-        return solc.get_target_contracts_and_solc_version(test_file, True, solc_version)
+        return solc.get_target_contracts_and_solc_version(
+            test_file, True, solc_version
+        )
 
 
 def analyze_test_file(
@@ -270,6 +275,7 @@ def analyze_test_file(
 
     res = None
     if not parallel_mode:
+        debug(f"PARSE FILE: {test_output_dir_host}")
         res = result.parse_test_file_output_dir(
             tool, test_file, test_output_dir_host, None, validate
         )
@@ -470,13 +476,13 @@ def perform_analysis(
     """
     # Prepare output directory for all tests and all tools in this run
     safe_print(f"Start analyzing {len(test_files)} test files...")
-    results_dir_docker = "results"
     if result_dir is None:
         results_dir_host = results_dir_docker = os.path.join(
-            RESULTS_DIR,
+            RESULTS_DIR_RELATIVE_PATH,
             datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
         )
     else:
+        results_dir_docker = RESULTS_DIR_RELATIVE_PATH
         results_dir_host = result_dir
 
     if not os.path.exists(results_dir_host):
@@ -506,7 +512,7 @@ def perform_analysis(
 
     printer.print_short_double_separator_line()
     safe_print("Benchmarking completed!\n")
-    safe_print(f"Results are recorded at: {result_dir}")
+    safe_print(f"Results are recorded at: {results_dir_host}")
 
     if jobs == 1 and benchmarking:
         result.print_benchmarking_results(results_dir_host, all_results)

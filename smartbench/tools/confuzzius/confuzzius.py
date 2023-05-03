@@ -60,6 +60,9 @@ class Confuzzius(Tool):
 
         # Input file and contract names
         cmd = cmd + " -f " + test_file
+
+        # Specify the input contract name if there is only 1 target contract.
+        # Otherwise, let Confuzzius handle all the contract name automatically
         if len(contracts) == 1:
             cmd = cmd + " -c " + contracts[0]
 
