@@ -193,7 +193,7 @@ class Confuzzius(Tool):
                     severity = self.parse_issue_severity(bug.get("severity"))
 
                     # Do not add duplicated issues
-                    all_issues = issue.update_new_issue(
+                    all_issues = issue.record_new_issue_and_deduplicate(
                         all_issues,
                         kind,
                         "",

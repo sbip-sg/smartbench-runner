@@ -193,7 +193,7 @@ class Mythril(Tool):
                 )
                 severity = self.parse_severity(bug.get("severity"))
 
-                all_issues = issue.update_new_issue(
+                all_issues = issue.record_new_issue_and_deduplicate(
                     all_issues,
                     kind,
                     "",

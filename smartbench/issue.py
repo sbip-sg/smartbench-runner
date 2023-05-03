@@ -28,8 +28,10 @@ class IssueKind(Enum):
     UNCHECKED_SEND_ETHER = "Unchecked Send Ether"
     UNCHECKED_TRANSFER_ETHER = "Unchecked Transfer Ether"
     UNCHECKED_CALL_RETURN_VALUE = "Unchecked Call Return Value"
-    UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low-Level Calls"
     UNUSED_RETURN_VALUE = "Unused Return Value"
+
+    # Exceptions
+    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     # Leaking Ether
     LEAKING_ETHER = "Leaking Ether"
@@ -37,8 +39,6 @@ class IssueKind(Enum):
     # Locking Ether
     LOCKING_ETHER = "Locking Ether"
 
-    # Exceptions
-    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     # Validation
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
@@ -277,7 +277,7 @@ class Issue:
         return not (self.__eq__(other))
 
 
-def update_new_issue(
+def record_new_issue_and_deduplicate(
     existing_issues: List[Issue],
     issue_kind: IssueKind,
     description: str,
@@ -350,7 +350,6 @@ def classify_to_smartbugs_pp_kind(
         return SmartBugsPP.TIME_MANIPULATION
 
     if issue_kind in [
-        IssueKind.UNCHECKED_LOW_LEVEL_CALLS,
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
         IssueKind.UNCHECKED_LOW_LEVEL_CODE,
     ]:
@@ -457,7 +456,7 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.LACK_OF_PROPER_SIGNATURE_VERIFICATION
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.REQUIREMENT_VIOLATION]:
         return SWCKind.REQUIREMENT_VIOLATION
 
     if issue_kind in [IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION]:

@@ -109,26 +109,32 @@ def validate_issues(
     unlabelled_issues: List[Issue] = []
     missing_bugs: List[BugAnnot] = []
 
-    # First loop to detect correct bugs and missing bugs
+    # Detect correct bugs
+    for issue in issues:
+        detected = False
+        for annot in annots:
+            if match_issue_to_annotation(tool, issue, annot):
+                correct_bugs.append((issue, annot))
+                break
+
+    # Detect missing bugs
     for annot in annots:
-        # True-positive issues ==> correct bugs
         detected = False
         for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
-                correct_bugs.append((issue, annot))
                 detected = True
+                break
         if not detected:
             missing_bugs.append(annot)
 
-    # Second loop to detect unlabelled_issues
+    # Detect unlabelled issues
     for issue in issues:
-        matched_bug = False
+        detected = False
         for annot in annots:
             if match_issue_to_annotation(tool, issue, annot):
-                matched_bug = True
+                detected = True
                 break
-        # Unknown issue
-        if not matched_bug:
+        if not detected:
             unlabelled_issues.append(issue)
 
     return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)

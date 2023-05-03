@@ -91,16 +91,16 @@ class AnalysisResult:
             safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
             safe_print(f"- Detected issues: {len(self.issues)}")
 
-        # Print severity information
-        severity_dict: Dict[Severity, int] = {}
-        for issue in self.issues:
-            if issue.severity in severity_dict:
-                severity_dict[issue.severity] += 1
-            else:
-                severity_dict[issue.severity] = 1
-        severity_info = [f"  + {s}: {severity_dict[s]}" for s in severity_dict]
-        if len(severity_dict) > 0:
-            safe_print("\n".join(severity_info))
+        # # Print severity information
+        # severity_dict: Dict[Severity, int] = {}
+        # for issue in self.issues:
+        #     if issue.severity in severity_dict:
+        #         severity_dict[issue.severity] += 1
+        #     else:
+        #         severity_dict[issue.severity] = 1
+        # severity_info = [f"  + {s}: {severity_dict[s]}" for s in severity_dict]
+        # if len(severity_dict) > 0:
+        #     safe_print("\n".join(severity_info))
 
         # Print validation results
         if self.validation_result is not None:

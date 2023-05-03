@@ -87,57 +87,66 @@ class Smartian(Tool):
 
         return cmd
 
-    def parse_issue_function_name(self, file) -> Optional[str]:
+    def parse_issue_function_name(
+        self, log_lines: List[str], idx: int, txn_idx: str
+    ) -> Optional[str]:
         """Parse issue location in sequence of transactions printed to the log
         file by Smartian. Each transaction contains the name of the function
         trigger it. This sequence of transaction ends with an empty line."""
 
-        func_name = None
-        while line := file.readline():
-            line = line.strip()
+        for i in range(idx + 1, len(log_lines)):
+            line = log_lines[i]
             if line == "":
                 break
             elif match := re.search(
-                r"TX .* Function: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
+                f"=> TX.* <= .* Function: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
             ):
-                func_name = match.groups(1)[0]
+                return match.groups(1)[0]
 
-        return func_name
+        return None
 
-    def parse_issue_kind(self, log_line) -> Optional[Tuple[IssueKind, str]]:
+    def parse_issue_kind(
+        self, log_line
+    ) -> Optional[Tuple[IssueKind, str, str]]:
         match = None
 
-        if match := re.search(r"Tx#.* found AssertionFailure .*", log_line):
+        if match := re.search(
+            r"Tx#([0-9]+) found AssertionFailure ", log_line
+        ):
             issue_kind = IssueKind.ASSERTION_FAILURE
-        elif match := re.search(r"Tx#.* found ArbitraryWrite .*", log_line):
+        elif match := re.search(
+            r"Tx#([0-9]+) found ArbitraryWrite ", log_line
+        ):
             issue_kind = IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION
         elif match := re.search(
-            r"Tx#.* found BlockstateDependency .*", log_line
+            r"Tx#([0-9]+) found BlockstateDependency ", log_line
         ):
             issue_kind = IssueKind.BLOCK_VALUE_DEPENDENCY
-        elif match := re.search(r"Tx#.* found ControlHijack .*", log_line):
+        elif match := re.search(r"Tx#([0-9]+) found ControlHijack ", log_line):
             # TODO: Review this classification
             issue_kind = IssueKind.UNSAFE_DELEGATECALL
-        elif match := re.search(r"Tx#.* found EtherLeak .*", log_line):
+        elif match := re.search(r"Tx#([0-9]+) found EtherLeak ", log_line):
             issue_kind = IssueKind.LEAKING_ETHER
-        elif match := re.search(r"Tx#.* found IntegerBug .*", log_line):
+        elif match := re.search(r"Tx#([0-9]+) found IntegerBug ", log_line):
             issue_kind = IssueKind.INTEGER_BUG
         elif match := re.search(
-            r"Tx#.* found MishandledException .*", log_line
+            r"Tx#([0-9]+) found MishandledException ", log_line
         ):
             issue_kind = IssueKind.UNHANDLED_EXCEPTION
-        elif match := re.search(r"Tx#.* found Reentrancy .*", log_line):
+        elif match := re.search(r"Tx#([0-9]+) found Reentrancy ", log_line):
             issue_kind = IssueKind.REENTRANCY
-        elif match := re.search(r"Tx#.* found SuicidalContract .*", log_line):
+        elif match := re.search(
+            r"Tx#([0-9]+) found SuicidalContract ", log_line
+        ):
             issue_kind = IssueKind.UNSAFE_SELFDESTRUCT
         elif match := re.search(
-            r"Tx#.* found TransactionOriginUse .*", log_line
+            r"Tx#([0-9]+) found TransactionOriginUse ", log_line
         ):
             issue_kind = IssueKind.TRANSACTION_ORDER_DEPENDENCY
-        elif match := re.search(r"Tx#.* found FreezingEther .*", log_line):
+        elif match := re.search(r"Tx#([0-9]+) found FreezingEther ", log_line):
             issue_kind = IssueKind.LOCKING_ETHER
         elif match := re.search(
-            r"Tx#.* found RequirementViolation .*", log_line
+            r"Tx#([0-9]+) found RequirementViolation ", log_line
         ):
             issue_kind = IssueKind.REQUIREMENT_VIOLATION
 
@@ -145,7 +154,8 @@ class Smartian(Tool):
             return None
         else:
             description = match.group(0)
-            return (issue_kind, description)
+            transaction_idx = match.group(1)
+            return (issue_kind, transaction_idx, description)
 
     def parse_analysis_output(
         self, test_output_dir: str
@@ -166,21 +176,28 @@ class Smartian(Tool):
             test_file is not None
         ), f"Failed to get test file from: {log_file}"
 
-        issues_info = []
+        log_lines = []
         with open(log_file, "r", encoding="utf-8") as file:
             contract_name = None
             while line := file.readline():
-                line = line.strip()
+                log_lines.append(line.strip())
 
-                if match := re.search(
-                    r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
-                ):
-                    contract_name = match.groups(1)[0]
-                elif issue_kind_description := self.parse_issue_kind(line):
-                    (kind, descr) = issue_kind_description
-                    # Parse name of function causing the bug
-                    func_name = self.parse_issue_function_name(file)
-                    issues_info.append((kind, descr, contract_name, func_name))
+        issues_info = []
+        for i in range(0, len(log_lines)):
+            line = log_lines[i].strip()
+            if match := re.search(
+                r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
+            ):
+                contract_name = match.groups(1)[0]
+            elif issue_kind_txn_description := self.parse_issue_kind(line):
+                (kind, txn_idx, descr) = issue_kind_txn_description
+                # Parse name of function causing the bug
+                # func_name = self.parse_issue_function_name(
+                #     log_lines, i, txn_idx
+                # )
+                # debug(f"FUNCTION NAME: {func_name}")
+                # issues_info.append((kind, descr, contract_name, func_name))
+                issues_info.append((kind, descr, contract_name))
 
         ast = None
         try:
@@ -200,23 +217,44 @@ class Smartian(Tool):
         except Exception:
             pass
 
-        all_issues = []
+        all_issues: List[Issue] = []
         for issue_info in issues_info:
-            kind, descr, contract_name, func_name = issue_info
+            # kind, descr, contract_name, func_name = issue_info
+            kind, descr, contract_name = issue_info
             start_line = end_line = None
 
             if ast is not None:
-                debug(f"FUNCTION: {func_name}")
                 try:
-                    if func_name == "fallback":
-                        func = ast.function_by_name(contract_name, "")
-                    else:
-                        func = ast.function_by_name(contract_name, func_name)
-                    (start_line, end_line) = func.line_num
-                except Exception as err:
-                    debug(f"Failed to find function: {func_name}\n\n" f"{err}")
+                    # if func_name == "fallback":
+                    #     try:
+                    #         func = ast.function_by_name(
+                    #             contract_name, "fallback"
+                    #         )
+                    #     except Exception:
+                    #         func = ast.function_by_name(contract_name, "")
+                    # elif func_name == "constructor":
+                    #     try:
+                    #         func = ast.function_by_name(
+                    #             contract_name, "constructor"
+                    #         )
+                    #     except Exception:
+                    #         func = ast.function_by_name(
+                    #             contract_name, contract_name
+                    #         )
+                    # else:
+                    #     func = ast.function_by_name(contract_name, func_name)
+                    # (start_line, end_line) = func.line_num
+
+                    # Coarse location: use location of the whole contract as the
+                    # location of the detected issue
+                    contract = ast.contract_by_name(contract_name)
+                    (start_line, end_line) = contract.line_num
+                except Exception:
+                    debug(f"Smartian: failed to find contract: {contract_name}")
 
             loc = Location(test_file, start_line, None, end_line, None)
+            # Do not deduplicate issues since the issue location is of the whole
+            # contracts
             issue = Issue(
                 kind,
                 descr,
@@ -234,8 +272,24 @@ class Smartian(Tool):
     ):
         """Function to check whether an reported issue is related to a bug
         annotation."""
-        # TODO: implement
-        return False
+
+        if issue.location is None:
+            return False
+
+        iloc = issue.location
+
+        # The bug line number must be reported explicitly by Smartian
+        if iloc.start_line is None or iloc.end_line is None:
+            return False
+
+        # Smartian report a bug location at the function level: begin and end
+        # line of the function containing bugs. So, the bug location must cover
+        # the issue location.
+
+        return (
+            iloc.start_line <= annot.start_line
+            and iloc.end_line >= annot.end_line
+        )
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
