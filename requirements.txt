@@ -7,4 +7,4 @@ solc-select == 1.0.2
 docker
 
 git+https://github.com/taquangtrung/solc-detect.git@v0.0.9#egg=solc_detect
-git+https://github.com/sbip-sg/solc-json-parser.git@0.1.5#egg=solc_json_parser
+git+https://github.com/sbip-sg/solc-json-parser

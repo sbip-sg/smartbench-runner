@@ -8,11 +8,10 @@ import os
 import pathlib
 import sys
 import traceback
-
 from typing import Dict, List, Optional, Tuple
 
 # Library
-from smartbench.printer import error, error_traceback, safe_print
+from smartbench.printer import debug, error, error_traceback, safe_print
 from smartbench.smartbench import printer
 
 
@@ -20,9 +19,7 @@ from smartbench.smartbench import printer
 class TestConfig:
     """Class representing the configuration for an input test file."""
 
-    def __init__(
-        self, target_contracts: List[str], compiler_version: Optional[str]
-    ):
+    def __init__(self, target_contracts: List[str], compiler_version: Optional[str]):
         self.target_contracts: List[str] = target_contracts
         self.compiler_version: Optional[str] = compiler_version
 
@@ -77,7 +74,7 @@ def collect_test_configs(
     try:
         with open(test_config_file, "r", encoding="utf-8") as file:
             while line := file.readline():
-                configure_items = []
+                config_items = []
 
                 # Parsing Smartbench format: each line contains a test file,
                 # followed by a colon `:`, and then contract names, which are
@@ -91,8 +88,8 @@ def collect_test_configs(
                         test_file = test_file.removesuffix(".sol")
 
                     # Get contract names
-                    configure_items = line[(idx + 1) :].split(",")
-                    configure_items = [s.strip() for s in configure_items]
+                    config_items = line[(idx + 1) :].split(",")
+                    config_items = [s.strip() for s in config_items]
 
                 # Parsing Smartian format: each line contains a test file name,
                 # and contract names, all are separated by comma `,`.
@@ -105,20 +102,27 @@ def collect_test_configs(
                         test_file = test_file.removesuffix(".sol")
 
                     # Get contract names
-                    configure_items = line[(idx + 1) :].split(",")
-                    configure_items = [s.strip() for s in configure_items]
+                    config_items = line[(idx + 1) :].split(",")
+                    config_items = [s.strip() for s in config_items]
+
+                # Parsing file listing format, only the file name is specified
+                else:
+                    test_file = line.strip()
+                    if test_file.endswith(".sol"):
+                        test_file = test_file.removesuffix(".sol")
 
                 # Extract compiler version
-                if "." in configure_items[-1]:
-                    compiler_version = configure_items[-1]
-                    target_contracts = configure_items[:-1]
+                if len(config_items) > 0 and "." in config_items[-1]:
+                    compiler_version = config_items[-1]
+                    target_contracts = config_items[:-1]
                 else:
                     compiler_version = None
-                    target_contracts = configure_items
+                    target_contracts = config_items
 
                 test_config = TestConfig(target_contracts, compiler_version)
                 test_config_dict[test_file] = test_config
 
+            debug(f"TEST CONFIG: {test_config_dict}")
             return test_config_dict
 
     except Exception:

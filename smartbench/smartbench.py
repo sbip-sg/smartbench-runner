@@ -127,6 +127,7 @@ def analyze_smart_contracts(args) -> None:
 
     # Collect test files
     all_test_files = []
+    test_configs = None
     if args.benchmark_dir is not None:
         # Collect test contracts
         test_configs = benchmark.collect_test_configs(args.test_config_file)

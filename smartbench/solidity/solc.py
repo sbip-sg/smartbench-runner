@@ -21,7 +21,7 @@ import solc_detect
 from solc_json_parser.parser import SolidityAst
 
 # Library
-from smartbench.printer import debug, error_traceback, safe_print
+from smartbench.printer import debug, error_traceback, safe_print, warning
 
 
 SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -111,26 +111,35 @@ def get_target_contracts_and_solc_version(
     # the underlying library `py-solc-x` is also used by other tools. If
     # `solc_json_parser` can to compile the contracts, then other tools will
     # also likely to be able to compile the contracts
+    ast = None
+
+    # Run SolcJSONParser with different solc versions
     for solc_version in best_solc_versions:
         try:
             ast = SolidityAst(test_file, version=solc_version)
-
-            contracts = ast.all_contract_names
-            if only_deployable_contracts:
-                library_names = ast.all_libraries_names
-                abstract_contracts = ast.all_abstract_contract_names
-                contracts = [
-                    s
-                    for s in contracts
-                    if s not in abstract_contracts and s not in library_names
-                ]
-
-            debug(f"Target contracts (found by SolcJsonParser): {contracts}")
-
-            debug(f"Using Solc: {solc_version}")
-            return (contracts, solc_version)
-        except Exception:
+            # ast = SolidityAst(test_file, version=solc_version)
+            if ast is not None:
+                break
+        except Exception as err:
+            warning(f"Exception while compiling {test_file}:\n\n{err}")
             pass
+
+    # Get contract information from AST parsed by SolcJSONParser
+    if ast is not None:
+        contracts = ast.all_contract_names
+        if only_deployable_contracts:
+            library_names = ast.all_libraries_names
+            abstract_contracts = ast.all_abstract_contract_names
+            contracts = [
+                s
+                for s in contracts
+                if s not in abstract_contracts and s not in library_names
+            ]
+
+        debug(f"Target contracts (found by SolcJsonParser): {contracts}")
+
+        debug(f"Using Solc: {solc_version}")
+        return (contracts, solc_version)
 
     # If `SolcJsonParser` fails to get contract names, then use `SolQuery` to
     # try get contract names by trying each of the detected best Solc versions.
