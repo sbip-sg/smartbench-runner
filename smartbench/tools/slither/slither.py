@@ -68,7 +68,7 @@ class Slither(Tool):
 
         # Output file
         if output_file := self.configure_json_output(test_output_dir):
-            cmd = cmd + " --json " + output_file
+            cmd = cmd + " -o " + output_file
 
         # Finally, pass default and additional arguments
         if self.default_arguments:

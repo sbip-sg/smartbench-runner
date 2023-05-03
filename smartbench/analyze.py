@@ -275,6 +275,7 @@ def analyze_test_file(
 
     res = None
     if not parallel_mode:
+        debug(f"PARSE FILE: {test_output_dir_host}")
         res = result.parse_test_file_output_dir(
             tool, test_file, test_output_dir_host, None, validate
         )
@@ -511,7 +512,7 @@ def perform_analysis(
 
     printer.print_short_double_separator_line()
     safe_print("Benchmarking completed!\n")
-    safe_print(f"Results are recorded at: {result_dir}")
+    safe_print(f"Results are recorded at: {results_dir_host}")
 
     if jobs == 1 and benchmarking:
         result.print_benchmarking_results(results_dir_host, all_results)
