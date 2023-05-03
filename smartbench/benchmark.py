@@ -77,7 +77,7 @@ def collect_test_configs(
     try:
         with open(test_config_file, "r", encoding="utf-8") as file:
             while line := file.readline():
-                configure_items = []
+                config_items = []
 
                 # Parsing Smartbench format: each line contains a test file,
                 # followed by a colon `:`, and then contract names, which are
@@ -91,8 +91,8 @@ def collect_test_configs(
                         test_file = test_file.removesuffix(".sol")
 
                     # Get contract names
-                    configure_items = line[(idx + 1) :].split(",")
-                    configure_items = [s.strip() for s in configure_items]
+                    config_items = line[(idx + 1) :].split(",")
+                    config_items = [s.strip() for s in config_items]
 
                 # Parsing Smartian format: each line contains a test file name,
                 # and contract names, all are separated by comma `,`.
@@ -105,16 +105,20 @@ def collect_test_configs(
                         test_file = test_file.removesuffix(".sol")
 
                     # Get contract names
-                    configure_items = line[(idx + 1) :].split(",")
-                    configure_items = [s.strip() for s in configure_items]
+                    config_items = line[(idx + 1) :].split(",")
+                    config_items = [s.strip() for s in config_items]
+
+                # Parsing file listing format, only the file name is specified
+                else:
+                    test_file = line.strip()
 
                 # Extract compiler version
-                if "." in configure_items[-1]:
-                    compiler_version = configure_items[-1]
-                    target_contracts = configure_items[:-1]
+                if "." in config_items[-1]:
+                    compiler_version = config_items[-1]
+                    target_contracts = config_items[:-1]
                 else:
                     compiler_version = None
-                    target_contracts = configure_items
+                    target_contracts = config_items
 
                 test_config = TestConfig(target_contracts, compiler_version)
                 test_config_dict[test_file] = test_config
