@@ -4,13 +4,16 @@
 
 # Standard Library
 import json
+import math
 import os
 import re
+
 from typing import List, Optional, Tuple
 
+# Third Party
 from solc_json_parser.parser import SolidityAst
 
-import math
+# Library
 from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
@@ -176,14 +179,17 @@ class Smartian(Tool):
 
         # checker = Checker("Smartian", "fuzzing")
 
-        for issue_info in all_issues:
-            issue_kind, contract_name, func_name = issue_info
-            print(f"{issue_kind}: {contract_name}, {func_name}")
+        # ast = None
+        # try:
+        #     ast = SolidityAst(test_file)
+        #     ast.
+        # except Exception:
+        #     pass
 
-            try:
-                ast = SolidityAst(test_file)
-            except Exception:
-                pass
+        # for issue_info in all_issues:
+        #     issue_kind, contract_name, func_name = issue_info
+        #     print(f"{issue_kind}: {contract_name}, {func_name}")
+
 
         return []
 
