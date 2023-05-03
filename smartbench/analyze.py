@@ -9,7 +9,6 @@ import re
 import shlex
 import signal
 import subprocess
-
 from datetime import datetime
 from multiprocessing import Process, Queue
 from typing import Dict, List, Optional, Tuple
@@ -18,13 +17,7 @@ from typing import Dict, List, Optional, Tuple
 from smartbench import annotation, printer, result, validator
 from smartbench.benchmark import TestConfig
 from smartbench.docker import DockerContainer
-from smartbench.printer import (
-    debug,
-    error_traceback,
-    print_unless,
-    safe_print,
-    warning,
-)
+from smartbench.printer import debug, error_traceback, print_unless, safe_print, warning
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
 from smartbench.tools.config import RESULTS_DIR, SMARTBENCH_ROOT, Confuzzius
@@ -159,8 +152,9 @@ def collect_target_contracts_and_solc_version(
             if test_file_name.endswith(config_file_name):
                 test_config = test_configs[config_file_name]
 
+        debug(f"TEST CONFIG: {test_config}")
         if test_config is None:
-            raise ([], None)
+            return ([], None)
 
         contract_names = test_config.target_contracts
         solc_version = test_config.compiler_version
@@ -171,15 +165,21 @@ def collect_target_contracts_and_solc_version(
                 "Confuzzius does not support specifiying multiple target contracts"
             )
 
-        if solc_version is None:
-            (_, solc_version) = solc.get_target_contracts_and_solc_version(
+        if contract_names == []:
+            (
+                contract_names,
+                solc_auto,
+            ) = solc.get_target_contracts_and_solc_version(
                 test_file, True, solc_version
             )
+            debug(f"CONTRACT NAMES: {contract_names}")
+
+        if solc_version is None:
+            solc_version = solc_auto
+
         return (contract_names, solc_version)
     else:
-        return solc.get_target_contracts_and_solc_version(
-            test_file, True, solc_version
-        )
+        return solc.get_target_contracts_and_solc_version(test_file, True, solc_version)
 
 
 def analyze_test_file(

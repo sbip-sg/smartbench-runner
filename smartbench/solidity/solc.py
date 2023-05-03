@@ -112,10 +112,12 @@ def get_target_contracts_and_solc_version(
     # `solc_json_parser` can to compile the contracts, then other tools will
     # also likely to be able to compile the contracts
     for solc_version in best_solc_versions:
+        debug(f"TRY SOLC: {solc_version}")
         try:
             ast = SolidityAst(test_file, version=solc_version)
 
             contracts = ast.all_contract_names
+            debug(f"CONTRACTS: {contracts}")
             if only_deployable_contracts:
                 library_names = ast.all_libraries_names
                 abstract_contracts = ast.all_abstract_contract_names
