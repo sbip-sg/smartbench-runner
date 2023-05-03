@@ -113,7 +113,7 @@ def collect_test_configs(
                     test_file = line.strip()
 
                 # Extract compiler version
-                if "." in config_items[-1]:
+                if config_items and "." in config_items[-1]:
                     compiler_version = config_items[-1]
                     target_contracts = config_items[:-1]
                 else:

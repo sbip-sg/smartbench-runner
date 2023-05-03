@@ -160,10 +160,11 @@ def collect_target_contracts_and_solc_version(
                 test_config = test_configs[config_file_name]
 
         if test_config is None:
-            raise ([], None)
-
-        contract_names = test_config.target_contracts
-        solc_version = test_config.compiler_version
+            contract_names = solc_version = None
+            # raise Exception ([], None)
+        else:
+            contract_names = test_config.target_contracts
+            solc_version = test_config.compiler_version
 
         # Checking results
         if isinstance(tool, Confuzzius) and len(contract_names) > 1:
@@ -171,10 +172,12 @@ def collect_target_contracts_and_solc_version(
                 "Confuzzius does not support specifiying multiple target contracts"
             )
 
-        if solc_version is None:
-            (_, solc_version) = solc.get_target_contracts_and_solc_version(
+        if solc_version is None or contract_names is None:
+            (detected_contracts, detected_solc_version) = solc.get_target_contracts_and_solc_version(
                 test_file, True, solc_version
             )
+            solc_version = solc_version or detected_solc_version
+            contract_names = contract_names or detected_contracts
         return (contract_names, solc_version)
     else:
         return solc.get_target_contracts_and_solc_version(
