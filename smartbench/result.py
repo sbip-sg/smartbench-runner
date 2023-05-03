@@ -201,10 +201,10 @@ def parse_tool_results(
 
     all_results: List[AnalysisResult] = []
     for test_output_dir in test_output_dirs:
-        printer.print_medium_dashed_separator_line()
-
         if not is_tool_output_dir(tool, test_output_dir):
             continue
+
+        printer.print_medium_dashed_separator_line()
 
         # Get test file
         test_output_dir = os.path.abspath(test_output_dir)
