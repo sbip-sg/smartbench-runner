@@ -165,17 +165,18 @@ def collect_target_contracts_and_solc_version(
                 "Confuzzius does not support specifiying multiple target contracts"
             )
 
+        # If contract names is not specified in test config, auto-detect them
         if contract_names == []:
             (
                 contract_names,
-                solc_auto,
+                solc_version_detected,
             ) = solc.get_target_contracts_and_solc_version(
                 test_file, True, solc_version
             )
             debug(f"CONTRACT NAMES: {contract_names}")
 
         if solc_version is None:
-            solc_version = solc_auto
+            solc_version = solc_version_detected
 
         return (contract_names, solc_version)
     else:
