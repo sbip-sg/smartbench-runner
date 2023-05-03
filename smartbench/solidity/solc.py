@@ -10,6 +10,7 @@ import os
 import shlex
 import subprocess
 import sys
+
 from subprocess import PIPE, Popen
 from typing import List, Optional, Tuple
 
@@ -17,9 +18,11 @@ from typing import List, Optional, Tuple
 import nodesemver
 import solc_detect
 
-# Library
-from smartbench.printer import debug, error_traceback, safe_print
 from solc_json_parser.parser import SolidityAst
+
+# Library
+from smartbench.printer import debug, error_traceback, safe_print, warning
+
 
 SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -114,12 +117,11 @@ def get_target_contracts_and_solc_version(
     for solc_version in best_solc_versions:
         try:
             ast = SolidityAst(test_file, version=solc_version)
-            print(f"COMPILATION OUTPUT: {ast.original_compilation_output}")
             # ast = SolidityAst(test_file, version=solc_version)
             if ast is not None:
                 break
         except Exception as err:
-            print(f"EXCEPTION during compilation: {err}")
+            warning(f"Exception while compiling {test_file}:\n\n{err}")
             pass
 
     # Get contract information from AST parsed by SolcJSONParser
