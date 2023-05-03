@@ -18,7 +18,8 @@ from smartbench import logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error
+from smartbench.printer import debug, error, warning
+from smartbench.solidity import solc
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
@@ -158,10 +159,14 @@ class Smartian(Tool):
         # Smartian does not write output to any JSON file, so we parse its
         # result from the log file.
         log_file = self.configure_log_file(test_output_dir)
-        test_file = logger.get_input_test_file(log_file)
         debug("Smartian log file: ", log_file)
 
-        all_issues = []
+        test_file = logger.get_input_test_file(log_file)
+        assert (
+            test_file is not None
+        ), f"Failed to get test file from: {log_file}"
+
+        issues_info = []
         with open(log_file, "r", encoding="utf-8") as file:
             contract_name = None
             while line := file.readline():
@@ -172,148 +177,57 @@ class Smartian(Tool):
                 ):
                     contract_name = match.groups(1)[0]
                 elif issue_kind_description := self.parse_issue_kind(line):
-                    (issue_kind, description) = issue_kind_description
+                    (kind, descr) = issue_kind_description
                     # Parse name of function causing the bug
                     func_name = self.parse_issue_function_name(file)
-                    all_issues.append((issue_kind, contract_name, func_name))
+                    issues_info.append((kind, descr, contract_name, func_name))
 
-        # checker = Checker("Smartian", "fuzzing")
+        ast = None
+        try:
+            best_solc_versions = solc.detect_best_solc_versions(test_file)
+            best_solc_versions = solc.detect_best_solc_versions(test_file)
+            for solc_version in best_solc_versions:
+                try:
+                    ast = SolidityAst(test_file, version=solc_version)
+                    if ast is not None:
+                        break
+                except Exception as err:
+                    warning(
+                        f"Smaritan result: failed to compile {test_file}\n\n"
+                        f"{err}"
+                    )
+                    pass
+        except Exception:
+            pass
 
-        # ast = None
-        # try:
-        #     ast = SolidityAst(test_file)
-        #     ast.
-        # except Exception:
-        #     pass
+        all_issues = []
+        for issue_info in issues_info:
+            kind, descr, contract_name, func_name = issue_info
+            start_line = end_line = None
 
-        # for issue_info in all_issues:
-        #     issue_kind, contract_name, func_name = issue_info
-        #     print(f"{issue_kind}: {contract_name}, {func_name}")
+            if ast is not None:
+                debug(f"FUNCTION: {func_name}")
+                try:
+                    if func_name == "fallback":
+                        func = ast.function_by_name(contract_name, "")
+                    else:
+                        func = ast.function_by_name(contract_name, func_name)
+                    (start_line, end_line) = func.line_num
+                except Exception as err:
+                    debug(f"Failed to find function: {func_name}\n\n" f"{err}")
 
+            loc = Location(test_file, start_line, None, end_line, None)
+            issue = Issue(
+                kind,
+                descr,
+                Severity.UNKNOWN,
+                Confidence.UNKNOWN,
+                loc,
+                Checker("Smartian", "fuzzing"),
+            )
+            all_issues.append(issue)
 
-        return []
-
-    # def parse_analysis_output(
-    #         self, test_output_dir: str
-    # ) -> Optional[List[Issue]]:
-    #     """Parse analysis result of Smartian. Return a list of detected issues,
-    #     or `None` if the result parsing fails.
-
-    #     Descriptions of some bugs are described in Smartian's paper:
-    #     https://dl.acm.org/doi/abs/10.1109/ASE51524.2021.9678888"""
-
-    #     # Smartian does not write output to any JSON file, so we parse its
-    #     # result from the log file.
-    #     log_file = self.configure_log_file(test_output_dir)
-    #     debug("Smartian log file: ", log_file)
-
-    #     log_file_data = open(log_file, "r", encoding="utf-8")
-    #     data = log_file_data.read()
-
-    #     if "Fuzzing timeout expired" not in data:
-    #         return None
-
-    #     kinds = []
-
-    #     matches = re.findall(r"Assertion Failure: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.ASSERTION_FAILURE not in kinds:
-    #             num_bugs = match.removeprefix("Assertion Failure: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.ASSERTION_FAILURE)
-
-    #     matches = re.findall(r"Arbitrary Write: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION not in kinds:
-    #             num_bugs = match.removeprefix("Arbitrary Write: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION)
-
-    #     matches = re.findall(r"Block state Dependency: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.BLOCK_VALUE_DEPENDENCY not in kinds:
-    #             num_bugs = match.removeprefix("Block state Dependency: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.BLOCK_VALUE_DEPENDENCY)
-
-    #     matches = re.findall(r"Control Hijack: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.UNSAFE_DELEGATECALL not in kinds:
-    #             num_bugs = match.removeprefix("Control Hijack: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.UNSAFE_DELEGATECALL)
-
-    #     matches = re.findall(r"Ether Leak: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.LEAKING_ETHER not in kinds:
-    #             num_bugs = match.removeprefix("Ether Leak: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.LEAKING_ETHER)
-
-    #     matches = re.findall(r"Integer Bug: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.INTEGER_BUG not in kinds:
-    #             num_bugs = match.removeprefix("Integer Bug: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.INTEGER_BUG)
-
-    #     matches = re.findall(r"Mishandled Exception: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.UNHANDLED_EXCEPTION not in kinds:
-    #             num_bugs = match.removeprefix("Mishandled Exception: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.UNHANDLED_EXCEPTION)
-
-    #     matches = re.findall(r"Reentrancy: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.REENTRANCY not in kinds:
-    #             num_bugs = match.removeprefix("Reentrancy: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.REENTRANCY)
-
-    #     matches = re.findall(r"Suicidal Contract: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.UNSAFE_SELFDESTRUCT not in kinds:
-    #             num_bugs = match.removeprefix("Suicidal Contract: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.UNSAFE_SELFDESTRUCT)
-
-    #     matches = re.findall(r"Transaction Origin Use: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.TRANSACTION_ORDER_DEPENDENCY not in kinds:
-    #             num_bugs = match.removeprefix("Transaction Origin Use: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.TRANSACTION_ORDER_DEPENDENCY)
-
-    #     matches = re.findall(r"Freezing Ether: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.LOCKING_ETHER not in kinds:
-    #             num_bugs = match.removeprefix("Freezing Ether: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.LOCKING_ETHER)
-
-    #     matches = re.findall(r"Requirement Violation: [0-9]+", data)
-    #     for match in matches:
-    #         if IssueKind.REQUIREMENT_VIOLATION not in kinds:
-    #             num_bugs = match.removeprefix("Requirement Violation: ")
-    #             if int(num_bugs) > 0:
-    #                 kinds.append(IssueKind.REQUIREMENT_VIOLATION)
-
-    #     checker = Checker("Smartian", "fuzzing")
-    #     issues = []
-    #     location = self.parse_issue_location(log_file)
-    #     for kind in kinds:
-    #         issue = Issue(
-    #             kind,
-    #             "",
-    #             Severity.UNKNOWN,
-    #             Confidence.UNKNOWN,
-    #             location,
-    #             checker,
-    #         )
-    #         issues.append(issue)
-
-    #     return issues
+        return all_issues
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
