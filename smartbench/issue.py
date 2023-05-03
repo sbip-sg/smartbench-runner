@@ -39,7 +39,6 @@ class IssueKind(Enum):
     # Locking Ether
     LOCKING_ETHER = "Locking Ether"
 
-
     # Validation
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
@@ -347,7 +346,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SmartBugsPP.TIME_MANIPULATION
+        return SmartBugsPP.BAD_RANDOMNESS
 
     if issue_kind in [
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
