@@ -122,7 +122,6 @@ def collect_test_configs(
                 test_config = TestConfig(target_contracts, compiler_version)
                 test_config_dict[test_file] = test_config
 
-            debug(f"TEST CONFIG: {test_config_dict}")
             return test_config_dict
 
     except Exception:

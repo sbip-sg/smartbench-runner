@@ -7,8 +7,8 @@ import multiprocessing
 import os
 import re
 import shlex
-import signal
 import subprocess
+import sys
 
 from datetime import datetime
 from multiprocessing import Process, Queue
@@ -213,7 +213,6 @@ def analyze_test_file(
     job_id: Optional[int] = None,
     timeout: Optional[int] = None,
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
-    benchmarking: bool = False,
     parallel_mode: bool = False,
 ) -> Optional[AnalysisResult]:
     """Analyze `test_file` using `tool` and write result to `test_output_dir`.
@@ -336,7 +335,7 @@ def run_analysis_job(
     all_results: List[AnalysisResult] = []
 
     for test_file in job.test_files:
-        # Configure test output directory for the curren test file
+        # Configure test output directory for the current test file
         tool_output_dir_host = job.job_output_dir_host
         tool_output_dir_docker = job.job_output_dir_docker
 
@@ -344,23 +343,26 @@ def run_analysis_job(
         test_output_dir_docker = os.path.join(tool_output_dir_docker, test_file)
 
         # Analyze the test file
-        if res := analyze_test_file(
-            job.tool,
-            test_file,
-            job.test_configs,
-            test_output_dir_host,
-            test_output_dir_docker,
-            job.docker_container,
-            job.annot_format,
-            job.solc_version,
-            job.id,
-            job.timeout,
-            validate,
-            benchmarking,
-            parallel_mode,
-        ):
-            if res is not None:
-                all_results.append(res)
+        try:
+            if res := analyze_test_file(
+                job.tool,
+                test_file,
+                job.test_configs,
+                test_output_dir_host,
+                test_output_dir_docker,
+                job.docker_container,
+                job.annot_format,
+                job.solc_version,
+                job.id,
+                job.timeout,
+                validate,
+                parallel_mode,
+            ):
+                if res is not None:
+                    all_results.append(res)
+        except Exception as err:
+            error_traceback(f"Error when running analysis job!\n\n{err}")
+            pass
 
     result_queue.put(all_results)
 

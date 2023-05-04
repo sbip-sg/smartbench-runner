@@ -257,6 +257,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as err:
-        error_traceback(f"{err}")
+        error_traceback(f"An error occurred!\n\n{err}")
 
     exiting()

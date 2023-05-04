@@ -150,11 +150,7 @@ def parse_test_file_output_dir(
             safe_print("- No issue is detected!\n")
 
         if validate:
-            if test_file is None:
-                safe_print(f"Unable to read test file: {test_file}")
-                safe_print("Skip validating results!")
-            else:
-                validation = validator.validate_issues(tool, issues, bug_annots)
+            validation = validator.validate_issues(tool, issues, bug_annots)
 
     res = AnalysisResult(
         tool,
