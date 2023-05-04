@@ -10,7 +10,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import logger
-from smartbench.annotation import BugAnnot
+from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.printer import debug, error, error_traceback
@@ -411,14 +411,24 @@ class Slither(Tool):
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 
-            # Slither reports issue location as a range with begin and end
-            # line/colum. If an issue and a bug annotation are relevant, then
-            # the issue's location should cover the bug annotation's location.
+            if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
+                # Slither reports issue location as a range with begin and end
+                # line/colum. If an issue and a bug annotation are relevant,
+                # then the issue's location should cover the bug annotation's
+                # location.
+                if (
+                        iloc.start_line <= annot.start_line
+                        and iloc.end_line >= annot.end_line
+                ):
+                    return True
 
-            if (
-                iloc.start_line <= annot.start_line
-                and iloc.end_line >= annot.end_line
-            ):
-                return True
+            elif annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+                #  When the annotation is in SolidiFI format, we need to check
+                #  whether the annotation location covers the bug location
+                if (
+                        iloc.start_line >= annot.start_line
+                        and iloc.end_line <= annot.end_line
+                ):
+                    return True
 
         return False

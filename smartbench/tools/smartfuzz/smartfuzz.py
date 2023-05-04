@@ -173,33 +173,24 @@ class Smartfuzz(Tool):
             all_issues.append(issue)
         return all_issues
 
-    def check_issue_kind(
-        self, issue_kind: IssueKind, annotation_kind: IssueKind
-    ) -> bool:
-        """Function to check whether an reported issue is related to a bug"""
-        return issue_kind == annotation_kind
-
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
     ) -> bool:
         """Function to check whether an reported issue is related to a bug
         annotation."""
 
-        # Check for issue kind
-        if not self.check_issue_kind(issue.issue_kind, annot.bug_kind):
-            return False
-        iloc: Location = issue.locations
-        debug(
-            "match_location_of_issue_to_annotation: ",
-            iloc,
-            annot.start_line,
-            annot.end_line,
-        )
-        # Check whether the issue location is covered by the annotation location.
-        if iloc.start_line is None or iloc.end_line is None:
-            return False
-        # Pass all criteria to match an issue with a bug annotation
-        return (
-            iloc.start_line >= annot.start_line
-            and iloc.end_line <= annot.end_line
-        )
+        for iloc in issue.locations:
+            # Check whether the issue location is covered by the annotation
+            # location.
+            if iloc.start_line is None or iloc.end_line is None:
+                return False
+
+            # Checking whether the annotation location covers the issue
+            # location detected by SmartFuzz  
+            if (
+                    iloc.start_line >= annot.start_line
+                    and iloc.end_line <= annot.end_line
+            ):
+                return True
+
+        return False

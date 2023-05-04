@@ -13,6 +13,7 @@ from typing import List, Optional
 # Library
 from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
+from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.issue import IssueKind
 from smartbench.printer import debug, safe_print, warning
 
@@ -59,6 +60,10 @@ class BugAnnot:
         self.smartbugs_kind: Optional[
             SmartBugsPP
         ] = classify_bug_annot_to_smartbugs_pp_kind(self.annot_name)
+
+        self.solidifi_kind: Optional[
+            SolidiFIPP
+        ] = classify_bug_annot_to_solidifi_pp_kind(self.annot_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -227,6 +232,32 @@ def classify_bug_annot_to_smartbugs_pp_kind(
     return None
 
 
+def classify_bug_annot_to_solidifi_pp_kind(
+    annot_name: str,
+) -> Optional[SolidiFIPP]:
+    """Classify bug annotation string in SolidiFI format to issue kind."""
+    # SolidiFI annotations
+    if annot_name == "Overflow-Underflow":
+        return SolidiFIPP.OVERFLOW_UNDERFLOW
+
+    if annot_name == "Re-entrancy":
+        return SolidiFIPP.REENTRANCY
+
+    if annot_name == "Timestamp-Dependency":
+        return SolidiFIPP.TIMESTAMP_DEPENDENCY
+
+    if annot_name == "Unchecked-Send":
+        return SolidiFIPP.UNCHECKED_SEND
+
+    if annot_name == "Unhandled-Exceptions":
+        return SolidiFIPP.UNHANDLED_EXCEPTION
+
+    if annot_name == "tx.origin":
+        return SolidiFIPP.TX_ORIGIN
+
+    return None
+
+
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBugs` format in a smart contract.
 
@@ -303,7 +334,7 @@ def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
                 AnnotFormat.SOLIDIFI_FORMAT,
                 filename,
                 int(ibug[0]),
-                int(ibug[0]) + int(ibug[1]),
+                int(ibug[0]) + int(ibug[1]) - 1,
             )
             bug_annots.append(bug_annotation)
     return bug_annots
