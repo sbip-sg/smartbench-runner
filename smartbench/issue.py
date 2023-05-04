@@ -381,7 +381,7 @@ def classify_to_smartbugs_pp_kind(
 def classify_to_solidifi_pp_kind(
     issue_kind: IssueKind,
 ) -> Optional[SolidiFIPP]:
-    """Classify an issue kind to a bug kind in SmartBugs++ classification."""
+    """Classify an issue kind to a bug kind in SolidiFI classification."""
     if issue_kind in [
         IssueKind.INTEGER_BUG,
         IssueKind.INTEGER_OVERFLOW,

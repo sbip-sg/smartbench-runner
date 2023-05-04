@@ -235,8 +235,8 @@ def classify_bug_annot_to_smartbugs_pp_kind(
 def classify_bug_annot_to_solidifi_pp_kind(
     annot_name: str,
 ) -> Optional[SolidiFIPP]:
-    """Classify bug annotation string in SmartBugs++ format to issue kind."""
-    # SmartBugs annotations
+    """Classify bug annotation string in SolidiFI format to issue kind."""
+    # SolidiFI annotations
     if annot_name == "Overflow-Underflow":
         return SolidiFIPP.OVERFLOW_UNDERFLOW
 
