@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """Module containing smart contract bug classification according to
-SolidiFI: <https://github.com/DependableSystemsLab/SolidiFI>
+SolidiFI: <https://github.com/DependableSystemsLab/SolidiFI-benchmark/tree/master/buggy_contracts>
 """
 
 
