@@ -170,7 +170,7 @@ class IssueKind(Enum):
         return self.value
 
     def __eq__(self, other):
-        return self.value == other.value
+        return other and self.value == other.value
 
 
 class Severity(Enum):
