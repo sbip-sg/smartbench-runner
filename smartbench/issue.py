@@ -404,7 +404,8 @@ def classify_to_solidifi_pp_kind(
         return SolidiFIPP.UNHANDLED_EXCEPTION
 
     if issue_kind in [
-        IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
+        IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
+        IssueKind.TRANSACTION_ORDER_DEPENDENCY,
     ]:
         return SolidiFIPP.TX_ORIGIN
 
