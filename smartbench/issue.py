@@ -179,7 +179,6 @@ class Severity(Enum):
     """Class representing severity level of an issue."""
 
     # Severity level
-    UNKNOWN = "Unknown Severity"
     CODING_STYLE = "Coding Style"
     CODE_OPTIMIZATION = "Optimization"
     INFORMATIONAL = "Informational"
@@ -196,7 +195,6 @@ class Confidence(Enum):
     issue."""
 
     # Confidence level
-    UNKNOWN = "Unknown Confidence"
     LOW_CONFIDENCE = "Low Confidence"
     MEDIUM_CONFIDENCE = "Medium Confidence"
     HIGH_CONFIDENCE = "High Confidence"
@@ -224,16 +222,16 @@ class Issue:
         self,
         issue_kind: IssueKind,
         description: str,
-        severity: Severity,
-        confidence: Confidence,
         locations: List[Location],
         checker: Checker,
+        severity: Optional[Severity] = None,
+        confidence: Optional[Confidence] = None,
     ):
         """Constructor."""
         self.issue_kind: IssueKind = issue_kind
         self.description: str = description
-        self.severity: Severity = severity
-        self.confidence: Confidence = confidence
+        self.severity: Optional[Severity] = severity
+        self.confidence: Optional[Confidence] = confidence
 
         # Use a list of locations to support tools that reports multiple
         # potential bug locations of an issue.
@@ -291,10 +289,10 @@ def record_new_issue_and_deduplicate(
     existing_issues: List[Issue],
     issue_kind: IssueKind,
     description: str,
-    severity: Severity,
-    confidence: Confidence,
     locations: List[Location],
     checker: Checker,
+    severity: Optional[Severity] = None,
+    confidence: Optional[Confidence] = None,
 ):
     # Check if the new issue is already reported
     for issue in existing_issues:
@@ -305,7 +303,12 @@ def record_new_issue_and_deduplicate(
 
     # Create new issue and collect it
     issue = Issue(
-        issue_kind, description, severity, confidence, locations, checker
+        issue_kind,
+        description,
+        locations,
+        checker,
+        severity,
+        confidence,
     )
     existing_issues.append(issue)
     return existing_issues
@@ -392,20 +395,16 @@ def classify_to_solidifi_pp_kind(
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
         return SolidiFIPP.REENTRANCY
 
-    if issue_kind in [
-        IssueKind.BLOCK_VALUE_DEPENDENCY
-    ]:
+    if issue_kind in [IssueKind.BLOCK_VALUE_DEPENDENCY]:
         return SolidiFIPP.TIMESTAMP_DEPENDENCY
 
-    if issue_kind in [
-        IssueKind.UNCHECKED_SEND_ETHER
-    ]:
+    if issue_kind in [IssueKind.UNCHECKED_SEND_ETHER]:
         return SolidiFIPP.UNCHECKED_SEND
 
     if issue_kind in [
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
         IssueKind.UNCHECKED_LOW_LEVEL_CODE,
-        IssueKind.UNHANDLED_EXCEPTION
+        IssueKind.UNHANDLED_EXCEPTION,
     ]:
         return SolidiFIPP.UNHANDLED_EXCEPTION
 

@@ -62,3 +62,7 @@ disable = [
 # Linting by flake8
 [tool.flake8]
 ignore = ["E203"]
+
+# Linting by pycodestyle
+[tool.pycodestyle]
+max-line-length=80

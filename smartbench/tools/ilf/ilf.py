@@ -19,7 +19,7 @@ from smartbench import issue, logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error_traceback, warning
+from smartbench.printer import debug, error, warning
 from smartbench.solidity import solc
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
@@ -89,7 +89,7 @@ class Ilf(Tool):
         return cmd
 
     def parse_issue_kind(self, bug_name: str) -> IssueKind:
-        """Parse issue kind from issue description reported by ILF"""
+        """Parse issue kind from issue description reported by ILF."""
         if bug_name == "BlockStateDep":
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
@@ -117,14 +117,13 @@ class Ilf(Tool):
         self, test_output_dir: str
     ) -> Optional[List[Issue]]:
         """Parse output of ILF"""
-        log_lines = []
         log_file = self.configure_log_file(test_output_dir)
-        debug("ILF log_file: ", log_file)
-
         test_file = logger.get_input_test_file(log_file)
         if test_file is None:
             warning(f"Failed to get input test file from: {log_file}")
 
+        # Read analysis output from log file of ILF
+        log_lines = []
         has_fuzzing_result = False
         try:
             with open(log_file, "r", encoding="utf-8") as file:
@@ -138,7 +137,7 @@ class Ilf(Tool):
 
                     log_lines.append(line.strip())
         except Exception as err:
-            error_traceback(f"Failed to parse log file: {log_file}\n\n{err}")
+            error(f"Failed to parse log file: {log_file}\n\n{err}")
             return None
 
         if not has_fuzzing_result:
@@ -161,17 +160,19 @@ class Ilf(Tool):
         # Parsing bug information in log file
         i = 0
         all_issues: List[Issue] = []
-        function_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
+        func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
         contract = ""
         while i < len(log_lines):
             log_line = log_lines[i]
             i += 1
 
+            # Skip parsing if not fuzzing any contract yet
+            if contract == "":
+                continue
+
             # Parse contract name
             if "Fuzzing contract:" in log_line:
                 contract = log_line.removeprefix("Fuzzing contract: ")
-                continue
-            elif contract == "":
                 continue
 
             # Search for the JSON data containing analysis information
@@ -190,19 +191,17 @@ class Ilf(Tool):
                 functions = reported_bugs[bug_kind]
                 bug_locations = []
                 for func_name in functions:
-                    start_line = end_line = None
-                    if (contract, func_name) in function_loc_dict:
-                        (start_line, end_line) = function_loc_dict[
-                            (contract, func_name)
-                        ]
+                    start_l = end_l = None
+                    if (contract, func_name) in func_loc_dict:
+                        (start_l, end_l) = func_loc_dict[(contract, func_name)]
                     elif ast is not None:
                         try:
-                            func = ast.function_by_name(contract, func_name)
-                            (start_line, end_line) = func.line_num
+                            function = ast.function_by_name(contract, func_name)
+                            (start_l, end_l) = function.line_num
                             # Store function location for later use
-                            function_loc_dict[(contract, func_name)] = (
-                                start_line,
-                                end_line,
+                            func_loc_dict[(contract, func_name)] = (
+                                start_l,
+                                end_l,
                             )
                         except Exception:
                             continue
@@ -211,18 +210,15 @@ class Ilf(Tool):
                         test_file,
                         contract,
                         func_name,
-                        start_line,
-                        None,
-                        end_line,
-                        None,
+                        start_line=start_l,
+                        end_line=end_l,
                     )
                     bug_locations.append(loc)
+
                 all_issues = issue.record_new_issue_and_deduplicate(
                     all_issues,
                     issue_kind,
                     log_line,
-                    Severity.UNKNOWN,
-                    Confidence.UNKNOWN,
                     bug_locations,
                     Checker("ILF", "fuzzing"),
                 )
@@ -284,9 +280,7 @@ class Ilf(Tool):
             with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
         except Exception as err:
-            error_traceback(
-                f"Failed to parse ILF log file: {log_file}\n\n{err}"
-            )
+            error(f"Failed to parse ILF log file: {log_file}\n\n{err}")
             return []
 
         contract_name = ""

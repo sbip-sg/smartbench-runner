@@ -162,20 +162,23 @@ class Smartian(Tool):
         Descriptions of some bugs are described in Smartian's paper:
         https://dl.acm.org/doi/abs/10.1109/ASE51524.2021.9678888"""
 
-        # Smartian does not write output to any JSON file, so we parse its
-        # result from the log file.
+        # Read analysis output from log file of Smartian
         log_file = self.configure_log_file(test_output_dir)
-        debug("Smartian log file: ", log_file)
-
         test_file = logger.get_input_test_file(log_file)
         if test_file is None:
             error(f"Failed to get test file from: {log_file}")
 
         log_lines = []
-        with open(log_file, "r", encoding="utf-8") as file:
-            contract_name = None
-            while line := file.readline():
-                log_lines.append(line.strip())
+        has_fuzzing_result = False
+        try:
+            with open(log_file, "r", encoding="utf-8") as file:
+                while line := file.readline():
+                    if not has_fuzzing_result and "Fuzz target :" in line:
+                        has_fuzzing_result = True
+                    log_lines.append(line.strip())
+        except Exception as err:
+            error(f"Failed to parse log file: {log_file}\n\n{err}")
+            return None
 
         issues_info: List[Tuple[IssueKind, str, str]] = []
         for i in range(0, len(log_lines)):
@@ -233,13 +236,12 @@ class Smartian(Tool):
             loc = Location(
                 test_file, contract_name, None, start_line, None, end_line, None
             )
+
             # Do not deduplicate issues since the issue location is of the whole
             # contracts
             issue = Issue(
                 kind,
                 descr,
-                Severity.UNKNOWN,
-                Confidence.UNKNOWN,
                 [loc],
                 Checker("Smartian", "fuzzing"),
             )
