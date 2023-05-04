@@ -7,7 +7,6 @@ SmartBug Curated database: <https://github.com/smartbugs/smartbugs-curated>
 
 # Standard Library
 from enum import Enum
-from typing import List
 
 
 class SmartBugsPP(Enum):

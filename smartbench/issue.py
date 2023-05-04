@@ -7,6 +7,7 @@ from typing import List, Optional
 
 # Library
 from smartbench.bugdb.sbc import SmartBugsPP
+from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.bugdb.swc import SWCKind
 from smartbench.solidity.loc import Location
 
@@ -244,6 +245,11 @@ class Issue:
             SmartBugsPP
         ] = classify_to_smartbugs_pp_kind(issue_kind)
 
+        # Classify to SolidiFI classification
+        self.solidifi_pp_kind: Optional[
+            SolidiFIPP
+        ] = classify_to_solidifi_pp_kind(issue_kind)
+
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
         self.index = Issue.index_counter
@@ -262,6 +268,7 @@ class Issue:
             f"  + Checker: {analyzer} --> {detector}\n"
             f"  + SWC Kind: {self.swc_kind}\n"
             f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
+            f"  + SolidiFI Kind: {self.solidifi_pp_kind}\n"
             f"  + Location: {location}"
         )
 
@@ -362,6 +369,52 @@ def classify_to_smartbugs_pp_kind(
         return SmartBugsPP.UNSAFE_DELEGATECALL
 
     # Not matching any SmartBugs++ Kind
+    return None
+
+
+def classify_to_solidifi_pp_kind(
+    issue_kind: IssueKind,
+) -> Optional[SolidiFIPP]:
+    """Classify an issue kind to a bug kind in SmartBugs++ classification."""
+    if issue_kind in [
+        IssueKind.INTEGER_BUG,
+        IssueKind.INTEGER_OVERFLOW,
+        IssueKind.INTEGER_UNDERFLOW,
+    ]:
+        return SolidiFIPP.OVERFLOW_UNDERFLOW
+
+    if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
+        return SolidiFIPP.REENTRANCY
+
+    if issue_kind in [
+        IssueKind.FRONT_RUNNING,
+        IssueKind.TRANSACTION_ORDER_DEPENDENCY,
+    ]:
+        return SolidiFIPP.TOD
+
+    if issue_kind in [
+        IssueKind.BLOCK_VALUE_DEPENDENCY
+    ]:
+        return SolidiFIPP.TIMESTAMP_DEPENDENCY
+
+    if issue_kind in [
+        IssueKind.UNCHECKED_SEND_ETHER
+    ]:
+        return SolidiFIPP.UNCHECKED_SEND
+
+    if issue_kind in [
+        IssueKind.UNCHECKED_CALL_RETURN_VALUE,
+        IssueKind.UNCHECKED_LOW_LEVEL_CODE,
+        IssueKind.UNHANDLED_EXCEPTION
+    ]:
+        return SolidiFIPP.UNHANDLED_EXCEPTION
+
+    if issue_kind in [
+        IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
+    ]:
+        return SolidiFIPP.TX_ORIGIN
+
+    # Not matching any SolidiFI Kind
     return None
 
 

@@ -177,7 +177,7 @@ class Smartfuzz(Tool):
         self, issue_kind: IssueKind, annotation_kind: IssueKind
     ) -> bool:
         """Function to check whether an reported issue is related to a bug"""
-        return issue_kind == annotation_kind
+        return False
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot

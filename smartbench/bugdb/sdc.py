@@ -12,7 +12,7 @@ from enum import Enum
 class SolidiFIPP(Enum):
     """Class representing bug kind in SolidiFI Classification."""
 
-    OVERFLOW_UNDERFLOW = "Overflow/Underflow"
+    OVERFLOW_UNDERFLOW = "Overflow-Underflow"
 
     REENTRANCY = "Reentrancy"
 

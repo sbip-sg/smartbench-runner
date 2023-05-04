@@ -13,6 +13,7 @@ from typing import List, Optional
 # Library
 from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
+from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.issue import IssueKind
 from smartbench.printer import debug, safe_print, warning
 
@@ -59,6 +60,10 @@ class BugAnnot:
         self.smartbugs_kind: Optional[
             SmartBugsPP
         ] = classify_bug_annot_to_smartbugs_pp_kind(self.annot_name)
+
+        self.solidifi_kind: Optional[
+            SolidiFIPP
+        ] = classify_bug_annot_to_solidifi_pp_kind(self.annot_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -223,6 +228,20 @@ def classify_bug_annot_to_smartbugs_pp_kind(
 
     if annot_name in ["UNSAFE_DELEGATECALL"]:
         return SmartBugsPP.UNSAFE_DELEGATECALL
+
+    return None
+
+
+def classify_bug_annot_to_solidifi_pp_kind(
+    annot_name: str,
+) -> Optional[SolidiFIPP]:
+    """Classify bug annotation string in SmartBugs++ format to issue kind."""
+    # SmartBugs annotations
+    if annot_name in ["Overflow-Underflow"]:
+        return SolidiFIPP.OVERFLOW_UNDERFLOW
+
+    if annot_name in ["REENTRANCY"]:
+        return SolidiFIPP.REENTRANCY
 
     return None
 

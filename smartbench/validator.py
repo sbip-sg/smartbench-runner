@@ -89,6 +89,13 @@ def match_issue_to_annotation(
             or issue.smartbugs_pp_kind != annot.smartbugs_kind
         ):
             return False
+    elif annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+        if (
+            issue.solidifi_pp_kind is None
+            or annot.solidifi_kind is None
+            or issue.solidifi_pp_kind != annot.solidifi_kind
+        ):
+            return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
         # TODO: implement later
         return False
