@@ -179,18 +179,17 @@ class Smartfuzz(Tool):
         """Function to check whether an reported issue is related to a bug
         annotation."""
 
-        iloc: Location = issue.location
-        debug(
-            "match_location_of_issue_to_annotation: ",
-            iloc,
-            annot.start_line,
-            annot.end_line,
-        )
-        # Check whether the issue location is covered by the annotation location.
-        if iloc.start_line is None or iloc.end_line is None:
-            return False
-        # Pass all criteria to match an issue with a bug annotation
-        return (
-            iloc.start_line >= annot.start_line
-            and iloc.end_line <= annot.end_line
-        )
+        for iloc in issue.locations:
+            # Check whether the issue location is covered by the annotation
+            # location.
+            if iloc.start_line is None or iloc.end_line is None:
+                return False
+
+            # Pass all criteria to match an issue with a bug annotation
+            if (
+                    iloc.start_line >= annot.start_line
+                    and iloc.end_line <= annot.end_line
+            ):
+                return True
+
+        return False

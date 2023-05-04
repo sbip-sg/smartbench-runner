@@ -9,6 +9,7 @@ from typing import List, Optional
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.bugdb.swc import SWCKind
+from smartbench.solidity import loc
 from smartbench.solidity.loc import Location
 
 
@@ -225,16 +226,19 @@ class Issue:
         description: str,
         severity: Severity,
         confidence: Confidence,
-        location: Location,
+        locations: List[Location],
         checker: Checker,
     ):
         """Constructor."""
-        # Initialize all instance variables
         self.issue_kind: IssueKind = issue_kind
         self.description: str = description
         self.severity: Severity = severity
         self.confidence: Confidence = confidence
-        self.location: Location = location
+
+        # Use a list of locations to support tools that reports multiple
+        # potential bug locations of an issue.
+        self.locations: List[Location] = locations
+
         self.checker: Checker = checker
 
         # Classify to SWC classification
@@ -257,8 +261,8 @@ class Issue:
 
     def __str__(self):
         location = (
-            f"{self.location.print_concise()}"
-            if self.location
+            f"{loc.print_concise_locations(self.locations)}"
+            if self.locations
             else "Unknown Location"
         )
         analyzer = self.checker.analyzer
@@ -275,7 +279,7 @@ class Issue:
     def __eq__(self, other):
         return (
             self.issue_kind == other.issue_kind
-            and self.location == other.location
+            and self.locations == other.location
             and self.severity == other.severity
         )
 
@@ -289,17 +293,19 @@ def record_new_issue_and_deduplicate(
     description: str,
     severity: Severity,
     confidence: Confidence,
-    location: Location,
+    locations: List[Location],
     checker: Checker,
 ):
     # Check if the new issue is already reported
     for issue in existing_issues:
-        if issue.issue_kind == issue_kind and issue.location == location:
+        if issue.issue_kind == issue_kind and loc.check_same_locations(
+            issue.locations, locations
+        ):
             return existing_issues
 
     # Create new issue and collect it
     issue = Issue(
-        issue_kind, description, severity, confidence, location, checker
+        issue_kind, description, severity, confidence, locations, checker
     )
     existing_issues.append(issue)
     return existing_issues
@@ -358,7 +364,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
         IssueKind.UNCHECKED_LOW_LEVEL_CODE,
-        IssueKind.UNHANDLED_EXCEPTION
+        IssueKind.UNHANDLED_EXCEPTION,
     ]:
         return SmartBugsPP.UNHANDLED_EXCEPTION
 

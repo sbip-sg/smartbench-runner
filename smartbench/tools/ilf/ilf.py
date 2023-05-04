@@ -6,6 +6,7 @@
 import json
 import math
 import os
+import re
 
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -121,15 +122,13 @@ class Ilf(Tool):
         debug("ILF log_file: ", log_file)
 
         test_file = logger.get_input_test_file(log_file)
-        if test_file is not None:
+        if test_file is None:
             warning(f"Failed to get input test file from: {log_file}")
 
         has_fuzzing_result = False
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 while line := file.readline():
-                    line = line.rstrip()
-
                     if (
                         not has_fuzzing_result
                         and "tx_count" in line
@@ -137,55 +136,15 @@ class Ilf(Tool):
                     ):
                         has_fuzzing_result = True
 
-                    log_lines.append(line)
+                    log_lines.append(line.strip())
         except Exception as err:
-            error_traceback(
-                f"Failed to parse ILF log file: {log_file}\n\n{err}"
-            )
+            error_traceback(f"Failed to parse log file: {log_file}\n\n{err}")
             return None
 
         if not has_fuzzing_result:
             return None
 
-        contract_name = ""
-        result_lines = []
-        contract_result_info = []
-        for line in log_lines:
-            if "Fuzzing contract:" in line:
-                if result_lines != [] and contract_name != "":
-                    contract_result_info.append((contract_name, result_lines))
-                    result_lines = []
-
-                contract_name = line.removeprefix("Fuzzing contract: ")
-
-            else:
-                result_lines.append(line)
-
-        if result_lines != []:
-            contract_result_info.append((contract_name, result_lines))
-
-        issues_info: List[Tuple[IssueKind, str, str, str]] = []
-        for contract_name, result_lines in contract_result_info:
-            line = result_lines[-1]
-            parts = line.split()
-            if len(parts) >= 3:
-                line = line.removeprefix(parts[0] + " ")
-                line = line.removeprefix(parts[1] + " ")
-                try:
-                    data = json.loads(line)
-                    bugs = data[contract_name]["bugs"]
-                    if bugs is None:
-                        continue
-
-                    for issue_kind in bugs:
-                        ikind = self.parse_issue_kind(issue_kind)
-                        funcs = bugs[issue_kind]
-                        issues_info.append((ikind, line, contract_name, funcs))
-                except Exception:
-                    continue
-
-        checker = Checker("ILF", "fuzzing")
-
+        # Construct AST of test file to get bug location
         ast = None
         if test_file is not None:
             best_solc_versions = solc.detect_best_solc_versions(test_file)
@@ -199,28 +158,61 @@ class Ilf(Tool):
         if ast is None:
             warning(f"Failed to get AST of: {test_file}")
 
+        # Parsing bug information in log file
+        i = 0
         all_issues: List[Issue] = []
         function_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
+        while i < len(log_lines):
+            log_line = log_lines[i]
+            i += 1
 
-        for issue_info in issues_info:
-            (issue_kind, descr, contract_name, func_names) = issue_info
+            # Parse contract name
+            if "Fuzzing contract:" in log_line:
+                contract_name = log_line.removeprefix("Fuzzing contract: ")
+                continue
 
-            # ILF only pinpoints bug location by function name, so we report the
-            # function location as the bug location.
-            start_line = end_line = None
-            # if (contract_name, func_name) in contract_loc_dict:
-            #         (start_line, end_line) = contract_loc_dict[contract_name]
+            # Search for the JSON data containing analysis information
+            match = re.search(r" ({.*})$", log_line)
+            if match is None:
+                continue
 
-            loc = Location(test_file, start_line, None, end_line, None)
-            all_issues = issue.record_new_issue_and_deduplicate(
-                all_issues,
-                issue_kind,
-                descr,
-                Severity.UNKNOWN,
-                Confidence.UNKNOWN,
-                loc,
-                checker,
-            )
+            # Parsing bug information
+            analysis_data = json.loads(match.group(1))
+            reported_bugs = analysis_data[contract_name]["bugs"]
+            if reported_bugs is None:
+                continue
+
+            for bug_kind in reported_bugs:
+                issue_kind = self.parse_issue_kind(bug_kind)
+                functions = reported_bugs[bug_kind]
+                bug_locations = []
+                if test_file is not None:
+                    for func_name in functions:
+                        start_line = end_line = None
+                        if (contract_name, func_name) in function_loc_dict:
+                            (start_line, end_line) = function_loc_dict[
+                                (contract_name, func_name)
+                            ]
+                            # Store function location for later use
+                            function_loc_dict[(contract_name, func_name)] = (
+                                start_line,
+                                end_line,
+                            )
+
+                        if start_line is not None and end_line is not None:
+                            loc = Location(
+                                test_file, start_line, None, end_line, None
+                            )
+                            bug_locations.append(loc)
+                all_issues = issue.record_new_issue_and_deduplicate(
+                    all_issues,
+                    issue_kind,
+                    log_line,
+                    Severity.UNKNOWN,
+                    Confidence.UNKNOWN,
+                    bug_locations,
+                    Checker("ILF", "fuzzing"),
+                )
 
         return all_issues
 

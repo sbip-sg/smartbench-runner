@@ -5,7 +5,7 @@
 import math
 import os
 
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 class Location:
@@ -46,10 +46,10 @@ class Location:
             and self.end_column == other.end_column
         )
 
-    def print_line_column(self) -> Optional[str]:
+    def print_line_column(self) -> str:
         """Print line and column info"""
         if self.start_line is None or self.end_line is None:
-            return None
+            return ""
 
         start_line = f"{self.start_line}"
         if self.start_column is not None:
@@ -65,7 +65,7 @@ class Location:
         """Print location in concise format."""
         location = os.path.basename(self.file_path)
 
-        if (line_column := self.print_line_column()) is not None:
+        if line_column := self.print_line_column():
             location += f":{line_column}"
 
         return location
@@ -121,3 +121,35 @@ class Localizer:
                 end_line = middle_line
             else:
                 start_line = middle_line
+
+
+def print_concise_locations(locs: List[Location]) -> str:
+    # Group location by file path
+    file_locs_dict: Dict[str, List[Location]] = {}
+
+    for loc in locs:
+        if loc.file_path in file_locs_dict:
+            file_locs: List[Location] = file_locs_dict[loc.file_path]
+            file_locs.append(loc)
+        else:
+            file_locs_dict[loc.file_path] = [loc]
+
+    loc_strs = []
+    for file_path in file_locs_dict:
+        file_locs = file_locs_dict[file_path]
+        file_locs_strs = [x.print_line_column() for x in file_locs]
+        loc_strs.append(f"{file_path}: {','.join(file_locs_strs)}")
+
+    return "; ".join(loc_strs)
+
+
+def check_same_locations(locs1: List[Location], locs2: List[Location]) -> bool:
+    """Check if 2 location list are the same"""
+    if not locs1 or not locs2 or len(locs1) != len(locs2):
+        return False
+
+    for loc1 in locs1:
+        if all([loc1 != loc2 for loc2 in locs2]):
+            return False
+
+    return True
