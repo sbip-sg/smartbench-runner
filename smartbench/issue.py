@@ -351,17 +351,15 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
         IssueKind.UNCHECKED_LOW_LEVEL_CODE,
+        IssueKind.UNHANDLED_EXCEPTION
     ]:
-        return SmartBugsPP.UNCHECKED_LOW_LEVEL_CALLS
+        return SmartBugsPP.UNHANDLED_EXCEPTION
 
     if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
         return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
 
     if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
         return SmartBugsPP.UNSAFE_DELEGATECALL
-
-    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION]:
-        return SmartBugsPP.UNHANDLED_EXCEPTION
 
     # Not matching any SmartBugs++ Kind
     return None
