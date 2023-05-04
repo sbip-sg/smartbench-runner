@@ -8,7 +8,7 @@ import math
 import os
 import re
 
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 # Third Party
 from solc_json_parser.parser import SolidityAst
@@ -110,13 +110,9 @@ class Smartian(Tool):
     ) -> Optional[Tuple[IssueKind, str, str]]:
         match = None
 
-        if match := re.search(
-            r"Tx#([0-9]+) found AssertionFailure ", log_line
-        ):
+        if match := re.search(r"Tx#([0-9]+) found AssertionFailure ", log_line):
             issue_kind = IssueKind.ASSERTION_FAILURE
-        elif match := re.search(
-            r"Tx#([0-9]+) found ArbitraryWrite ", log_line
-        ):
+        elif match := re.search(r"Tx#([0-9]+) found ArbitraryWrite ", log_line):
             issue_kind = IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION
         elif match := re.search(
             r"Tx#([0-9]+) found BlockstateDependency ", log_line
@@ -172,9 +168,8 @@ class Smartian(Tool):
         debug("Smartian log file: ", log_file)
 
         test_file = logger.get_input_test_file(log_file)
-        assert (
-            test_file is not None
-        ), f"Failed to get test file from: {log_file}"
+        if test_file is None:
+            error(f"Failed to get test file from: {log_file}")
 
         log_lines = []
         with open(log_file, "r", encoding="utf-8") as file:
@@ -182,7 +177,7 @@ class Smartian(Tool):
             while line := file.readline():
                 log_lines.append(line.strip())
 
-        issues_info = []
+        issues_info: List[Tuple[IssueKind, str, str]] = []
         for i in range(0, len(log_lines)):
             line = log_lines[i].strip()
             if match := re.search(
@@ -200,55 +195,38 @@ class Smartian(Tool):
                 issues_info.append((kind, descr, contract_name))
 
         ast = None
-        try:
-            best_solc_versions = solc.detect_best_solc_versions(test_file)
+        if test_file is not None:
             best_solc_versions = solc.detect_best_solc_versions(test_file)
             for solc_version in best_solc_versions:
                 try:
                     ast = SolidityAst(test_file, version=solc_version)
                     if ast is not None:
                         break
-                except Exception as err:
-                    warning(
-                        f"Smaritan result: failed to compile {test_file}\n\n"
-                        f"{err}"
-                    )
-                    pass
-        except Exception:
-            pass
+                except Exception:
+                    continue
+        if ast is None:
+            warning(f"Failed to get AST of: {test_file}")
 
         all_issues: List[Issue] = []
+        contract_loc_dict: Dict[str, Tuple[int, int]] = {}
+
         for issue_info in issues_info:
             # kind, descr, contract_name, func_name = issue_info
-            kind, descr, contract_name = issue_info
+            (kind, descr, contract_name) = issue_info
+
+            # Smartian doesn't pinpoint the bug location to exactly
+            # which function or line of code, so we consider location of
+            # the corresponding contract as the bug location.
             start_line = end_line = None
-
-            if ast is not None:
+            if contract_name in contract_loc_dict:
+                (start_line, end_line) = contract_loc_dict[contract_name]
+            elif ast is not None:
                 try:
-                    # if func_name == "fallback":
-                    #     try:
-                    #         func = ast.function_by_name(
-                    #             contract_name, "fallback"
-                    #         )
-                    #     except Exception:
-                    #         func = ast.function_by_name(contract_name, "")
-                    # elif func_name == "constructor":
-                    #     try:
-                    #         func = ast.function_by_name(
-                    #             contract_name, "constructor"
-                    #         )
-                    #     except Exception:
-                    #         func = ast.function_by_name(
-                    #             contract_name, contract_name
-                    #         )
-                    # else:
-                    #     func = ast.function_by_name(contract_name, func_name)
-                    # (start_line, end_line) = func.line_num
-
-                    # Coarse location: use location of the whole contract as the
-                    # location of the detected issue
                     contract = ast.contract_by_name(contract_name)
                     (start_line, end_line) = contract.line_num
+
+                    # Store in a dictionary for later use
+                    contract_loc_dict[contract_name] = (start_line, end_line)
                 except Exception:
                     debug(f"Smartian: failed to find contract: {contract_name}")
 
