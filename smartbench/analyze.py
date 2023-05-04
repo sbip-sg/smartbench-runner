@@ -292,8 +292,10 @@ def analyze_test_file(
 
         if res is None:
             safe_print(f"No analysis result for: {test_file}")
-        else:
+        elif res.is_successful:
             res.print_detailed_summary()
+        else:
+            warning(f"Failed to analyze test file: {test_file}")
 
     return res
 

@@ -142,7 +142,6 @@ def parse_test_file_output_dir(
         issues = []
     else:
         is_successful = True
-
         safe_print_underline("Detected issues")
         if len(issues) > 0:
             safe_print("\n\n".join([format(f"- {x}") for x in issues]))
@@ -225,7 +224,11 @@ def parse_tool_results(
         )
 
         if res is not None:
-            res.print_detailed_summary()
+            if res.is_successful:
+                res.print_detailed_summary()
+            else:
+                warning(f"Failed to parse result of test file: {test_file}")
+
             all_results.append(res)
 
     return all_results
