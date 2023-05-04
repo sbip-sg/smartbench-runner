@@ -188,7 +188,7 @@ class Smartfuzz(Tool):
         # Check for issue kind
         if not self.check_issue_kind(issue.issue_kind, annot.annot_issue_kind):
             return False
-        iloc: Location = issue.location
+        iloc: Location = issue.locations
         debug(
             "match_location_of_issue_to_annotation: ",
             iloc,

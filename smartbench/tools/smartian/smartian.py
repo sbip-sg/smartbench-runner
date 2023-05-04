@@ -251,10 +251,10 @@ class Smartian(Tool):
         """Function to check whether an reported issue is related to a bug
         annotation."""
 
-        if issue.location is None:
+        if issue.locations is None:
             return False
 
-        iloc = issue.location
+        iloc = issue.locations
 
         # The bug line number must be reported explicitly by Smartian
         if iloc.start_line is None or iloc.end_line is None:
