@@ -16,7 +16,7 @@ from solc_json_parser.parser import SolidityAst
 
 # Library
 from smartbench import issue, logger
-from smartbench.annotation import BugAnnot
+from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.printer import debug, error_traceback, warning
@@ -232,9 +232,30 @@ class Ilf(Tool):
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
     ):
-        """Function to check whether an reported issue is related to a bug
-        annotation."""
-        # Check for issue kind
+        """Function to check whether the location of an reported issue is
+        related to a bug annotation."""
+
+        # Find if a bug location matches with the annotation location.
+        for iloc in issue.locations:
+            # The bug line number must be reported explicitly by Silther
+            if iloc.start_line is None or iloc.end_line is None:
+                return False
+
+            if (
+                annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT
+                or annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT
+            ):
+                # ILF reports issue location as a range of the whole function.
+                # If an issue and a bug annotation are relevant, then the
+                # issue's location should cover the bug annotation's location.
+                if (
+                    iloc.start_line <= annot.start_line
+                    and iloc.end_line >= annot.end_line
+                ):
+                    return True
+            else:
+                warning(f"Need to validate location for {annot.annot_format}")
+
         return False
 
     def parse_time(self, line: str):
