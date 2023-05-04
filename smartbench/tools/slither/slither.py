@@ -430,7 +430,3 @@ class Slither(Tool):
                     return True
 
         return False
-
-    def parse_instruction_coverage(self, test_output_dir: str):
-        """Parse code coverage."""
-        raise Exception("Slither does not report code coverage.")
