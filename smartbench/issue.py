@@ -387,12 +387,6 @@ def classify_to_solidifi_pp_kind(
         return SolidiFIPP.REENTRANCY
 
     if issue_kind in [
-        IssueKind.FRONT_RUNNING,
-        IssueKind.TRANSACTION_ORDER_DEPENDENCY,
-    ]:
-        return SolidiFIPP.TOD
-
-    if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY
     ]:
         return SolidiFIPP.TIMESTAMP_DEPENDENCY

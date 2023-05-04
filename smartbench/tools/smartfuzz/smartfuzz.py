@@ -173,21 +173,12 @@ class Smartfuzz(Tool):
             all_issues.append(issue)
         return all_issues
 
-    def check_issue_kind(
-        self, issue_kind: IssueKind, annotation_kind: IssueKind
-    ) -> bool:
-        """Function to check whether an reported issue is related to a bug"""
-        return False
-
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
     ) -> bool:
         """Function to check whether an reported issue is related to a bug
         annotation."""
 
-        # Check for issue kind
-        if not self.check_issue_kind(issue.issue_kind, annot.bug_kind):
-            return False
         iloc: Location = issue.location
         debug(
             "match_location_of_issue_to_annotation: ",

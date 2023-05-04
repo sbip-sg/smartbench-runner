@@ -237,11 +237,23 @@ def classify_bug_annot_to_solidifi_pp_kind(
 ) -> Optional[SolidiFIPP]:
     """Classify bug annotation string in SmartBugs++ format to issue kind."""
     # SmartBugs annotations
-    if annot_name in ["Overflow-Underflow"]:
+    if annot_name == "Overflow-Underflow":
         return SolidiFIPP.OVERFLOW_UNDERFLOW
 
-    if annot_name in ["REENTRANCY"]:
+    if annot_name == "Re-entrancy":
         return SolidiFIPP.REENTRANCY
+
+    if annot_name == "Timestamp-Dependency":
+        return SolidiFIPP.TIMESTAMP_DEPENDENCY
+
+    if annot_name == "Unchecked-Send":
+        return SolidiFIPP.UNCHECKED_SEND
+
+    if annot_name == "Unhandled-Exceptions":
+        return SolidiFIPP.UNHANDLED_EXCEPTION
+
+    if annot_name == "tx.origin":
+        return SolidiFIPP.TX_ORIGIN
 
     return None
 

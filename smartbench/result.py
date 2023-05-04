@@ -126,9 +126,9 @@ def parse_test_file_output_dir(
 ) -> Optional[AnalysisResult]:
     # Parse bug annotations in test file
     bug_annots = annotation.parse_bug_annotations(test_file, annot_format)
-    safe_print_underline("Bug annotations")
+    # safe_print_underline("Bug annotations")
     if len(bug_annots) > 0:
-        safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
+        # safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
         safe_print("")
     else:
         safe_print("- No bug annotation is found!\n")
@@ -144,10 +144,10 @@ def parse_test_file_output_dir(
         is_successful = True
 
         safe_print_underline("Detected issues")
-        if len(issues) > 0:
-            safe_print("\n\n".join([format(f"- {x}") for x in issues]))
-        else:
-            safe_print("- No issue is detected!\n")
+        # if len(issues) > 0:
+        #     safe_print("\n\n".join([format(f"- {x}") for x in issues]))
+        # else:
+        #     safe_print("- No issue is detected!\n")
 
         if validate:
             if test_file is None:

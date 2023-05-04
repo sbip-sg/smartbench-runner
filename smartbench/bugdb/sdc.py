@@ -16,8 +16,6 @@ class SolidiFIPP(Enum):
 
     REENTRANCY = "Reentrancy"
 
-    TOD = "TOD"
-
     TIMESTAMP_DEPENDENCY = "Timestamp Dependency"
 
     UNCHECKED_SEND = "Unchecked Send"

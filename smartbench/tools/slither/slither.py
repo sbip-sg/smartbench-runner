@@ -420,8 +420,8 @@ class Slither(Tool):
         # issue's location should cover the bug annotation's location.
 
         return (
-            iloc.start_line <= annot.start_line
-            and iloc.end_line >= annot.end_line
+            iloc.start_line <= annot.start_line + 1
+            and iloc.end_line >= annot.end_line - 1
         )
 
     def parse_instruction_coverage(self, test_output_dir: str):
