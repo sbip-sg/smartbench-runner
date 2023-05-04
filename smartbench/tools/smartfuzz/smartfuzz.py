@@ -132,7 +132,7 @@ class Smartfuzz(Tool):
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
-        safe_print("unknown issue kind: ", description)
+        safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
 
     def parse_analysis_output(
@@ -186,7 +186,7 @@ class Smartfuzz(Tool):
         annotation."""
 
         # Check for issue kind
-        if not self.check_issue_kind(issue.issue_kind, annot.annot_issue_kind):
+        if not self.check_issue_kind(issue.issue_kind, annot.bug_kind):
             return False
         iloc: Location = issue.locations
         debug(
