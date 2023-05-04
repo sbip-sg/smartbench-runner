@@ -47,17 +47,17 @@ def print_unless(condition: bool, *args: str) -> None:
 
 def warning(*args: str) -> None:
     """Print a warning message"""
-    safe_print("\n!! WARNING: " + " ".join(map(str, args)) + "\n")
+    safe_print("!! WARNING: " + " ".join(map(str, args)))
 
 
 def error(*args: str) -> None:
     """Print an error message"""
-    safe_print("\n!! ERROR: " + " ".join(map(str, args)) + "\n")
+    safe_print("!! ERROR: " + " ".join(map(str, args)))
 
 
 def error_traceback(*args: str) -> None:
     """Print an error message"""
-    safe_print("\n!! ERROR: " + " ".join(map(str, args)) + "\n")
+    safe_print("!! ERROR: " + " ".join(map(str, args)) + "\n")
     traceback_info = traceback.format_exc()
     safe_print("*** Backtrace ***\n")
     lexer = pygments.lexers.get_lexer_by_name("pytb", stripall=True)

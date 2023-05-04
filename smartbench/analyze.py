@@ -363,7 +363,9 @@ def run_analysis_job(
                 if res is not None:
                     all_results.append(res)
         except Exception as err:
-            error_traceback(f"Error when running analysis job!\n\n{err}")
+            error_traceback(
+               f"An exception occurred when running analysis job!\n\n{err}"
+            )
             pass
 
     result_queue.put(all_results)
