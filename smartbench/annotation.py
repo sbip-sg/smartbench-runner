@@ -334,7 +334,7 @@ def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
                 AnnotFormat.SOLIDIFI_FORMAT,
                 filename,
                 int(ibug[0]),
-                int(ibug[0]) + int(ibug[1]),
+                int(ibug[0]) + int(ibug[1]) - 1,
             )
             bug_annots.append(bug_annotation)
     return bug_annots

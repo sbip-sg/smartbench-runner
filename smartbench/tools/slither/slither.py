@@ -10,7 +10,7 @@ from typing import List, Optional
 
 # Library
 from smartbench import logger
-from smartbench.annotation import BugAnnot
+from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
 from smartbench.printer import (
@@ -415,14 +415,21 @@ class Slither(Tool):
         if iloc.start_line is None or iloc.end_line is None:
             return False
 
-        # Slither reports issue location as a range with begin and end
-        # line/colum. If an issue and a bug annotation are relevant, then the
-        # issue's location should cover the bug annotation's location.
-
-        return (
-            iloc.start_line <= annot.start_line + 1
-            and iloc.end_line >= annot.end_line - 1
-        )
+        if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
+            # Slither reports issue location as a range with begin and end
+            # line/colum. If an issue and a bug annotation are relevant, then the
+            # issue's location should cover the bug annotation's location.
+            return (
+                iloc.start_line <= annot.start_line
+                and iloc.end_line >= annot.end_line
+            )
+        elif annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+            return (
+                iloc.start_line >= annot.start_line
+                and iloc.end_line <= annot.end_line
+            )
+        else:
+            return False
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage."""
