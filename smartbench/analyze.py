@@ -148,27 +148,43 @@ def log_analysis_output(
 def collect_target_contracts_and_solc_version(
     tool: Tool,
     test_file: str,
-    test_configs: Optional[Dict[str, TestConfig]],
+    test_config_dict: Optional[Dict[str, TestConfig]],
     solc_version: Optional[str] = None,
 ) -> Tuple[List[str], Optional[str]]:
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
-    # Auto detect target contracts if they is not specified explicitly by users
-    if test_configs is not None:
-        # Collect target contracts specified explicitly by users
+    if test_config_dict is None:
+        # Auto detect target contracts and compiler version if no test config is
+        # specified
+        return solc.get_target_contracts_and_solc_version(
+            test_file, True, solc_version
+        )
+    else:
+        # Collect target contracts and compiler versions that are explicitly
+        # specified by users
+
+        # Find test configuration for the input file
         test_config = None
         test_file_name = test_file.removesuffix(".sol")
-        for config_file_name in test_configs:
+        for config_file_name in test_config_dict:
             if test_file_name.endswith(config_file_name):
-                test_config = test_configs[config_file_name]
+                test_config = test_config_dict[config_file_name]
 
+        # Return empty contract list if no configuration is specified for this
+        # input file.
         if test_config is None:
             return ([], None)
 
-        contract_names = test_config.target_contracts
-        solc_version = test_config.compiler_version
+        # Always use the compiler version specified in test configure if
+        # possible, otherwise, use the compiler version specified by CLI
+        if test_config.compiler_version is not None:
+            solc_version = test_config.compiler_version
 
-        # If contract names is not specified in test config, auto-detect them
+        # Use contract names from test config
+        contract_names = test_config.target_contracts
+
+        # If contract names or compiler version are not specified in test
+        # config, auto-detect them
         if contract_names == [] or solc_version is None:
             (
                 contract_names_detected,
@@ -179,15 +195,10 @@ def collect_target_contracts_and_solc_version(
 
         if contract_names == []:
             contract_names = contract_names_detected
-
         if solc_version is None:
             solc_version = solc_version_detected
 
         return (contract_names, solc_version)
-    else:
-        return solc.get_target_contracts_and_solc_version(
-            test_file, True, solc_version
-        )
 
 
 def analyze_test_file(
