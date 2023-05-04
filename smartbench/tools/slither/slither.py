@@ -424,8 +424,6 @@ class Slither(Tool):
             and iloc.end_line >= annot.end_line
         )
 
-        return True
-
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage."""
         raise Exception("Slither does not report code coverage.")

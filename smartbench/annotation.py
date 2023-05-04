@@ -6,9 +6,11 @@
 import csv
 import os
 import warnings
+
 from enum import Enum
 from typing import List, Optional
 
+# Library
 from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.issue import IssueKind
@@ -50,18 +52,13 @@ class BugAnnot:
         end_line: int,
     ):
         self.annot_name: str = annot_name
-        self.bug_kind: IssueKind = self.map_bug_annot_to_issue_kind(
-            annot_name, annot_format
-        )
         self.annot_format: AnnotFormat = annot_format
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
-        self.smartbugs_kind: Optional[SBC] = (
-            None
-            if self.bug_kind is None
-            else issue.classify_to_smartbugs_pp_kind(self.bug_kind)
-        )
+        self.smartbugs_kind: Optional[
+            SmartBugsPP
+        ] = classify_bug_annot_to_smartbugs_pp_kind(self.annot_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -73,7 +70,7 @@ class BugAnnot:
         location = f"{os.path.basename(self.file_path)}:{self.start_line}"
         if self.start_line != self.end_line:
             location = location + "-" + str(self.end_line)
-        return f"Bug ({self.index}): {self.bug_kind} - {location}"
+        return f"Bug ({self.index}): {self.annot_name} - {location}"
 
     def map_bug_annot_to_issue_kind(
         self, annot_name: str, annot_format: AnnotFormat
@@ -175,6 +172,59 @@ class BugAnnot:
 
     def __str__(self):
         return self.print_concise()
+
+
+def classify_bug_annot_to_smartbugs_pp_kind(
+    annot_name: str,
+) -> Optional[SmartBugsPP]:
+    """Classify bug annotation string in SmartBugs++ format to issue kind."""
+    # SmartBugs annotations
+    if annot_name in ["ACCESS_CONTROL"]:
+        return SmartBugsPP.ACCESS_CONTROL
+
+    if annot_name in ["ASSERTION_FAILURE"]:
+        return SmartBugsPP.ASSERTION_FAILURE
+
+    if annot_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
+        return SmartBugsPP.ARITHMETIC
+
+    if annot_name in ["BAD_RANDOMNESS"]:
+        return SmartBugsPP.BAD_RANDOMNESS
+
+    if annot_name in ["DENIAL_OF_SERVICE"]:
+        return SmartBugsPP.DENIAL_OF_SERVICE
+
+    if annot_name in "FRONT_RUNNING":
+        return SmartBugsPP.FRONT_RUNNING
+
+    if annot_name in ["LEAKING_ETHER"]:
+        return SmartBugsPP.LEAKING_ETHER
+
+    if annot_name in ["LOCKING_ETHER"]:
+        return SmartBugsPP.LOCKING_ETHER
+
+    if annot_name in ["REENTRANCY"]:
+        return SmartBugsPP.REENTRANCY
+
+    if annot_name in ["SHORT_ADDRESSES"]:
+        return SmartBugsPP.SHORT_ADDRESSES
+
+    if annot_name in ["TIME_MANIPULATION"]:
+        return SmartBugsPP.TIME_MANIPULATION
+
+    if annot_name in ["TRANSACTION_ORDER_DEPENDENCY"]:
+        return SmartBugsPP.TRANSACTION_ORDER_DEPENDENCY
+
+    if annot_name in ["UNCHECKED_LL_CALLS", "UNHANDLED_EXCEPTION"]:
+        return SmartBugsPP.UNHANDLED_EXCEPTION
+
+    if annot_name in ["UNPROTECTED_SELFDESTRUCT"]:
+        return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
+
+    if annot_name in ["UNSAFE_DELEGATECALL"]:
+        return SmartBugsPP.UNSAFE_DELEGATECALL
+
+    return None
 
 
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:

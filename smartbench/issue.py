@@ -28,17 +28,16 @@ class IssueKind(Enum):
     UNCHECKED_SEND_ETHER = "Unchecked Send Ether"
     UNCHECKED_TRANSFER_ETHER = "Unchecked Transfer Ether"
     UNCHECKED_CALL_RETURN_VALUE = "Unchecked Call Return Value"
-    UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low-Level Calls"
     UNUSED_RETURN_VALUE = "Unused Return Value"
+
+    # Exceptions
+    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     # Leaking Ether
     LEAKING_ETHER = "Leaking Ether"
 
     # Locking Ether
     LOCKING_ETHER = "Locking Ether"
-
-    # Exceptions
-    UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     # Validation
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
@@ -277,7 +276,7 @@ class Issue:
         return not (self.__eq__(other))
 
 
-def update_new_issue(
+def record_new_issue_and_deduplicate(
     existing_issues: List[Issue],
     issue_kind: IssueKind,
     description: str,
@@ -347,23 +346,20 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SmartBugsPP.TIME_MANIPULATION
+        return SmartBugsPP.BAD_RANDOMNESS
 
     if issue_kind in [
-        IssueKind.UNCHECKED_LOW_LEVEL_CALLS,
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
         IssueKind.UNCHECKED_LOW_LEVEL_CODE,
+        IssueKind.UNHANDLED_EXCEPTION
     ]:
-        return SmartBugsPP.UNCHECKED_LOW_LEVEL_CALLS
+        return SmartBugsPP.UNHANDLED_EXCEPTION
 
     if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
         return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
 
     if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
         return SmartBugsPP.UNSAFE_DELEGATECALL
-
-    if issue_kind in [IssueKind.UNHANDLED_EXCEPTION]:
-        return SmartBugsPP.UNHANDLED_EXCEPTION
 
     # Not matching any SmartBugs++ Kind
     return None
@@ -457,7 +453,7 @@ def classify_to_swc_kind(
     if issue_kind in []:
         return SWCKind.LACK_OF_PROPER_SIGNATURE_VERIFICATION
 
-    if issue_kind in []:
+    if issue_kind in [IssueKind.REQUIREMENT_VIOLATION]:
         return SWCKind.REQUIREMENT_VIOLATION
 
     if issue_kind in [IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION]:

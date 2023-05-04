@@ -37,8 +37,6 @@ class SmartBugsPP(Enum):
 
     TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
 
-    UNCHECKED_LOW_LEVEL_CALLS = "Unchecked Low Level Calls"
-
     UNHANDLED_EXCEPTION = "Unhandled Exception"
 
     UNPROTECTED_SELFDESTRUCT = "Unprotected Selfdestruct"
