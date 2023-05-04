@@ -423,6 +423,8 @@ class Slither(Tool):
                     return True
 
             elif annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+                #  When the annotation is in SolidiFI format, we need to check
+                #  whether the annotation location covers the bug location
                 if (
                         iloc.start_line >= annot.start_line
                         and iloc.end_line <= annot.end_line

@@ -185,7 +185,8 @@ class Smartfuzz(Tool):
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 
-            # Pass all criteria to match an issue with a bug annotation
+            # Checking whether the annotation location covers the issue
+            # location detected by SmartFuzz  
             if (
                     iloc.start_line >= annot.start_line
                     and iloc.end_line <= annot.end_line
