@@ -162,13 +162,16 @@ class Ilf(Tool):
         i = 0
         all_issues: List[Issue] = []
         function_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
+        contract = ""
         while i < len(log_lines):
             log_line = log_lines[i]
             i += 1
 
             # Parse contract name
             if "Fuzzing contract:" in log_line:
-                contract_name = log_line.removeprefix("Fuzzing contract: ")
+                contract = log_line.removeprefix("Fuzzing contract: ")
+                continue
+            elif contract == "":
                 continue
 
             # Search for the JSON data containing analysis information
@@ -178,7 +181,7 @@ class Ilf(Tool):
 
             # Parsing bug information
             analysis_data = json.loads(match.group(1))
-            reported_bugs = analysis_data[contract_name]["bugs"]
+            reported_bugs = analysis_data[contract]["bugs"]
             if reported_bugs is None:
                 continue
 
@@ -186,24 +189,34 @@ class Ilf(Tool):
                 issue_kind = self.parse_issue_kind(bug_kind)
                 functions = reported_bugs[bug_kind]
                 bug_locations = []
-                if test_file is not None:
-                    for func_name in functions:
-                        start_line = end_line = None
-                        if (contract_name, func_name) in function_loc_dict:
-                            (start_line, end_line) = function_loc_dict[
-                                (contract_name, func_name)
-                            ]
+                for func_name in functions:
+                    start_line = end_line = None
+                    if (contract, func_name) in function_loc_dict:
+                        (start_line, end_line) = function_loc_dict[
+                            (contract, func_name)
+                        ]
+                    elif ast is not None:
+                        try:
+                            func = ast.function_by_name(contract, func_name)
+                            (start_line, end_line) = func.line_num
                             # Store function location for later use
-                            function_loc_dict[(contract_name, func_name)] = (
+                            function_loc_dict[(contract, func_name)] = (
                                 start_line,
                                 end_line,
                             )
+                        except Exception:
+                            continue
 
-                        if start_line is not None and end_line is not None:
-                            loc = Location(
-                                test_file, start_line, None, end_line, None
-                            )
-                            bug_locations.append(loc)
+                    loc = Location(
+                        test_file,
+                        contract,
+                        func_name,
+                        start_line,
+                        None,
+                        end_line,
+                        None,
+                    )
+                    bug_locations.append(loc)
                 all_issues = issue.record_new_issue_and_deduplicate(
                     all_issues,
                     issue_kind,

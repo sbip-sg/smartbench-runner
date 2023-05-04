@@ -92,7 +92,7 @@ class Sfuzz(Tool):
             return None
 
         # TODO: Need to parse line and number location
-        return Location(file_path, None, None, None, None)
+        return Location(file_path)
 
     def parse_issue_kind(self, description: str) -> IssueKind:
         if "exception disorder : found" in description:
