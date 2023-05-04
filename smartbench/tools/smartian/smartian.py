@@ -238,7 +238,7 @@ class Smartian(Tool):
                 descr,
                 Severity.UNKNOWN,
                 Confidence.UNKNOWN,
-                loc,
+                [loc],
                 Checker("Smartian", "fuzzing"),
             )
             all_issues.append(issue)
@@ -251,23 +251,22 @@ class Smartian(Tool):
         """Function to check whether an reported issue is related to a bug
         annotation."""
 
-        if issue.locations is None:
-            return False
+        for iloc in issue.locations:
+            # The bug line number must be reported explicitly by Smartian
+            if iloc.start_line is None or iloc.end_line is None:
+                return False
 
-        iloc = issue.locations
+            # Smartian report a bug location at the function level: begin and end
+            # line of the function containing bugs. So, the bug location must cover
+            # the issue location.
 
-        # The bug line number must be reported explicitly by Smartian
-        if iloc.start_line is None or iloc.end_line is None:
-            return False
+            if (
+                iloc.start_line <= annot.start_line
+                and iloc.end_line >= annot.end_line
+            ):
+                return True
 
-        # Smartian report a bug location at the function level: begin and end
-        # line of the function containing bugs. So, the bug location must cover
-        # the issue location.
-
-        return (
-            iloc.start_line <= annot.start_line
-            and iloc.end_line >= annot.end_line
-        )
+        return False
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
