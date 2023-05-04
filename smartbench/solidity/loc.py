@@ -17,14 +17,18 @@ class Location:
 
     def __init__(
         self,
-        file_path: str,
+        file_path: Optional[str] = None,
+        contract_name: Optional[str] = None,
+        function_name: Optional[str] = None,
         start_line: Optional[int] = None,
         start_column: Optional[int] = None,
         end_line: Optional[int] = None,
         end_column: Optional[int] = None,
     ):
         """Constructor"""
-        self.file_path: str = file_path
+        self.file_path = file_path
+        self.contract_name = contract_name
+        self.function_name = function_name
         self.start_line = int(start_line) if start_line else None
         self.start_column = int(start_column) if start_column else None
         self.end_line = int(end_line) if end_line else None
@@ -40,6 +44,8 @@ class Location:
     def __eq__(self, other):
         return (
             self.file_path == other.file_path
+            and self.contract_name == other.contract_name
+            and self.function_name == other.function_name
             and self.start_line == other.start_line
             and self.start_column == other.start_column
             and self.end_line == other.end_line
@@ -136,16 +142,20 @@ def print_concise_locations(locs: List[Location]) -> str:
 
     loc_strs = []
     for file_path in file_locs_dict:
+        file_name = os.path.basename(file_path)
         file_locs = file_locs_dict[file_path]
         file_locs_strs = [x.print_line_column() for x in file_locs]
-        loc_strs.append(f"{file_path}: {','.join(file_locs_strs)}")
+        if file_locs_strs is None:
+            loc_strs.append(f"{file_name}")
+        else:
+            loc_strs.append(f"{file_name}: {','.join(file_locs_strs)}")
 
     return "; ".join(loc_strs)
 
 
 def check_same_locations(locs1: List[Location], locs2: List[Location]) -> bool:
     """Check if 2 location list are the same"""
-    if not locs1 or not locs2 or len(locs1) != len(locs2):
+    if len(locs1) != len(locs2):
         return False
 
     for loc1 in locs1:

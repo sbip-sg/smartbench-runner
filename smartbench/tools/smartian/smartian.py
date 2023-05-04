@@ -230,7 +230,9 @@ class Smartian(Tool):
                 except Exception:
                     debug(f"Smartian: failed to find contract: {contract_name}")
 
-            loc = Location(test_file, start_line, None, end_line, None)
+            loc = Location(
+                test_file, contract_name, None, start_line, None, end_line, None
+            )
             # Do not deduplicate issues since the issue location is of the whole
             # contracts
             issue = Issue(
