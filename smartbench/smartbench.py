@@ -183,10 +183,10 @@ def parse_analysis_results(args) -> None:
     if args.export_summary != "":
         summary_file_format = args.export_summary
 
-    # Print detailed summary
-    report_detailed_summary = False
-    if args.detailed_summary:
-        report_detailed_summary = True
+    # Whether to print details of bug detection
+    print_bug_details = True
+    if args.disable_print_details:
+        print_bug_details = False
 
     # Parsing analysis results
     for result_dir in result_directories:
@@ -197,7 +197,7 @@ def parse_analysis_results(args) -> None:
             args.validate,
             summary_file_format,
             args.annot_format,
-            report_detailed_summary,
+            print_bug_details
         )
 
 

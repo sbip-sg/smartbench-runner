@@ -57,10 +57,13 @@ class BugAnnot:
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
+
+        # Classifying this bug annotation to SmartBugs classification
         self.smartbugs_kind: Optional[
             SmartBugsPP
         ] = classify_bug_annot_to_smartbugs_pp_kind(self.annot_name)
 
+        # Classifying this bug annotation to Solidifi classification
         self.solidifi_kind: Optional[
             SolidiFIPP
         ] = classify_bug_annot_to_solidifi_pp_kind(self.annot_name)

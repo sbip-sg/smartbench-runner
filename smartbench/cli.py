@@ -238,11 +238,11 @@ def parse_cli_arguments():
         help="Export analysis summaries to JSON or CSV files.",
     )
 
-    # Print and exported summary in a more detailed format.
+    # Disable printing detail bug summary
     result_argparser.add_argument(
-        "--detailed-summary",
+        "--disable-print-details",
         action="store_true",
-        help="Print and export summary in a more detailed format.",
+        help="Disable printing details of bug detection results.",
     )
 
     # Specify benchmark name for special cases without standard annotation and

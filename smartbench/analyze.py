@@ -285,7 +285,6 @@ def analyze_test_file(
 
     res = None
     if not parallel_mode:
-        debug(f"PARSE FILE: {test_output_dir_host}")
         res = result.parse_test_file_output_dir(
             tool, test_file, test_output_dir_host, None, validate
         )
