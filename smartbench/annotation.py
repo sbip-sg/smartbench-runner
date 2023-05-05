@@ -32,9 +32,20 @@ BUG_CLOSE_TAG = "</bug>"
 class AnnotFormat(Enum):
     """Class representing kind of bug annotations."""
 
-    SMARTBUGS_FORMAT = "SmartBugs Format"
-    SMARTBENCH_FORMAT = "SmartBench Format"
-    SOLIDIFI_FORMAT = "SolidiFI Format"
+    SMARTBUGS = "SmartBugs"
+    SMARTBENCH = "SmartBench"
+    SOLIDIFI = "SolidiFI"
+
+
+def parse_annot_format_kind(annot_format: str) -> Optional[AnnotFormat]:
+    if annot_format.lower() == "smartbugs":
+        return AnnotFormat.SMARTBUGS
+    elif annot_format.lower() == "smartbench":
+        return AnnotFormat.SMARTBENCH
+    elif annot_format.lower() == "solidifi":
+        return AnnotFormat.SOLIDIFI
+    else:
+        return None
 
 
 class BugAnnot:
@@ -84,9 +95,9 @@ class BugAnnot:
         self, annot_name: str, annot_format: AnnotFormat
     ) -> Optional[IssueKind]:
         """Classify bug annotation string to issue kind."""
-        if annot_format == AnnotFormat.SMARTBUGS_FORMAT:
+        if annot_format == AnnotFormat.SMARTBUGS:
             return self.map_smartbugs_annot_to_issue_kind(annot_name)
-        elif annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+        elif annot_format == AnnotFormat.SOLIDIFI:
             return self.map_solidifi_bug_annot_to_issue_kind(annot_name)
         else:
             warning(f"Unknown bug annotation format: {annot_format}")
@@ -297,7 +308,7 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
                 for bug_type in bug_info.split(","):
                     bug_annotation = BugAnnot(
                         bug_type.strip(),
-                        AnnotFormat.SMARTBUGS_FORMAT,
+                        AnnotFormat.SMARTBUGS,
                         filename,
                         start_line,
                         end_line,
@@ -334,7 +345,7 @@ def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
         for ibug in bug_log_list[1 : len(bug_log_list)]:
             bug_annotation = BugAnnot(
                 ibug[2].strip(),
-                AnnotFormat.SOLIDIFI_FORMAT,
+                AnnotFormat.SOLIDIFI,
                 filename,
                 int(ibug[0]),
                 int(ibug[0]) + int(ibug[1]) - 1,
@@ -374,7 +385,9 @@ def guess_annotation_type(filename: str) -> Optional[str]:
     return None
 
 
-def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
+def parse_bug_annotations(
+    test_file: str, annot_format: Optional[AnnotFormat] = None
+) -> List[BugAnnot]:
     """Parse bug annotation in a smart contract.
 
     The input `annot_format` can take value `smartbugs`, `smartbench`, `solidifi`, or None.
@@ -391,13 +404,13 @@ def parse_bug_annotations(test_file: str, annot_format=None) -> List[BugAnnot]:
     # Reset bug annotation counter
     BugAnnot.index_counter = 1
 
-    if annot_format.lower() == "smartbugs":
+    if annot_format == AnnotFormat.SMARTBUGS:
         return parse_smartbugs_annotations(test_file)
 
-    if annot_format.lower() == "smartbench":
+    if annot_format == AnnotFormat.SMARTBENCH:
         return parse_smartbench_annotations(test_file)
 
-    if annot_format.lower() == "solidifi":
+    if annot_format == AnnotFormat.SOLIDIFI:
         return parse_solidifi_annotations(test_file)
 
     warnings.warn("Unknown bug annotation formmat:", annot_format)

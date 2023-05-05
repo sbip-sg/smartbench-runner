@@ -41,7 +41,7 @@ class AnalysisResult:
         test_file: str,
         test_output_dir: str,
         bug_annots: List[BugAnnot],
-        annot_format: Optional[str],
+        annot_format: Optional[AnnotFormat],
         is_successful: bool,
         issues: List[Issue] = [],
         validation_result: Optional[ValidationResult] = None,
@@ -125,7 +125,7 @@ def parse_test_file_output_dir(
     benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
-    annot_format: Optional[str] = None,
+    annot_format: Optional[AnnotFormat] = None,
     print_bug_details: bool = True,
 ) -> Optional[AnalysisResult]:
     """Parsing and printing analysis results"""
@@ -176,7 +176,7 @@ def parse_tool_results(
     benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
-    annot_format: Optional[str] = None,
+    annot_format: Optional[AnnotFormat] = None,
     print_bug_details: bool = True,
 ) -> List[AnalysisResult]:
     printer.print_long_double_separator_line()
@@ -249,7 +249,7 @@ def parse_result_directory(
     benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
-    annot_format: Optional[str] = None,
+    annot_format: Optional[AnnotFormat] = None,
     print_bug_details: bool = True,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
@@ -403,7 +403,7 @@ def print_benchmarking_results(
                 continue
 
             num_missing = len(validation.missing_bugs)
-            if result.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+            if result.annot_format == AnnotFormat.SOLIDIFI:
                 # In Solidifi benchmarks, multiple correct bugs under
                 # the same injected buggy function are only count as
                 # one, so the final number of correct is computed by
@@ -469,7 +469,7 @@ def export_benchmarking_results_to_csv_format(
                 else:
                     num_missing = len(validation.missing_bugs)
 
-                    if result.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+                    if result.annot_format == AnnotFormat.SOLIDIFI:
                         # In Solidifi benchmarks, multiple correct bugs under
                         # the same injected buggy function are only count as
                         # one, so the final number of correct is computed by

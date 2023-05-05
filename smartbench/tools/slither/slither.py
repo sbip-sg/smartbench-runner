@@ -419,7 +419,7 @@ class Slither(Tool):
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 
-            if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
+            if annot.annot_format == AnnotFormat.SMARTBUGS:
                 # Slither reports issue location as a range with begin and end
                 # line/colum. If an issue and a bug annotation are relevant,
                 # then the issue's location should cover the bug annotation's
@@ -430,7 +430,7 @@ class Slither(Tool):
                 ):
                     return True
 
-            elif annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+            elif annot.annot_format == AnnotFormat.SOLIDIFI:
                 #  When the annotation is in SolidiFI format, we need to check
                 #  whether the annotation location covers the bug location
                 if (

@@ -233,8 +233,8 @@ class Ilf(Tool):
                 return False
 
             if (
-                annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT
-                or annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT
+                annot.annot_format == AnnotFormat.SMARTBUGS
+                or annot.annot_format == AnnotFormat.SOLIDIFI
             ):
                 # ILF reports issue location as a range of the whole function.
                 # If an issue and a bug annotation are relevant, then the

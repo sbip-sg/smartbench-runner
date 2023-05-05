@@ -82,21 +82,21 @@ def match_issue_to_annotation(
     annotation."""
 
     # Check whether the issue kind and bug annotation kind are related
-    if annot.annot_format == AnnotFormat.SMARTBUGS_FORMAT:
+    if annot.annot_format == AnnotFormat.SMARTBUGS:
         if (
             issue.smartbugs_pp_kind is None
             or annot.smartbugs_kind is None
             or issue.smartbugs_pp_kind != annot.smartbugs_kind
         ):
             return False
-    elif annot.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+    elif annot.annot_format == AnnotFormat.SOLIDIFI:
         if (
             issue.solidifi_pp_kind is None
             or annot.solidifi_kind is None
             or issue.solidifi_pp_kind != annot.solidifi_kind
         ):
             return False
-    elif annot.annot_format == AnnotFormat.SMARTBENCH_FORMAT:
+    elif annot.annot_format == AnnotFormat.SMARTBENCH:
         # TODO: implement later
         return False
 

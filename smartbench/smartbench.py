@@ -21,6 +21,7 @@ from smartbench import (
     printer,
     result,
 )
+from smartbench.annotation import AnnotFormat
 from smartbench.cli import Command
 from smartbench.printer import error, error_traceback, safe_print
 from smartbench.tools.config import configure_analysis_tools
@@ -183,6 +184,12 @@ def parse_analysis_results(args) -> None:
     if args.export_summary != "":
         summary_file_format = args.export_summary
 
+    annot_format = None
+    if args.annot_format is not None:
+        annot_format = annotation.parse_annot_format_kind(args.annot_format)
+
+    print(f"ANNOT FORMAT: {annot_format}")
+
     # Whether to print details of bug detection
     print_bug_details = True
     if args.disable_print_details:
@@ -196,8 +203,8 @@ def parse_analysis_results(args) -> None:
             benchmark_names,
             args.validate,
             summary_file_format,
-            args.annot_format,
-            print_bug_details
+            annot_format,
+            print_bug_details,
         )
 
 
