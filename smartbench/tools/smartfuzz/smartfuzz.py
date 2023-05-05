@@ -55,29 +55,38 @@ class Smartfuzz(Tool):
         should have the same signature with other tools."""
 
         annot_format = kwargs.get("annot_format", None)
-        # safe_print(f"annot_format: {annot_format}")
+
         # Configure command
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
-        # ./benchmark.sh input_file output_file coverage_file timeout[integer] seed[integer] time_distribution[equal or default] [the rest]"
 
         timeout = self.default_timeout if timeout is None else timeout
         cmd = (
             cmd
-            + f" {test_file} {test_output_dir}/smartfuzz_result.json {test_output_dir}/smartfuzz_coverage.json {timeout}"
+            + f" {test_file}"
+            + f" {test_output_dir}/smartfuzz_result.json"
+            + f" {test_output_dir}/smartfuzz_coverage.json"
+            + f" {timeout}"
             + f" {self.random_seed} default"
         )
+
+        # Specify the input contract name if there is only 1 target contract.
+        # Otherwise, let SmartFuzz handle all the contract name automatically
+        if annot_format != "solidifi":
+            if len(contracts) == 1:
+                cmd += f" --contract-name {contracts[0]}"
 
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
-        if annot_format != "solidifi":
-            if len(contracts) == 1:
-                cmd += f" --contract-name {contracts[0]}"
+
+        # Timeout
+
+        # Finally, pass default and additional arguments
         if self.default_arguments:
             cmd = cmd + " " + self.default_arguments
         if self.additional_args:
             cmd = cmd + " " + self.additional_args
-        # safe_print (f"cmd {cmd} ")
+
         return cmd
 
     def parse_issue_location(
