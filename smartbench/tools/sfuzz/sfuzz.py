@@ -88,7 +88,7 @@ class Sfuzz(Tool):
 
         return cmd
 
-    def parse_issue_kind(self, description: str) -> IssueKind:
+    def parse_issue_kind(self, description: str) -> Optional[IssueKind]:
         if "exception disorder : found" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
@@ -113,7 +113,7 @@ class Sfuzz(Tool):
         if "timestamp dependency : found" in description:
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
-        return IssueKind.UNKNOWN
+        return None
 
     def parse_analysis_output(
         self, test_output_dir: str
@@ -164,8 +164,10 @@ class Sfuzz(Tool):
             i += 1
 
             # Parse contract name
-            if "Fuzzing contract:" in log_line:
-                contract_name = log_line.removeprefix("Fuzzing contract: ")
+            if match := re.search(
+                r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
+            ):
+                contract_name = match.groups(1)[0]
                 continue
 
             # Skip parsing if not fuzzing any contract yet
@@ -187,6 +189,7 @@ class Sfuzz(Tool):
                         )
                     except Exception:
                         continue
+
                 loc = Location(
                     test_file,
                     contract_name=contract_name,
