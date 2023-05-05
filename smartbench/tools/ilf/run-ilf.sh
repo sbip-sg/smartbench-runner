@@ -200,3 +200,8 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     GOPATH=$GO_DIR python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
         --timeout $TIMEOUT --limit 2000 --fuzzer imitation --model ./model/
 done
+
+################################################
+# Clean up after analysis
+
+rm -rf $PROJECT_DIR

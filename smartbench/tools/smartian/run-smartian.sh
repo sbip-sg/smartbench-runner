@@ -158,3 +158,8 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
         --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
         ${ADDITIONAL_ARGS[@]} 2>&1
 done
+
+################################################
+# Clean up after analysis
+
+rm -rf $COMPILED_CONTRACTS_DIR
