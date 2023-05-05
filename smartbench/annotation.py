@@ -354,7 +354,7 @@ def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
     return bug_annots
 
 
-def guess_annotation_type(filename: str) -> Optional[str]:
+def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
     """Guess bug format and parse bug annotations."""
     has_smartbugs_annots = False
     has_smartbench_annots = False
@@ -368,10 +368,10 @@ def guess_annotation_type(filename: str) -> Optional[str]:
                 has_smartbugs_annots = True
 
     if has_smartbench_annots and (not has_smartbugs_annots):
-        return "smartbench"
+        return AnnotFormat.SMARTBENCH
 
     if has_smartbugs_annots and (not has_smartbench_annots):
-        return "smartbugs"
+        return AnnotFormat.SMARTBUGS
 
     if has_smartbugs_annots and has_smartbench_annots:
         warning(
@@ -413,7 +413,9 @@ def parse_bug_annotations(
     if annot_format == AnnotFormat.SOLIDIFI:
         return parse_solidifi_annotations(test_file)
 
-    warnings.warn("Unknown bug annotation formmat:", annot_format)
+    warning(
+        f"Unknown bug annot formmat: {annot_format}\n",
+    )
     return []
 
 

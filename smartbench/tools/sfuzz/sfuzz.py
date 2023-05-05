@@ -178,7 +178,7 @@ class Sfuzz(Tool):
                     (start_l, end_l) = contract_loc_dict[contract_name]
                 elif ast is not None:
                     try:
-                        contract = ast.function_by_name(contract_name)
+                        contract = ast.contract_by_name(contract_name)
                         (start_l, end_l) = contract.line_num
                         # Store function location for later use
                         contract_loc_dict[contract_name] = (
