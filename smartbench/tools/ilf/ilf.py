@@ -161,13 +161,13 @@ class Ilf(Tool):
             log_line = log_lines[i]
             i += 1
 
-            # Skip parsing if not fuzzing any contract yet
-            if contract == "":
-                continue
-
             # Parse contract name
             if "Fuzzing contract:" in log_line:
                 contract = log_line.removeprefix("Fuzzing contract: ")
+                continue
+
+            # Skip parsing if not fuzzing any contract yet
+            if contract == "":
                 continue
 
             # Search for the JSON data containing analysis information
