@@ -172,13 +172,14 @@ class Sfuzz(Tool):
             if contract_name == "":
                 continue
 
-            if (issue_kind := self.parse_issue_kind(log_line)) is not None:
+            issue_kind = self.parse_issue_kind(log_line)
+            if  issue_kind != IssueKind.UNKNOWN:
                 start_l = end_l = None
                 if contract_name in contract_loc_dict:
                     (start_l, end_l) = contract_loc_dict[contract_name]
                 elif ast is not None:
                     try:
-                        contract = ast.function_by_name(contract_name)
+                        contract = ast.contract_by_name(contract_name)
                         (start_l, end_l) = contract.line_num
                         # Store function location for later use
                         contract_loc_dict[contract_name] = (
