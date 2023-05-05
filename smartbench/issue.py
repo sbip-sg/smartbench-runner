@@ -398,7 +398,7 @@ def classify_to_solidifi_pp_kind(
     if issue_kind in [IssueKind.BLOCK_VALUE_DEPENDENCY]:
         return SolidiFIPP.TIMESTAMP_DEPENDENCY
 
-    if issue_kind in [IssueKind.UNCHECKED_SEND_ETHER]:
+    if issue_kind in [IssueKind.UNCHECKED_SEND_ETHER, IssueKind.LEAKING_ETHER]:
         return SolidiFIPP.UNCHECKED_SEND
 
     if issue_kind in [
