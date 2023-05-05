@@ -18,7 +18,7 @@ from solc_json_parser.parser import SolidityAst
 from smartbench import issue, logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
-from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.issue import Checker, Issue, IssueKind
 from smartbench.printer import debug, error, warning
 from smartbench.solidity import solc
 from smartbench.solidity.loc import Location
@@ -128,13 +128,8 @@ class Ilf(Tool):
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 while line := file.readline():
-                    if (
-                        not has_fuzzing_result
-                        and "tx_count" in line
-                        and "insn_coverage" in line
-                    ):
+                    if not has_fuzzing_result and '"tx_count"' in line:
                         has_fuzzing_result = True
-
                     log_lines.append(line.strip())
         except Exception as err:
             error(f"Failed to parse log file: {log_file}\n\n{err}")
@@ -157,7 +152,7 @@ class Ilf(Tool):
         if ast is None:
             warning(f"Failed to get AST of: {test_file}")
 
-        # Parsing bug information in log file
+        # Parsing bug information in log data
         i = 0
         all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
