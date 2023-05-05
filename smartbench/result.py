@@ -8,12 +8,12 @@ import bisect
 import os
 import pathlib
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, no_type_check
 
 # Library
 from smartbench import annotation, logger, printer, validator
-from smartbench.annotation import BugAnnot
-from smartbench.issue import Issue, Severity
+from smartbench.annotation import AnnotFormat, BugAnnot
+from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
     error,
@@ -41,6 +41,7 @@ class AnalysisResult:
         test_file: str,
         test_output_dir: str,
         bug_annots: List[BugAnnot],
+        annot_format: Optional[str],
         is_successful: bool,
         issues: List[Issue] = [],
         validation_result: Optional[ValidationResult] = None,
@@ -67,10 +68,12 @@ class AnalysisResult:
 
         # Bug annotations specified for the test files.
         self.bug_annots: List[BugAnnot] = list(bug_annots)
+        self.annot_format = annot_format
 
         # Validation of detected issues
         self.validation_result = validation_result
 
+    @no_type_check
     def __lt__(self, other) -> bool:
         """Compare analysis result by the test file name, case insensitive.
         Used only for the ordering purpose."""
@@ -160,6 +163,7 @@ def parse_test_file_output_dir(
         test_file,
         test_output_dir,
         bug_annots,
+        annot_format,
         is_successful,
         issues,
         validation,
@@ -390,16 +394,23 @@ def print_benchmarking_results(
             num_succeeded += 1
             num_issues = len(result.issues)
 
-            if result.validation_result is None:
+            validation = result.validation_result
+            if validation is None:
                 safe_print(
                     f"- {test_file}: Succeeded, {num_annots}, "
                     f"{num_issues}, [results were not validated]"
                 )
                 continue
 
-            validation = result.validation_result
-            num_correct = len(validation.correct_bugs)
             num_missing = len(validation.missing_bugs)
+            if result.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+                # In Solidifi benchmarks, multiple correct bugs under
+                # the same injected buggy function are only count as
+                # one, so the final number of correct is computed by
+                # excluding the number of missing bugs
+                num_correct = num_annots - num_missing
+            else:
+                num_correct = len(validation.correct_bugs)
             num_unlabelled = len(validation.unlabelled_issues)
 
             safe_print(
@@ -424,7 +435,7 @@ def export_benchmarking_results_to_csv_format(
     safe_print("Exporting benchmarking results to CSV files...")
 
     for tool_id in tools_results.keys():
-        results = tools_results[tool_id]
+        results: List[AnalysisResult] = tools_results[tool_id]
         result_file = f"results_{tool_id}.csv"
         result_file = os.path.join(result_dir, result_file)
 
@@ -453,12 +464,20 @@ def export_benchmarking_results_to_csv_format(
                 file.write(f"Succeeded, {num_annots}, {num_issues}")
 
                 validation = result.validation_result
-
                 if validation is None:
                     file.write(",  [results were not validated]\n")
                 else:
-                    num_correct = len(validation.correct_bugs)
                     num_missing = len(validation.missing_bugs)
+
+                    if result.annot_format == AnnotFormat.SOLIDIFI_FORMAT:
+                        # In Solidifi benchmarks, multiple correct bugs under
+                        # the same injected buggy function are only count as
+                        # one, so the final number of correct is computed by
+                        # excluding the number of missing bugs
+                        num_correct = num_annots - num_missing
+                    else:
+                        num_correct = len(validation.correct_bugs)
+
                     num_unlabelled = len(validation.unlabelled_issues)
                     file.write(
                         f", {num_correct}, {num_missing}, {num_unlabelled}\n"
@@ -478,8 +497,6 @@ def export_benchmarking_results_to_json_format(
     """Export benchmarking results to JSON files."""
     printer.print_short_dashed_separator_line()
     safe_print("Exporting benchmarking results to JSON files...")
-
-    json_tools_results = {}
 
     for tool_id in tools_results.keys():
         tool_results = tools_results[tool_id]
