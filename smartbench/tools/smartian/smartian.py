@@ -51,8 +51,8 @@ class Smartian(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
-        solc_version: str,
         container: DockerContainer,
+        solc_version: str,
         timeout: Optional[int] = None,
         **kwargs,
     ) -> str:

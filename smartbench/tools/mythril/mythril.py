@@ -45,8 +45,8 @@ class Mythril(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
-        solc_version: Optional[str] = None,
-        container=Optional[DockerContainer],
+        container: DockerContainer,
+        solc_version: str,
         timeout: Optional[int] = None,
         **kwargs,
     ) -> str:

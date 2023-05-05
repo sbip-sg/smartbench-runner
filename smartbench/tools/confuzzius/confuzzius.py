@@ -46,8 +46,8 @@ class Confuzzius(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
+        container: DockerContainer,
         solc_version: str,
-        container=DockerContainer,
         timeout: Optional[int] = None,
         **kwargs,
     ) -> str:

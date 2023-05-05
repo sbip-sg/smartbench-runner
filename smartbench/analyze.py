@@ -27,7 +27,7 @@ from smartbench.printer import (
 )
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
-from smartbench.tools.config import SMARTBENCH_ROOT, Confuzzius
+from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
@@ -252,8 +252,8 @@ def analyze_test_file(
         test_file,
         contracts,
         test_output_dir_docker,
-        solc_version,
         container,
+        solc_version,
         timeout,
         annot_format=annot_format,
     )

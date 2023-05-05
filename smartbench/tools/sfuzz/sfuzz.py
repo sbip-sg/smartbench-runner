@@ -4,13 +4,16 @@
 
 # Standard Library
 import json
+import math
 import os
 import re
+
 from typing import Dict, List, Optional, Tuple
 
+# Third Party
 from solc_json_parser.parser import SolidityAst
 
-import math
+# Library
 from smartbench import issue, logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
@@ -46,8 +49,8 @@ class Sfuzz(Tool):
         test_file: str,
         contracts: List[str],
         test_output_dir: str,
-        solc_version: Optional[str] = None,
-        container=Optional[DockerContainer],
+        container: DockerContainer,
+        solc_version: str,
         timeout: Optional[int] = None,
         **kwargs,
     ) -> str:
