@@ -98,7 +98,11 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     docker tag smartbench/$TOOL_ID taquangtrung/$TOOL_ID
     docker save taquangtrung/$TOOL_ID > docker_image_${TOOL_ID}.tar
 
-    echo "  Publishing Docker image to SBIP G2: $TOOL_ID"
+    if [[ $TOOL_ID != "smartfuzz" ]]; then
+        echo "  Publishing Docker image of $TOOL_ID to DockerHub..."
+    fi
+
+    echo "  Publishing Docker image of $TOOL_ID to SBIP G2..."
     scp docker_image_${TOOL_ID}.tar   $G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/docker_image_${TOOL_ID}.tar
 
 done
