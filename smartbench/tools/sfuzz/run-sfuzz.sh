@@ -117,7 +117,9 @@ mkdir output
 # Run sFuzz on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================="
-    echo "** Fuzzing contract: $CONTRACT"
+    echo ""
+    echo "Fuzzing contract: $CONTRACT"
+    echo ""
     cp $TEST_FILE "contracts/$CONTRACT.sol"
 done
 
