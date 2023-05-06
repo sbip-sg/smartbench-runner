@@ -10,14 +10,13 @@ import argparse
 from enum import Enum
 
 
-class Command(Enum):
+class Command(str, Enum):
     """Class define sub-commands of Smartbench."""
 
     ANALYZE = "analyze"
     PARSE_RESULTS = "parse-results"
     PARSE_COVERAGE = "parse-coverage"
     PARSE_ANNOTS = "parse-annots"
-    DEPLOY_CONTRACTS = "deploy-contracts"
 
 
 def parse_cli_arguments():
@@ -52,7 +51,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `analyze` sub-command
     analyze_argparser = subcommand_parsers.add_parser(
-        Command.ANALYZE.value,
+        Command.ANALYZE,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to analyze smart contracts",
@@ -183,7 +182,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `parse-result` sub-command
     result_argparser = subcommand_parsers.add_parser(
-        Command.PARSE_RESULTS.value,
+        Command.PARSE_RESULTS,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to parse existing analysis results.",
@@ -242,7 +241,7 @@ def parse_cli_arguments():
     result_argparser.add_argument(
         "--disable-print-details",
         action="store_true",
-        help="Disable printing details of bug detection results.",
+        help="Disable printing details of bug detection.",
     )
 
     # Specify benchmark name for special cases without standard annotation and
@@ -259,7 +258,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `parse-coverage` sub-command
     coverage_argparser = subcommand_parsers.add_parser(
-        Command.PARSE_COVERAGE.value,
+        Command.PARSE_COVERAGE,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to parse instruction coverage in analysis results.",
@@ -278,7 +277,7 @@ def parse_cli_arguments():
 
     # Create a parser for the `parse-annotation` sub-command
     annot_argparser = subcommand_parsers.add_parser(
-        Command.PARSE_ANNOTS.value,
+        Command.PARSE_ANNOTS,
         parents=[parent_parser],
         add_help=False,
         help="Sub-command to parse bug annotations in source code.",

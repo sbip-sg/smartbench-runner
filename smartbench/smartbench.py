@@ -230,22 +230,22 @@ def main():
     flags.configure_global_flags(args)
 
     # Run analysis tools
-    if args.sub_command == Command.ANALYZE.value:
+    if args.sub_command == Command.ANALYZE:
         safe_print("Smartbench: running mode analyzing smart contracts...\n")
         analyze_smart_contracts(args)
 
     # Parse analysis results
-    elif args.sub_command == Command.PARSE_RESULTS.value:
+    elif args.sub_command == Command.PARSE_RESULTS:
         safe_print("Smartbench: running mode parsing benchmarking results...\n")
         parse_analysis_results(args)
 
     # Parse the instruction coverage in analysis results
-    elif args.sub_command == Command.PARSE_COVERAGE.value:
+    elif args.sub_command == Command.PARSE_COVERAGE:
         safe_print("Smartbench: running mode parsing instruction coverage...\n")
         parse_instruction_coverage(args)
 
     # Parse bug annotations
-    elif args.sub_command == Command.PARSE_ANNOTS.value:
+    elif args.sub_command == Command.PARSE_ANNOTS:
         safe_print("Smartbench: running mode parsing bug annotations...\n")
         parse_bug_annotations(args)
 
