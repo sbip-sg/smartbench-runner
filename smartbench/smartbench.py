@@ -19,9 +19,9 @@ from smartbench import (
     docker,
     flags,
     printer,
+    query,
     result,
 )
-from smartbench.annotation import AnnotFormat
 from smartbench.cli import Command
 from smartbench.printer import error, error_traceback, safe_print
 from smartbench.tools.config import configure_analysis_tools
@@ -212,7 +212,13 @@ def parse_instruction_coverage(args) -> None:
 def parse_bug_annotations(args) -> None:
     """Parse bug annotation in smart contracts."""
     test_files = benchmark.collect_test_files(args.input_files_directories)
-    annotation.collect_bug_annotations(test_files)
+    annotation.parse_bug_annotations(test_files)
+
+
+def query_information(args) -> None:
+    """Parse bug annotation in smart contracts."""
+    test_files = benchmark.collect_test_files(args.input_files_directories)
+    query.query_test_files(test_files, args)
 
 
 def main():
@@ -231,23 +237,28 @@ def main():
 
     # Run analysis tools
     if args.sub_command == Command.ANALYZE:
-        safe_print("Smartbench: running mode analyzing smart contracts...\n")
+        safe_print("Analyzing smart contracts...\n")
         analyze_smart_contracts(args)
 
     # Parse analysis results
     elif args.sub_command == Command.PARSE_RESULTS:
-        safe_print("Smartbench: running mode parsing benchmarking results...\n")
+        safe_print("Parsing benchmarking results...\n")
         parse_analysis_results(args)
 
     # Parse the instruction coverage in analysis results
     elif args.sub_command == Command.PARSE_COVERAGE:
-        safe_print("Smartbench: running mode parsing instruction coverage...\n")
+        safe_print("Parsing instruction coverage...\n")
         parse_instruction_coverage(args)
 
     # Parse bug annotations
     elif args.sub_command == Command.PARSE_ANNOTS:
-        safe_print("Smartbench: running mode parsing bug annotations...\n")
+        safe_print("Parsing bug annotations...\n")
         parse_bug_annotations(args)
+
+    # Parse bug annotations
+    elif args.sub_command == Command.QUERY:
+        safe_print("Querying smart contracts information...\n")
+        query_information(args)
 
     else:
         safe_print("Smartbench runner: no sub-command is specified!")

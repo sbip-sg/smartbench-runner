@@ -17,6 +17,7 @@ class Command(str, Enum):
     PARSE_RESULTS = "parse-results"
     PARSE_COVERAGE = "parse-coverage"
     PARSE_ANNOTS = "parse-annots"
+    QUERY = "query"
 
 
 def parse_cli_arguments():
@@ -34,7 +35,7 @@ def parse_cli_arguments():
         help=None,
     )
 
-    ################################
+    ##########################################################
     # Parent parser for common arguments
 
     parent_parser = argparse.ArgumentParser(add_help=True)
@@ -46,7 +47,7 @@ def parse_cli_arguments():
         help="Enable debugging mode.",
     )
 
-    ################################
+    ##########################################################
     # Parser for sub-command `analyze`
 
     # Create a parser for the `analyze` sub-command
@@ -54,7 +55,7 @@ def parse_cli_arguments():
         Command.ANALYZE,
         parents=[parent_parser],
         add_help=False,
-        help="Sub-command to analyze smart contracts",
+        help="Sub-command to analyze smart contract test files",
     )
 
     analyze_argparser.add_argument(
@@ -180,7 +181,6 @@ def parse_cli_arguments():
     ################################
     # Parser for sub-command `parse-results`
 
-    # Create a parser for the `parse-result` sub-command
     result_argparser = subcommand_parsers.add_parser(
         Command.PARSE_RESULTS,
         parents=[parent_parser],
@@ -188,7 +188,6 @@ def parse_cli_arguments():
         help="Sub-command to parse existing analysis results.",
     )
 
-    # Input result directories
     result_argparser.add_argument(
         "input_result_directories",
         nargs="*",  # Accept multiple result directories
@@ -196,7 +195,6 @@ def parse_cli_arguments():
         help="Input result directories.",
     )
 
-    # Result directories
     result_argparser.add_argument(
         "-r",
         dest="result_directories",
@@ -205,7 +203,6 @@ def parse_cli_arguments():
         help="Input result directories.",
     )
 
-    # Result directories
     result_argparser.add_argument(
         "-b",
         dest="benchmark_names",
@@ -214,7 +211,6 @@ def parse_cli_arguments():
         help="Benchmark names in the result directory.",
     )
 
-    # Analysis tool
     result_argparser.add_argument(
         "-t",
         "--tools",
@@ -223,29 +219,24 @@ def parse_cli_arguments():
         help="Analysis tools to be evaluated.",
     )
 
-    # Validate analysis result
     result_argparser.add_argument(
         "--validate",
         action="store_true",
         help="Validate analysis results with bug annotations.",
     )
 
-    # Validate analysis result
     result_argparser.add_argument(
         "--export-summary",
         action="store_true",
         help="Export analysis summaries to JSON or CSV files.",
     )
 
-    # Disable printing detail bug summary
     result_argparser.add_argument(
         "--disable-print-details",
         action="store_true",
         help="Disable printing details of bug detection.",
     )
 
-    # Specify benchmark name for special cases without standard annotation and
-    # validation
     result_argparser.add_argument(
         "--annot-format",
         type=str,
@@ -253,10 +244,9 @@ def parse_cli_arguments():
         help=("Type of bug annotation format."),
     )
 
-    ################################
+    ##########################################################
     # Parser for sub-command `parse-coverage`
 
-    # Create a parser for the `parse-coverage` sub-command
     coverage_argparser = subcommand_parsers.add_parser(
         Command.PARSE_COVERAGE,
         parents=[parent_parser],
@@ -264,7 +254,6 @@ def parse_cli_arguments():
         help="Sub-command to parse instruction coverage in analysis results.",
     )
 
-    # Input result directories
     coverage_argparser.add_argument(
         "result_directories",
         nargs="+",  # Accept multiple input files or directories
@@ -272,18 +261,16 @@ def parse_cli_arguments():
         help="Input result directories.",
     )
 
-    ################################
+    ##########################################################
     # Parser for sub-command `parse-annotation`
 
-    # Create a parser for the `parse-annotation` sub-command
     annot_argparser = subcommand_parsers.add_parser(
         Command.PARSE_ANNOTS,
         parents=[parent_parser],
         add_help=False,
-        help="Sub-command to parse bug annotations in source code.",
+        help="Sub-command to parse bug annotations in test file.",
     )
 
-    # Input result directories
     annot_argparser.add_argument(
         "input_files_directories",
         nargs="+",  # Accept multiple input files or directories
@@ -291,7 +278,30 @@ def parse_cli_arguments():
         help="Input files or directories (accepts wildcard characters).",
     )
 
-    ################################
+    ##########################################################
+    # Parser for sub-command `query`
+
+    query_argparser = subcommand_parsers.add_parser(
+        Command.QUERY,
+        parents=[parent_parser],
+        add_help=False,
+        help="Sub-command to query information in test file.",
+    )
+
+    query_argparser.add_argument(
+        "input_files_directories",
+        nargs="+",  # Accept multiple input files or directories
+        type=str,
+        help="Input files or directories (accepts wildcard characters).",
+    )
+
+    query_argparser.add_argument(
+        "--solc-version",
+        action="store_true",
+        help="Print compatiable Solc versions for each test file",
+    )
+
+    ##########################################################
     # Parse all arguments
 
     args = arg_parser.parse_args()

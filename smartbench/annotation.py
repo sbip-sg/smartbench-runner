@@ -398,7 +398,7 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
     return None
 
 
-def parse_bug_annotations(
+def parse_bug_annot_one_test_file(
     test_file: str, annot_format: Optional[AnnotFormat] = None
 ) -> List[BugAnnot]:
     """Parse bug annotation in a smart contract.
@@ -432,7 +432,7 @@ def parse_bug_annotations(
     return []
 
 
-def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
+def parse_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
     """Parsing bug annotations from test files"""
     safe_print("\nParsing bug annotations...\n")
 
@@ -440,7 +440,7 @@ def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
 
     for test_file in test_files:
         safe_print("Test file: " + test_file)
-        annots = parse_bug_annotations(test_file)
+        annots = parse_bug_annot_one_test_file(test_file)
 
         if len(annots) == 0:
             safe_print("- No bug annotations!\n")
