@@ -245,7 +245,7 @@ def parse_tool_results(
 
 def parse_result_directory(
     results_dir: str,
-    only_tools: Optional[List[Tool]] = None,
+    only_tools: Optional[List[str]] = None,
     benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
@@ -275,15 +275,14 @@ def parse_result_directory(
 
         # Tool ID is assumed to be the same as tool_result_dir
         tool_id = tool_output_dir
+        if only_tools is not None and all(tool_id != t for t in only_tools):
+            continue
+
         tool = load_tool_configuration(tool_id)
 
         if tool is None:
             warning(f"Invalid result directory of all tools: {results_dir}")
             continue
-
-        if only_tools is not None and all(tool.id != t.id for t in only_tools):
-            continue
-
         tool_results = parse_tool_results(
             tool,
             tool_output_dir_path,

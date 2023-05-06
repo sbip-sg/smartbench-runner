@@ -162,8 +162,10 @@ class Ilf(Tool):
             i += 1
 
             # Parse contract name
-            if "Fuzzing contract:" in log_line:
-                contract = log_line.removeprefix("Fuzzing contract: ")
+            if match := re.search(
+                r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
+            ):
+                contract = match.groups(1)[0]
                 continue
 
             # Skip parsing if not fuzzing any contract yet

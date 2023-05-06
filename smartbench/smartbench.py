@@ -164,11 +164,6 @@ def analyze_smart_contracts(args) -> None:
 
 def parse_analysis_results(args) -> None:
     """Parse existing results obtained from previous analyses."""
-    # Configure analysis tools and mode
-    only_tools = None
-    if args.tools:
-        only_tools = configure_analysis_tools(args.tools)
-
     # Collect result directories
     result_directories = args.input_result_directories
     if args.result_directories is not None:
@@ -199,7 +194,7 @@ def parse_analysis_results(args) -> None:
     for result_dir in result_directories:
         result.parse_result_directory(
             result_dir,
-            only_tools,
+            args.tools,
             benchmark_names,
             args.validate,
             summary_file_format,
