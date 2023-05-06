@@ -177,7 +177,6 @@ class Sfuzz(Tool):
             if contract_name == "":
                 continue
 
-            issue_kind = self.parse_issue_kind(log_line)
             if (issue_kind := self.parse_issue_kind(log_line)) is not None:
                 start_l = end_l = None
                 if contract_name in contract_loc_dict:
