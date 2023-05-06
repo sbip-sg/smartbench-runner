@@ -58,12 +58,14 @@ class BugAnnot:
     def __init__(
         self,
         annot_name: str,
+        is_real_bug: bool,
         annot_format: AnnotFormat,
         file_path: str,
         start_line: int,
         end_line: int,
     ):
         self.annot_name: str = annot_name
+        self.is_real_bug: bool = bool(is_real_bug)
         self.annot_format: AnnotFormat = annot_format
         self.file_path: str = file_path
         self.start_line: int = start_line
@@ -86,15 +88,20 @@ class BugAnnot:
 
     def print_concise(self) -> str:
         """Print bug annotation in concise format."""
+
+        annot_type = "Bug" if self.is_real_bug else "NoBug"
+
         location = f"{os.path.basename(self.file_path)}:{self.start_line}"
         if self.start_line != self.end_line:
             location = location + "-" + str(self.end_line)
-        return f"Bug ({self.index}): {self.annot_name} - {location}"
+
+        return f"{annot_type} ({self.index}): {self.annot_name} - {location}"
 
     def map_bug_annot_to_issue_kind(
         self, annot_name: str, annot_format: AnnotFormat
     ) -> Optional[IssueKind]:
         """Classify bug annotation string to issue kind."""
+
         if annot_format == AnnotFormat.SMARTBUGS:
             return self.map_smartbugs_annot_to_issue_kind(annot_name)
         elif annot_format == AnnotFormat.SOLIDIFI:
@@ -107,7 +114,7 @@ class BugAnnot:
         self, annot_name: str
     ) -> Optional[IssueKind]:
         """Classify bug annotation string in SmartBugs++ format to issue kind."""
-        # SmartBugs annotations
+
         if annot_name in "FRONT_RUNNING":
             return IssueKind.FRONT_RUNNING
 
@@ -117,7 +124,7 @@ class BugAnnot:
         if annot_name in ["ACCESS_CONTROL"]:
             return IssueKind.ACCESS_CONTROL
 
-        if annot_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
+        if annot_name in ["ARITHMETIC"]:
             return IssueKind.INTEGER_BUG
 
         if annot_name in ["DENIAL_OF_SERVICE"]:
@@ -169,6 +176,7 @@ class BugAnnot:
         self, annot_name: str
     ) -> Optional[IssueKind]:
         """Classify bug annotation string in Solidifi++ format to issue kind."""
+
         if annot_name in ["Overflow-Underflow"]:
             return IssueKind.INTEGER_BUG
 
@@ -197,6 +205,7 @@ def classify_bug_annot_to_smartbugs_pp_kind(
     annot_name: str,
 ) -> Optional[SmartBugsPP]:
     """Classify bug annotation string in SmartBugs++ format to issue kind."""
+
     # SmartBugs annotations
     if annot_name in ["ACCESS_CONTROL"]:
         return SmartBugsPP.ACCESS_CONTROL
@@ -204,7 +213,7 @@ def classify_bug_annot_to_smartbugs_pp_kind(
     if annot_name in ["ASSERTION_FAILURE"]:
         return SmartBugsPP.ASSERTION_FAILURE
 
-    if annot_name in ["ARITHMETIC_BUG", "ARITHMETIC"]:
+    if annot_name in ["ARITHMETIC"]:
         return SmartBugsPP.ARITHMETIC
 
     if annot_name in ["BAD_RANDOMNESS"]:
@@ -299,15 +308,18 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
             line = line.strip()
             if (
                 line.startswith(COMMENT_TAG)
-                and YES_TAG in line
+                and (YES_TAG in line or NO_TAG in line)
                 and REPORT_TAG in line
             ):
-                bug_info = line.replace(COMMENT_TAG, "")
-                bug_info = bug_info.replace(YES_TAG, "")
-                bug_info = bug_info.replace(REPORT_TAG, "")
-                for bug_type in bug_info.split(","):
+                is_real_bug = YES_TAG in line
+                bug_types = line.replace(COMMENT_TAG, "")
+                bug_types = bug_types.replace(YES_TAG, "")
+                bug_types = bug_types.replace(NO_TAG, "")
+                bug_types = bug_types.replace(REPORT_TAG, "")
+                for bug_type in bug_types.split(","):
                     bug_annotation = BugAnnot(
                         bug_type.strip(),
+                        is_real_bug,
                         AnnotFormat.SMARTBUGS,
                         filename,
                         start_line,
@@ -345,6 +357,7 @@ def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
         for ibug in bug_log_list[1 : len(bug_log_list)]:
             bug_annotation = BugAnnot(
                 ibug[2].strip(),
+                True,
                 AnnotFormat.SOLIDIFI,
                 filename,
                 int(ibug[0]),
@@ -426,15 +439,15 @@ def collect_bug_annotations(test_files: List[str]) -> List[BugAnnot]:
     bug_annots = []
 
     for test_file in test_files:
-        safe_print("- Test file: " + test_file)
+        safe_print("Test file: " + test_file)
         annots = parse_bug_annotations(test_file)
 
         if len(annots) == 0:
-            safe_print("  No bug annotations are found!")
+            safe_print("- No bug annotations!\n")
             continue
 
         for annot in annots:
-            safe_print(f"  {annot.print_concise()}")
+            safe_print(f"- {annot.print_concise()}")
 
         bug_annots += annots
 

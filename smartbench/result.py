@@ -397,7 +397,7 @@ def print_benchmarking_results(
             if validation is None:
                 safe_print(
                     f"- {test_file}: Succeeded, {num_annots}, "
-                    f"{num_issues}, [results were not validated]"
+                    f"{num_issues}, no validation"
                 )
                 continue
 
@@ -464,7 +464,7 @@ def export_benchmarking_results_to_csv_format(
 
                 validation = result.validation_result
                 if validation is None:
-                    file.write(",  [results were not validated]\n")
+                    file.write(",  no validation\n")
                 else:
                     num_missing = len(validation.missing_bugs)
 
