@@ -402,11 +402,14 @@ def print_benchmarking_results(
                 continue
 
             num_missing = len(validation.missing_bugs)
-            if result.annot_format == AnnotFormat.SOLIDIFI:
-                # In Solidifi benchmarks, multiple correct bugs under
-                # the same injected buggy function are only count as
-                # one, so the final number of correct is computed by
-                # excluding the number of missing bugs
+            if (
+                    result.annot_format == AnnotFormat.SOLIDIFI or
+                    result.annot_format == AnnotFormat.SMARTBUGS
+                ):
+                # In Solidifi and Smartbugs benchmarks, multiple correct bugs
+                # under the same injected buggy function are only count as one,
+                # so the final number of correct is computed by excluding the
+                # number of missing bugs 
                 num_correct = num_annots - num_missing
             else:
                 num_correct = len(validation.correct_bugs)
@@ -468,11 +471,15 @@ def export_benchmarking_results_to_csv_format(
                 else:
                     num_missing = len(validation.missing_bugs)
 
-                    if result.annot_format == AnnotFormat.SOLIDIFI:
-                        # In Solidifi benchmarks, multiple correct bugs under
-                        # the same injected buggy function are only count as
-                        # one, so the final number of correct is computed by
-                        # excluding the number of missing bugs
+                    if (
+                            result.annot_format == AnnotFormat.SOLIDIFI or
+                            result.annot_format == AnnotFormat.SMARTBUGS
+                    ):
+            
+                        # In Solidifi and Smartbugs benchmarks, multiple
+                        # correct bugs under the same injected buggy function
+                        # are only count as one, so the final number of correct
+                        # is computed by excluding the number of missing bugs
                         num_correct = num_annots - num_missing
                     else:
                         num_correct = len(validation.correct_bugs)
