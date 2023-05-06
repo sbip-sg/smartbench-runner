@@ -183,8 +183,6 @@ def parse_analysis_results(args) -> None:
     if args.annot_format is not None:
         annot_format = annotation.parse_annot_format_kind(args.annot_format)
 
-    print(f"ANNOT FORMAT: {annot_format}")
-
     # Whether to print details of bug detection
     print_bug_details = True
     if args.disable_print_details:

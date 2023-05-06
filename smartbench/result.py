@@ -151,7 +151,22 @@ def parse_test_file_output_dir(
         if print_bug_details:
             safe_print_underline("Detected issues")
             if len(issues) > 0:
-                safe_print("\n\n".join([format(f"- {x}") for x in issues]))
+                print_smartbugs_kind = False
+                print_solidifi_kind = False
+                for annot in bug_annots:
+                    if annot.annot_format == AnnotFormat.SMARTBUGS:
+                        print_smartbugs_kind = True
+                    if annot.annot_format == AnnotFormat.SOLIDIFI:
+                        print_solidifi_kind = True
+                    if print_smartbugs_kind and print_solidifi_kind:
+                        break
+                issues_strs = [
+                    x.print_concise(
+                        True, print_smartbugs_kind, print_solidifi_kind
+                    )
+                    for x in issues
+                ]
+                safe_print("\n\n".join([format(f"- {s}") for s in issues_strs]))
             else:
                 safe_print("- No issue is detected!\n")
 
