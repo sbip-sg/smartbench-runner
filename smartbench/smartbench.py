@@ -214,7 +214,7 @@ def parse_bug_annotations(args) -> None:
     test_files = benchmark.collect_test_files(
         args.input_files_directories, absolute_path=False
     )
-    annotation.parse_bug_annotations(test_files)
+    annotation.parse_bug_annotations_all_files(test_files)
 
 
 def query_information(args) -> None:
