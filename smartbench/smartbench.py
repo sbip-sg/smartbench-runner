@@ -211,13 +211,17 @@ def parse_instruction_coverage(args) -> None:
 
 def parse_bug_annotations(args) -> None:
     """Parse bug annotation in smart contracts."""
-    test_files = benchmark.collect_test_files(args.input_files_directories)
+    test_files = benchmark.collect_test_files(
+        args.input_files_directories, absolute_path=False
+    )
     annotation.parse_bug_annotations(test_files)
 
 
 def query_information(args) -> None:
     """Parse bug annotation in smart contracts."""
-    test_files = benchmark.collect_test_files(args.input_files_directories)
+    test_files = benchmark.collect_test_files(
+        args.input_files_directories, absolute_path=False
+    )
     query.query_test_files(test_files, args)
 
 
