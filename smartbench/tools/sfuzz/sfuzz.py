@@ -89,6 +89,9 @@ class Sfuzz(Tool):
         return cmd
 
     def parse_issue_kind(self, description: str) -> Optional[IssueKind]:
+        if "gasless send : found" in description:
+            IssueKind.UNHANDLED_EXCEPTION
+
         if "exception disorder : found" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
