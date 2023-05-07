@@ -94,15 +94,21 @@ fi
 
 for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     echo ""
-    echo "- Preparing Docker image for: $TOOL_ID"
-    docker tag smartbench/$TOOL_ID taquangtrung/$TOOL_ID
-    docker save taquangtrung/$TOOL_ID > docker_image_${TOOL_ID}.tar
+    echo "Preparing Docker image for: $TOOL_ID"
+    LOCAL_IMAGE_TAG="smartbench/$TOOL_ID"
+    REMOTE_IMAGE_TAG="taquangtrung/$TOOL_ID"
+    docker tag $LOCAL_IMAGE_TAG $REMOTE_IMAGE_TAG
+
+    TOOL_IMAGE_FILE="docker_image_${TOOL_ID}.tar.xz"
+    echo "- Saving Docker image to $TOOL_IMAGE_FILE"
+    docker save $REMOTE_IMAGE_TAG | xz > $TOOL_IMAGE_FILE
 
     if [[ $TOOL_ID != "smartfuzz" ]]; then
         echo "  Publishing Docker image of $TOOL_ID to DockerHub..."
+        docker push $REMOTE_IMAGE_TAG
     fi
 
     echo "  Publishing Docker image of $TOOL_ID to SBIP G2..."
-    scp docker_image_${TOOL_ID}.tar   $G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/docker_image_${TOOL_ID}.tar
+    scp $TOOL_IMAGE_FILE  $G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE
 
 done
