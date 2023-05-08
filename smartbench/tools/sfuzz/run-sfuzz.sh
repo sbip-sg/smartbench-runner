@@ -98,14 +98,10 @@ if [[ $TIMEOUT -lt 0 ]]; then
 fi
 
 ################################################
-# Configure paths
+# Analyze contracts
 
-# Configure tool path when running inside or outside a Docker container.
-if [ -f /.dockerenv ]; then
-    TOOL_DIR="/root/sfuzz"
-else
-    TOOL_DIR="$(realpath $(dirname "$0"))/repo/sfuzz"
-fi
+# Configure paths
+TOOL_DIR="/root/sfuzz"
 
 # Run sFuzz insider the `build/fuzzer` repository
 cd $TOOL_DIR/build/fuzzer

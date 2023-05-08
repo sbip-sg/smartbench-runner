@@ -120,17 +120,10 @@ fi
 
 
 ################################################
-# Configure paths
-
-# Configure tool path when running inside or outside a Docker container.
-if [ -f /.dockerenv ]; then
-    TOOL_DIR="/root/confuzzius"
-else
-    TOOL_DIR="$(realpath $(dirname "$0"))/repo/confuzzius"
-fi
-
-################################################
 # Analyze contracts
+
+# Configure paths
+TOOL_DIR="/root/confuzzius"
 
 if [[ $CONTRACT_NAME == "" ]]; then
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium --solc "v$SOLC_VER" \
