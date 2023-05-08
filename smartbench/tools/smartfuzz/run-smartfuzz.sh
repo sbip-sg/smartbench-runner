@@ -59,7 +59,7 @@ while [[ $# -gt 0 ]]; do
             shift  # past argument
             shift  # past value
             ;;
-        --code-coverage)
+        --coverage)
             COVERAGE_FILE="$2"
             shift  # past argument
             shift  # past value
