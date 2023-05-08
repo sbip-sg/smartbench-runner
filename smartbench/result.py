@@ -151,7 +151,22 @@ def parse_test_file_output_dir(
         if print_bug_details:
             safe_print_underline("Detected issues")
             if len(issues) > 0:
-                safe_print("\n\n".join([format(f"- {x}") for x in issues]))
+                print_smartbugs_kind = False
+                print_solidifi_kind = False
+                for annot in bug_annots:
+                    if annot.annot_format == AnnotFormat.SMARTBUGS:
+                        print_smartbugs_kind = True
+                    if annot.annot_format == AnnotFormat.SOLIDIFI:
+                        print_solidifi_kind = True
+                    if print_smartbugs_kind and print_solidifi_kind:
+                        break
+                issues_strs = [
+                    x.print_concise(
+                        True, print_smartbugs_kind, print_solidifi_kind
+                    )
+                    for x in issues
+                ]
+                safe_print("\n\n".join([format(f"- {s}") for s in issues_strs]))
             else:
                 safe_print("- No issue is detected!\n")
 
@@ -397,19 +412,16 @@ def print_benchmarking_results(
             if validation is None:
                 safe_print(
                     f"- {test_file}: Succeeded, {num_annots}, "
-                    f"{num_issues}, [results were not validated]"
+                    f"{num_issues}, no validation"
                 )
                 continue
 
             num_missing = len(validation.missing_bugs)
-            if (
-                    result.annot_format == AnnotFormat.SOLIDIFI or
-                    result.annot_format == AnnotFormat.SMARTBUGS
-                ):
-                # In Solidifi and Smartbugs benchmarks, multiple correct bugs
-                # under the same injected buggy function are only count as one,
-                # so the final number of correct is computed by excluding the
-                # number of missing bugs 
+            if result.annot_format == AnnotFormat.SOLIDIFI:
+                # In Solidifi benchmarks, multiple correct bugs under
+                # the same injected buggy function are only count as
+                # one, so the final number of correct is computed by
+                # excluding the number of missing bugs
                 num_correct = num_annots - num_missing
             else:
                 num_correct = len(validation.correct_bugs)
@@ -467,19 +479,15 @@ def export_benchmarking_results_to_csv_format(
 
                 validation = result.validation_result
                 if validation is None:
-                    file.write(",  [results were not validated]\n")
+                    file.write(",  no validation\n")
                 else:
                     num_missing = len(validation.missing_bugs)
 
-                    if (
-                            result.annot_format == AnnotFormat.SOLIDIFI or
-                            result.annot_format == AnnotFormat.SMARTBUGS
-                    ):
-            
-                        # In Solidifi and Smartbugs benchmarks, multiple
-                        # correct bugs under the same injected buggy function
-                        # are only count as one, so the final number of correct
-                        # is computed by excluding the number of missing bugs
+                    if result.annot_format == AnnotFormat.SOLIDIFI:
+                        # In Solidifi benchmarks, multiple correct bugs under
+                        # the same injected buggy function are only count as
+                        # one, so the final number of correct is computed by
+                        # excluding the number of missing bugs
                         num_correct = num_annots - num_missing
                     else:
                         num_correct = len(validation.correct_bugs)
