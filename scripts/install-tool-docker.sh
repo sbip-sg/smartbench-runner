@@ -9,12 +9,9 @@ SUPPORTED_TOOLS=(
     "mythril"
     "sfuzz"
     "slither"
-    "smartfuzz"
     "smartian"
+    "smartfuzz"
 )
-
-SUPPORTED_TOOL_IDS=${SUPPORTED_TOOLS[@]}
-SUPPORTED_TOOL_IDS+=("all")
 
 ################################################
 # Usage
@@ -50,14 +47,13 @@ print_run_help () {
 ################################################
 # Parse arguments
 
-TOOL_ID=""
+TOOL_IDS=()
 CONTAINER_NAMES=()
 NUM_CONTAINERS=0
 FORCE_INSTALL=false
 ONLY_CREATE_CONTAINERS=false
 BASE_IMAGE_NO_CACHE=false
 TOOL_IMAGE_NO_CACHE=false
-USE_GIT_TOKEN=false
 INSTALL_LOCALLY=true
 INSTALL_USING_G2=false
 G2_USER_NAME=""
@@ -66,9 +62,19 @@ SMARTBENCH_RESULTS_DIR=""
 while [[ $# -gt 0 ]]; do
     case $1 in
         -t)
-            TOOL_ID="$2"
-            shift
-            shift
+            shift # past argument
+            # Parse tool names
+            while [[ $# -gt 0 ]]; do
+                case $1 in
+                    -*|--*)
+                        break
+                        ;;
+                    *)
+                        TOOL_IDS+=("$1")
+                        shift  # past value
+                        ;;
+                esac
+            done
             ;;
         -n)
             NUM_CONTAINERS=$2
@@ -78,10 +84,6 @@ while [[ $# -gt 0 ]]; do
         --result-dir)
             SMARTBENCH_RESULTS_DIR="$2"
             shift
-            shift
-            ;;
-        --use-git-token)
-            USE_GIT_TOKEN=true
             shift
             ;;
         --force-install)
@@ -130,23 +132,29 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Checking tool ID
-if [[ $TOOL_ID == "" ]]; then
-    echo "Error: analysis tool ID is not specified!"
+# Checking tools' IDs
+INSTALL_ALL_TOOLS=false
+INSTALL_SMARTFUZZ=false
+if [[ ${#TOOL_IDS[@]} == 0 ]]; then
+    echo "Error: no analysis tool is specified!"
     print_run_help
     exit 1
-elif [[ ! $(echo ${SUPPORTED_TOOL_IDS[@]} | grep -w $TOOL_ID) ]]; then
-    echo "Error: tool $TOOL_ID is not supported!"
-    print_run_help
-    exit 1
-fi
-
-# Getting IDs of all tools to be built
-ALL_TOOL_IDS=()
-if [[ $TOOL_ID == "all" ]]; then
-    ALL_TOOL_IDS=(${SUPPORTED_TOOLS[@]})
 else
-    ALL_TOOL_IDS=($TOOL_ID)
+    for TOOL_ID in ${TOOL_IDS[@]}; do
+        if [[ $TOOL_ID == "all" ]]; then
+            INSTALL_ALL_TOOLS=true
+            INSTALL_SMARTFUZZ=true
+        elif [[ $TOOL_ID == "smartfuzz" ]]; then
+            INSTALL_SMARTFUZZ=true
+        elif [[ ! $(echo ${SUPPORTED_TOOLS[@]} | grep -w $TOOL_ID) ]]; then
+            echo "Error: tool $TOOL_ID is not supported!"
+            print_run_help
+            exit 1
+        fi
+    done
+fi
+if [[ $INSTALL_ALL_TOOLS == true ]]; then
+    TOOL_IDS=(${SUPPORTED_TOOLS[@]})
 fi
 
 # Checking container names
@@ -156,7 +164,7 @@ if [[ $NUM_CONTAINERS == "" ]]; then
     exit 1
 fi
 
-if [[ ${#ALL_TOOL_IDS[@]} > 1 && ${#CONTAINER_NAMES[@]} > 0 ]]; then
+if [[ ${#TOOL_IDS[@]} > 1 && ${#CONTAINER_NAMES[@]} > 0 ]]; then
     echo "Do not specify container name '${CONTAINER_NAMES[@]}' when building for multiple tools!"
     print_run_help
     exit 1
@@ -204,28 +212,7 @@ DOCKER_BENCHMARKS_DIR="/root/benchmarks"
 DOCKER_EXAMPLES_DIR="/root/examples"
 DOCKER_RESULTS_DIR="/root/results"
 
-# Build base Docker image
-echo "Start building docker containers for analysis tools... "
-echo ""
-
-# Install base image of Smartbench locally
-if [[ $INSTALL_LOCALLY == true && $ONLY_CREATE_CONTAINERS == false ]]; then
-    echo "============================================="
-    echo "Building base image for all analysis tools..."
-    echo ""
-
-    BASE_CACHE_ARG=""
-    if [[ $BASE_IMAGE_NO_CACHE == true ]]; then
-        BASE_CACHE_ARG="--no-cache"
-    fi
-
-    cd $SMARTBENCH_ROOT
-    docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
-fi
-
-echo "============================================="
-echo "Start building docker container(s) for: ${ALL_TOOL_IDS[@]}"
-echo ""
+echo "Preapre building Docker containers for: ${TOOL_IDS[@]}"
 
 # Configure some arguments to build Docker image for each tool locally or remotely
 if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
@@ -236,8 +223,9 @@ if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
         fi
 
         GIT_TOKEN_ARG=""
-        if [[ $USE_GIT_TOKEN == true ]]; then
-            echo "Git Access Token is required to build Docker image from: $TOOL_DOCKER_FILE"
+        if [[ $INSTALL_SMARTFUZZ == true ]]; then
+            echo ""
+            echo "Git Access Token is required to build Docker images for: SmartFuzz"
             echo -n "Enter your Git Access Token: "
             read GIT_TOKEN
             GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
@@ -250,10 +238,27 @@ if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
     fi
 fi
 
-for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
+# Install base image of Smartbench locally
+if [[ $INSTALL_LOCALLY == true && $ONLY_CREATE_CONTAINERS == false ]]; then
+    echo ""
+    echo "============================================="
+    echo "Building base Ubuntu image..."
+    echo ""
+
+    BASE_CACHE_ARG=""
+    if [[ $BASE_IMAGE_NO_CACHE == true ]]; then
+        BASE_CACHE_ARG="--no-cache"
+    fi
+
+    cd $SMARTBENCH_ROOT
+    docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
+fi
+
+for TOOL_ID in ${TOOL_IDS[@]}; do
     if [[ $INSTALL_LOCALLY == true ]]; then
         # Build Docker image for each tool locally
 
+        echo ""
         echo "============================================="
         echo "Building Docker image for: $TOOL_ID..."
         echo ""
@@ -268,11 +273,14 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
         TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
 
-        if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
+        if [[ $ONLY_CREATE_CONTAINERS == true ]]; then
+            echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
+        elif [[ $TOOL_ID == "smartfuzz" ]]; then
             docker build -f $TOOL_DOCKER_FILE \
                 -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
         else
-            echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
+            docker build -f $TOOL_DOCKER_FILE \
+                -t $TOOL_DOCKER_IMAGE . $TOOL_CACHE_ARG
         fi
 
     elif [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]]; then
@@ -311,7 +319,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     fi
 
     # Clear previous containers names if building for many tools
-    if [[ ${#ALL_TOOL_IDS[@]} > 1 ]]; then
+    if [[ ${#TOOL_IDS[@]} > 1 ]]; then
        CONTAINER_NAMES=()
     fi
 
