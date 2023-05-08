@@ -136,7 +136,7 @@ def log_analysis_output(
                     break
                 line = f"{line.decode('utf-8')}"
                 # Remove escaping sequence from output log
-                ansi_pattern = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+                ansi_pattern = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]")
                 line = ansi_pattern.sub("", line)
                 file.write(line)
         return True
@@ -255,7 +255,6 @@ def analyze_test_file(
         container,
         solc_version,
         timeout,
-        annot_format=annot_format,
     )
 
     if cmd is None:
@@ -363,7 +362,7 @@ def run_analysis_job(
                     all_results.append(res)
         except Exception as err:
             error_traceback(
-               f"An exception occurred when running analysis job!\n\n{err}"
+                f"An exception occurred when running analysis job!\n\n{err}"
             )
             pass
 

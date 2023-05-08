@@ -354,14 +354,14 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
                 echo "ERROR: a container named \"$CONTAINER\" is already running"
                 echo "Please stop and delete it before continuing the installation!"
                 echo ""
-                echo "Tips: run this script with `--force-install` to overwrite everthing!"
+                echo "Tips: run this script with '--force-install' to overwrite everthing!"
                 echo ""
                 clean_up 1
             else
                 echo "ERROR: a container named \"$CONTAINER\" exists but is not running"
                 echo "Please delete it before continuing the installation!"
                 echo ""
-                echo "Tips: run this script with `--force-install` to overwrite everthing!"
+                echo "Tips: run this script with '--force-install' to overwrite everthing!"
                 echo ""
                 clean_up 1
             fi
