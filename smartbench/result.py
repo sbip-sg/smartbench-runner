@@ -110,11 +110,10 @@ class AnalysisResult:
             self.validation_result.print_summary()
 
 
-def is_tool_output_dir(tool: Tool, test_dir: str) -> bool:
+def is_tool_output_dir(tool: Tool, test_output_dir: str) -> bool:
     """Check whether `test_dir` containing analysis log of a tool for
     a test file."""
-    test_dir = os.path.abspath(test_dir)
-    log_file = os.path.join(test_dir, tool.log_file)
+    log_file = tool.configure_log_file(test_output_dir)
     return os.path.exists(log_file)
 
 
@@ -224,7 +223,7 @@ def parse_tool_results(
 
         # Get test file
         test_output_dir = os.path.abspath(test_output_dir)
-        log_file = os.path.join(test_output_dir, tool.log_file)
+        log_file = tool.configure_log_file(test_output_dir)
         debug(f"Log file: {log_file}")
 
         test_file = logger.get_input_test_file(log_file)
@@ -298,6 +297,7 @@ def parse_result_directory(
         if tool is None:
             warning(f"Invalid result directory of all tools: {results_dir}")
             continue
+
         tool_results = parse_tool_results(
             tool,
             tool_output_dir_path,
