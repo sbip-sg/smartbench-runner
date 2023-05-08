@@ -29,11 +29,14 @@ print_usage () {
     echo "  publish-tool-docker.sh -t <tool-ids> [options]"
     echo ""
     echo "Options:"
-    echo "  -t <tool-id>            ID of analysis tool, currently support the followings:"
-    echo "                          confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
-    echo "                          slither, smartfuzz, smartian."
-    echo "                          Use `-t all` to install for all tools."
-    echo "  --g2-user-name          Specify your user name in SBIP G2 server."
+    echo "  -t <tool-id>         ID of analysis tool, currently support the followings:"
+    echo "                       confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
+    echo "                       slither, smartfuzz, smartian."
+    echo "                       Use `-t all` to install for all tools."
+    echo "  --g2-user-name       Specify your user name in SBIP G2 server."
+    echo "  --to-sbip-g2         Only publish Docker imges to SBIP G2 server."
+    echo "  --to-dockerhub       Only publish Docker imges to DockerHub."
+    echo "  --skip-saving-image  Skip saving Docker image, use existing files instead."
 }
 
 print_run_help () {
@@ -160,8 +163,9 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
 
     if [[ $TO_DOCKERHUB == true ]]; then
         if [[ $TOOL_ID == "smartfuzz" ]]; then
-            echo "Error: Smartfuzz should not be published to DockerHub!"
+            echo "WARNING: Smartfuzz should not be published to DockerHub!"
             echo ""
+            echo "Skipped publishing SmartFuzz to DockerHub!"
         else
             echo "Publishing $TOOL_ID's Docker image to DockerHub..."
             echo ""

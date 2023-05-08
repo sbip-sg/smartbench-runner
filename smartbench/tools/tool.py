@@ -53,7 +53,7 @@ class Tool:
         # output
         self.json_coverage_file = (
             f"{tool_id}_coverage.json"
-            if tool_id in ["sfuzz", "confuzzius", "smartian", "ilf"]
+            if tool_id in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
             else None
         )
 
