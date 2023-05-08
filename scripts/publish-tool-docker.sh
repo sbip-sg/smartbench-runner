@@ -91,7 +91,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Checking tool ID
+# Checking tools IDs
 INSTALL_ALL_TOOLS=false
 if [[ ${#TOOL_IDS[@]} == 0 ]]; then
     echo "Error: no analysis tool is specified!"
@@ -108,8 +108,6 @@ else
         fi
     done
 fi
-
-# Getting IDs of all tools to be published
 if [[ $INSTALL_ALL_TOOLS == true ]]; then
     TOOL_IDS=(${SUPPORTED_TOOLS[@]})
 fi
