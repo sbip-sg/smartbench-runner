@@ -205,14 +205,6 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
-        "-b",
-        dest="benchmark_names",
-        nargs="*",  # Accept multiple benchmark names
-        type=str,
-        help="Benchmark names in the result directory.",
-    )
-
-    result_argparser.add_argument(
         "-t",
         "--tools",
         nargs="+",  # Accept multiple tools.

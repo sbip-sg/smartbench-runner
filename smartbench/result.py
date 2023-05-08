@@ -192,7 +192,6 @@ def parse_test_file_result(
     annot_format: Optional[AnnotFormat] = None,
     print_bug_details: bool = True,
 ) -> List[AnalysisResult]:
-
     printer.print_medium_dashed_separator_line()
 
     safe_print(f"Output directory: {test_output_dir}\n")
@@ -252,7 +251,6 @@ def guess_analysis_tools(test_output_dir: str) -> List[str]:
 def parse_result_directory(
     results_dir: str,
     only_tools: Optional[List[str]] = None,
-    benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
@@ -280,6 +278,13 @@ def parse_result_directory(
             continue
 
         tools = guess_analysis_tools(test_output_dir)
+
+        if only_tools is not None:
+            tools = [
+                t
+                for t in tools
+                if any(t.id == s for s in only_tools)
+            ]
 
         for tool in tools:
             tool_results = parse_test_file_result(

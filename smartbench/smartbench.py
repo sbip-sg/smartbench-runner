@@ -169,11 +169,6 @@ def parse_analysis_results(args) -> None:
     if args.result_directories is not None:
         result_directories.extend(args.result_directories)
 
-    # Collect target benchmark names.
-    benchmark_names = None
-    if args.benchmark_names is not None:
-        benchmark_names = args.benchmark_names
-
     # Format of summary files to be exported.
     summary_file_format = None
     if args.export_summary != "":
@@ -193,7 +188,6 @@ def parse_analysis_results(args) -> None:
         result.parse_result_directory(
             result_dir,
             args.tools,
-            benchmark_names,
             args.validate,
             summary_file_format,
             annot_format,
