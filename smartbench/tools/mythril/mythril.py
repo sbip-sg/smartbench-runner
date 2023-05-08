@@ -48,7 +48,6 @@ class Mythril(Tool):
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """Function to make analysis command for `Mythril`. This function should
         have the same signature with other tools."""
@@ -57,32 +56,32 @@ class Mythril(Tool):
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
-        cmd = cmd + " -f " + test_file
+        cmd += f" -f {test_file}"
 
         # Solc version
         if solc_version is not None:
-            cmd = cmd + " --solc-version " + solc_version
+            cmd += f" --solc-version {solc_version}"
 
         # Output file
-        if output_file := self.configure_json_output(test_output_dir):
-            cmd = cmd + " -o " + output_file
+        if output_file := self.configure_json_result_file(test_output_dir):
+            cmd += f" -o {output_file}"
 
         # Timeout
         timeout = self.default_timeout if timeout is None else timeout
-        cmd = cmd + " -t " + str(timeout)
+        cmd += f" -t {str(timeout)}"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            cmd += f" {self.default_arguments}"
         if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+            cmd += f" {self.additional_args}"
 
         return cmd
 
-    def parse_severity(self, severity: Optional[str]) -> Severity:
+    def parse_severity(self, severity: Optional[str]) -> Optional[Severity]:
         """Parse severity level of issue detected by Mythril."""
         if severity is None:
-            return Severity.UNKNOWN
+            return None
 
         severity = severity.casefold()
 
@@ -95,7 +94,9 @@ class Mythril(Tool):
         if severity == "high":
             return Severity.HIGH_RISK
 
-        return Severity.UNKNOWN
+        warning(f"Unknown severity: {severity}")
+
+        return None
 
     def parse_issue_location(
         self, log_file, start_line, end_line
@@ -169,7 +170,7 @@ class Mythril(Tool):
     ) -> Optional[List[Issue]]:
         """Parse output of Mythril"""
         output = None
-        output_file = os.path.join(test_output_dir, self.json_output_file)
+        output_file = os.path.join(test_output_dir, self.json_result_file)
         log_file = self.configure_log_file(test_output_dir)
         debug("Mythril parse file: ", output_file)
         try:

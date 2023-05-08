@@ -54,7 +54,6 @@ class Smartian(Tool):
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """Function to make analysis command for `Smartian`. This function should
         have the same signature with other tools."""
@@ -63,27 +62,27 @@ class Smartian(Tool):
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
-        cmd = cmd + " -f " + test_file
+        cmd += f" -f {test_file}"
         if len(contracts) > 0:
-            cmd = cmd + " -c " + " ".join(contracts)
+            cmd += f" -c {' '.join(contracts)}"
 
         # Solc version
         if solc_version is not None:
-            cmd = cmd + " --solc-version " + solc_version
+            cmd += f" --solc-version {solc_version}"
 
         # Output directory
-        cmd = cmd + " -o " + test_output_dir
+        cmd += f" -o {test_output_dir}"
 
         # Timeout for each contract
         timeout = self.default_timeout if timeout is None else timeout
         contract_timeout = math.ceil(timeout / len(contracts))
-        cmd = cmd + " -t " + str(contract_timeout)
+        cmd += f" -t {str(contract_timeout)}"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            cmd += f" {self.default_arguments}"
         if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+            cmd += f" {self.additional_args}"
 
         return cmd
 
@@ -275,7 +274,7 @@ class Smartian(Tool):
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Smartian"""
         log_file = self.configure_log_file(test_output_dir)
-        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        coverage_file = os.path.join(test_output_dir, self.json_coverage_file)
 
         lines = None
         try:

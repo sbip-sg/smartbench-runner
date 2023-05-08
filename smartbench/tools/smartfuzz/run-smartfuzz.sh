@@ -1,36 +1,146 @@
 #!/bin/bash
-# running benchmark ./benchmark.sh input_file output_file timeout seed
-# copy from smartfuzz/scripts/benchmark.sh
-if test "$#" -lt 6; then
-    echo "Taking at least 6 parameters"
-    echo "./benchmark.sh input_file output_file coverage_file timeout[integer] seed[integer] time_distribution[equal or default] [the rest]"
-    echo "example ./benchmark.sh test.sol test.out.json test.out.coverage.json 10 1 default [other smartfuzz args --contract-name Test]"
-    exit 0
-fi
-input_file=$1
-output_file=$2
-coverage_file=$3
-timeout=$4
-seed=$5
-time_distribution=$6
-time_distribution_args=""
-if [[ "$time_distribution" == "equal" ]]; then
-    time_distribution_args=" --time-distribute-equal "
-fi
-if [[ "$output_file" == "automatic" ]]; then
-    output_file="$input_file.result.json"
-fi
-if [ -f /.dockerenv ]; then
-    TOOL_DIR="/root/smartfuzz"
-else
-    TOOL_DIR="$(realpath $(dirname "$0"))/repo/smartfuzz"
+
+# Usage:
+#   ./run-smartfuzz.sh -f <test-file> [options] [smartfuzz-arguments]
+#
+
+################################################
+# Usage
+
+print_usage () {
+    echo ""
+    echo "Usage: "
+    echo "  run-smartian.sh -f <test-file> -c <contract-names> [options] [smartial-arguments]"
+    echo ""
+    echo "Options:"
+    echo "  -f <test-file>               Smart contract file to be analyzed."
+    echo "  -r <result-file>             Output file containing analysis result."
+    echo "  -c <contract-name>        Name of the target contract."
+    echo "  --coverage <coverage-file>   Output file containing code coverage."
+    echo "  -t <timeout>                 Timeout for each target contract."
+    echo "  --time-distribution <value>  Default or equal time distribution for each contract."
+    echo "  -h, --help                   Print this usage."
+    echo ""
+    echo "Addtional arguments passing to Smartian can be put at the end of this command."
+}
+
+print_help () {
+    echo ""
+    echo "Please run with '-h' to see the command usage."
+}
+
+################################################
+# Parse arguments
+
+TEST_FILE=""
+RESULT_FILE=""
+COVERAGE_FILE=""
+TIMEOUT=0
+RANDOM_SEED=0
+TIME_DISTRIBUTION=""
+TIME_DISTRIBUTION_ARGS=""
+CONTRACT_ARGS=""
+ADDITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -f)
+            TEST_FILE=$(realpath $2)
+            shift # past argument
+            shift # past value
+            ;;
+        -c)
+            CONTRACT_NAME=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        -r)
+            RESULT_FILE="$2"
+            shift  # past argument
+            shift  # past value
+            ;;
+        --code-coverage)
+            COVERAGE_FILE="$2"
+            shift  # past argument
+            shift  # past value
+            ;;
+        -t)
+            TIMEOUT=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        --time-distribution)
+            TIME_DISTRIBUTION=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        --random-seed)
+            RANDOM_SEED=$2
+            shift  # past argument
+            shift  # past value
+            ;;
+        -h|--help)
+            print_usage
+            exit 1
+            ;;
+        *)
+            ADDITIONAL_ARGS+=("$1") # save all other arguments
+            shift # past argument
+            ;;
+    esac
+done
+
+if [[ $TEST_FILE == "" ]]; then
+    echo "Error: test file is not specified!"
+    print_help
+    exit 1
 fi
 
-# Shift the arguments to the left by 6 to remove the first 6 arguments
-shift 6
-# disable --use-symbolic-execution for now
-# move --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting to upper level script
-python "$TOOL_DIR/main.py" $input_file -r $output_file -j 1 --time $timeout -q --print-coverage $coverage_file -s $seed $time_distribution_args $@ &
-python "$TOOL_DIR/main.py" $input_file -r "$output_file.reentrancy" -j 1 -q --time $timeout --reentrancy -s $seed $time_distribution_args $@
+if [[ $RESULT_FILE == "" ]]; then
+    echo "Error: result file is not specified!"
+    print_help
+    exit 1
+fi
+
+if [[ $COVERAGE_FILE == "" ]]; then
+    echo "Error: code coverage file is not specified!"
+    print_help
+    exit 1
+fi
+
+if [[ $TIMEOUT -lt 0 ]]; then
+    echo "Error: timeout is invalid or not specified!"
+    print_help
+    exit 1
+fi
+
+if [[ $TIME_DISTRIBUTION == "equal" ]]; then
+    TIME_DISTRIBUTION_ARGS=" --time-distribute-equal "
+fi
+
+if [[ $CONTRACT_NAME != "" ]]; then
+    CONTRACT_ARGS=" --contract-name $CONTRACT_NAME "
+fi
+
+################################################
+# Configure paths
+
+TOOL_DIR="/root/smartfuzz"
+
+################################################
+# Analyze input test files
+
+# Run the first process of SmartFuzz to detect non-reentrancy bugs
+python "$TOOL_DIR/main.py" $TEST_FILE -r $RESULT_FILE \
+    -j 1 --time $TIMEOUT \
+    -q --print-coverage $COVERAGE_FILE -s $RANDOM_SEED \
+    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS $ADDITIONAL_ARGS &
+
+# Run the sencond process of SmartFuzz to detect reentrancy bugs
+python "$TOOL_DIR/main.py" $TEST_FILE -r "$output_file.reentrancy" \
+    -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
+    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS $ADDITIONAL_ARGS
+
+# Wait and merge results from 2 processes
 wait
-python "$TOOL_DIR/scripts/merge_json_result.py" $output_file
+python "$TOOL_DIR/scripts/merge_json_result.py" $RESULT_FILE

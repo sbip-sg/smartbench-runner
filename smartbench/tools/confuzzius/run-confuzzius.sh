@@ -32,7 +32,7 @@ print_help () {
 ################################################
 # Parse arguments
 
-TOOL_ID="confuzzius"
+TOOL_ID="confuzzius"        # For different variants of Confuzzius
 TEST_FILE=""
 CONTRACT_NAME=""
 TIMEOUT=0
@@ -120,10 +120,12 @@ fi
 
 
 ################################################
-# Analyze contracts
-
 # Configure paths
+
 TOOL_DIR="/root/confuzzius"
+
+################################################
+# Analyze contracts
 
 if [[ $CONTRACT_NAME == "" ]]; then
     SOLC_VERSION=$SOLC_VER python "$TOOL_DIR/fuzzer/main.py" --evm byzantium --solc "v$SOLC_VER" \

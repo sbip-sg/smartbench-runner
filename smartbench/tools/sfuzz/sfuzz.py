@@ -52,7 +52,6 @@ class Sfuzz(Tool):
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """
         Function to make analysis command for Slither.
@@ -63,28 +62,28 @@ class Sfuzz(Tool):
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
-        cmd = cmd + " -f " + test_file
+        cmd += f" -f {test_file}"
         if len(contracts) == 1:
-            cmd = cmd + " -c " + contracts[0]
+            cmd += f" -c {contracts[0]}"
 
         # Solc version
         if solc_version is not None:
-            cmd = cmd + " --solc-version " + solc_version
+            cmd += f" --solc-version {solc_version}"
 
         # Pass contract names to sFuzz
         if len(contracts) > 0:
-            cmd = cmd + " -c " + " ".join(contracts)
+            cmd += f" -c {' '.join(contracts)}"
 
         # Timeout
         timeout = self.default_timeout if timeout is None else timeout
         contract_timeout = math.ceil(timeout / len(contracts))
-        cmd = cmd + " -t " + str(contract_timeout)
+        cmd += f" -t {str(contract_timeout)}"
 
         # Pass arguments
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            cmd += f" {self.default_arguments}"
         if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+            cmd += f" {self.additional_args}"
 
         return cmd
 
@@ -242,7 +241,7 @@ class Sfuzz(Tool):
         """Parse instruction coverage of sFuzz"""
         lines = None
         log_file = self.configure_log_file(test_output_dir)
-        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        coverage_file = os.path.join(test_output_dir, self.json_coverage_file)
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]

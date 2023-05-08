@@ -55,7 +55,7 @@ ONLY_CREATE_CONTAINERS=false
 BASE_IMAGE_NO_CACHE=false
 TOOL_IMAGE_NO_CACHE=false
 INSTALL_LOCALLY=true
-INSTALL_USING_G2=false
+INSTALL_FROM_G2=false
 G2_USER_NAME=""
 SMARTBENCH_RESULTS_DIR=""
 
@@ -108,7 +108,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --use-g2-images)
             INSTALL_LOCALLY=false
-            INSTALL_USING_G2=true
+            INSTALL_FROM_G2=true
             shift
             ;;
         --g2-user-name)
@@ -225,15 +225,14 @@ if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
         GIT_TOKEN_ARG=""
         if [[ $INSTALL_SMARTFUZZ == true ]]; then
             echo ""
-            echo "Git Access Token is required to build Docker images for: SmartFuzz"
+            echo "Git Access Token is required to build Docker image for: SmartFuzz"
             echo -n "Enter your Git Access Token: "
             read GIT_TOKEN
             GIT_TOKEN_ARG=" --build-arg GIT_ACCESS_TOKEN=$GIT_TOKEN"
         fi
-    fi
-
-    if [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]] && [[ $G2_USER_NAME == "" ]]; then
-        echo -n "Enter your username in SBIP G2 to download Smartfuzz Docker image: "
+    elif [[ $INSTALL_FROM_G2 == true || $INSTALL_SMARTFUZZ == true ]] && \
+         [[ $G2_USER_NAME == "" ]]; then
+        echo -n "Enter your username in SBIP G2 to download Docker image(s): "
         read G2_USER_NAME
     fi
 fi
@@ -283,7 +282,7 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
                 -t $TOOL_DOCKER_IMAGE . $TOOL_CACHE_ARG
         fi
 
-    elif [[ $INSTALL_USING_G2 == true || $TOOL_ID == "smartfuzz" ]]; then
+    elif [[ $INSTALL_FROM_G2 == true || $TOOL_ID == "smartfuzz" ]]; then
         # Load Docker image from SBIP G2 server
         # This command below only works when running in NUS network
 
@@ -291,7 +290,7 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
         echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
 
-        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar.xz"
+        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar.gz"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
 
         if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
@@ -354,14 +353,14 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
                 echo "ERROR: a container named \"$CONTAINER\" is already running"
                 echo "Please stop and delete it before continuing the installation!"
                 echo ""
-                echo "Tips: run this script with `--force-install` to overwrite everthing!"
+                echo "Tips: run this script with '--force-install' to overwrite everthing!"
                 echo ""
                 clean_up 1
             else
                 echo "ERROR: a container named \"$CONTAINER\" exists but is not running"
                 echo "Please delete it before continuing the installation!"
                 echo ""
-                echo "Tips: run this script with `--force-install` to overwrite everthing!"
+                echo "Tips: run this script with '--force-install' to overwrite everthing!"
                 echo ""
                 clean_up 1
             fi

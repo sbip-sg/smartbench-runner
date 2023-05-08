@@ -31,6 +31,7 @@ from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
+SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
 RESULTS_DIR_RELATIVE_PATH = "results"
 
 
@@ -136,7 +137,7 @@ def log_analysis_output(
                     break
                 line = f"{line.decode('utf-8')}"
                 # Remove escaping sequence from output log
-                ansi_pattern = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+                ansi_pattern = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]")
                 line = ansi_pattern.sub("", line)
                 file.write(line)
         return True
@@ -255,7 +256,6 @@ def analyze_test_file(
         container,
         solc_version,
         timeout,
-        annot_format=annot_format,
     )
 
     if cmd is None:
@@ -363,7 +363,7 @@ def run_analysis_job(
                     all_results.append(res)
         except Exception as err:
             error_traceback(
-               f"An exception occurred when running analysis job!\n\n{err}"
+                f"An exception occurred when running analysis job!\n\n{err}"
             )
             pass
 
@@ -473,7 +473,7 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
-    test_configs: Optional[Dict[str, TestConfig]],
+    test_configs: Optional[Dict[str, TestConfig]] = None,
     result_dir: Optional[str] = None,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,

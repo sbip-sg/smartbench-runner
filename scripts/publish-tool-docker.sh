@@ -48,6 +48,7 @@ TOOL_IDS=()
 G2_USER_NAME=""
 TO_SBIP_G2=false
 TO_DOCKERHUB=false
+SKIP_SAVING_IMAGE=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -77,6 +78,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --to-dockerhub)
             TO_DOCKERHUB=true
+            shift
+            ;;
+        --skip-saving-image)
+            SKIP_SAVING_IMAGE=true
             shift
             ;;
         -h|--help)
@@ -141,9 +146,16 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
     if [[ $TO_SBIP_G2 == true ]]; then
         TOOL_IMAGE_FILE="docker_image_${TOOL_ID}.tar.gz"
         TOOL_IMAGE_PATH=$SCRIPT_DIR/$TOOL_IMAGE_FILE
-        echo "Saving Docker image to: $TOOL_IMAGE_PATH"
+        if [[ $SKIP_SAVING_IMAGE == false ]]; then
+            echo "Saving Docker image to: $TOOL_IMAGE_PATH"
+            echo ""
+            docker save $TOOL_REMOTE_IMAGE | gzip > $TOOL_IMAGE_PATH
+        fi
+
+        echo "Publishing $TOOL_ID's Docker image SBIP G2..."
         echo ""
-        docker save $TOOL_REMOTE_IMAGE | gzip > $TOOL_IMAGE_PATH
+        scp $TOOL_IMAGE_PATH \
+            $G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE
     fi
 
     if [[ $TO_DOCKERHUB == true ]]; then
@@ -155,12 +167,5 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
             echo ""
             docker push $TOOL_REMOTE_IMAGE
         fi
-    fi
-
-    if [[ $TO_SBIP_G2 == true ]]; then
-        echo "Publishing $TOOL_ID's Docker image SBIP G2..."
-        echo ""
-        scp $TOOL_IMAGE_PATH \
-            $G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE
     fi
 done

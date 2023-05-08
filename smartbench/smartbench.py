@@ -116,7 +116,7 @@ def analyze_smart_contracts(args) -> None:
     if args.benchmark_dir is None and args.test_config_file is not None:
         error(
             f"Benchmark directory is not specified for "
-            f"target contracts file: {args.target_contracts_file}"
+            f"target contracts file: {args.test_config_file}"
         )
         return None
     elif args.benchmark_dir is not None and args.test_config_file is None:

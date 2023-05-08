@@ -49,7 +49,6 @@ class Confuzzius(Tool):
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """
         Function to make an analysis command for Slither.
@@ -59,33 +58,33 @@ class Confuzzius(Tool):
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
-        cmd = cmd + " -f " + test_file
+        cmd += f" -f {test_file}"
 
         # Specify the input contract name if there is only 1 target contract.
         # Otherwise, let Confuzzius handle all the contract name automatically
         if len(contracts) == 1:
-            cmd = cmd + " -c " + contracts[0]
+            cmd += f" -c {contracts[0]}"
 
         # Solc version
         if solc_version is not None:
-            cmd = cmd + " --solc-version " + solc_version
+            cmd += f" --solc-version {solc_version}"
 
         # Output directory
-        cmd = cmd + " -o " + test_output_dir
+        cmd += f" -o {test_output_dir}"
 
         # Timeout for each contract
         timeout = self.default_timeout if timeout is None else timeout
         contract_timeout = math.ceil(timeout / len(contracts))
-        cmd = cmd + " -t " + str(contract_timeout)
+        cmd += f" -t {str(contract_timeout)}"
 
         # Tool ID (Confuzzius has multiple variants)
-        cmd = cmd + " --tool-id " + self.id
+        cmd += f" --tool-id {self.id}"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            cmd += f" {self.default_arguments}"
         if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+            cmd += f" {self.additional_args}"
 
         return cmd
 
@@ -161,7 +160,7 @@ class Confuzzius(Tool):
     ) -> Optional[List[Issue]]:
         """Parse output of Confuzzius"""
         log_file = self.configure_log_file(test_output_dir)
-        output_file = self.configure_json_output(test_output_dir)
+        output_file = self.configure_json_result_file(test_output_dir)
 
         if output_file is None:
             error_traceback("JSON output file is not found!")
@@ -235,7 +234,7 @@ class Confuzzius(Tool):
 
     def parse_instruction_coverage(self, test_output_dir: str):
         """Parse code coverage of Confuzzius"""
-        output_file = self.configure_json_output(test_output_dir)
+        output_file = self.configure_json_result_file(test_output_dir)
         output = None
         try:
             with open(output_file, "r", encoding="utf-8") as file:
@@ -276,7 +275,7 @@ class Confuzzius(Tool):
         results_json_obj_str = json.dumps(results_json_obj, indent=2)
         debug(f"coverage: {results_json_obj_str}")
 
-        coverage_file = os.path.join(test_output_dir, self.coverage_json_file)
+        coverage_file = os.path.join(test_output_dir, self.json_coverage_file)
         with open(coverage_file, "w", encoding="utf-8") as file:
             file.write(results_json_obj_str)
             file.close()

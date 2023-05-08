@@ -49,30 +49,20 @@ class Smartfuzz(Tool):
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """Function to make analysis command for `Smartfuzz`. This function
         should have the same signature with other tools."""
 
-        annot_format = kwargs.get("annot_format", None)
-
-        # Configure command
+        # Executable file
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
-        timeout = self.default_timeout if timeout is None else timeout
-        cmd = (
-            cmd
-            + f" {test_file}"
-            + f" {test_output_dir}/smartfuzz_result.json"
-            + f" {test_output_dir}/smartfuzz_coverage.json"
-            + f" {timeout}"
-            + f" {self.random_seed} default"
-        )
+        # Input file
+        cmd += f" -f {test_file}"
 
         # Specify the input contract name if there is only 1 target contract.
         # Otherwise, let SmartFuzz handle all the contract name automatically
-        if annot_format != "solidifi" and len(contracts) == 1:
-            cmd += f" --contract-name {contracts[0]}"
+        # if annot_format != "solidifi" and len(contracts) == 1:
+        #     cmd += f" --contract-name {contracts[0]}"
 
         # disable --use-symbolic-execution for now
         # move --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting
@@ -81,14 +71,27 @@ class Smartfuzz(Tool):
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
+        # Output files
+        if output_file := self.configure_json_result_file(test_output_dir):
+            cmd += f" -r {output_file}"
+        if coverage_file := self.configure_json_coverage_file(test_output_dir):
+            cmd += f" --coverage {coverage_file}"
+
+        # SmartFuzz allows specifying only 1 input contract. If multiple
+        # contracts are supplied, let it run automatically.
+        if len(contracts) == 1:
+            cmd += f" -c {contracts[0]}"
 
         # Timeout
+        timeout = self.default_timeout if timeout is None else timeout
+        cmd += f" -t {str(timeout)}"
+        cmd += " --time-distribution default"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            cmd += f" {self.default_arguments}"
         if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+            cmd += f" {self.additional_args}"
 
         return cmd
 
@@ -177,7 +180,9 @@ class Smartfuzz(Tool):
         if (log_file := self.configure_log_file(test_output_dir)) is not None:
             test_file = logger.get_input_test_file(log_file)
 
-        if (output_file := self.configure_json_output(test_output_dir)) is None:
+        if (
+            output_file := self.configure_json_result_file(test_output_dir)
+        ) is None:
             error("Failed to configure Smartfuzz output file!")
             return None
 
