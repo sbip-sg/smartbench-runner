@@ -15,7 +15,9 @@ from typing import List, Optional
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Issue
-from smartbench.solidity.loc import Location
+
+
+EXECUTION_LOG_SUFFIX = "_execution.log"
 
 
 class Tool:
@@ -53,12 +55,13 @@ class Tool:
         # output
         self.json_coverage_file = (
             f"{tool_id}_coverage.json"
-            if tool_id in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
+            if tool_id
+            in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
             else None
         )
 
         # Log file for capturing execution log
-        self.log_file: str = f"{tool_id}_execution.log"
+        self.log_file: str = f"{tool_id}{EXECUTION_LOG_SUFFIX}"
 
     def __str__(self):
         """Printing to string."""

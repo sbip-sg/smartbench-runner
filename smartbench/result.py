@@ -17,6 +17,7 @@ from smartbench.issue import Issue
 from smartbench.printer import (
     debug,
     error,
+    error_traceback,
     print_unless,
     safe_print,
     safe_print_underline,
@@ -27,7 +28,7 @@ from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.ilf.ilf import Ilf
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.smartian.smartian import Smartian
-from smartbench.tools.tool import Tool
+from smartbench.tools.tool import EXECUTION_LOG_SUFFIX, Tool
 from smartbench.validator import ValidationResult
 
 
@@ -121,7 +122,6 @@ def parse_test_file_output_dir(
     tool: Tool,
     test_file: str,
     test_output_dir: str,
-    benchmark_names: Optional[List[str]] = None,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
@@ -184,77 +184,69 @@ def parse_test_file_output_dir(
     )
 
 
-def parse_tool_results(
+def parse_test_file_result(
     tool: Tool,
-    tool_results_dir: str,
-    benchmark_names: Optional[List[str]] = None,
+    test_output_dir: str,
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     print_bug_details: bool = True,
 ) -> List[AnalysisResult]:
-    printer.print_long_double_separator_line()
-    safe_print(f"Parsing analysis result of: {tool.id}")
 
-    # Find all output directories for each test file
-    test_output_dirs = [p[0] for p in os.walk(tool_results_dir)]
+    printer.print_medium_dashed_separator_line()
 
-    # Filter them by the benchmark names, and sort alphabetically
-    if benchmark_names is not None:
-        benchmark_paths = []
-        for b in benchmark_names:
-            if not b.endswith("/"):
-                b += "/"
-                benchmark_paths.append(os.path.join(tool_results_dir, b))
+    safe_print(f"Output directory: {test_output_dir}\n")
 
-        test_output_dirs = [
-            d
-            for d in test_output_dirs
-            if any([d.startswith(b) for b in benchmark_paths])
-        ]
-        test_output_dirs = sorted(test_output_dirs)
+    safe_print(f"Analysis tool: {tool.id}")
 
-    all_results: List[AnalysisResult] = []
-    for test_output_dir in test_output_dirs:
-        if not is_tool_output_dir(tool, test_output_dir):
-            continue
+    # Get test file
+    test_output_dir = os.path.abspath(test_output_dir)
+    log_file = tool.configure_log_file(test_output_dir)
+    test_file = logger.get_input_test_file(log_file)
+    safe_print(f"Test file: {test_file}\n")
 
-        printer.print_medium_dashed_separator_line()
+    if test_file is None:
+        warning(f"Unable to get test file: {test_file}")
+        return []
 
-        # Get test file
-        test_output_dir = os.path.abspath(test_output_dir)
-        log_file = tool.configure_log_file(test_output_dir)
-        debug(f"Log file: {log_file}")
+    res = parse_test_file_output_dir(
+        tool,
+        test_file,
+        test_output_dir,
+        validate,
+        export_summary,
+        annot_format,
+        print_bug_details,
+    )
 
-        test_file = logger.get_input_test_file(log_file)
-        safe_print(f"Test file: {test_file}\n")
+    if res is None:
+        return []
 
-        if test_file is None:
-            warning(f"Unable to get test file: {test_file}")
-            continue
+    if not res.is_successful:
+        warning(f"Failed to parse result of test file: {test_file}")
+    elif print_bug_details:
+        res.print_detailed_summary()
+    else:
+        safe_print("Parsed analysis results successfully!")
 
-        res = parse_test_file_output_dir(
-            tool,
-            test_file,
-            test_output_dir,
-            benchmark_names,
-            validate,
-            export_summary,
-            annot_format,
-            print_bug_details,
-        )
+    return [res]
 
-        if res is not None:
-            if not res.is_successful:
-                warning(f"Failed to parse result of test file: {test_file}")
-            elif print_bug_details:
-                res.print_detailed_summary()
-            else:
-                safe_print("Parsed analysis results successfully!")
 
-            all_results.append(res)
+def guess_analysis_tools(test_output_dir: str) -> List[str]:
+    """Guess analysis tools corresponding to a test output directory."""
+    tools = []
 
-    return all_results
+    # Find tool IDs by looking at execution log files
+    for file_name in os.listdir(test_output_dir):
+        if file_name.endswith(EXECUTION_LOG_SUFFIX):
+            tool_id = file_name[0 : -len(EXECUTION_LOG_SUFFIX)]
+            try:
+                tool = load_tool_configuration(tool_id)
+                tools.append(tool)
+            except Exception:
+                error_traceback(f"Failed to load tool configuration: {tool_id}")
+
+    return tools
 
 
 def parse_result_directory(
@@ -280,35 +272,25 @@ def parse_result_directory(
 
     all_results: List[AnalysisResult] = []
 
-    # Parse results of each analysis tool
-    tool_result_dirs = list(os.listdir(results_dir))
-    for tool_output_dir in tool_result_dirs:
-        tool_output_dir_path = os.path.join(results_dir, tool_output_dir)
-        if not os.path.isdir(tool_output_dir_path):
+    # Find output directory of all test files
+    test_output_dirs = [p[0] for p in os.walk(results_dir)]
+
+    for test_output_dir in test_output_dirs:
+        if not os.path.isdir(test_output_dir):
             continue
 
-        # Tool ID is assumed to be the same as tool_result_dir
-        tool_id = tool_output_dir
-        if only_tools is not None and all(tool_id != t for t in only_tools):
-            continue
+        tools = guess_analysis_tools(test_output_dir)
 
-        tool = load_tool_configuration(tool_id)
-
-        if tool is None:
-            warning(f"Invalid result directory of all tools: {results_dir}")
-            continue
-
-        tool_results = parse_tool_results(
-            tool,
-            tool_output_dir_path,
-            benchmark_names,
-            validate,
-            export_summary,
-            annot_format,
-            print_bug_details,
-        )
-
-        all_results.extend(tool_results)
+        for tool in tools:
+            tool_results = parse_test_file_result(
+                tool,
+                test_output_dir,
+                validate,
+                export_summary,
+                annot_format,
+                print_bug_details,
+            )
+            all_results.extend(tool_results)
 
     safe_print("Parsing result completed!")
     print_benchmarking_results(results_dir, all_results)
