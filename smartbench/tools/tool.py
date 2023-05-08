@@ -42,23 +42,23 @@ class Tool:
         # increasing random seed for reproducible results
         self.random_seed: int = int(random_seed)
 
-        # Output file in JSON format, some tools may not support this output
-        self.json_output_file = (
+        # Result file in JSON format, some tools may not support this output
+        self.json_result_file = (
             None
             if tool_id in ["smartian", "sfuzz"]
             else f"{tool_id}_result.json"
         )
 
-        # Log file for capturing execution log
-        self.log_file: str = f"{tool_id}_execution.log"
-
-        # Output code coverage file in JSON format, some tools may not support
-        # this output
-        self.coverage_json_file = (
+        # Code coverage file in JSON format, some tools may not support this
+        # output
+        self.json_coverage_file = (
             f"{tool_id}_coverage.json"
             if tool_id in ["sfuzz", "confuzzius", "smartian", "ilf"]
             else None
         )
+
+        # Log file for capturing execution log
+        self.log_file: str = f"{tool_id}_execution.log"
 
     def __str__(self):
         """Printing to string."""
@@ -67,17 +67,30 @@ class Tool:
             f"Arguments: {self.additional_args}}}"
         )
 
-    def configure_json_output(self, result_dir: str) -> Optional[str]:
-        """
-        Configure output file of the tool for a test file.
-        """
-        if self.json_output_file is None:
+    def configure_json_result_file(self, result_dir: str) -> Optional[str]:
+        """Configure result file in JSON format of the tool for a test file."""
+
+        if self.json_result_file is None:
             return None
 
         # Prepare output directory
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
-        return os.path.join(result_dir, self.json_output_file)
+
+        return os.path.join(result_dir, self.json_result_file)
+
+    def configure_json_coverage_file(self, result_dir: str) -> Optional[str]:
+        """Configure code coverage file in JSON format of the tool for a test
+        file."""
+
+        if self.json_coverage_file is None:
+            return None
+
+        # Prepare output directory
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+
+        return os.path.join(result_dir, self.json_coverage_file)
 
     def configure_log_file(self, result_dir: str) -> str:
         """
@@ -97,7 +110,6 @@ class Tool:
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """Make an analysis command for a tool."""
 

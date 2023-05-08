@@ -13,7 +13,7 @@ from smartbench import logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback
+from smartbench.printer import debug, error, error_traceback, warning
 from smartbench.solidity.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
@@ -46,7 +46,6 @@ class Slither(Tool):
         container: DockerContainer,
         solc_version: str,
         timeout: Optional[int] = None,
-        **kwargs,
     ) -> str:
         """Function to make an analysis command for Slither."""
 
@@ -54,28 +53,31 @@ class Slither(Tool):
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file
-        cmd = cmd + " -f " + test_file
+        cmd += f" -f {test_file}"
 
         # Solc version
         if solc_version is not None:
-            cmd = cmd + " --solc-version " + solc_version
+            cmd += f" --solc-version {solc_version}"
 
         # Output file
-        if output_file := self.configure_json_output(test_output_dir):
-            cmd = cmd + " -o " + output_file
+        if output_file := self.configure_json_result_file(test_output_dir):
+            cmd += f" -o {output_file}"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
-            cmd = cmd + " " + self.default_arguments
+            cmd += f" {self.default_arguments}"
         if self.additional_args:
-            cmd = cmd + " " + self.additional_args
+            cmd += f" {self.additional_args}"
 
         return cmd
 
-    def parse_result_confidence(self, confidence: Optional[str]) -> Confidence:
+    def parse_result_confidence(
+        self, confidence: Optional[str]
+    ) -> Optional[Confidence]:
         """Parse confidence level of issue detected by Slither."""
+
         if confidence is None:
-            return Confidence.UNKNOWN
+            return None
 
         confidence = confidence.casefold()
 
@@ -88,12 +90,16 @@ class Slither(Tool):
         if confidence == "medium":
             return Confidence.MEDIUM_CONFIDENCE
 
-        return Confidence.UNKNOWN
+        warning(f"Unknown confidence: {confidence}")
+        return None
 
-    def parse_issue_severity(self, severity: Optional[str]) -> Severity:
+    def parse_issue_severity(
+        self, severity: Optional[str]
+    ) -> Optional[Severity]:
         """Parse severity level of issue detected by Slither."""
+
         if severity is None:
-            return Severity.UNKNOWN
+            return None
 
         severity = severity.casefold()
 
@@ -112,7 +118,8 @@ class Slither(Tool):
         if severity == "high":
             return Severity.HIGH_RISK
 
-        return Severity.UNKNOWN
+        warning(f"Unknown severity: {severity}")
+        return None
 
     def parse_issue_location(
         self, log_file: str, backtrace_elements
@@ -355,11 +362,11 @@ class Slither(Tool):
         """Parse output of Slither. Return `None` if result parsing is not
         successful."""
 
-        if self.json_output_file is None:
+        if self.json_result_file is None:
             error_traceback("JSON output file is not found!")
             return None
 
-        output_file = os.path.join(test_output_dir, self.json_output_file)
+        output_file = os.path.join(test_output_dir, self.json_result_file)
         log_file = self.configure_log_file(test_output_dir)
 
         output = None

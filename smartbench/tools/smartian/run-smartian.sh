@@ -135,10 +135,12 @@ if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
 fi
 
 ################################################
-# Analyze contracts
-
 # Configure paths
+
 TOOL_DIR="/root/smartian"
+
+################################################
+# Analyze contracts
 
 # Run Smartian on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
