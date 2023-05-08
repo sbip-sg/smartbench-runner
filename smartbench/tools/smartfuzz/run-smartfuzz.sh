@@ -137,7 +137,7 @@ python "$TOOL_DIR/main.py" $TEST_FILE -r $RESULT_FILE \
     $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS $ADDITIONAL_ARGS &
 
 # Run the sencond process of SmartFuzz to detect reentrancy bugs
-python "$TOOL_DIR/main.py" $TEST_FILE -r "$output_file.reentrancy" \
+python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.reentrancy" \
     -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
     $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS $ADDITIONAL_ARGS
 
