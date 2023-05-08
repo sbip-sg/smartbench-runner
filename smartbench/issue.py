@@ -419,6 +419,7 @@ def classify_to_solidifi_pp_kind(
         IssueKind.INTEGER_BUG,
         IssueKind.INTEGER_OVERFLOW,
         IssueKind.INTEGER_UNDERFLOW,
+        IssueKind.INTEGER_TRUNCATION,
     ]:
         return SolidiFIPP.OVERFLOW_UNDERFLOW
 
