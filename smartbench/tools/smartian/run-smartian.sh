@@ -115,16 +115,6 @@ if [[ $TIMEOUT -lt 0 ]]; then
 fi
 
 ################################################
-# Configure paths
-
-# Configure tool path when running inside or outside a Docker container.
-if [ -f /.dockerenv ]; then
-    TOOL_DIR="/root/smartian"
-else
-    TOOL_DIR="$(realpath $(dirname "$0"))/repo/smartian"
-fi
-
-################################################
 # Compile contracts
 
 COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
@@ -146,6 +136,9 @@ fi
 
 ################################################
 # Analyze contracts
+
+# Configure paths
+TOOL_DIR="/root/smartian"
 
 # Run Smartian on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do

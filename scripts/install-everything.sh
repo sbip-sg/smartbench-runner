@@ -12,4 +12,4 @@ echo ""
 echo "======================================================"
 echo "Install all Docker containers"
 echo ""
-$SCRIPT_DIR/install-tool-docker.sh -t all -n 30 --use-remote-images --force-install
+$SCRIPT_DIR/install-tool-docker.sh -t all --use-remote-images --force-install

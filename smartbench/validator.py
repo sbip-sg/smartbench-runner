@@ -12,7 +12,6 @@ import more_itertools as mit
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.issue import Issue
 from smartbench.printer import debug, safe_print
-from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
@@ -60,9 +59,7 @@ class ValidationResult:
         unlabelled_info = f"{len(self.unlabelled_issues)}"
         unlabelled_idxs = [i.index for i in self.unlabelled_issues]
         if len(unlabelled_idxs) > 0:
-            unlabelled_info += (
-                f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
-            )
+            unlabelled_info += f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
         safe_print(f"  + Unlabelled issues: {unlabelled_info}")
 
 
@@ -120,12 +117,17 @@ def validate_issues(
     for issue in issues:
         detected = False
         for annot in annots:
-            if match_issue_to_annotation(tool, issue, annot):
+            if annot.is_real_bug and match_issue_to_annotation(
+                tool, issue, annot
+            ):
                 correct_bugs.append((issue, annot))
                 break
 
     # Detect missing bugs
     for annot in annots:
+        if not annot.is_real_bug:
+            continue
+
         detected = False
         for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
@@ -138,7 +140,9 @@ def validate_issues(
     for issue in issues:
         detected = False
         for annot in annots:
-            if match_issue_to_annotation(tool, issue, annot):
+            if annot.is_real_bug and match_issue_to_annotation(
+                tool, issue, annot
+            ):
                 detected = True
                 break
         if not detected:

@@ -135,8 +135,8 @@ def log_analysis_output(
                 if not (line := proc.stdout.readline()):
                     break
                 line = f"{line.decode('utf-8')}"
-                # Remove ansi color from output log
-                ansi_pattern = re.compile(r"\x1B\[\d+(;\d+){0,2}m")
+                # Remove escaping sequence from output log
+                ansi_pattern = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
                 line = ansi_pattern.sub("", line)
                 file.write(line)
         return True

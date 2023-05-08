@@ -116,15 +116,7 @@ fi
 ################################################
 # Configure paths
 
-# Configure tool path when running inside or outside a Docker container.
-if [ -f /.dockerenv ]; then
-    GO_DIR="/root/go"
-    TEMPLATE_DIR="/root/template"
-else
-    BASE_DIR="$(realpath $(dirname "$0"))"
-    GO_DIR="$BASE_DIR/repo/go"
-    TEMPLATE_DIR="$BASE_DIR/template"
-fi
+GO_DIR="/root/go"
 TOOL_DIR="$GO_DIR/src/ilf"
 
 ################################################

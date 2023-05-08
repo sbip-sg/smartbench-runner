@@ -283,7 +283,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
         echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
 
-        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar"
+        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar.xz"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
 
         if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
@@ -321,9 +321,7 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
     done
 
     if [[ ${#CONTAINER_NAMES[@]} == 0 ]]; then
-        echo "Error: no container name or number of container is specified!"
-        print_run_help
-        exit 1
+        continue
     fi
 
     # Create new Docker containers that share the two folders:
@@ -346,12 +344,16 @@ for TOOL_ID in ${ALL_TOOL_IDS[@]}; do
                 docker rm $CONTAINER --force
             elif [[ $(docker ps -f name=$CONTAINER | grep -e "[ \t]$CONTAINER\$") ]]; then
                 echo "ERROR: a container named \"$CONTAINER\" is already running"
-                echo "Please delete it and run this script again to continue a fresh installation!"
+                echo "Please stop and delete it before continuing the installation!"
+                echo ""
+                echo "Tips: run this script with `--force-install` to overwrite everthing!"
                 echo ""
                 clean_up 1
             else
                 echo "ERROR: a container named \"$CONTAINER\" exists but is not running"
-                echo "Please delete it and run this script again to continue a fresh installation!"
+                echo "Please delete it before continuing the installation!"
+                echo ""
+                echo "Tips: run this script with `--force-install` to overwrite everthing!"
                 echo ""
                 clean_up 1
             fi

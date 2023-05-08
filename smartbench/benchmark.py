@@ -8,6 +8,7 @@ import os
 import pathlib
 import sys
 import traceback
+
 from typing import Dict, List, Optional, Tuple
 
 # Library
@@ -19,7 +20,9 @@ from smartbench.smartbench import printer
 class TestConfig:
     """Class representing the configuration for an input test file."""
 
-    def __init__(self, target_contracts: List[str], compiler_version: Optional[str]):
+    def __init__(
+        self, target_contracts: List[str], compiler_version: Optional[str]
+    ):
         self.target_contracts: List[str] = target_contracts
         self.compiler_version: Optional[str] = compiler_version
 
@@ -29,7 +32,9 @@ def is_solidity_file(filename) -> bool:
     return os.path.isfile(filename) and filename[-4:] in (".sol")
 
 
-def find_test_files_in_directory(directory: str) -> List[str]:
+def find_test_files_in_directory(
+    directory: str, absolute_path: bool = True
+) -> List[str]:
     """
     Find all Solidity files in a directory.
     Return a list of absolute file names.
@@ -37,13 +42,18 @@ def find_test_files_in_directory(directory: str) -> List[str]:
     files = []
     path = pathlib.Path(directory)
     for file_path in path.rglob("*"):
-        file_name = os.path.normpath(os.path.abspath(file_path))
-        if is_solidity_file(file_name):
-            files.append(file_name)
+        if absolute_path:
+            file_path = os.path.abspath(file_path)
+        file_path = os.path.normpath(file_path)
+        test_file = str(file_path)
+        if is_solidity_file(test_file):
+            files.append(test_file)
     return files
 
 
-def collect_test_files(input_files_directories: List[str]) -> List[str]:
+def collect_test_files(
+    input_files_directories: List[str], absolute_path: bool = True
+) -> List[str]:
     """
     Collect test cases for the analysis.
     """
@@ -53,9 +63,12 @@ def collect_test_files(input_files_directories: List[str]) -> List[str]:
 
     for input_path in input_files_directories:
         if os.path.isdir(input_path):
-            test_files += find_test_files_in_directory(input_path)
+            test_files += find_test_files_in_directory(
+                input_path, absolute_path
+            )
         elif os.path.isfile(input_path):
-            input_path = os.path.abspath(input_path)
+            if absolute_path:
+                input_path = os.path.abspath(input_path)
             if is_solidity_file(input_path):
                 test_files.append(input_path)
 

@@ -258,13 +258,13 @@ class Issue:
         Issue.index_counter += 1
 
     def __str__(self):
+        analyzer = self.checker.analyzer
+        detector = self.checker.detector
         location = (
             f"{loc.print_concise_locations(self.locations)}"
             if self.locations
             else "Unknown Location"
         )
-        analyzer = self.checker.analyzer
-        detector = self.checker.detector
         return (
             f"Issue ({self.index}): {self.issue_kind}\n"
             f"  + Checker: {analyzer} --> {detector}\n"
@@ -283,6 +283,36 @@ class Issue:
 
     def __ne__(self, other):
         return not (self.__eq__(other))
+
+    def print_concise(
+        self,
+        print_swc_kind: bool = True,
+        print_smartbugs_kind: bool = True,
+        print_solidifi_kind: bool = True,
+    ) -> str:
+        issue_str = f"Issue ({self.index}): {self.issue_kind}\n"
+
+        analyzer = self.checker.analyzer
+        detector = self.checker.detector
+        issue_str += f"  + Checker: {analyzer} --> {detector}\n"
+
+        if print_swc_kind:
+            issue_str += f"  + SWC Kind: {self.swc_kind}\n"
+
+        if print_smartbugs_kind:
+            issue_str += f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
+
+        if print_solidifi_kind:
+            issue_str += f"  + SolidiFI Kind: {self.solidifi_pp_kind}\n"
+
+        location = (
+            f"{loc.print_concise_locations(self.locations)}"
+            if self.locations
+            else "Unknown Location"
+        )
+        issue_str += f"  + Location: {location}"
+
+        return issue_str
 
 
 def record_new_issue_and_deduplicate(
