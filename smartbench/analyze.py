@@ -31,6 +31,7 @@ from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
+SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
 RESULTS_DIR_RELATIVE_PATH = "results"
 
 
@@ -472,7 +473,7 @@ def run_analysis_tool(
 def perform_analysis(
     tools: List[Tool],
     test_files: List[str],
-    test_configs: Optional[Dict[str, TestConfig]],
+    test_configs: Optional[Dict[str, TestConfig]] = None,
     result_dir: Optional[str] = None,
     solc_version: Optional[str] = None,
     timeout: Optional[int] = None,
