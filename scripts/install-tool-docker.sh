@@ -290,7 +290,7 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
         echo "Pulling Docker image from SBIP G2 for: $TOOL_ID..."
         echo ""
 
-        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar.xz"
+        TOOL_IMAGE_FILE="docker_image_$TOOL_ID.tar.gz"
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
 
         if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
