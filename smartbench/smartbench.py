@@ -113,29 +113,29 @@ def analyze_smart_contracts(args) -> None:
             only_create_containers,
         )
 
-    if args.benchmark_dir is None and args.test_config_file is not None:
+    if args.test_dir is None and args.test_config_file is not None:
         error(
-            f"Benchmark directory is not specified for "
-            f"target contracts file: {args.test_config_file}"
+            f"No test directory is specified for "
+            f"test config file: {args.test_config_file}"
         )
         return None
-    elif args.benchmark_dir is not None and args.test_config_file is None:
+    elif args.test_dir is not None and args.test_config_file is None:
         error(
-            f"Target contracts file is not specified for "
-            f"benchmark directory: {args.benchmark_dir}"
+            f"No test config file is not specified for "
+            f"test directory: {args.test_dir}"
         )
         return None
 
     # Collect test files
     all_test_files = []
     test_configs = None
-    if args.benchmark_dir is not None:
+    if args.test_dir is not None:
         # Collect test contracts
         test_configs = benchmark.collect_test_configs(args.test_config_file)
         for test_file_name in test_configs:
             if not test_file_name.endswith(".sol"):
                 test_file_name += ".sol"
-            test_file_name = os.path.join(args.benchmark_dir, test_file_name)
+            test_file_name = os.path.join(args.test_dir, test_file_name)
             all_test_files.append(test_file_name)
 
     else:

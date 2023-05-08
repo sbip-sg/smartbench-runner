@@ -74,6 +74,7 @@ def parse_cli_arguments():
     )
 
     analyze_argparser.add_argument(
+        "--test-dir",
         "--benchmark-dir",
         type=str,
         help="Configuration file specifying target contracts in test files. \
