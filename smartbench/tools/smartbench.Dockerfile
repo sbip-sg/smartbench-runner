@@ -14,7 +14,7 @@ WORKDIR /root/
 
 # Install Ubuntu packages
 RUN apt-get update
-RUN apt-get -y install git wget tzdata
+RUN apt-get -y install git wget tzdata vim
 
 # Install Python3.9
 RUN apt-get install -y python3.9 python3.9-dev python-is-python3 python3-pip
@@ -30,6 +30,7 @@ RUN pip install py-solc --force-reinstall
 
 # Prepare benchmarking environments
 RUN mkdir benchmarks
+RUN mkdir testing
 RUN mkdir results
 
 # Entry point when running the container as an executable

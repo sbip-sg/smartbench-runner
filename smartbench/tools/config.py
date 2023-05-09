@@ -66,6 +66,8 @@ def load_tool_configuration(tool_id: str) -> Optional[Tool]:
     tool_root_id = tool_id
     if (idx := tool_id.find("-")) >= 0:
         tool_root_id = tool_id[:idx]
+    elif (idx := tool_id.find("_")) >= 0:
+        tool_root_id = tool_id[:idx]
 
     if tool_root_id not in SUPPORTED_TOOLS:
         warning(f"Invalid or unspported tool ID: {tool_id}")
@@ -129,6 +131,7 @@ def load_tool_configuration(tool_id: str) -> Optional[Tool]:
             else:
                 return tool_constructor(
                     tool_id,
+                    tool_root_id,
                     tool_name,
                     executable,
                     default_args,

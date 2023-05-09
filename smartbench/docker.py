@@ -35,7 +35,7 @@ class DockerContainer:
         """Start the docker container"""
         command = f"docker start {self.name}"
         try:
-            safe_print(f"Starting docker container: {self}")
+            safe_print(f"\nStarting docker container: {self}")
             subprocess.run(
                 shlex.split(command),
                 stdout=subprocess.PIPE,

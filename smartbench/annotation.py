@@ -426,9 +426,7 @@ def parse_bug_annotations(
     if annot_format == AnnotFormat.SOLIDIFI:
         return parse_solidifi_annotations(test_file)
 
-    warning(
-        f"Unknown bug annot formmat: {annot_format}\n",
-    )
+    debug(f"Unknown bug annot formmat: {annot_format}\n")
     return []
 
 

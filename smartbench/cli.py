@@ -74,6 +74,7 @@ def parse_cli_arguments():
     )
 
     analyze_argparser.add_argument(
+        "--test-dir",
         "--benchmark-dir",
         type=str,
         help="Configuration file specifying target contracts in test files. \
@@ -91,7 +92,7 @@ def parse_cli_arguments():
     analyze_argparser.add_argument(
         "--result-dir",
         type=str,
-        help="Directory to store analysis resutls of all tools",
+        help="Directory to store analysis resutls of all tools.",
     )
 
     analyze_argparser.add_argument(
@@ -204,14 +205,6 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
-        "-b",
-        dest="benchmark_names",
-        nargs="*",  # Accept multiple benchmark names
-        type=str,
-        help="Benchmark names in the result directory.",
-    )
-
-    result_argparser.add_argument(
         "-t",
         "--tools",
         nargs="+",  # Accept multiple tools.
@@ -235,6 +228,18 @@ def parse_cli_arguments():
         "--disable-print-details",
         action="store_true",
         help="Disable printing details of bug detection.",
+    )
+
+    result_argparser.add_argument(
+        "--concise-summary",
+        action="store_true",
+        help="Print concise summary of analysis results.",
+    )
+
+    result_argparser.add_argument(
+        "--detailed-summary",
+        action="store_true",
+        help="Print detailed summary of analysis results.",
     )
 
     result_argparser.add_argument(

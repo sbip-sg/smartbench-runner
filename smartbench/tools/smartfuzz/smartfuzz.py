@@ -23,6 +23,7 @@ class Smartfuzz(Tool):
     def __init__(
         self,
         id: str,
+        root_id: str,
         name: str,
         executable: str,
         default_arguments: str,
@@ -33,6 +34,7 @@ class Smartfuzz(Tool):
         Tool.__init__(
             self,
             id,
+            root_id,
             name,
             executable,
             default_arguments,

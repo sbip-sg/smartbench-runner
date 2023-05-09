@@ -12,14 +12,16 @@ import sys
 
 from datetime import datetime
 from multiprocessing import Process, Queue
+from subprocess import CalledProcessError
 from typing import Dict, List, Optional, Tuple
 
 # Library
-from smartbench import annotation, printer, result, validator
+from smartbench import printer, result
 from smartbench.benchmark import TestConfig
 from smartbench.docker import DockerContainer
 from smartbench.printer import (
     debug,
+    error,
     error_traceback,
     print_unless,
     safe_print,
@@ -27,12 +29,12 @@ from smartbench.printer import (
 )
 from smartbench.result import AnalysisResult
 from smartbench.solidity import solc
-from smartbench.tools.config import SMARTBENCH_ROOT
 from smartbench.tools.tool import Tool
 
 
 SMARTBENCH_ROOT = os.path.dirname(os.path.dirname(__file__))
-RESULTS_DIR_RELATIVE_PATH = "results"
+TOOLS_DIR = os.path.join(SMARTBENCH_ROOT, "smartbench", "tools")
+RESULTS_DIR_RELPATH = "results"
 
 
 class AnalysisJob:
@@ -302,7 +304,7 @@ def analyze_test_file(
 def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
     """Start all docker containers to run analysis jobs."""
     printer.print_short_double_separator_line()
-    safe_print("Preparing docker containers...\n")
+    safe_print("Preparing docker containers...")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
     container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
@@ -311,7 +313,23 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
     for name in container_names:
         container = DockerContainer(name)
         containers.append(container)
+
+        # Start Docker
         container.start()
+
+        # Copy the tool's benchmarking script to the container
+        safe_print(f"Deploying {tool.name}'s scripts to: {container.name}")
+        tool_exe = os.path.join(TOOLS_DIR, tool.root_id, tool.executable)
+        cmd = f"docker cp {tool_exe} {container.name}:/root/{tool.executable}"
+        try:
+            subprocess.run(
+                shlex.split(cmd),
+                stdout=subprocess.PIPE,
+                check=True,
+            )
+        except CalledProcessError as err:
+            error(f"Failed to copy benchmarking script: {tool.id}!")
+            raise err
 
     return containers
 
@@ -398,7 +416,7 @@ def run_analysis_tool(
 
     all_results: List[AnalysisResult] = []
 
-    # Start Docker containers if using Docker mode
+    # Start Docker containers for benchmarking
     docker_containers = start_docker_containers(tool, jobs)
 
     printer.print_short_double_separator_line()
@@ -494,11 +512,11 @@ def perform_analysis(
     safe_print(f"Start analyzing {len(test_files)} test files...")
     if result_dir is None:
         results_dir_host = results_dir_docker = os.path.join(
-            RESULTS_DIR_RELATIVE_PATH,
+            RESULTS_DIR_RELPATH,
             datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
         )
     else:
-        results_dir_docker = RESULTS_DIR_RELATIVE_PATH
+        results_dir_docker = RESULTS_DIR_RELPATH
         results_dir_host = result_dir
 
     if not os.path.exists(results_dir_host):

@@ -24,6 +24,7 @@ from smartbench import (
 )
 from smartbench.cli import Command
 from smartbench.printer import error, error_traceback, safe_print
+from smartbench.result import SummaryPrinting
 from smartbench.tools.config import configure_analysis_tools
 from smartbench.tools.tool import Tool
 
@@ -113,29 +114,29 @@ def analyze_smart_contracts(args) -> None:
             only_create_containers,
         )
 
-    if args.benchmark_dir is None and args.test_config_file is not None:
+    if args.test_dir is None and args.test_config_file is not None:
         error(
-            f"Benchmark directory is not specified for "
-            f"target contracts file: {args.test_config_file}"
+            f"No test directory is specified for "
+            f"test config file: {args.test_config_file}"
         )
         return None
-    elif args.benchmark_dir is not None and args.test_config_file is None:
+    elif args.test_dir is not None and args.test_config_file is None:
         error(
-            f"Target contracts file is not specified for "
-            f"benchmark directory: {args.benchmark_dir}"
+            f"No test config file is not specified for "
+            f"test directory: {args.test_dir}"
         )
         return None
 
     # Collect test files
     all_test_files = []
     test_configs = None
-    if args.benchmark_dir is not None:
+    if args.test_dir is not None:
         # Collect test contracts
         test_configs = benchmark.collect_test_configs(args.test_config_file)
         for test_file_name in test_configs:
             if not test_file_name.endswith(".sol"):
                 test_file_name += ".sol"
-            test_file_name = os.path.join(args.benchmark_dir, test_file_name)
+            test_file_name = os.path.join(args.test_dir, test_file_name)
             all_test_files.append(test_file_name)
 
     else:
@@ -169,11 +170,6 @@ def parse_analysis_results(args) -> None:
     if args.result_directories is not None:
         result_directories.extend(args.result_directories)
 
-    # Collect target benchmark names.
-    benchmark_names = None
-    if args.benchmark_names is not None:
-        benchmark_names = args.benchmark_names
-
     # Format of summary files to be exported.
     summary_file_format = None
     if args.export_summary != "":
@@ -184,20 +180,23 @@ def parse_analysis_results(args) -> None:
         annot_format = annotation.parse_annot_format_kind(args.annot_format)
 
     # Whether to print details of bug detection
-    print_bug_details = True
+    summary_printing = SummaryPrinting.CONCISE_PRINTING
     if args.disable_print_details:
-        print_bug_details = False
+        summary_printing = SummaryPrinting.DISABLE_PRINTING
+    elif args.concise_summary:
+        summary_printing = SummaryPrinting.CONCISE_PRINTING
+    elif args.detailed_summary:
+        summary_printing = SummaryPrinting.DETAILED_PRINTING
 
     # Parsing analysis results
     for result_dir in result_directories:
         result.parse_result_directory(
             result_dir,
             args.tools,
-            benchmark_names,
             args.validate,
             summary_file_format,
             annot_format,
-            print_bug_details,
+            summary_printing,
         )
 
 

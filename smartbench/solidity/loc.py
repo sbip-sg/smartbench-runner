@@ -52,10 +52,10 @@ class Location:
             and self.end_column == other.end_column
         )
 
-    def print_line_column(self) -> str:
+    def print_line_column(self) -> Optional[str]:
         """Print line and column info"""
         if self.start_line is None or self.end_line is None:
-            return ""
+            return None
 
         start_line = f"{self.start_line}"
         if self.start_column is not None:
@@ -67,9 +67,11 @@ class Location:
 
         return f"{start_line}-{end_line}"
 
-    def print_concise(self):
+    def print_concise(self) -> Optional[str]:
         """Print location in concise format."""
         location = os.path.basename(self.file_path)
+        if location is None:
+            return None
 
         if line_column := self.print_line_column():
             location += f":{line_column}"
@@ -144,8 +146,11 @@ def print_concise_locations(locs: List[Location]) -> str:
     for file_path in file_locs_dict:
         file_name = os.path.basename(file_path)
         file_locs = file_locs_dict[file_path]
-        file_locs_strs = [x.print_line_column() for x in file_locs]
-        if file_locs_strs is None:
+        file_locs_strs = []
+        for loc in file_locs:
+            if loc_str := loc.print_line_column():
+                file_locs_strs.append(loc_str)
+        if file_locs_strs == []:
             loc_strs.append(f"{file_name}")
         else:
             loc_strs.append(f"{file_name}: {','.join(file_locs_strs)}")

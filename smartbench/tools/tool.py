@@ -15,7 +15,9 @@ from typing import List, Optional
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Issue
-from smartbench.solidity.loc import Location
+
+
+EXECUTION_LOG_SUFFIX = "_execution.log"
 
 
 class Tool:
@@ -23,7 +25,8 @@ class Tool:
 
     def __init__(
         self,
-        tool_id: str,
+        id: str,
+        root_id: str,
         name: str,
         executable: str,
         default_arguments: str,
@@ -32,8 +35,8 @@ class Tool:
         random_seed: int = 0,
     ):
         """Constructor"""
-        tool_id = tool_id.lower()
-        self.id: str = str(tool_id)
+        self.id: str = str(id)
+        self.root_id: str = str(root_id)
         self.name: str = str(name)
         self.executable: str = str(executable)
         self.default_arguments: str = default_arguments
@@ -45,20 +48,21 @@ class Tool:
         # Result file in JSON format, some tools may not support this output
         self.json_result_file = (
             None
-            if tool_id in ["smartian", "sfuzz"]
-            else f"{tool_id}_result.json"
+            if self.id in ["smartian", "sfuzz"]
+            else f"{self.id}_result.json"
         )
 
         # Code coverage file in JSON format, some tools may not support this
         # output
         self.json_coverage_file = (
-            f"{tool_id}_coverage.json"
-            if tool_id in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
+            f"{self.id}_coverage.json"
+            if self.id
+            in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
             else None
         )
 
         # Log file for capturing execution log
-        self.log_file: str = f"{tool_id}_execution.log"
+        self.log_file: str = f"{self.id}{EXECUTION_LOG_SUFFIX}"
 
     def __str__(self):
         """Printing to string."""
