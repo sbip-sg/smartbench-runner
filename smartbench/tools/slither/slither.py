@@ -21,7 +21,8 @@ from smartbench.tools.tool import Tool
 class Slither(Tool):
     def __init__(
         self,
-        tool_id: str,
+        id: str,
+        root_id: str,
         name: str,
         executable: str,
         default_arguments: str,
@@ -30,7 +31,8 @@ class Slither(Tool):
     ):
         Tool.__init__(
             self,
-            tool_id,
+            id,
+            root_id,
             name,
             executable,
             default_arguments,

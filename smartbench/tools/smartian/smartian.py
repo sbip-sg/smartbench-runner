@@ -28,6 +28,7 @@ class Smartian(Tool):
     def __init__(
         self,
         id: str,
+        root_id: str,
         name: str,
         executable: str,
         default_arguments: str,
@@ -38,6 +39,7 @@ class Smartian(Tool):
         Tool.__init__(
             self,
             id,
+            root_id,
             name,
             executable,
             default_arguments,

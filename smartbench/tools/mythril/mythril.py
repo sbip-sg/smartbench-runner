@@ -22,6 +22,7 @@ class Mythril(Tool):
     def __init__(
         self,
         id: str,
+        root_id: str,
         name: str,
         executable: str,
         default_args: str,
@@ -32,6 +33,7 @@ class Mythril(Tool):
         Tool.__init__(
             self,
             id,
+            root_id,
             name,
             executable,
             default_args,

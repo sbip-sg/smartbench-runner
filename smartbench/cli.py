@@ -92,7 +92,7 @@ def parse_cli_arguments():
     analyze_argparser.add_argument(
         "--result-dir",
         type=str,
-        help="Directory to store analysis resutls of all tools",
+        help="Directory to store analysis resutls of all tools.",
     )
 
     analyze_argparser.add_argument(
