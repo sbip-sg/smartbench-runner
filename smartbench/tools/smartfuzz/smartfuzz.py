@@ -61,6 +61,18 @@ class Smartfuzz(Tool):
         # Input file
         cmd += f" -f {test_file}"
 
+        # Specify the input contract name if there is only 1 target contract.
+        # Otherwise, let SmartFuzz handle all the contract name automatically
+        # if annot_format != "solidifi" and len(contracts) == 1:
+        #     cmd += f" --contract-name {contracts[0]}"
+
+        # disable --use-symbolic-execution for now
+        # move --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting
+        # from run-smartbench.sh to here for reusability of docker image
+        cmd += " --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting "
+        # Solc version
+        if solc_version is not None:
+            cmd += f" --solc-version {solc_version}"
         # Output files
         if output_file := self.configure_json_result_file(test_output_dir):
             cmd += f" -r {output_file}"
