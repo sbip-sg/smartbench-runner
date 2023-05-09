@@ -12,14 +12,6 @@ RUN git clone https://github.com/christoftorres/ConFuzzius confuzzius
 WORKDIR /root/confuzzius
 RUN pip install -r fuzzer/requirements.txt
 
-# Copy script running ConFuzzius
-ADD smartbench/tools/confuzzius/run-confuzzius.sh /root/
-
-# Copy some sample contracts
-WORKDIR /root/
-RUN mkdir examples
-ADD examples/*.sol examples/
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

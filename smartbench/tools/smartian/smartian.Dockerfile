@@ -25,15 +25,6 @@ RUN apt install -y dotnet-sdk-5.0
 WORKDIR /root/smartian
 RUN make
 
-# Copy script running Smartian
-WORKDIR /root/
-ADD smartbench/tools/smartian/run-smartian.sh /root/
-
-# Copy some sample contracts
-WORKDIR /root/
-RUN mkdir examples
-ADD examples/*.sol examples/
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

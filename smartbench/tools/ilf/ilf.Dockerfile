@@ -64,15 +64,6 @@ RUN pip install ethereum
 # Compile ILF
 RUN go build -o execution.so -buildmode=c-shared export/execution.go
 
-# Copy script running ILF
-WORKDIR /root
-ADD smartbench/tools/ilf/run-ilf.sh /root/
-
-# Copy some sample contracts
-WORKDIR /root/
-RUN mkdir examples
-ADD examples/*.sol examples/
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

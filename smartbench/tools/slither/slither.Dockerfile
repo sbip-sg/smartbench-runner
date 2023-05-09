@@ -10,14 +10,6 @@ FROM smartbench/base:latest
 WORKDIR /root/
 RUN pip install slither-analyzer==0.9.3
 
-# Copy script running Slither
-ADD smartbench/tools/slither/run-slither.sh /root/
-
-# Copy some sample contracts
-WORKDIR /root/
-RUN mkdir examples
-ADD examples/*.sol examples/
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

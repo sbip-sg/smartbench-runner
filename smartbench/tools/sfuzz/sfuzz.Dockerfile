@@ -25,15 +25,6 @@ WORKDIR /root/sfuzz/build/fuzzer
 RUN cp ../../assets . -r
 RUN cp ~/.solc-select/artifacts/solc-0.4.16/solc-0.4.16 /bin/
 
-# Copy script running sFuzz
-WORKDIR /root/
-ADD smartbench/tools/sfuzz/run-sfuzz.sh /root/
-
-# Copy some sample contracts
-WORKDIR /root/
-RUN mkdir examples
-ADD examples/*.sol examples/
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]

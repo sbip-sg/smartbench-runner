@@ -22,15 +22,6 @@ WORKDIR /root/smartfuzz/
 RUN pip3 install -r requirements.txt
 RUN python scripts/download_solc_compilers.py
 
-# Copy script running Smartfuzz
-WORKDIR /root/
-ADD smartbench/tools/smartfuzz/run-smartfuzz.sh /root/
-
-# Copy some sample contracts
-WORKDIR /root/
-RUN mkdir examples
-ADD examples/*.sol examples/
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]
