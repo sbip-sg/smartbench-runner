@@ -13,8 +13,9 @@ ARG TZ=Asia/Singapore
 WORKDIR /root/
 
 # Install Ubuntu packages
-RUN apt-get update
-RUN apt-get -y install git wget tzdata vim
+RUN apt update
+RUN apt -y install git wget tzdata
+RUN apt -y install vim
 
 # Install Python3.9
 RUN apt-get install -y python3.9 python3.9-dev python-is-python3 python3-pip
