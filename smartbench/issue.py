@@ -210,6 +210,9 @@ class Checker:
         self.analyzer: str = analyzer
         self.detector: str = detector
 
+    def __str__(self) -> str:
+        return f"{self.analyzer} --> {self.detector}"
+
 
 class Issue:
     """Class representing an issue found in smart contracts."""
@@ -284,35 +287,41 @@ class Issue:
     def __ne__(self, other):
         return not (self.__eq__(other))
 
-    def print_concise(
+    def pretty_print(
         self,
         print_swc_kind: bool = True,
         print_smartbugs_kind: bool = True,
         print_solidifi_kind: bool = True,
+        print_concise: bool = True,
     ) -> str:
-        issue_str = f"Issue ({self.index}): {self.issue_kind}\n"
-
-        analyzer = self.checker.analyzer
-        detector = self.checker.detector
-        issue_str += f"  + Checker: {analyzer} --> {detector}\n"
-
-        if print_swc_kind:
-            issue_str += f"  + SWC Kind: {self.swc_kind}\n"
-
-        if print_smartbugs_kind:
-            issue_str += f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
-
-        if print_solidifi_kind:
-            issue_str += f"  + SolidiFI Kind: {self.solidifi_pp_kind}\n"
-
         location = (
             f"{loc.print_concise_locations(self.locations)}"
             if self.locations
             else "Unknown Location"
         )
-        issue_str += f"  + Location: {location}"
 
-        return issue_str
+        if print_concise:
+            issue_str = (
+                f"Issue ({self.index}): {self.issue_kind} ({location})\n"
+            )
+            if print_swc_kind:
+                issue_str += f"  SWC: {self.swc_kind}"
+            if print_smartbugs_kind:
+                issue_str += f", SmartBugs++: {self.smartbugs_pp_kind}"
+            if print_solidifi_kind:
+                issue_str += f",  SolidiFI: {self.solidifi_pp_kind}"
+            return issue_str
+        else:
+            issue_str = f"Issue ({self.index}): {self.issue_kind}"
+            issue_str += f"  + Checker: {self.checker}\n"
+            if print_swc_kind:
+                issue_str += f"  + SWC Kind: {self.swc_kind}\n"
+            if print_smartbugs_kind:
+                issue_str += f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
+            if print_solidifi_kind:
+                issue_str += f"  + SolidiFI Kind: {self.solidifi_pp_kind}\n"
+            issue_str += f"  + Location: {location}"
+            return issue_str
 
 
 def record_new_issue_and_deduplicate(

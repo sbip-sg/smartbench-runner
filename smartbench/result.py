@@ -8,6 +8,7 @@ import bisect
 import os
 import pathlib
 
+from enum import Enum
 from typing import Dict, List, Optional, no_type_check
 
 # Library
@@ -30,6 +31,14 @@ from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import EXECUTION_LOG_SUFFIX, Tool
 from smartbench.validator import ValidationResult
+
+
+class SummaryPrinting(str, Enum):
+    """Class representing the summary printing mode"""
+
+    CONCISE_PRINTING = "Concise Printing"
+    DETAILED_PRINTING = "Detailed Printing"
+    DISABLE_PRINTING = "Disable Printing"
 
 
 class AnalysisResult:
@@ -125,12 +134,12 @@ def parse_test_file_output_dir(
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
-    print_bug_details: bool = True,
+    summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
 ) -> Optional[AnalysisResult]:
     """Parsing and printing analysis results"""
     # Parse and print bug annotations in test file
     bug_annots = annotation.parse_bug_annotations(test_file, annot_format)
-    if print_bug_details:
+    if summary_printing != SummaryPrinting.DISABLE_PRINTING:
         safe_print_underline("Bug annotations")
         if len(bug_annots) > 0:
             safe_print("\n".join([format(f"- {x}") for x in bug_annots]))
@@ -147,7 +156,7 @@ def parse_test_file_output_dir(
         issues = []
     else:
         is_successful = True
-        if print_bug_details:
+        if summary_printing != SummaryPrinting.DISABLE_PRINTING:
             safe_print_underline("Detected issues")
             if len(issues) > 0:
                 print_smartbugs_kind = False
@@ -160,8 +169,11 @@ def parse_test_file_output_dir(
                     if print_smartbugs_kind and print_solidifi_kind:
                         break
                 issues_strs = [
-                    x.print_concise(
-                        True, print_smartbugs_kind, print_solidifi_kind
+                    x.pretty_print(
+                        True,
+                        print_smartbugs_kind,
+                        print_solidifi_kind,
+                        summary_printing == SummaryPrinting.CONCISE_PRINTING,
                     )
                     for x in issues
                 ]
@@ -190,7 +202,7 @@ def parse_test_file_result(
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
-    print_bug_details: bool = True,
+    summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
 ) -> List[AnalysisResult]:
     printer.print_medium_dashed_separator_line()
 
@@ -215,7 +227,7 @@ def parse_test_file_result(
         validate,
         export_summary,
         annot_format,
-        print_bug_details,
+        summary_printing,
     )
 
     if res is None:
@@ -223,7 +235,7 @@ def parse_test_file_result(
 
     if not res.is_successful:
         warning(f"Failed to parse result of test file: {test_file}")
-    elif print_bug_details:
+    elif summary_printing:
         res.print_detailed_summary()
     else:
         safe_print("Parsed analysis results successfully!")
@@ -231,7 +243,7 @@ def parse_test_file_result(
     return [res]
 
 
-def guess_analysis_tools(test_output_dir: str) -> List[str]:
+def guess_analysis_tools(test_output_dir: str) -> List[Tool]:
     """Guess analysis tools corresponding to a test output directory."""
     tools = []
 
@@ -240,8 +252,8 @@ def guess_analysis_tools(test_output_dir: str) -> List[str]:
         if file_name.endswith(EXECUTION_LOG_SUFFIX):
             tool_id = file_name[0 : -len(EXECUTION_LOG_SUFFIX)]
             try:
-                tool = load_tool_configuration(tool_id)
-                tools.append(tool)
+                if tool := load_tool_configuration(tool_id):
+                    tools.append(tool)
             except Exception:
                 error_traceback(f"Failed to load tool configuration: {tool_id}")
 
@@ -254,7 +266,7 @@ def parse_result_directory(
     validate: Optional[bool] = False,
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
-    print_bug_details: bool = True,
+    summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
@@ -280,11 +292,7 @@ def parse_result_directory(
         tools = guess_analysis_tools(test_output_dir)
 
         if only_tools is not None:
-            tools = [
-                t
-                for t in tools
-                if any(t.id == s for s in only_tools)
-            ]
+            tools = [t for t in tools if any(t.id == s for s in only_tools)]
 
         for tool in tools:
             tool_results = parse_test_file_result(
@@ -293,7 +301,7 @@ def parse_result_directory(
                 validate,
                 export_summary,
                 annot_format,
-                print_bug_details,
+                summary_printing,
             )
             all_results.extend(tool_results)
 

@@ -24,6 +24,7 @@ from smartbench import (
 )
 from smartbench.cli import Command
 from smartbench.printer import error, error_traceback, safe_print
+from smartbench.result import SummaryPrinting
 from smartbench.tools.config import configure_analysis_tools
 from smartbench.tools.tool import Tool
 
@@ -179,9 +180,13 @@ def parse_analysis_results(args) -> None:
         annot_format = annotation.parse_annot_format_kind(args.annot_format)
 
     # Whether to print details of bug detection
-    print_bug_details = True
+    summary_printing = SummaryPrinting.CONCISE_PRINTING
     if args.disable_print_details:
-        print_bug_details = False
+        summary_printing = SummaryPrinting.DISABLE_PRINTING
+    elif args.concise_summary:
+        summary_printing = SummaryPrinting.CONCISE_PRINTING
+    elif args.detailed_summary:
+        summary_printing = SummaryPrinting.DETAILED_PRINTING
 
     # Parsing analysis results
     for result_dir in result_directories:
@@ -191,7 +196,7 @@ def parse_analysis_results(args) -> None:
             args.validate,
             summary_file_format,
             annot_format,
-            print_bug_details,
+            summary_printing,
         )
 
 

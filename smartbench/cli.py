@@ -231,6 +231,18 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
+        "--concise-summary",
+        action="store_true",
+        help="Print concise summary of analysis results.",
+    )
+
+    result_argparser.add_argument(
+        "--detailed-summary",
+        action="store_true",
+        help="Print detailed summary of analysis results.",
+    )
+
+    result_argparser.add_argument(
         "--annot-format",
         type=str,
         choices=["smartbugs", "smartbench", "solidifi"],
