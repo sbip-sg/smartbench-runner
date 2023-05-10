@@ -238,7 +238,7 @@ def classify_bug_annot_to_smartbugs_pp_kind(
         return SmartBugsPP.SHORT_ADDRESSES
 
     if annot_name in ["TIME_MANIPULATION"]:
-        return SmartBugsPP.TIME_MANIPULATION
+        return SmartBugsPP.BAD_RANDOMNESS
 
     if annot_name in ["TRANSACTION_ORDER_DEPENDENCY"]:
         return SmartBugsPP.TRANSACTION_ORDER_DEPENDENCY
