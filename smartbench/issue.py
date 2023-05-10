@@ -406,7 +406,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.BLOCK_VALUE_DEPENDENCY,
     ]:
-        return SmartBugsPP.BLOCK_VALUE_DEPENDENCY
+        return SmartBugsPP.BAD_RANDOMNESS
 
     if issue_kind in [
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
