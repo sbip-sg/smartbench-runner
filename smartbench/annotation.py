@@ -216,8 +216,8 @@ def classify_bug_annot_to_smartbugs_pp_kind(
     if annot_name in ["ARITHMETIC"]:
         return SmartBugsPP.ARITHMETIC
 
-    if annot_name in ["BAD_RANDOMNESS", "TIME_MANIPULATION"]:
-        return SmartBugsPP.BLOCK_VALUE_DEPENDENCY
+    if annot_name in ["BAD_RANDOMNESS"]:
+        return SmartBugsPP.BAD_RANDOMNESS
 
     if annot_name in ["DENIAL_OF_SERVICE"]:
         return SmartBugsPP.DENIAL_OF_SERVICE
@@ -236,6 +236,9 @@ def classify_bug_annot_to_smartbugs_pp_kind(
 
     if annot_name in ["SHORT_ADDRESSES"]:
         return SmartBugsPP.SHORT_ADDRESSES
+
+    if annot_name in ["TIME_MANIPULATION"]:
+        return SmartBugsPP.TIME_MANIPULATION
 
     if annot_name in ["TRANSACTION_ORDER_DEPENDENCY"]:
         return SmartBugsPP.TRANSACTION_ORDER_DEPENDENCY
