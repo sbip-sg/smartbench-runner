@@ -18,7 +18,7 @@ class SmartBugsPP(Enum):
 
     ARITHMETIC = "Arithmetic"
 
-    BAD_RANDOMNESS = "Bad Randomness"
+    BLOCK_DEPENDENCY = "Block Dependency"
 
     DENIAL_OF_SERVICE = "Denial Of Service"
 

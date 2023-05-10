@@ -217,7 +217,7 @@ def classify_bug_annot_to_smartbugs_pp_kind(
         return SmartBugsPP.ARITHMETIC
 
     if annot_name in ["BAD_RANDOMNESS", "TIME_MANIPULATION"]:
-        return SmartBugsPP.BAD_RANDOMNESS
+        return SmartBugsPP.BLOCK_DEPENDENCY
 
     if annot_name in ["DENIAL_OF_SERVICE"]:
         return SmartBugsPP.DENIAL_OF_SERVICE
