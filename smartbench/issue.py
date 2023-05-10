@@ -357,7 +357,12 @@ def classify_to_smartbugs_pp_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartBugsPP]:
     """Classify an issue kind to a bug kind in SmartBugs++ classification."""
-    if issue_kind in [IssueKind.ACCESS_CONTROL]:
+    if issue_kind in [
+        IssueKind.ACCESS_CONTROL,
+        IssueKind.UNSAFE_DELEGATECALL,
+        IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
+        IssueKind.REQUIREMENT_VIOLATION,
+    ]:
         return SmartBugsPP.ACCESS_CONTROL
 
     if issue_kind in [
@@ -412,9 +417,6 @@ def classify_to_smartbugs_pp_kind(
 
     if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
         return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
-
-    if issue_kind in [IssueKind.UNSAFE_DELEGATECALL]:
-        return SmartBugsPP.UNSAFE_DELEGATECALL
 
     # Not matching any SmartBugs++ Kind
     return None
