@@ -249,9 +249,6 @@ def classify_bug_annot_to_smartbugs_pp_kind(
     if annot_name in ["UNPROTECTED_SELFDESTRUCT"]:
         return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
 
-    if annot_name in ["UNSAFE_DELEGATECALL"]:
-        return SmartBugsPP.UNSAFE_DELEGATECALL
-
     return None
 
 
