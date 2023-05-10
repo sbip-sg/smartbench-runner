@@ -192,12 +192,7 @@ class Mythril(Tool):
                 kind = self.parse_issue_kind(bug.get("title"))
                 start_line = bug.get("lineno")
                 code = bug.get("code")
-                if code is None:
-                    end_line = start_line
-                else:
-                    end_line = start_line + code.count("\n")
-
-                loc = self.parse_issue_location(log_file, start_line, end_line)
+                loc = self.parse_issue_location(log_file, start_line, start_line)
                 severity = self.parse_severity(bug.get("severity"))
 
                 all_issues = issue.record_new_issue_and_deduplicate(
