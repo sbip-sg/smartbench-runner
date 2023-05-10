@@ -357,7 +357,7 @@ def classify_to_smartbugs_pp_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartBugsPP]:
     """Classify an issue kind to a bug kind in SmartBugs++ classification."""
-    if issue_kind in [IssueKind.ACCESS_CONTROL]:
+    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN]:
         return SmartBugsPP.ACCESS_CONTROL
 
     if issue_kind in [
