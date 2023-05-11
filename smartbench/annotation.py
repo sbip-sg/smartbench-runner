@@ -345,7 +345,7 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
             line = line.strip()
             if (
                 line.startswith(COMMENT_TAG)
-                and BUG_OPEN_TAG in line
+                and BUG_OPEN_TAG in line and NAME_EQUAL_TAG in line
             ):
                 start_line = index + 1
                 bug_type = line.replace(COMMENT_TAG, "")
