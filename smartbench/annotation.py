@@ -27,6 +27,7 @@ COMMENT_TAG = "//"
 # SmartBench annotations
 BUG_OPEN_TAG = "<bug "
 BUG_CLOSE_TAG = "</bug>"
+NAME_EQUAL_TAG = "name="
 
 
 class AnnotFormat(Enum):
@@ -330,12 +331,48 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBench` format in a smart contract.
 
     SmartBench format is in HTML-like format.
-    // <bug type='bug-type' severity='high'>
+    // <bug type='bug-type' >
     ...
     // </bug>
     """
-    warnings.warn("TODO: implement `parse_smartbench_annotations`")
-    return []
+
+    bug_annots = []
+    print(f"annotation file: {filename}")
+    with open(filename, "r", encoding="utf-8") as file:
+        bug_type = None
+        start_line = None
+        for index, line in enumerate(file.readlines()):
+            line = line.strip()
+            if (
+                line.startswith(COMMENT_TAG)
+                and BUG_OPEN_TAG in line
+            ):
+                start_line = index + 1
+                bug_type = line.replace(COMMENT_TAG, "")
+                bug_type = bug_type.replace(BUG_OPEN_TAG, "")
+                bug_type = bug_type.replace(NAME_EQUAL_TAG, "")
+                bug_type = bug_type.replace(">", "")
+                bug_type = bug_type.strip()
+
+            if (
+                line.startswith(COMMENT_TAG)
+                and BUG_CLOSE_TAG in line
+            ):
+                if bug_type is not None and start_line is not None:
+                    end_line = index + 1
+                    bug_annotation = BugAnnot(
+                        bug_type,
+                        True,
+                        AnnotFormat.SMARTBENCH,
+                        filename,
+                        start_line,
+                        end_line,
+                    )
+                    bug_annots.append(bug_annotation)
+                    bug_type = None
+                    start_line = None
+
+    return bug_annots
 
 
 def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:
