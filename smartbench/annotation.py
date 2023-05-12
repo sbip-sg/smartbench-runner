@@ -351,7 +351,6 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     """
 
     bug_annots = []
-    print(f"annotation file: {filename}")
     with open(filename, "r", encoding="utf-8") as file:
         bug_type = None
         start_line = None
