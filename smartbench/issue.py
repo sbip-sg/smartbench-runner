@@ -229,6 +229,7 @@ class Issue:
         checker: Checker,
         severity: Optional[Severity] = None,
         confidence: Optional[Confidence] = None,
+        time_detected: int = 0,
     ):
         """Constructor."""
         self.issue_kind: IssueKind = issue_kind
@@ -239,6 +240,8 @@ class Issue:
         # Use a list of locations to support tools that reports multiple
         # potential bug locations of an issue.
         self.locations: List[Location] = locations
+
+        self.time_detected: int =  time_detected # Time in seconds when the issue is found.
 
         self.checker: Checker = checker
 
@@ -283,6 +286,9 @@ class Issue:
             and self.locations == other.location
             and self.severity == other.severity
         )
+
+    def to_json(self):
+        return self.index, self.time_detected
 
     def __ne__(self, other):
         return not (self.__eq__(other))

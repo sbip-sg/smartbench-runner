@@ -211,8 +211,11 @@ class Smartfuzz(Tool):
                 "",
                 location,
                 checker,
+                time_detected=int(bug.get("time")),
             )
             all_issues.append(issue)
+        all_issues.sort(key=lambda x: x.time_detected)
+        print ("all issues: ", [issue.to_json() for issue in all_issues])
         return all_issues
 
     def match_location_of_issue_to_annotation(
