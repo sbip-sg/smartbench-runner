@@ -376,8 +376,8 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [IssueKind.ASSERTION_FAILURE]:
         return SmartBugsPP.ASSERTION_FAILURE
 
-    if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR]:
-        return SmartBugsPP.BAD_RANDOMNESS
+    if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR, IssueKind.BLOCK_VALUE_DEPENDENCY,]:
+        return SmartBugsPP.BLOCK_DEPENDENCY
 
     if issue_kind in [
         IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL,
@@ -402,11 +402,6 @@ def classify_to_smartbugs_pp_kind(
 
     if issue_kind in []:
         return SmartBugsPP.SHORT_ADDRESSES
-
-    if issue_kind in [
-        IssueKind.BLOCK_VALUE_DEPENDENCY,
-    ]:
-        return SmartBugsPP.BAD_RANDOMNESS
 
     if issue_kind in [
         IssueKind.UNCHECKED_CALL_RETURN_VALUE,
