@@ -365,8 +365,9 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
                 bug_type = line.replace(COMMENT_TAG, "")
                 bug_type = bug_type.replace(BUG_OPEN_TAG, "")
                 bug_type = bug_type.replace(NAME_EQUAL_TAG, "")
-                bug_type = bug_type.replace(">", "")
                 bug_type = bug_type.strip()
+                # Remove the ">" character at the end
+                bug_type = bug_type[:-1]
 
             if (
                 line.startswith(COMMENT_TAG)
