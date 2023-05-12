@@ -428,8 +428,10 @@ class Slither(Tool):
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 
-            if (annot.annot_format == AnnotFormat.SMARTBUGS
-                or annot.annot_format == AnnotFormat.SMARTBENCH):
+            if (
+                annot.annot_format == AnnotFormat.SMARTBUGS
+                or annot.annot_format == AnnotFormat.SMARTBENCH
+            ):
                 # Slither reports issue location as a range with begin and end
                 # line/colum. If an issue and a bug annotation are relevant,
                 # then the issue's location should cover the bug annotation's
