@@ -257,9 +257,9 @@ class Issue:
         ] = classify_to_solidifi_pp_kind(issue_kind)
 
         # Classify to Smartbench classification
-        self.smartbench_pp_kind: Optional[
+        self.smartbench_kind: Optional[
             SmartbenchKind
-        ] = classify_to_smartbench_pp_kind(issue_kind)
+        ] = classify_to_smartbench_kind(issue_kind)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -465,7 +465,7 @@ def classify_to_solidifi_pp_kind(
     # Not matching any SolidiFI Kind
     return None
 
-def classify_to_smartbench_pp_kind(
+def classify_to_smartbench_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartbenchKind]:
     """Classify an issue kind to a bug kind in Smartbench classification."""

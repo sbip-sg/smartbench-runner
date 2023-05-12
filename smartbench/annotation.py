@@ -14,6 +14,7 @@ from typing import List, Optional
 from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
+from smartbench.bugdb.smartbench import SmartbenchKind
 from smartbench.issue import IssueKind
 from smartbench.printer import debug, safe_print, warning
 
@@ -81,6 +82,11 @@ class BugAnnot:
         self.solidifi_kind: Optional[
             SolidiFIPP
         ] = classify_bug_annot_to_solidifi_pp_kind(self.annot_name)
+
+        # Classifying this bug annotation to Smartbench classification
+        self.smartbench_kind: Optional[
+            SmartbenchKind
+        ] = classify_bug_annot_to_smartbench_kind(self.annot_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -275,6 +281,21 @@ def classify_bug_annot_to_solidifi_pp_kind(
 
     if annot_name == "tx.origin":
         return SolidiFIPP.TX_ORIGIN
+
+    return None
+
+
+def classify_bug_annot_to_smartbench_kind(
+    annot_name: str,
+) -> Optional[SmartbenchKind]:
+    """Classify bug annotation string in Smartbench format to issue kind."""
+
+    # Smartbench annotations
+    if annot_name in ["ACCESS_CONTROL"]:
+        return SmartbenchKind.ACCESS_CONTROL
+
+    if annot_name in ["REENTRANCY"]:
+        return SmartbenchKind.REENTRANCY
 
     return None
 

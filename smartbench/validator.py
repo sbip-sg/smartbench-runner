@@ -95,9 +95,9 @@ def match_issue_to_annotation(
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH:
         if (
-            issue.smartbench_pp_kind is None
-            # or annot.smartbench_kind is None
-            # or issue.smartbench_pp_kind != annot.smartbench_kind
+            issue.smartbench_kind is None
+            or annot.smartbench_kind is None
+            or issue.smartbench_kind != annot.smartbench_kind
         ):
             return False
 
