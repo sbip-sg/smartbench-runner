@@ -28,7 +28,6 @@ COMMENT_TAG = "//"
 # SmartBench annotations
 BUG_OPEN_TAG = "<bug "
 BUG_CLOSE_TAG = "</bug>"
-NAME_EQUAL_TAG = "name="
 
 
 class AnnotFormat(Enum):
@@ -358,12 +357,11 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
             line = line.strip()
             if (
                 line.startswith(COMMENT_TAG)
-                and BUG_OPEN_TAG in line and NAME_EQUAL_TAG in line
+                and BUG_OPEN_TAG in line
             ):
                 start_line = index + 1
                 bug_type = line.replace(COMMENT_TAG, "")
                 bug_type = bug_type.replace(BUG_OPEN_TAG, "")
-                bug_type = bug_type.replace(NAME_EQUAL_TAG, "")
                 bug_type = bug_type.strip()
                 # Remove the ">" character at the end
                 bug_type = bug_type[:-1]
