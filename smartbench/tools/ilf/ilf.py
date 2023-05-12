@@ -131,7 +131,7 @@ class Ilf(Tool):
                 while line := file.readline():
                     if not has_fuzzing_result and '"tx_count"' in line:
                         has_fuzzing_result = True
-                        log_lines.append(line.strip())
+                    log_lines.append(line.strip())
         except Exception as err:
             error(f"Failed to parse log file: {log_file}\n\n{err}")
             return None

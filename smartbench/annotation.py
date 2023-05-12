@@ -344,7 +344,7 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBench` format in a smart contract.
 
     SmartBench format is in HTML-like format.
-    // <bug type='bug-type' >
+    // <bug BUG_TYPE>
     ...
     // </bug>
     """
