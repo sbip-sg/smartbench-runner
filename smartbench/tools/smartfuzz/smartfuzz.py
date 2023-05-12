@@ -189,6 +189,9 @@ class SmartFuzz(Tool):
         if "ArbitraryExternalCall" in description:
             return IssueKind.ARBITRARY_EXTERNAL_CALL
 
+        if "POSSIBLY_UNINITIALIZED" in description:
+            return IssueKind.POSSIBLY_UNINITIALIZED
+
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
 
@@ -288,6 +291,8 @@ class SmartFuzz(Tool):
         # Passing for other bug types
         checker = self.parse_rule("fuzzing")
         for issue_kind, bug in other_bugs:
+            if issue_kind == IssueKind.POSSIBLY_UNINITIALIZED:
+                continue
             location = self.parse_issue_location(
                 test_file,
                 bug.get("contract"),
@@ -302,9 +307,10 @@ class SmartFuzz(Tool):
                 "",
                 location,
                 checker,
-                detected_time=detected_time
+                detected_time=int(detected_time)
             )
-
+        all_issues.sort(key=lambda x: x.time_detected)
+        print ("all issues: ", [issue.to_json() for issue in all_issues])
         return all_issues
 
     def match_location_of_issue_to_annotation(

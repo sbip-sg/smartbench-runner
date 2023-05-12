@@ -80,7 +80,7 @@ class BugAnnot:
         self.file_path: str = file_path
         self.start_line: int = start_line
         self.end_line: int = end_line
-
+        self.time_detected: int = 0 # time detected this bug in second
         # Classifying this bug annotation to SmartBugs classification
         self.smartbugs_kind: Optional[
             SmartBugsPP
@@ -105,6 +105,9 @@ class BugAnnot:
         # the same contract
         self.index = BugAnnot.index_counter
         BugAnnot.index_counter += 1
+
+    def to_json(self):
+        return self.index, self.time_detected
 
     def print_concise(self) -> str:
         """Print bug annotation in concise format."""

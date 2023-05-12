@@ -231,6 +231,12 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
+        "--export-raw-results",
+        action="store_true",
+        help="Export raw results to JSON file",
+    )
+
+    result_argparser.add_argument(
         "--disable-print-details",
         action="store_true",
         help="Disable printing details of bug detection.",

@@ -7,6 +7,7 @@
 import bisect
 import os
 import pathlib
+import json
 
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, no_type_check
@@ -87,6 +88,13 @@ class AnalysisResult:
         other_file = other.test_file.casefold()
         return test_file.__lt__(other_file)
 
+    def simplify(self) -> Dict:
+        result = {}
+        result["test_file"] = self.test_file
+        result["missing_annots"] = self.validation_result.missing_bugs
+        result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs]
+        result["unlabelled_issues"] = self.validation_result.unlabelled_issues
+        return result
     def print_detailed_summary(self) -> None:
         """Print statistic summary of detected issues for a test file"""
         safe_print("")
@@ -453,6 +461,34 @@ def print_benchmarking_results(
         )
 
     export_benchmarking_results_to_csv_format(results_dir, tools_results)
+    export_raw_results_to_json_format(results_dir, tools_results)
+
+def json_decoder(obj:object):
+    if isinstance(obj, BugAnnot) or isinstance(obj, Issue):
+        return obj.to_json()
+    else:
+        return obj.__dict__
+
+def export_raw_results_to_json_format(
+    result_dir: str,
+    tools_results: Dict[str, List[AnalysisResult]],
+) -> None:
+    """Export raw results to JSON files."""
+    printer.print_short_dashed_separator_line()
+    safe_print("Exporting raw results to JSON files...")
+
+    for tool_id in tools_results.keys():
+        results: List[AnalysisResult] = tools_results[tool_id]
+        simplified_results = [result.simplify() for result in results]
+        result_file = f"raw_results_{tool_id}.json"
+        result_file = os.path.join(result_dir, result_file)
+
+        safe_print(f"- {result_file}")
+
+        with open(result_file, "w", encoding="utf-8") as file:
+            json.dump(simplified_results, file, default=json_decoder)
+
+    safe_print("Exporting raw results to JSON files completed!")
 
 
 def export_benchmarking_results_to_csv_format(
