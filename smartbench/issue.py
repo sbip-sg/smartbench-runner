@@ -9,6 +9,7 @@ from typing import List, Optional
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.bugdb.swc import SWCKind
+from smartbench.bugdb.smartbench import SmartbenchKind
 from smartbench.solidity import loc
 from smartbench.solidity.loc import Location
 
@@ -255,6 +256,11 @@ class Issue:
             SolidiFIPP
         ] = classify_to_solidifi_pp_kind(issue_kind)
 
+        # Classify to Smartbench classification
+        self.smartbench_pp_kind: Optional[
+            SmartbenchKind
+        ] = classify_to_smartbench_pp_kind(issue_kind)
+
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
         self.index = Issue.index_counter
@@ -457,6 +463,19 @@ def classify_to_solidifi_pp_kind(
         return SolidiFIPP.TX_ORIGIN
 
     # Not matching any SolidiFI Kind
+    return None
+
+def classify_to_smartbench_pp_kind(
+    issue_kind: IssueKind,
+) -> Optional[SmartbenchKind]:
+    """Classify an issue kind to a bug kind in Smartbench classification."""
+    if issue_kind in [IssueKind.ACCESS_CONTROL]:
+        return SmartbenchKind.ACCESS_CONTROL
+
+    if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
+        return SmartbenchKind.REENTRANCY
+
+    # Not matching any Smartbench Kind
     return None
 
 
