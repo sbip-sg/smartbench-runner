@@ -94,8 +94,12 @@ def match_issue_to_annotation(
         ):
             return False
     elif annot.annot_format == AnnotFormat.SMARTBENCH:
-        # TODO: implement later
-        return False
+        if (
+            issue.smartbench_kind is None
+            or annot.smartbench_kind is None
+            or issue.smartbench_kind != annot.smartbench_kind
+        ):
+            return False
 
     # Check whether the issue and bug annotation are of the same file.
     return tool.match_location_of_issue_to_annotation(issue, annot)

@@ -14,6 +14,7 @@ from typing import List, Optional
 from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
+from smartbench.bugdb.smartbench import SmartbenchKind
 from smartbench.issue import IssueKind
 from smartbench.printer import debug, safe_print, warning
 
@@ -80,6 +81,11 @@ class BugAnnot:
         self.solidifi_kind: Optional[
             SolidiFIPP
         ] = classify_bug_annot_to_solidifi_pp_kind(self.annot_name)
+
+        # Classifying this bug annotation to Smartbench classification
+        self.smartbench_kind: Optional[
+            SmartbenchKind
+        ] = classify_bug_annot_to_smartbench_kind(self.annot_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -271,6 +277,21 @@ def classify_bug_annot_to_solidifi_pp_kind(
     return None
 
 
+def classify_bug_annot_to_smartbench_kind(
+    annot_name: str,
+) -> Optional[SmartbenchKind]:
+    """Classify bug annotation string in Smartbench format to issue kind."""
+
+    # Smartbench annotations
+    if annot_name in ["ACCESS_CONTROL"]:
+        return SmartbenchKind.ACCESS_CONTROL
+
+    if annot_name in ["REENTRANCY"]:
+        return SmartbenchKind.REENTRANCY
+
+    return None
+
+
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBugs` format in a smart contract.
 
@@ -323,12 +344,47 @@ def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBench` format in a smart contract.
 
     SmartBench format is in HTML-like format.
-    // <bug type='bug-type' severity='high'>
+    // <bug BUG_TYPE>
     ...
     // </bug>
     """
-    warnings.warn("TODO: implement `parse_smartbench_annotations`")
-    return []
+
+    bug_annots = []
+    with open(filename, "r", encoding="utf-8") as file:
+        bug_type = None
+        start_line = None
+        for index, line in enumerate(file.readlines()):
+            line = line.strip()
+            if (
+                line.startswith(COMMENT_TAG)
+                and BUG_OPEN_TAG in line
+            ):
+                start_line = index + 1
+                bug_type = line.replace(COMMENT_TAG, "")
+                bug_type = bug_type.replace(BUG_OPEN_TAG, "")
+                bug_type = bug_type.strip()
+                # Remove the ">" character at the end
+                bug_type = bug_type[:-1]
+
+            if (
+                line.startswith(COMMENT_TAG)
+                and BUG_CLOSE_TAG in line
+            ):
+                if bug_type is not None and start_line is not None:
+                    end_line = index + 1
+                    bug_annotation = BugAnnot(
+                        bug_type,
+                        True,
+                        AnnotFormat.SMARTBENCH,
+                        filename,
+                        start_line,
+                        end_line,
+                    )
+                    bug_annots.append(bug_annotation)
+                    bug_type = None
+                    start_line = None
+
+    return bug_annots
 
 
 def parse_solidifi_annotations(filename: str) -> List[BugAnnot]:

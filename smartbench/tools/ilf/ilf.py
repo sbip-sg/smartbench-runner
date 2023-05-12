@@ -238,6 +238,7 @@ class Ilf(Tool):
             if (
                 annot.annot_format == AnnotFormat.SMARTBUGS
                 or annot.annot_format == AnnotFormat.SOLIDIFI
+                or annot.annot_format == AnnotFormat.SMARTBENCH
             ):
                 # ILF reports issue location as a range of the whole function.
                 # If an issue and a bug annotation are relevant, then the
