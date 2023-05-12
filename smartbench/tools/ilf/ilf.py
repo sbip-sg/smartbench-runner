@@ -27,15 +27,15 @@ from smartbench.tools.tool import Tool
 
 class Ilf(Tool):
     def __init__(
-            self,
-            id: str,
-            root_id: str,
-            name: str,
-            executable: str,
-            default_arguments: str,
-            default_timeout: int,
-            additional_args: Optional[str] = None,
-            random_seed: int = 0,
+        self,
+        id: str,
+        root_id: str,
+        name: str,
+        executable: str,
+        default_arguments: str,
+        default_timeout: int,
+        additional_args: Optional[str] = None,
+        random_seed: int = 0,
     ):
         Tool.__init__(
             self,
@@ -50,13 +50,13 @@ class Ilf(Tool):
         )
 
     def make_analysis_command(
-            self,
-            test_file: str,
-            contracts: List[str],
-            test_output_dir: str,
-            container: DockerContainer,
-            solc_version: str,
-            timeout: Optional[int] = None,
+        self,
+        test_file: str,
+        contracts: List[str],
+        test_output_dir: str,
+        container: DockerContainer,
+        solc_version: str,
+        timeout: Optional[int] = None,
     ) -> str:
         """Function to make analysis command for ILF. This function should have
         the same signature with other tools."""
@@ -115,7 +115,7 @@ class Ilf(Tool):
         return IssueKind.UNKNOWN
 
     def parse_analysis_output(
-            self, test_output_dir: str
+        self, test_output_dir: str
     ) -> Optional[List[Issue]]:
         """Parse output of ILF"""
         log_file = self.configure_log_file(test_output_dir)
@@ -164,7 +164,7 @@ class Ilf(Tool):
 
             # Parse contract name
             if match := re.search(
-                    r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
+                r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
             ):
                 contract = match.groups(1)[0]
                 continue
@@ -224,7 +224,7 @@ class Ilf(Tool):
         return all_issues
 
     def match_location_of_issue_to_annotation(
-            self, issue: Issue, annot: BugAnnot
+        self, issue: Issue, annot: BugAnnot
     ):
         """Function to check whether the location of an reported issue is
         related to a bug annotation."""
@@ -235,15 +235,17 @@ class Ilf(Tool):
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 
-            if (annot.annot_format == AnnotFormat.SMARTBUGS
+            if (
+                annot.annot_format == AnnotFormat.SMARTBUGS
                 or annot.annot_format == AnnotFormat.SOLIDIFI
-                or annot.annot_format == AnnotFormat.SMARTBENCH):
+                or annot.annot_format == AnnotFormat.SMARTBENCH
+            ):
                 # ILF reports issue location as a range of the whole function.
                 # If an issue and a bug annotation are relevant, then the
                 # issue's location should cover the bug annotation's location.
                 if (
-                        iloc.start_line <= annot.start_line
-                        and iloc.end_line >= annot.end_line
+                    iloc.start_line <= annot.start_line
+                    and iloc.end_line >= annot.end_line
                 ):
                     return True
             else:
