@@ -11,6 +11,7 @@ SUPPORTED_TOOLS=(
     "slither"
     "smartian"
     "smartfuzz"
+    "smartfuzz-ablation"
 )
 
 ################################################
