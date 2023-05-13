@@ -366,7 +366,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.ACCESS_CONTROL,
         IssueKind.UNSAFE_DELEGATECALL,
-        # IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
+        IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
         IssueKind.REQUIREMENT_VIOLATION,
     ]:
         return SmartBugsPP.ACCESS_CONTROL
