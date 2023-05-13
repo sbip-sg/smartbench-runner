@@ -366,7 +366,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [
         IssueKind.ACCESS_CONTROL,
         IssueKind.UNSAFE_DELEGATECALL,
-        IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
+        # IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
         IssueKind.REQUIREMENT_VIOLATION,
     ]:
         return SmartBugsPP.ACCESS_CONTROL
@@ -397,7 +397,7 @@ def classify_to_smartbugs_pp_kind(
     ]:
         return SmartBugsPP.FRONT_RUNNING
 
-    if issue_kind in [IssueKind.LEAKING_ETHER]:
+    if issue_kind in [IssueKind.LEAKING_ETHER, IssueKind.UNCHECKED_SEND_ETHER, IssueKind.UNCHECKED_TRANSFER_ETHER]:
         return SmartBugsPP.LEAKING_ETHER
 
     if issue_kind in [IssueKind.LOCKING_ETHER]:
@@ -453,7 +453,6 @@ def classify_to_solidifi_pp_kind(
 
     if issue_kind in [
         IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN,
-        IssueKind.TRANSACTION_ORDER_DEPENDENCY,
     ]:
         return SolidiFIPP.TX_ORIGIN
 

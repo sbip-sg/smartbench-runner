@@ -167,6 +167,9 @@ class Smartfuzz(Tool):
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
+        if "UNSAFE_DELEGATECALL" in description:
+            return IssueKind.UNSAFE_DELEGATECALL
+
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
 
