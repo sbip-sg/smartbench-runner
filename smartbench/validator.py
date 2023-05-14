@@ -104,8 +104,8 @@ def match_issue_to_annotation(
     elif annot.annot_format == AnnotFormat.VERISMART:
         if (
             issue.verismart_kind is None
-            # or annot.verismart_kind is None
-            # or issue.verismart_kind != annot.verismart_kind
+            or annot.verismart_kind is None
+            or issue.verismart_kind != annot.verismart_kind
         ):
             return False
 
