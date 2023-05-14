@@ -501,7 +501,7 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
         return AnnotFormat.SMARTBENCH
 
     if has_smartbugs_annots and (not has_smartbench_annots):
-        return AnnotFormat.VERISMART
+        return AnnotFormat.SMARTBUGS
 
     if has_verismart_annots:
         return AnnotFormat.VERISMART
