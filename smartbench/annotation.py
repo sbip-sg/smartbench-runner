@@ -493,7 +493,7 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
             if REPORT_TAG in line:
                 has_smartbugs_annots = True
 
-            if (VERISMART_OVERFLOW in line or VERISMART_UNDERFLOW or
+            if (VERISMART_OVERFLOW in line or VERISMART_UNDERFLOW in line or
                 VERISMART_LEAKING in line or VERISMART_LEAKING in line or
                 VERISMART_SELFDESTRUCT in line):
                 has_verismart_annots = True
