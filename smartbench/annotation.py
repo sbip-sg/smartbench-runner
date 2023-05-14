@@ -373,7 +373,7 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
 def parse_verismart_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `VeriSmart` format in a smart contract.
 
-    `Verismart` format: // <bug type>
+    `VeriSmart` format: // <bug type>
     """
     bug_annots = []
     with open(filename, "r", encoding="utf-8") as file:
@@ -494,8 +494,7 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
                 has_smartbugs_annots = True
 
             if (VERISMART_OVERFLOW in line or VERISMART_UNDERFLOW in line or
-                VERISMART_LEAKING in line or VERISMART_LEAKING in line or
-                VERISMART_SELFDESTRUCT in line):
+                VERISMART_LEAKING in line or VERISMART_SELFDESTRUCT in line):
                 has_verismart_annots = True
 
     if has_smartbench_annots and (not has_smartbugs_annots):
