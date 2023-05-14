@@ -29,6 +29,11 @@ COMMENT_TAG = "//"
 BUG_OPEN_TAG = "<bug "
 BUG_CLOSE_TAG = "</bug>"
 
+# Verismart annotation
+VERISMART_OVERFLOW = "<INTEGER_OVERFLOW>"
+VERISMART_UNDERFLOW = "<INTEGER_UNDERFLOW>"
+VERISMART_LEAKING = "<LEAKING_VUL>"
+VERISMART_SELFDESTRUCT = "<SUICIDAL_VUL>"
 
 class AnnotFormat(Enum):
     """Class representing kind of bug annotations."""
@@ -36,6 +41,7 @@ class AnnotFormat(Enum):
     SMARTBUGS = "SmartBugs"
     SMARTBENCH = "SmartBench"
     SOLIDIFI = "SolidiFI"
+    VERISMART = "VeriSmart"
 
 
 def parse_annot_format_kind(annot_format: str) -> Optional[AnnotFormat]:
@@ -45,6 +51,8 @@ def parse_annot_format_kind(annot_format: str) -> Optional[AnnotFormat]:
         return AnnotFormat.SMARTBENCH
     elif annot_format.lower() == "solidifi":
         return AnnotFormat.SOLIDIFI
+    elif annot_format.lower() == "verismart":
+        return AnnotFormat.VERISMART
     else:
         return None
 
@@ -338,6 +346,41 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
                     bug_annots.append(bug_annotation)
     return bug_annots
 
+def parse_verismart_annotations(filename: str) -> List[BugAnnot]:
+    """Parse bug annotations written in `VeriSmart` format in a smart contract.
+
+    `Verismart` format: // <bug type>
+    """
+    bug_annots = []
+    with open(filename, "r", encoding="utf-8") as file:
+        for index, line in enumerate(file.readlines()):
+            start_line = end_line = index + 1
+            line = line.strip()
+            if (COMMENT_TAG in line):
+                bug_type = None
+                if VERISMART_OVERFLOW in line:
+                    bug_type = "INTEGER_OVERFLOW"
+                if VERISMART_UNDERFLOW in line:
+                    bug_type = "INTEGER_UNDERFLOW"
+
+                if VERISMART_LEAKING in line:
+                    bug_type = "LEAKING_ETHER"
+
+                if VERISMART_SELFDESTRUCT in line:
+                    bug_type = "UNSAFE_SELFDESTRUCT"
+                
+                if bug_type is not None:
+                    bug_annotation = BugAnnot(
+                        bug_type.strip(),
+                        True,
+                        AnnotFormat.VERISMART,
+                        filename,
+                        start_line,
+                        end_line,
+                    )
+                    bug_annots.append(bug_annotation)
+    return bug_annots
+
 
 def parse_smartbench_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBench` format in a smart contract.
@@ -416,6 +459,7 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
     """Guess bug format and parse bug annotations."""
     has_smartbugs_annots = False
     has_smartbench_annots = False
+    has_verismart_annots = False
 
     with open(filename, "r", encoding="utf-8") as file:
         for line in file.readlines():
@@ -425,11 +469,19 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
             if REPORT_TAG in line:
                 has_smartbugs_annots = True
 
+            if (VERISMART_OVERFLOW in line or VERISMART_UNDERFLOW or
+                VERISMART_LEAKING in line or VERISMART_LEAKING in line or
+                VERISMART_SELFDESTRUCT in line):
+                has_verismart_annots = True
+
     if has_smartbench_annots and (not has_smartbugs_annots):
         return AnnotFormat.SMARTBENCH
 
     if has_smartbugs_annots and (not has_smartbench_annots):
-        return AnnotFormat.SMARTBUGS
+        return AnnotFormat.VERISMART
+
+    if has_verismart_annots:
+        return AnnotFormat.VERISMART
 
     if has_smartbugs_annots and has_smartbench_annots:
         warning(
@@ -448,7 +500,8 @@ def parse_bug_annotations(
 ) -> List[BugAnnot]:
     """Parse bug annotation in a smart contract.
 
-    The input `annot_format` can take value `smartbugs`, `smartbench`, `solidifi`, or None.
+    The input `annot_format` can take value `smartbugs`, `smartbench`,
+    `solidifi`, `verismart` or None.
     """
     annot_format = (
         annot_format
@@ -470,6 +523,9 @@ def parse_bug_annotations(
 
     if annot_format == AnnotFormat.SOLIDIFI:
         return parse_solidifi_annotations(test_file)
+
+    if annot_format == AnnotFormat.VERISMART:
+        return parse_verismart_annotations(test_file)
 
     debug(f"Unknown bug annot formmat: {annot_format}\n")
     return []
