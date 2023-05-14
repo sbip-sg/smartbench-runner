@@ -308,9 +308,9 @@ def classify_bug_annot_to_smartbench_kind(
 def classify_bug_annot_to_verismart_kind(
     annot_name: str,
 ) -> Optional[VeriSmartKind]:
-    """Classify bug annotation string in Smartbench format to issue kind."""
+    """Classify bug annotation string in VeriSmart format to issue kind."""
 
-    # Smartbench annotations
+    # VeriSmart annotations
     if annot_name in ["ARITHMETIC"]:
         return VeriSmartKind.ARITHMETIC
 
