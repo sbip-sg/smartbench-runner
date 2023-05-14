@@ -494,7 +494,7 @@ def classify_to_verismart_kind(
         return VeriSmartKind.LEAKING_ETHER
 
     if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
-        return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
+        return VeriSmartKind.UNSAFE_SELFDESTRUCT
 
     # Not matching any VeriSmart Kind
     return None

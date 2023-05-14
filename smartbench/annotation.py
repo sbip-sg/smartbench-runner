@@ -15,6 +15,7 @@ from smartbench import issue
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.bugdb.smartbench import SmartbenchKind
+from smartbench.bugdb.verismart import VeriSmartKind
 from smartbench.issue import IssueKind
 from smartbench.printer import debug, safe_print, warning
 
@@ -94,6 +95,11 @@ class BugAnnot:
         self.smartbench_kind: Optional[
             SmartbenchKind
         ] = classify_bug_annot_to_smartbench_kind(self.annot_name)
+
+        # Classifying this bug annotation to VeriSmart classification
+        self.verismart_kind: Optional[
+            VeriSmartKind
+        ] = classify_bug_annot_to_verismart_kind(self.annot_name)
 
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
@@ -299,6 +305,24 @@ def classify_bug_annot_to_smartbench_kind(
 
     return None
 
+def classify_bug_annot_to_verismart_kind(
+    annot_name: str,
+) -> Optional[VeriSmartKind]:
+    """Classify bug annotation string in Smartbench format to issue kind."""
+
+    # Smartbench annotations
+    if annot_name in ["ARITHMETIC"]:
+        return VeriSmartKind.ARITHMETIC
+
+    if annot_name in ["LEAKING_ETHER"]:
+        return VeriSmartKind.LEAKING_ETHER
+
+    if annot_name in ["UNSAFE_SELFDESTRUCT"]:
+        return VeriSmartKind.UNSAFE_SELFDESTRUCT
+
+    return None
+
+
 
 def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
     """Parse bug annotations written in `SmartBugs` format in a smart contract.
@@ -359,9 +383,9 @@ def parse_verismart_annotations(filename: str) -> List[BugAnnot]:
             if (COMMENT_TAG in line):
                 bug_type = None
                 if VERISMART_OVERFLOW in line:
-                    bug_type = "INTEGER_OVERFLOW"
+                    bug_type = "ARITHMETIC"
                 if VERISMART_UNDERFLOW in line:
-                    bug_type = "INTEGER_UNDERFLOW"
+                    bug_type = "ARITHMETIC"
 
                 if VERISMART_LEAKING in line:
                     bug_type = "LEAKING_ETHER"
