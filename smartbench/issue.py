@@ -10,6 +10,7 @@ from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
 from smartbench.bugdb.swc import SWCKind
 from smartbench.bugdb.smartbench import SmartbenchKind
+from smartbench.bugdb.verismart import VeriSmartKind
 from smartbench.solidity import loc
 from smartbench.solidity.loc import Location
 
@@ -261,6 +262,11 @@ class Issue:
             SmartbenchKind
         ] = classify_to_smartbench_kind(issue_kind)
 
+        # Classify to VeriSmart classification
+        self.verismart_kind: Optional[
+            VeriSmartKind
+        ] = classify_to_verismart_kind(issue_kind)
+
         # Assign an index to the issue. This index is unique for all issues in
         # the same contract
         self.index = Issue.index_counter
@@ -470,6 +476,27 @@ def classify_to_smartbench_kind(
         return SmartbenchKind.REENTRANCY
 
     # Not matching any Smartbench Kind
+    return None
+
+def classify_to_verismart_kind(
+    issue_kind: IssueKind,
+) -> Optional[VeriSmartKind]:
+    """Classify an issue kind to a bug kind in VeriSmart classification."""
+    if issue_kind in [
+        IssueKind.INTEGER_BUG,
+        IssueKind.INTEGER_OVERFLOW,
+        IssueKind.INTEGER_UNDERFLOW,
+        IssueKind.INTEGER_TRUNCATION,
+    ]:
+        return VeriSmartKind.ARITHMETIC
+
+    if issue_kind in [IssueKind.LEAKING_ETHER, IssueKind.UNCHECKED_SEND_ETHER, IssueKind.UNCHECKED_TRANSFER_ETHER]:
+        return VeriSmartKind.LEAKING_ETHER
+
+    if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
+        return SmartBugsPP.UNPROTECTED_SELFDESTRUCT
+
+    # Not matching any VeriSmart Kind
     return None
 
 
