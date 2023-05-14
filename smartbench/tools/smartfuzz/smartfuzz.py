@@ -10,7 +10,7 @@ import os
 from typing import List, Optional, Union
 
 # Library
-from smartbench import logger
+from smartbench import issue, logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
@@ -200,6 +200,7 @@ class Smartfuzz(Tool):
 
         all_issues = []
         reported_bugs = list(output.values())
+        all_issues: List[Issue] = []
         for bug in reported_bugs:
             checker = self.parse_rule("fuzzing")
             issue_kind = self.parse_issue_kind(bug.get("bug_type"))
@@ -209,13 +210,14 @@ class Smartfuzz(Tool):
                 bug.get("function"),
                 bug.get("line_number"),
             )
-            issue = Issue(
+            all_issues = issue.record_new_issue_and_deduplicate(
+                all_issues,
                 issue_kind,
                 "",
                 location,
                 checker,
             )
-            all_issues.append(issue)
+
         return all_issues
 
     def match_location_of_issue_to_annotation(
