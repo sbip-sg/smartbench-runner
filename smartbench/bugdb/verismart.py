@@ -23,5 +23,5 @@ class VeriSmartKind(Enum):
 
     @staticmethod
     def elements():
-        """Return all elements of Smartbench Classification"""
+        """Return all elements of VeriSmart Classification"""
         return [c.value for c in VeriSmartKind]

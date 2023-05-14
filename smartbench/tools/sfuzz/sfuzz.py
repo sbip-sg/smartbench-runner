@@ -226,6 +226,7 @@ class Sfuzz(Tool):
                 annot.annot_format == AnnotFormat.SMARTBUGS
                 or annot.annot_format == AnnotFormat.SOLIDIFI
                 or annot.annot_format == AnnotFormat.SMARTBENCH
+                or annot.annot_format == AnnotFormat.VERISMART
             ):
                 # SFuzz reports issue location as a range of the whole function.
                 # If an issue and a bug annotation are relevant, then the
