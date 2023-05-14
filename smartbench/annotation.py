@@ -314,8 +314,7 @@ def parse_smartbugs_annotations(filename: str) -> List[BugAnnot]:
     bug_annots = []
     with open(filename, "r", encoding="utf-8") as file:
         for index, line in enumerate(file.readlines()):
-            start_line = index + 2
-            end_line = index + 2
+            start_line = end_line = index + 2
             line = line.strip()
             if (
                 line.startswith(COMMENT_TAG)
