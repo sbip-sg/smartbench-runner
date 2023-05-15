@@ -324,7 +324,7 @@ class Issue:
                 issue_str += f",  SolidiFI: {self.solidifi_pp_kind}"
             return issue_str
         else:
-            issue_str = f"Issue ({self.index}): {self.issue_kind}"
+            issue_str = f"Issue ({self.index}): {self.issue_kind}\n"
             issue_str += f"  + Checker: {self.checker}\n"
             if print_swc_kind:
                 issue_str += f"  + SWC Kind: {self.swc_kind}\n"
