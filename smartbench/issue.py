@@ -8,8 +8,8 @@ from typing import List, Optional
 # Library
 from smartbench.bugdb.sbc import SmartBugsPP
 from smartbench.bugdb.sdc import SolidiFIPP
-from smartbench.bugdb.swc import SWCKind
 from smartbench.bugdb.smartbench import SmartbenchKind
+from smartbench.bugdb.swc import SWCKind
 from smartbench.bugdb.verismart import VeriSmartKind
 from smartbench.solidity import loc
 from smartbench.solidity.loc import Location
@@ -388,7 +388,7 @@ def classify_to_smartbugs_pp_kind(
     if issue_kind in [IssueKind.ASSERTION_FAILURE]:
         return SmartBugsPP.ASSERTION_FAILURE
 
-    if issue_kind in [IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR, IssueKind.BLOCK_VALUE_DEPENDENCY,]:
+    if issue_kind in [IssueKind.BLOCK_VALUE_DEPENDENCY]:
         return SmartBugsPP.BLOCK_DEPENDENCY
 
     if issue_kind in [
@@ -403,7 +403,11 @@ def classify_to_smartbugs_pp_kind(
     ]:
         return SmartBugsPP.FRONT_RUNNING
 
-    if issue_kind in [IssueKind.LEAKING_ETHER, IssueKind.UNCHECKED_SEND_ETHER, IssueKind.UNCHECKED_TRANSFER_ETHER]:
+    if issue_kind in [
+        IssueKind.LEAKING_ETHER,
+        IssueKind.UNCHECKED_SEND_ETHER,
+        IssueKind.UNCHECKED_TRANSFER_ETHER,
+    ]:
         return SmartBugsPP.LEAKING_ETHER
 
     if issue_kind in [IssueKind.LOCKING_ETHER]:
@@ -465,6 +469,7 @@ def classify_to_solidifi_pp_kind(
     # Not matching any SolidiFI Kind
     return None
 
+
 def classify_to_smartbench_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartbenchKind]:
@@ -478,6 +483,7 @@ def classify_to_smartbench_kind(
     # Not matching any Smartbench Kind
     return None
 
+
 def classify_to_verismart_kind(
     issue_kind: IssueKind,
 ) -> Optional[VeriSmartKind]:
@@ -490,7 +496,11 @@ def classify_to_verismart_kind(
     ]:
         return VeriSmartKind.ARITHMETIC
 
-    if issue_kind in [IssueKind.LEAKING_ETHER, IssueKind.UNCHECKED_SEND_ETHER, IssueKind.UNCHECKED_TRANSFER_ETHER]:
+    if issue_kind in [
+        IssueKind.LEAKING_ETHER,
+        IssueKind.UNCHECKED_SEND_ETHER,
+        IssueKind.UNCHECKED_TRANSFER_ETHER,
+    ]:
         return VeriSmartKind.LEAKING_ETHER
 
     if issue_kind in [IssueKind.UNSAFE_SELFDESTRUCT]:
