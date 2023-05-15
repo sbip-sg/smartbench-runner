@@ -101,6 +101,14 @@ def match_issue_to_annotation(
         ):
             return False
 
+    elif annot.annot_format == AnnotFormat.VERISMART:
+        if (
+            issue.verismart_kind is None
+            or annot.verismart_kind is None
+            or issue.verismart_kind != annot.verismart_kind
+        ):
+            return False
+
     # Check whether the issue and bug annotation are of the same file.
     return tool.match_location_of_issue_to_annotation(issue, annot)
 

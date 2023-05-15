@@ -431,6 +431,7 @@ class Slither(Tool):
             if (
                 annot.annot_format == AnnotFormat.SMARTBUGS
                 or annot.annot_format == AnnotFormat.SMARTBENCH
+                or annot.annot_format == AnnotFormat.VERISMART
             ):
                 # Slither reports issue location as a range with begin and end
                 # line/colum. If an issue and a bug annotation are relevant,

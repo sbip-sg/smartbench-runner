@@ -145,7 +145,7 @@ def parse_cli_arguments():
     analyze_argparser.add_argument(
         "--annot-format",
         type=str,
-        choices=["smartbugs", "smartbench", "solidifi"],
+        choices=["smartbugs", "smartbench", "solidifi", "verismart"],
         help=("Type of bug annotation format."),
     )
 
@@ -245,7 +245,7 @@ def parse_cli_arguments():
     result_argparser.add_argument(
         "--annot-format",
         type=str,
-        choices=["smartbugs", "smartbench", "solidifi"],
+        choices=["smartbugs", "smartbench", "solidifi", "verismart"],
         help=("Type of bug annotation format."),
     )
 
