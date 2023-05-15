@@ -9,7 +9,7 @@ import os
 from typing import List, Optional
 
 # Library
-from smartbench import logger
+from smartbench import issue, logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
@@ -392,7 +392,7 @@ class Slither(Tool):
         except ValueError:
             return None
 
-        all_issues = []
+        all_issues: List[Issue] = []
         for detector in detectors:
             description = detector.get("description")
             checker = Checker("Slither", detector.get("check"))
@@ -404,15 +404,16 @@ class Slither(Tool):
             confidence = self.parse_result_confidence(
                 detector.get("confidence")
             )
-            issue = Issue(
+
+            all_issues = issue.record_new_issue_and_deduplicate(
+                all_issues,
                 kind,
                 description,
                 location,
                 checker,
                 severity,
-                confidence,
+                confidence
             )
-            all_issues.append(issue)
 
         return all_issues
 
