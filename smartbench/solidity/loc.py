@@ -44,8 +44,6 @@ class Location:
     def __eq__(self, other):
         return (
             self.file_path == other.file_path
-            and self.contract_name == other.contract_name
-            and self.function_name == other.function_name
             and self.start_line == other.start_line
             and self.start_column == other.start_column
             and self.end_line == other.end_line
