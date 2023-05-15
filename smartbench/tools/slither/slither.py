@@ -173,7 +173,7 @@ class Slither(Tool):
 
     def parse_issue_kind(self, description: str, checker: str) -> IssueKind:
         """Parse issue kind from issue description reported by Slither"""
-        if "Reentrancy" in description:
+        if "Reentrancy in" in description and "reentrancy" in checker:
             return IssueKind.REENTRANCY
 
         if "ignores return value by" in description:
