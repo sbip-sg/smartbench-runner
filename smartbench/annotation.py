@@ -31,10 +31,10 @@ BUG_OPEN_TAG = "<bug "
 BUG_CLOSE_TAG = "</bug>"
 
 # Verismart annotation
-VERISMART_OVERFLOW = "<INTEGER_OVERFLOW>"
-VERISMART_UNDERFLOW = "<INTEGER_UNDERFLOW>"
-VERISMART_LEAKING = "<LEAKING_VUL>"
-VERISMART_SELFDESTRUCT = "<SUICIDAL_VUL>"
+INTEGER_OVERFLOW_TAG = "<INTEGER_OVERFLOW>"
+INTEGER_UNDERFLOW_TAG = "<INTEGER_UNDERFLOW>"
+LEAKING_VUL_TAG = "<LEAKING_VUL>"
+SUICIDAL_VUL_TAG = "<SUICIDAL_VUL>"
 
 class AnnotFormat(Enum):
     """Class representing kind of bug annotations."""
@@ -382,17 +382,16 @@ def parse_verismart_annotations(filename: str) -> List[BugAnnot]:
             line = line.strip()
             if (COMMENT_TAG in line):
                 bug_type = None
-                if VERISMART_OVERFLOW in line:
-                    bug_type = "ARITHMETIC"
-                if VERISMART_UNDERFLOW in line:
+
+                if INTEGER_OVERFLOW_TAG in line or INTEGER_UNDERFLOW_TAG in line:
                     bug_type = "ARITHMETIC"
 
-                if VERISMART_LEAKING in line:
+                if LEAKING_VUL_TAG in line:
                     bug_type = "LEAKING_ETHER"
 
-                if VERISMART_SELFDESTRUCT in line:
+                if SUICIDAL_VUL_TAG in line:
                     bug_type = "UNSAFE_SELFDESTRUCT"
-                
+
                 if bug_type is not None:
                     bug_annotation = BugAnnot(
                         bug_type.strip(),
@@ -493,8 +492,8 @@ def guess_annotation_type(filename: str) -> Optional[AnnotFormat]:
             if REPORT_TAG in line:
                 has_smartbugs_annots = True
 
-            if (VERISMART_OVERFLOW in line or VERISMART_UNDERFLOW in line or
-                VERISMART_LEAKING in line or VERISMART_SELFDESTRUCT in line):
+            if (INTEGER_OVERFLOW_TAG in line or INTEGER_UNDERFLOW_TAG in line or
+                LEAKING_VUL_TAG in line or SUICIDAL_VUL_TAG in line):
                 has_verismart_annots = True
 
     if has_smartbench_annots and (not has_smartbugs_annots):
