@@ -89,7 +89,7 @@ class Smartian(Tool):
         return cmd
 
     def parse_function_names_related_to_issue(
-        self, log_lines: List[str], idx: int
+        self, description: str, log_lines: List[str], idx: int
     ) -> List[str]:
         """Parse issue location in sequence of transactions printed to the log
         file by Smartian. Each transaction contains the name of the function
@@ -97,14 +97,21 @@ class Smartian(Tool):
 
         func_names = []
 
+        # Find the root transaction causing bug
+        txn_id = None
+        if match := re.search(r"Tx#([0-9]+) found", description):
+            txn_id = match.group(1)
+
+        # Find name of function executed by the buggy transaction
         for i in range(idx + 1, len(log_lines)):
             line = log_lines[i]
             if line == "":
                 break
             elif match := re.search(
-                r"TX.* Function: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
+                r"TX ([0-9]*).* Function: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
             ):
-                func_names.append(match.group(1))
+                if match.group(1) == txn_id:
+                    func_names.append(match.group(2))
 
         return func_names
 
@@ -212,11 +219,11 @@ class Smartian(Tool):
                 contract = match.group(1)
             elif issue_kind_txn_description := self.parse_issue_kind(log_line):
                 issue_locs = []
-                (issue_kind, txn_idx, descr) = issue_kind_txn_description
+                (issue_kind, txn_idx, description) = issue_kind_txn_description
 
                 # Parse function names relevant to the issue
                 func_names = self.parse_function_names_related_to_issue(
-                    log_lines, i
+                    description, log_lines, i
                 )
                 for func_name in func_names:
                     start_l = end_l = None
@@ -247,81 +254,12 @@ class Smartian(Tool):
                 all_issues = issue.record_new_issue_and_deduplicate(
                     all_issues,
                     issue_kind,
-                    descr,
+                    description,
                     issue_locs,
                     Checker("Smartian", "fuzzing"),
                 )
 
         return all_issues
-
-        # issues_info: List[Tuple[IssueKind, str, str]] = []
-        # for i in range(0, len(log_lines)):
-        #     line = log_lines[i].strip()
-        #     if match := re.search(
-        #         r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", line
-        #     ):
-        #         contract_name = match.groups(1)[0]
-        #     elif issue_kind_txn_description := self.parse_issue_kind(line):
-        #         (kind, txn_idx, descr) = issue_kind_txn_description
-        #         # Parse name of function causing the bug
-        #         # func_name = self.parse_function_names_related_to_issue(
-        #         #     log_lines, i, txn_idx
-        #         # )
-        #         # debug(f"FUNCTION NAME: {func_name}")
-        #         # issues_info.append((kind, descr, contract_name, func_name))
-        #         issues_info.append((kind, descr, contract_name))
-
-        # ast = None
-        # if test_file is not None:
-        #     best_solc_versions = solc.detect_best_solc_versions(test_file)
-        #     for solc_version in best_solc_versions:
-        #         try:
-        #             ast = SolidityAst(test_file, version=solc_version)
-        #             if ast is not None:
-        #                 break
-        #         except Exception:
-        #             continue
-        # if ast is None:
-        #     warning(f"Failed to get AST of: {test_file}")
-
-        # all_issues: List[Issue] = []
-        # contract_loc_dict: Dict[str, Tuple[int, int]] = {}
-
-        # for issue_info in issues_info:
-        #     # kind, descr, contract_name, func_name = issue_info
-        #     (kind, descr, contract_name) = issue_info
-
-        #     # Smartian doesn't pinpoint the bug location to exactly
-        #     # which function or line of code, so we consider location of
-        #     # the corresponding contract as the bug location.
-        #     start_line = end_line = None
-        #     if contract_name in contract_loc_dict:
-        #         (start_line, end_line) = contract_loc_dict[contract_name]
-        #     elif ast is not None:
-        #         try:
-        #             contract = ast.contract_by_name(contract_name)
-        #             (start_line, end_line) = contract.line_num
-
-        #             # Store in a dictionary for later use
-        #             contract_loc_dict[contract_name] = (start_line, end_line)
-        #         except Exception:
-        #             debug(f"Smartian: failed to find contract: {contract_name}")
-
-        #     loc = Location(
-        #         test_file, contract_name, None, start_line, None, end_line, None
-        #     )
-
-        #     # Do not deduplicate issues since the issue location is of the whole
-        #     # contracts
-        #     issue = Issue(
-        #         kind,
-        #         descr,
-        #         [loc],
-        #         Checker("Smartian", "fuzzing"),
-        #     )
-        #     all_issues.append(issue)
-
-        # return all_issues
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
