@@ -149,6 +149,12 @@ class Smartfuzz(Tool):
         if "BlockNumberDependency" in description:
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
+        if "BlockValueDependency" in description:
+            return IssueKind.BLOCK_VALUE_DEPENDENCY
+
+        if "LockedEthers" in description:
+            return IssueKind.LOCKING_ETHER
+
         if "TxOriginDependency" in description:
             return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
