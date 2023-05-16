@@ -95,9 +95,9 @@ class AnalysisResult:
     def simplify(self) -> Dict:
         result = {}
         result["test_file"] = self.test_file
-        result["missing_annots"] = self.validation_result.missing_bugs
-        result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs]
-        result["unlabelled_issues"] = self.validation_result.unlabelled_issues
+        result["missing_annots"] = self.validation_result.missing_bugs if self.validation_result else []
+        result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs] if self.validation_result else []
+        result["unlabelled_issues"] = self.validation_result.unlabelled_issues if self.validation_result else []
         return result
     def print_detailed_summary(self) -> None:
         """Print statistic summary of detected issues for a test file"""
