@@ -69,7 +69,8 @@ class Smartfuzz(Tool):
         # disable --use-symbolic-execution for now
         # move --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting
         # from run-smartbench.sh to here for reusability of docker image
-        cmd += " --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting "
+        # cmd += " --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting "
+        cmd += " --disable-tx-mutation --use-delta-debugging --enable-abstract-rewriting "
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"

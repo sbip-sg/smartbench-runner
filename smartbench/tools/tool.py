@@ -49,14 +49,14 @@ class Tool:
         self.json_result_file = (
             None
             if self.id in ["smartian", "sfuzz"]
-            else f"{self.id}_result.json"
+            else f'{self.id.split("-")[0]}_result.json'
         )
 
         # Code coverage file in JSON format, some tools may not support this
         # output
         self.json_coverage_file = (
-            f"{self.id}_coverage.json"
-            if self.id
+            f'{self.id.split("-")[0]}_coverage.json'
+            if self.id.split("-")[0]
             in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
             else None
         )
