@@ -145,7 +145,7 @@ else
         if [[ $TOOL_ID == "all" ]]; then
             INSTALL_ALL_TOOLS=true
             INSTALL_SMARTFUZZ=true
-        elif [[ $TOOL_ID == "smartfuzz" ]]; then
+        elif [[ $TOOL_ID == "smartfuzz"  || $TOOL_ID == "smartfuzz-ablation" ]]; then
             INSTALL_SMARTFUZZ=true
         elif [[ ! $(echo ${SUPPORTED_TOOLS[@]} | grep -w $TOOL_ID) ]]; then
             echo "Error: tool $TOOL_ID is not supported!"
