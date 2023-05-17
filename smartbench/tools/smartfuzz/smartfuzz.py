@@ -7,16 +7,20 @@ import json
 import math
 import os
 
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Tuple
+
+# Third Party
+from solc_json_parser.parser import SolidityAst
 
 # Library
 from smartbench import issue, logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback, safe_print
+from smartbench.printer import debug, error, error_traceback, safe_print, warning
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
+from smartbench.solidity import solc
 
 
 class Smartfuzz(Tool):
@@ -207,18 +211,62 @@ class Smartfuzz(Tool):
             error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
             return None
 
+        # Construct AST of test file to get bug location
+        ast = None
+        if test_file is not None:
+            best_solc_versions = solc.detect_best_solc_versions(test_file)
+            for solc_version in best_solc_versions:
+                try:
+                    ast = SolidityAst(test_file, version=solc_version)
+                    if ast is not None:
+                        break
+                except Exception:
+                    continue
+        if ast is None:
+            warning(f"Failed to get AST of: {test_file}")
+
         all_issues = []
         reported_bugs = list(output.values())
         all_issues: List[Issue] = []
+        func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
         for bug in reported_bugs:
             checker = self.parse_rule("fuzzing")
             issue_kind = self.parse_issue_kind(bug.get("bug_type"))
-            location = self.parse_issue_location(
-                test_file,
-                bug.get("contract"),
-                bug.get("function"),
-                bug.get("line_number"),
-            )
+            contract = bug.get("contract")
+            function = bug.get("function")
+            start_l = end_l = None
+            if issue_kind == IssueKind.DENIAL_OF_SERVICE:
+                if (contract, function) in func_loc_dict:
+                        (start_l, end_l) = func_loc_dict[(contract, function)]
+                elif ast is not None:
+                        try:
+                            function_info = ast.function_by_name(contract, function)
+                            (start_l, end_l) = function_info.line_num
+                            print(f"start_line: ", start_l)
+                            print(f"end_line: ", end_l)
+                            # Store function location for later use
+                            func_loc_dict[(contract, function)] = (
+                                start_l,
+                                end_l,
+                            )
+                        except Exception:
+                            continue
+
+            if start_l is not None:
+                # Report the whole function for `DENIAL_OF_SERVICE`
+                location = self.parse_issue_location(
+                    test_file,
+                    contract,
+                    function,
+                    [start_l, end_l]
+                )
+            else:
+                location = self.parse_issue_location(
+                    test_file,
+                    contract,
+                    function,
+                    bug.get("line_number"),
+                )
             all_issues = issue.record_new_issue_and_deduplicate(
                 all_issues,
                 issue_kind,
@@ -240,6 +288,13 @@ class Smartfuzz(Tool):
             # location.
             if iloc.start_line is None or iloc.end_line is None:
                 return False
+
+            # Checking for `DENIAL_OF_SERVICE` issue
+            if (issue.issue_kind == IssueKind.DENIAL_OF_SERVICE
+                and annot.start_line >= iloc.start_line
+                and annot.end_line <= iloc.end_line
+            ):
+                return True
 
             # Checking whether the annotation location covers the issue
             # location detected by SmartFuzz
