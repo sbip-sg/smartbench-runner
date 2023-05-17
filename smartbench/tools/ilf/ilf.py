@@ -157,7 +157,9 @@ class Ilf(Tool):
         i = 0
         all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
-        contract = ""
+        contract = None
+        contract_info = []
+        prev_line = None
         while i < len(log_lines):
             log_line = log_lines[i]
             i += 1
@@ -166,17 +168,31 @@ class Ilf(Tool):
             if match := re.search(
                 r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
             ):
+                if contract is not None and prev_line is not None:
+                    contract_info.append((contract, prev_line))
+                    prev_line = None
+
                 contract = match.groups(1)[0]
                 continue
 
             # Skip parsing if not fuzzing any contract yet
-            if contract == "":
+            if contract is None:
                 continue
 
             # Search for the JSON data containing analysis information
+            # Skip if the log line is not a JSON object
             match = re.search(r" ({.*})$", log_line)
             if match is None:
                 continue
+
+            prev_line = log_line
+
+        # Add the information of the last contract
+        if contract is not None and prev_line is not None:
+            contract_info.append((contract, prev_line))
+
+        for (contract, log_line) in contract_info:
+            match = re.search(r" ({.*})$", log_line)
 
             # Parsing bug information
             analysis_data = json.loads(match.group(1))
