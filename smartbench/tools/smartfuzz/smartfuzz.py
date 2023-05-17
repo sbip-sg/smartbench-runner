@@ -242,8 +242,6 @@ class Smartfuzz(Tool):
                         try:
                             function_info = ast.function_by_name(contract, function)
                             (start_l, end_l) = function_info.line_num
-                            print(f"start_line: ", start_l)
-                            print(f"end_line: ", end_l)
                             # Store function location for later use
                             func_loc_dict[(contract, function)] = (
                                 start_l,
