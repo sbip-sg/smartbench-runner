@@ -187,7 +187,6 @@ class Ilf(Tool):
             for bug_kind in reported_bugs:
                 issue_kind = self.parse_issue_kind(bug_kind)
                 functions = reported_bugs[bug_kind]
-                bug_locations = []
                 for func_name in functions:
                     start_l = end_l = None
                     if (contract, func_name) in func_loc_dict:
@@ -211,15 +210,14 @@ class Ilf(Tool):
                         start_line=start_l,
                         end_line=end_l,
                     )
-                    bug_locations.append(loc)
 
-                all_issues = issue.record_new_issue_and_deduplicate(
-                    all_issues,
-                    issue_kind,
-                    log_line,
-                    bug_locations,
-                    Checker("ILF", "fuzzing"),
-                )
+                    all_issues = issue.record_new_issue_and_deduplicate(
+                        all_issues,
+                        issue_kind,
+                        log_line,
+                        [loc],
+                        Checker("ILF", "fuzzing"),
+                    )
 
         return all_issues
 
