@@ -101,7 +101,7 @@ class AnalysisResult:
             f"- Status: {'Succeeded' if self.is_successful else 'Failed'}"
         )
         if self.is_successful:
-            safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
+            safe_print(f"- Bug annotations: {len(self.bug_annots)}")
             safe_print(f"- Detected issues: {len(self.issues)}")
 
         # # Print severity information

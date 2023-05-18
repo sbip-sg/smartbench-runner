@@ -158,6 +158,7 @@ class Ilf(Tool):
         all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
         contract = ""
+        start_time = None
         while i < len(log_lines):
             log_line = log_lines[i]
             i += 1
@@ -174,20 +175,25 @@ class Ilf(Tool):
                 continue
 
             # Search for the JSON data containing analysis information
-            match = re.search(r" ({.*})$", log_line)
+            match = re.search(r"\[([0-9]+\.[0-9]+)\][^{]* ({.*})$", log_line)
             if match is None:
                 continue
 
-            # Parsing bug information
-            analysis_data = json.loads(match.group(1))
+            # Parse analysis time
+            if start_time is None:
+                start_time = math.floor(float(match.group(1)))
+
+            # Parse bug information
+            analysis_data = json.loads(match.group(2))
             reported_bugs = analysis_data[contract]["bugs"]
             if reported_bugs is None:
                 continue
 
             for bug_kind in reported_bugs:
                 issue_kind = self.parse_issue_kind(bug_kind)
-                functions = reported_bugs[bug_kind]
+
                 bug_locations = []
+                functions = reported_bugs[bug_kind]
                 for func_name in functions:
                     start_l = end_l = None
                     if (contract, func_name) in func_loc_dict:
@@ -213,12 +219,17 @@ class Ilf(Tool):
                     )
                     bug_locations.append(loc)
 
+                detected_time = math.ceil(float(match.group(1)))
+                if start_time is not None:
+                    detected_time -= start_time
+
                 all_issues = issue.record_new_issue_and_deduplicate(
                     all_issues,
                     issue_kind,
                     log_line,
                     bug_locations,
                     Checker("ILF", "fuzzing"),
+                    detected_time=detected_time
                 )
 
         return all_issues
