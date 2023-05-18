@@ -1,0 +1,7 @@
+[info]
+name = "VeriSmart"
+
+[command]
+executable = "run-verismart.sh"
+default_arguments = ""
+default_timeout = 60
