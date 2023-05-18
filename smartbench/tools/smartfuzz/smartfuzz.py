@@ -207,7 +207,6 @@ class Smartfuzz(Tool):
             error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
             return None
 
-        all_issues = []
         reported_bugs = list(output.values())
         all_issues: List[Issue] = []
         for bug in reported_bugs:
@@ -219,12 +218,15 @@ class Smartfuzz(Tool):
                 bug.get("function"),
                 bug.get("line_number"),
             )
+            detected_time = bug.get("time")
+
             all_issues = issue.record_new_issue_and_deduplicate(
                 all_issues,
                 issue_kind,
                 "",
                 location,
                 checker,
+                detected_time=detected_time
             )
 
         return all_issues

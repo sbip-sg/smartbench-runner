@@ -138,6 +138,7 @@ def parse_test_file_output_dir(
 ) -> Optional[AnalysisResult]:
     """Parsing and printing analysis results"""
     # Parse and print bug annotations in test file
+
     bug_annots = annotation.parse_bug_annotations(test_file, annot_format)
     if summary_printing != SummaryPrinting.DISABLE_PRINTING:
         safe_print_underline("Bug annotations")
@@ -208,7 +209,7 @@ def parse_test_file_result(
 
     safe_print(f"Output directory: {test_output_dir}\n")
 
-    safe_print(f"Analysis tool: {tool.id}")
+    safe_print(f"Analysis tool: {tool.id}\n")
 
     # Get test file
     test_output_dir = os.path.abspath(test_output_dir)
@@ -217,7 +218,10 @@ def parse_test_file_result(
     safe_print(f"Test file: {test_file}\n")
 
     if test_file is None:
-        warning(f"Unable to get test file: {test_file}")
+        error(f"Unable to get input test file: {test_file}")
+        return []
+    elif not os.path.exists(test_file):
+        error(f"Input test file does not exists: {test_file}")
         return []
 
     res = parse_test_file_output_dir(
