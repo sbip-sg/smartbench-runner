@@ -9,7 +9,7 @@ import os
 import pathlib
 
 from enum import Enum
-from typing import Dict, List, Optional, no_type_check
+from typing import Dict, List, Optional, Tuple, no_type_check
 
 # Library
 from smartbench import annotation, logger, printer, validator
@@ -19,7 +19,6 @@ from smartbench.printer import (
     debug,
     error,
     error_traceback,
-    print_unless,
     safe_print,
     safe_print_underline,
     warning,
@@ -48,36 +47,33 @@ class AnalysisResult:
     def __init__(
         self,
         tool: Tool,
-        test_file: str,
+        test_file: Optional[str],
         test_output_dir: str,
-        bug_annots: List[BugAnnot],
+        bug_annots: Optional[List[BugAnnot]],
         annot_format: Optional[AnnotFormat],
-        is_successful: bool,
-        issues: List[Issue] = [],
+        issues: Optional[List[Issue]] = None,
         validation_result: Optional[ValidationResult] = None,
     ):
         self.tool: Tool = tool
 
         # Paths of test file and output directory
-        self.test_file: str = test_file
+        self.test_file: Optional[str] = test_file
         self.test_output_dir: str = test_output_dir
 
         # Concise path of test file, which is the longest common suffix of
         # the test file path and output directory path
-        self.concise_test_file = os.path.commonprefix(
-            [self.test_file[::-1], self.test_output_dir[::-1]]
-        )[::-1]
-        if self.concise_test_file.startswith("/"):
-            self.concise_test_file = self.concise_test_file[1:]
-
-        # Whether the test file is successfully analyzed
-        self.is_successful: bool = is_successful
+        if self.test_file is not None:
+            self.concise_test_file = os.path.commonprefix(
+                [self.test_file[::-1], self.test_output_dir[::-1]]
+            )[::-1]
+            if self.concise_test_file.startswith("/"):
+                self.concise_test_file = self.concise_test_file[1:]
 
         # All the issues that are reported
-        self.issues: List[Issue] = list(issues) if issues else []
+        self.issues: Optional[List[Issue]] = issues
 
         # Bug annotations specified for the test files.
-        self.bug_annots: List[BugAnnot] = list(bug_annots)
+        self.bug_annots: Optional[List[BugAnnot]] = bug_annots
         self.annot_format = annot_format
 
         # Validation of detected issues
@@ -97,11 +93,11 @@ class AnalysisResult:
         safe_print_underline("ANALYSIS RESULT")
         safe_print(f"- Tool: {self.tool.name}")
         safe_print(f"- Test file: {self.test_file}")
-        safe_print(
-            f"- Status: {'Succeeded' if self.is_successful else 'Failed'}"
-        )
-        if self.is_successful:
-            safe_print(f"- Annotated bugs: {len(self.bug_annots)}")
+        if self.issues is None:
+            safe_print("- Status: Failed")
+        else:
+            safe_print("- Status: Succeeded")
+            safe_print(f"- Bug annotations: {len(self.bug_annots)}")
             safe_print(f"- Detected issues: {len(self.issues)}")
 
         # # Print severity information
@@ -127,18 +123,11 @@ def is_tool_output_dir(tool: Tool, test_output_dir: str) -> bool:
     return os.path.exists(log_file)
 
 
-def parse_test_file_output_dir(
-    tool: Tool,
+def parse_test_file_bug_annots(
     test_file: str,
-    test_output_dir: str,
-    validate: Optional[bool] = False,
-    export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
-) -> Optional[AnalysisResult]:
-    """Parsing and printing analysis results"""
-    # Parse and print bug annotations in test file
-
+) -> List[BugAnnot]:
     bug_annots = annotation.parse_bug_annotations(test_file, annot_format)
     if summary_printing != SummaryPrinting.DISABLE_PRINTING:
         safe_print_underline("Bug annotations")
@@ -147,21 +136,29 @@ def parse_test_file_output_dir(
             safe_print("")
         else:
             safe_print("- No bug annotation is found!\n")
+    return bug_annots
 
-    # Parse and print detected bugs
+
+def parse_test_file_output_dir(
+    tool: Tool,
+    bug_annots: Optional[List[BugAnnot]],
+    test_output_dir: str,
+    annot_format: Optional[AnnotFormat] = None,
+    summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
+) -> Optional[List[Issue]]:
+    """Parsing and printing analysis results"""
+
     tool.prepare_parsing_analysis_output()
     issues = tool.parse_analysis_output(test_output_dir)
-    validation = None
-    if issues is None:
-        is_successful = False
-        issues = []
-    else:
-        is_successful = True
-        if summary_printing != SummaryPrinting.DISABLE_PRINTING:
-            safe_print_underline("Detected issues")
-            if len(issues) > 0:
-                print_smartbugs_kind = False
-                print_solidifi_kind = False
+    if (
+        issues is not None
+        and summary_printing != SummaryPrinting.DISABLE_PRINTING
+    ):
+        safe_print_underline("Detected issues")
+        if len(issues) > 0:
+            print_smartbugs_kind = False
+            print_solidifi_kind = False
+            if bug_annots is not None:
                 for annot in bug_annots:
                     if annot.annot_format == AnnotFormat.SMARTBUGS:
                         print_smartbugs_kind = True
@@ -169,32 +166,20 @@ def parse_test_file_output_dir(
                         print_solidifi_kind = True
                     if print_smartbugs_kind and print_solidifi_kind:
                         break
-                issues_strs = [
-                    x.pretty_print(
-                        True,
-                        print_smartbugs_kind,
-                        print_solidifi_kind,
-                        summary_printing == SummaryPrinting.CONCISE_PRINTING,
-                    )
-                    for x in issues
-                ]
-                safe_print("\n\n".join([format(f"- {s}") for s in issues_strs]))
-            else:
-                safe_print("- No issue is detected!\n")
+            issues_strs = [
+                x.pretty_print(
+                    True,
+                    print_smartbugs_kind,
+                    print_solidifi_kind,
+                    summary_printing == SummaryPrinting.CONCISE_PRINTING,
+                )
+                for x in issues
+            ]
+            safe_print("\n\n".join([format(f"- {s}") for s in issues_strs]))
+        else:
+            safe_print("- No issue is detected!\n")
 
-        if validate:
-            validation = validator.validate_issues(tool, issues, bug_annots)
-
-    return AnalysisResult(
-        tool,
-        test_file,
-        test_output_dir,
-        bug_annots,
-        annot_format,
-        is_successful,
-        issues,
-        validation,
-    )
+    return issues
 
 
 def parse_test_file_result(
@@ -204,7 +189,7 @@ def parse_test_file_result(
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
-) -> List[AnalysisResult]:
+) -> Optional[AnalysisResult]:
     printer.print_medium_dashed_separator_line()
 
     safe_print(f"Output directory: {test_output_dir}\n")
@@ -217,34 +202,49 @@ def parse_test_file_result(
     test_file = logger.get_input_test_file(log_file)
     safe_print(f"Test file: {test_file}\n")
 
+    bug_annots = None
+    issues = None
+    validation = None
+
     if test_file is None:
         error(f"Unable to get input test file: {test_file}")
-        return []
     elif not os.path.exists(test_file):
         error(f"Input test file does not exists: {test_file}")
-        return []
+    else:
+        # Parse bug annotation in input test file
+        bug_annots = parse_test_file_bug_annots(test_file, annot_format)
 
-    res = parse_test_file_output_dir(
+        # Parse issues detected by an analysis tool
+        issues = parse_test_file_output_dir(
+            tool,
+            bug_annots,
+            test_output_dir,
+            annot_format,
+            summary_printing,
+        )
+
+        # Validate detected issues against the bug annotations
+        if validate and issues is not None and bug_annots is not None:
+            validation = validator.validate_issues(tool, issues, bug_annots)
+
+    res = AnalysisResult(
         tool,
         test_file,
         test_output_dir,
-        validate,
-        export_summary,
+        bug_annots,
         annot_format,
-        summary_printing,
+        issues,
+        validation,
     )
 
-    if res is None:
-        return []
-
-    if not res.is_successful:
-        warning(f"Failed to parse result of test file: {test_file}")
+    if res.issues is None:
+        warning(f"Failed to parse analysis result for: {test_file}")
     elif summary_printing:
         res.print_detailed_summary()
     else:
         safe_print("Parsed analysis results successfully!")
 
-    return [res]
+    return res
 
 
 def guess_analysis_tools(test_output_dir: str) -> List[Tool]:
@@ -299,7 +299,7 @@ def parse_result_directory(
             tools = [t for t in tools if any(t.id == s for s in only_tools)]
 
         for tool in tools:
-            tool_results = parse_test_file_result(
+            tool_result = parse_test_file_result(
                 tool,
                 test_output_dir,
                 validate,
@@ -307,7 +307,8 @@ def parse_result_directory(
                 annot_format,
                 summary_printing,
             )
-            all_results.extend(tool_results)
+            if tool_result is not None:
+                all_results.append(tool_result)
 
     safe_print("Parsing result completed!")
     print_benchmarking_results(results_dir, all_results)
@@ -393,19 +394,27 @@ def print_benchmarking_results(
         safe_print(f"Detailed result of: {tool_id}\n")
 
         # Count number of successful and failed cases
-        num_succeeded = num_failed = 0
+        num_succeeded = num_failed_annots = num_failed_result = 0
 
         for result in tools_results[tool_id]:
             test_file = result.concise_test_file
 
-            num_annots = len(result.bug_annots)
-            if not result.is_successful:
-                num_failed += 1
-                safe_print(f"- {test_file}: Failed, {num_annots}")
+            if result.test_file is None:
+                result_dir = result.test_output_dir
+                safe_print(f"!! Input test file not found: {result_dir}")
                 continue
+            elif result.bug_annots is None:
+                safe_print(f"- {test_file}: Failed, unable to parse bug annots")
+                num_failed_annots += 1
+            else:
+                num_annots = len(result.bug_annots)
+                if result.issues is None:
+                    num_failed_result += 1
+                    safe_print(f"- {test_file}: Failed, {num_annots}")
+                    continue
 
-            num_succeeded += 1
-            num_issues = len(result.issues)
+                num_succeeded += 1
+                num_issues = len(result.issues)
 
             validation = result.validation_result
             if validation is None:
@@ -432,8 +441,10 @@ def print_benchmarking_results(
             )
 
         safe_print(
-            f"\nOverall result: {tool_id}: "
-            f"{num_succeeded} succeeded, {num_failed} failed."
+            f"\nOverall result: {tool_id}\n"
+            f"- {num_succeeded} succeeded\n"
+            f"- {num_failed_annots} failed to parse bug annots\n"
+            f"- {num_failed_result} failed to parse results"
         )
 
     export_benchmarking_results_to_csv_format(results_dir, tools_results)
@@ -459,18 +470,27 @@ def export_benchmarking_results_to_csv_format(
             file.write("======================================\n\n")
 
             # Count number of successful and failed cases
-            num_succeeded = num_failed = 0
+            num_succeeded = num_failed_annots = num_failed_results = 0
 
             for result in results:
-                test_file = result.concise_test_file
+                if result.concise_test_file is None:
+                    result_dir = result.test_output_dir
+                    file.write(f"!! Input test file not found: {result_dir}")
+                    continue
 
-                num_annots = len(result.bug_annots)
+                test_file = result.concise_test_file
                 file.write(f"- {test_file}: ")
 
-                if not result.is_successful:
-                    num_failed += 1
-                    file.write(f"Failed, {num_annots}\n")
+                if result.bug_annots is None:
+                    num_failed_annots += 1
+                    file.write("Failed, unable to parse annots\n")
                     continue
+                else:
+                    num_annots = len(result.bug_annots)
+                    if result.issues is None:
+                        num_failed_results += 1
+                        file.write(f"Failed, {num_annots}\n")
+                        continue
 
                 num_succeeded += 1
                 num_issues = len(result.issues)
@@ -497,63 +517,8 @@ def export_benchmarking_results_to_csv_format(
                     )
 
             file.write(
-                f"\nOverall result: {tool_id}: "
-                f"{num_succeeded} succeeded, {num_failed} failed."
+                f"\nOverall result: {tool_id}\n"
+                f"- {num_succeeded} succeeded\n"
+                f"- {num_failed_annots} failed to parse annots\n"
+                f"- {num_failed_results} failed to parse result\n"
             )
-
-
-def export_benchmarking_results_to_json_format(
-    result_dir: str,
-    tools_results: Dict[str, List[AnalysisResult]],
-    detailed_summary: bool = False,
-) -> None:
-    """Export benchmarking results to JSON files."""
-    printer.print_short_dashed_separator_line()
-    safe_print("Exporting benchmarking results to JSON files...")
-
-    for tool_id in tools_results.keys():
-        tool_results = tools_results[tool_id]
-
-        json_tool_results = []
-
-        # Count number of successful and failed cases
-        num_succeeded = num_failed = 0
-
-        for result in tool_results:
-            test_file = (
-                result.test_file
-                if detailed_summary
-                else result.concise_test_file
-            )
-
-            json_result = {}
-            json_result["test_file"] = test_file
-
-            if not result.is_successful:
-                num_failed += 1
-                json_result["analysis_status"] = "Failed"
-                json_tool_results.append(json_result)
-                continue
-
-            num_succeeded += 1
-            num_issues = len(result.issues)
-            json_result["analysis_status"] = "Succeeded"
-            json_result["num_issues"] = str(num_issues)
-
-            validation = result.validation_result
-
-            if validation is None:
-                json_result["validation_status"] = "Invalidated"
-                json_tool_results.append(json_result)
-                continue
-
-            json_result["validation_status"] = "Validated"
-
-            num_correct = len(validation.correct_bugs)
-            num_missing = len(validation.missing_bugs)
-            num_unlabelled = len(validation.unlabelled_issues)
-
-            json_result["correct_bugs"] = str(num_correct)
-            json_result["missing_bugs"] = str(num_missing)
-            json_result["unlabelled_bugs"] = str(num_unlabelled)
-            json_tool_results.append(json_result)
