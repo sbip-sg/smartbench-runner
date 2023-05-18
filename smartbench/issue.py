@@ -231,12 +231,16 @@ class Issue:
         checker: Checker,
         severity: Optional[Severity] = None,
         confidence: Optional[Confidence] = None,
+        time_detected: Optional[int] = None,
     ):
         """Constructor."""
         self.issue_kind: IssueKind = issue_kind
         self.description: str = description
         self.severity: Optional[Severity] = severity
         self.confidence: Optional[Confidence] = confidence
+
+        # Time in second when the issue is detected
+        self.detected_time: Optional[int] = time_detected
 
         # Use a list of locations to support tools that reports multiple
         # potential bug locations of an issue.
@@ -273,21 +277,12 @@ class Issue:
         Issue.index_counter += 1
 
     def __str__(self):
-        analyzer = self.checker.analyzer
-        detector = self.checker.detector
         location = (
             f"{loc.print_concise_locations(self.locations)}"
             if self.locations
             else "Unknown Location"
         )
-        return (
-            f"Issue ({self.index}): {self.issue_kind}\n"
-            f"  + Checker: {analyzer} --> {detector}\n"
-            f"  + SWC Kind: {self.swc_kind}\n"
-            f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
-            f"  + SolidiFI Kind: {self.solidifi_pp_kind}\n"
-            f"  + Location: {location}"
-        )
+        return f"Issue ({self.index}): {self.issue_kind} ({location})\n"
 
     def __eq__(self, other):
         return (
@@ -332,6 +327,8 @@ class Issue:
                 issue_str += f"  + SmartBugs++ Kind: {self.smartbugs_pp_kind}\n"
             if print_solidifi_kind:
                 issue_str += f"  + SolidiFI Kind: {self.solidifi_pp_kind}\n"
+            if self.detected_time is not None:
+                issue_str += f"  + Detected time: {self.detected_time}\n"
             issue_str += f"  + Location: {location}"
             return issue_str
 
@@ -344,6 +341,7 @@ def record_new_issue_and_deduplicate(
     checker: Checker,
     severity: Optional[Severity] = None,
     confidence: Optional[Confidence] = None,
+    detected_time: Optional[int] = None,
 ):
     # Check if the new issue is already reported
     for issue in existing_issues:
@@ -360,6 +358,7 @@ def record_new_issue_and_deduplicate(
         checker,
         severity,
         confidence,
+        detected_time,
     )
     existing_issues.append(issue)
     return existing_issues
