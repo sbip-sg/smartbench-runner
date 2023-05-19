@@ -17,7 +17,7 @@ RUN pip3 install -e ./
 
 # Install SmartFuzz
 WORKDIR /root/
-RUN git clone https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/smart-fuzz smartfuzz
+RUN git clone --single-branch --branch smartbug-fn https://$GIT_ACCESS_TOKEN@github.com/sbip-sg/smart-fuzz smartfuzz
 WORKDIR /root/smartfuzz/
 RUN pip3 install -r requirements.txt
 RUN python scripts/download_solc_compilers.py
