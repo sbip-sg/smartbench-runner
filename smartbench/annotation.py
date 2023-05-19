@@ -395,7 +395,6 @@ def parse_verismart_annotations(filename: str) -> List[BugAnnot]:
                     bug_type = "UNSAFE_SELFDESTRUCT"
                     bug_types.append(bug_type)
 
-
                 if bug_types != []:
                     for bug_type in bug_types:
                         bug_annotation = BugAnnot(
