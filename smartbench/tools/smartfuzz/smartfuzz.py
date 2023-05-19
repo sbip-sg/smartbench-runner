@@ -240,7 +240,7 @@ class Smartfuzz(Tool):
             start_l = end_l = None
             if issue_kind == IssueKind.DENIAL_OF_SERVICE:
                 if (contract, function) in func_loc_dict:
-                        (start_l, end_l) = func_loc_dict[(contract, function)]
+                    (start_l, end_l) = func_loc_dict[(contract, function)]
                 else:
                     ast = self.construct_ast(test_file)
                     if ast is not None:
@@ -255,7 +255,6 @@ class Smartfuzz(Tool):
                         except Exception:
                             continue
 
-            if start_l is not None:
                 # Report the whole function for `DENIAL_OF_SERVICE`
                 location = self.parse_issue_location(
                     test_file,
