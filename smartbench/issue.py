@@ -98,6 +98,7 @@ class IssueKind(Enum):
     INTEGER_OVERFLOW = "Integer Overflow"
     INTEGER_UNDERFLOW = "Integer Underflow"
     INTEGER_TRUNCATION = "Integer Truncation"
+    DIVISION_BY_ZERO = "Division by Zero"
 
     # SWC-110, assertion
     ASSERTION_FAILURE = "Assertion Failure"

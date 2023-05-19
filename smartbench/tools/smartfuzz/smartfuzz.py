@@ -19,7 +19,7 @@ from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
 
 
-class Smartfuzz(Tool):
+class SmartFuzz(Tool):
     def __init__(
         self,
         id: str,

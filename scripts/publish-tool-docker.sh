@@ -16,6 +16,7 @@ SUPPORTED_TOOLS=(
     "slither"
     "smartfuzz"
     "smartian"
+    "verismart"
 )
 
 SCRIPT_DIR="$(realpath $(dirname "$0"))"
