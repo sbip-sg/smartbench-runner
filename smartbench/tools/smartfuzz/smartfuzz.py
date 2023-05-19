@@ -186,6 +186,23 @@ class Smartfuzz(Tool):
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
 
+    def construct_ast(self, filename: str):
+        # Construct AST of test file to get bug location
+        ast = None
+        if filename is not None:
+            best_solc_versions = solc.detect_best_solc_versions(filename)
+            for solc_version in best_solc_versions:
+                try:
+                    ast = SolidityAst(filename, version=solc_version)
+                    if ast is not None:
+                        break
+                except Exception:
+                    continue
+        if ast is None:
+            warning(f"Failed to get AST of: {filename}")
+
+        return ast
+
     def parse_analysis_output(
         self,
         test_output_dir: str,
@@ -211,20 +228,6 @@ class Smartfuzz(Tool):
             error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
             return None
 
-        # Construct AST of test file to get bug location
-        ast = None
-        if test_file is not None:
-            best_solc_versions = solc.detect_best_solc_versions(test_file)
-            for solc_version in best_solc_versions:
-                try:
-                    ast = SolidityAst(test_file, version=solc_version)
-                    if ast is not None:
-                        break
-                except Exception:
-                    continue
-        if ast is None:
-            warning(f"Failed to get AST of: {test_file}")
-
         all_issues = []
         reported_bugs = list(output.values())
         all_issues: List[Issue] = []
@@ -238,7 +241,9 @@ class Smartfuzz(Tool):
             if issue_kind == IssueKind.DENIAL_OF_SERVICE:
                 if (contract, function) in func_loc_dict:
                         (start_l, end_l) = func_loc_dict[(contract, function)]
-                elif ast is not None:
+                else:
+                    ast = self.construct_ast(test_file)
+                    if ast is not None:
                         try:
                             function_info = ast.function_by_name(contract, function)
                             (start_l, end_l) = function_info.line_num
