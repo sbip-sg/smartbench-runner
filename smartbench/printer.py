@@ -47,12 +47,12 @@ def print_unless(condition: bool, *args: str) -> None:
 
 def warning(*args: str) -> None:
     """Print a warning message"""
-    safe_print("\n!! WARNING: " + " ".join(map(str, args)))
+    safe_print("\n!! WARNING: " + " ".join(map(str, args)) + "\n")
 
 
 def error(*args: str) -> None:
     """Print an error message"""
-    safe_print("\n!! ERROR: " + " ".join(map(str, args)))
+    safe_print("\n!! ERROR: " + " ".join(map(str, args)) + "\n")
 
 
 def error_traceback(*args: str) -> None:

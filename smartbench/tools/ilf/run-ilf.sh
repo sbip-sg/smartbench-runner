@@ -185,8 +185,7 @@ SOLC_VERSION=$SOLC_VER GOPATH=$GO_DIR \
 cd $TOOL_DIR
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo ""
-    echo "==============================="
-    echo ""
+    echo "==============================================================="
     echo "Fuzzing contract: $CONTRACT"
     echo ""
     GOPATH=$GO_DIR python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \

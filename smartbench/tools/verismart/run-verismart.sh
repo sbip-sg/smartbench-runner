@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage:
-#   ./run-smartian.sh -f <test-file> -c <contract-names> [options] [smartian-arguments]
+#   ./run-verismart.sh -f <test-file> -c <contract-names> [options] [verismart-arguments]
 #
 
 ################################################
@@ -10,7 +10,7 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-smartian.sh -f <test-file> -c <contract-names> [options] [smartial-arguments]"
+    echo "  run-verismart.sh -f <test-file> -c <contract-names> [options] [smartial-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>            Smart contract file to be analyzed."
@@ -20,7 +20,7 @@ print_usage () {
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
     echo "  -h, --help                Print this usage."
     echo ""
-    echo "Addtional arguments passing to Smartian can be put at the end of this command."
+    echo "Addtional arguments passing to VeriSmart can be put at the end of this command."
 }
 
 print_help () {
@@ -115,48 +115,21 @@ if [[ $TIMEOUT -lt 0 ]]; then
 fi
 
 ################################################
-# Compile contracts
-
-COMPILED_CONTRACTS_DIR="$OUTPUT_DIR/compiled_contracts"
-rm -rf $COMPILED_CONTRACTS_DIR
-mkdir $COMPILED_CONTRACTS_DIR
-
-SOLC_VERSION=$SOLC_VER solc $TEST_FILE --bin --abi \
-    -o $COMPILED_CONTRACTS_DIR --overwrite \
-    1>/dev/null 2>&1  # Do not capture output of Solc
-
-# If contract names are not specified from the input, analyze all contracts
-# obtained after compilation.
-if [[ ${#CONTRACT_NAMES[@]}  == 0 ]]; then
-    CURRENT_DIR=$(pwd)
-    cd $COMPILED_CONTRACTS_DIR
-    CONTRACT_NAMES=($(ls -1 *.bin | sed "s/\.bin//"))
-    cd $CURRENT_DIR
-fi
-
-################################################
 # Configure paths
 
-TOOL_DIR="/root/smartian"
+TOOL_DIR="/root/verismart"
 
 ################################################
 # Analyze contracts
 
-# Run Smartian on each candidate contract
+# Run VeriSmart on each candidate contract
 for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo ""
     echo "==============================================================="
     echo "Fuzzing contract: $CONTRACT"
     echo ""
-    dotnet $TOOL_DIR/build/Smartian.dll fuzz \
-        --useothersoracle --checkoptionalbugs --verbose 1 \
-        --program "$COMPILED_CONTRACTS_DIR/$CONTRACT.bin" \
-        --abifile "$COMPILED_CONTRACTS_DIR/$CONTRACT.abi" \
-        --outputdir $OUTPUT_DIR --timelimit $TIMEOUT \
+    SOLC_VERSION=$SOLC_VER $TOOL_DIR/main.native \
+        -input $TEST_FILE -main $CONTRACT \
+        -outdir $OUTPUT_DIR -verify_timeout $TIMEOUT \
         ${ADDITIONAL_ARGS[@]} 2>&1
 done
-
-################################################
-# Clean up after analysis
-
-rm -rf $COMPILED_CONTRACTS_DIR

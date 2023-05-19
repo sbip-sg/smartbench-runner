@@ -16,7 +16,8 @@ from smartbench.tools.ilf.ilf import Ilf
 from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither.slither import Slither
-from smartbench.tools.smartfuzz.smartfuzz import Smartfuzz
+from smartbench.tools.smartfuzz.smartfuzz import SmartFuzz
+from smartbench.tools.verismart.verismart import VeriSmart
 from smartbench.tools.smartian.smartian import Smartian
 from smartbench.tools.tool import Tool
 
@@ -44,6 +45,7 @@ SUPPORTED_TOOLS = [
     "slither",
     "smartfuzz",
     "smartian",
+    "verismart"
 ]
 
 
@@ -110,20 +112,22 @@ def load_tool_configuration(tool_id: str) -> Optional[Tool]:
                 report_config_error(tool_id, DEFAULT_TIMEOUT, config_file_path)
 
             tool_constructor: Optional[Callable] = None
-            if tool_root_id == "slither":
-                tool_constructor = Slither
-            elif tool_root_id == "confuzzius":
+            if tool_root_id == "confuzzius":
                 tool_constructor = Confuzzius
+            elif tool_root_id == "ilf":
+                tool_constructor = Ilf
             elif tool_root_id == "mythril":
                 tool_constructor = Mythril
             elif tool_root_id == "sfuzz":
                 tool_constructor = Sfuzz
+            elif tool_root_id == "slither":
+                tool_constructor = Slither
             elif tool_root_id == "smartian":
                 tool_constructor = Smartian
             elif tool_root_id == "smartfuzz":
-                tool_constructor = Smartfuzz
-            elif tool_root_id == "ilf":
-                tool_constructor = Ilf
+                tool_constructor = SmartFuzz
+            elif tool_root_id == "verismart":
+                tool_constructor = VeriSmart
 
             if tool_constructor is None:
                 error_traceback(f"Unknown analysis tool: {tool_id}")

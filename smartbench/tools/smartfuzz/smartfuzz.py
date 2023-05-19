@@ -23,7 +23,7 @@ from smartbench.tools.tool import Tool
 from smartbench.solidity import solc
 
 
-class Smartfuzz(Tool):
+class SmartFuzz(Tool):
     def __init__(
         self,
         id: str,
@@ -228,7 +228,6 @@ class Smartfuzz(Tool):
             error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
             return None
 
-        all_issues = []
         reported_bugs = list(output.values())
         all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
@@ -275,6 +274,7 @@ class Smartfuzz(Tool):
                 "",
                 location,
                 checker,
+                detected_time=detected_time
             )
 
         return all_issues
