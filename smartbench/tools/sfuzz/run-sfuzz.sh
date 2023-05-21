@@ -120,4 +120,4 @@ done
 
 SOLC_VERSION=$SOLC_VER ./fuzzer -g -r 0 -d $TIMEOUT --attacker ReentrancyAttacker 2>&1
 chmod +x fuzzMe
-SOLC_VERSION=$SOLC_VER ./fuzzMe
+SOLC_VERSION=$SOLC_VER timeout "$((2*TIMEOUT))" -s SIGINT ./fuzzMe
