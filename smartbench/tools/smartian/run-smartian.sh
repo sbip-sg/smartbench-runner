@@ -148,7 +148,7 @@ for CONTRACT in ${CONTRACT_NAMES[@]}; do
     echo "==============================================================="
     echo "Fuzzing contract: $CONTRACT"
     echo ""
-    timeout "$((2*TIMEOUT))" -s SIGINT dotnet $TOOL_DIR/build/Smartian.dll fuzz \
+    timeout -s SIGINT "$((2*TIMEOUT))" dotnet $TOOL_DIR/build/Smartian.dll fuzz \
         --useothersoracle --checkoptionalbugs --verbose 1 \
         --program "$COMPILED_CONTRACTS_DIR/$CONTRACT.bin" \
         --abifile "$COMPILED_CONTRACTS_DIR/$CONTRACT.abi" \
