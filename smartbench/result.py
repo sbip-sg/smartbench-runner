@@ -403,18 +403,20 @@ def print_benchmarking_results(
                 result_dir = result.test_output_dir
                 safe_print(f"!! Input test file not found: {result_dir}")
                 continue
-            elif result.bug_annots is None:
+
+            if result.bug_annots is None:
                 safe_print(f"- {test_file}: Failed, unable to parse bug annots")
                 num_failed_annots += 1
-            else:
-                num_annots = len(result.bug_annots)
-                if result.issues is None:
-                    num_failed_result += 1
-                    safe_print(f"- {test_file}: Failed, {num_annots}")
-                    continue
+                continue
 
-                num_succeeded += 1
-                num_issues = len(result.issues)
+            num_annots = len(result.bug_annots)
+            if result.issues is None:
+                num_failed_result += 1
+                safe_print(f"- {test_file}: Failed, {num_annots}")
+                continue
+
+            num_succeeded += 1
+            num_issues = len(result.issues)
 
             validation = result.validation_result
             if validation is None:
