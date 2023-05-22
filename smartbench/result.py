@@ -406,6 +406,7 @@ def print_benchmarking_results(
             elif result.bug_annots is None:
                 safe_print(f"- {test_file}: Failed, unable to parse bug annots")
                 num_failed_annots += 1
+                continue
             else:
                 num_annots = len(result.bug_annots)
                 if result.issues is None:
