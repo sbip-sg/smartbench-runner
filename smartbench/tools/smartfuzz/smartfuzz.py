@@ -71,9 +71,9 @@ class SmartFuzz(Tool):
         #     cmd += f" --contract-name {contracts[0]}"
 
         # disable --use-symbolic-execution for now
-        # move --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting
+        # move --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting --enable-blockvalue-mutation
         # from run-smartbench.sh to here for reusability of docker image
-        cmd += " --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting "
+        cmd += " --use-dependency-graph --use-delta-debugging --enable-abstract-rewriting --enable-blockvalue-mutation "
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
