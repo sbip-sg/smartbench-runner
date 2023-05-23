@@ -203,6 +203,36 @@ class SmartFuzz(Tool):
 
         return ast
 
+    # def parse_dos_bugs(self):
+    #     checker = self.parse_rule("fuzzing")
+    #     issue_kind = self.parse_issue_kind(bug.get("bug_type"))
+    #     contract = bug.get("contract")
+    #     function = bug.get("function")
+    #     start_l = end_l = None
+    #     if (contract, function) in func_loc_dict:
+    #         (start_l, end_l) = func_loc_dict[(contract, function)]
+    #     else:
+    #         ast = self.construct_ast(test_file)
+    #         if ast is not None:
+    #             try:
+    #                 function_info = ast.function_by_name(contract, function)
+    #                 (start_l, end_l) = function_info.line_num
+    #                 # Store function location for later use
+    #                 func_loc_dict[(contract, function)] = (
+    #                     start_l,
+    #                     end_l,
+    #                 )
+    #             except Exception:
+    #                 continue
+
+    #             # Report the whole function for `DENIAL_OF_SERVICE`
+    #             location = self.parse_issue_location(
+    #                 test_file,
+    #                 contract,
+    #                 function,
+    #                 [start_l, end_l]
+    #             )
+
     def parse_analysis_output(
         self,
         test_output_dir: str,
@@ -231,50 +261,77 @@ class SmartFuzz(Tool):
         reported_bugs = list(output.values())
         all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
+
+        dos_bugs = []
+        other_bugs = []
         for bug in reported_bugs:
-            checker = self.parse_rule("fuzzing")
             issue_kind = self.parse_issue_kind(bug.get("bug_type"))
+            if issue_kind == IssueKind.DENIAL_OF_SERVICE:
+                dos_bugs.append((issue_kind, bug))
+            else:
+                other_bugs.append((issue_kind, bug))
+
+        # Similar element
+        checker = self.parse_rule("fuzzing")
+
+        # Passing for DOS bugs
+        ast = None
+        for issue_kind, bug in dos_bugs:
             contract = bug.get("contract")
             function = bug.get("function")
             start_l = end_l = None
-            if issue_kind == IssueKind.DENIAL_OF_SERVICE:
-                if (contract, function) in func_loc_dict:
-                    (start_l, end_l) = func_loc_dict[(contract, function)]
-                else:
-                    ast = self.construct_ast(test_file)
-                    if ast is not None:
-                        try:
-                            function_info = ast.function_by_name(contract, function)
-                            (start_l, end_l) = function_info.line_num
-                            # Store function location for later use
-                            func_loc_dict[(contract, function)] = (
-                                start_l,
-                                end_l,
-                            )
-                        except Exception:
-                            continue
-
-                # Report the whole function for `DENIAL_OF_SERVICE`
-                location = self.parse_issue_location(
-                    test_file,
-                    contract,
-                    function,
-                    [start_l, end_l]
-                )
+            if (contract, function) in func_loc_dict:
+                (start_l, end_l) = func_loc_dict[(contract, function)]
             else:
-                location = self.parse_issue_location(
-                    test_file,
-                    contract,
-                    function,
-                    bug.get("line_number"),
-                )
+                if ast is None:
+                    ast = self.construct_ast(test_file)
+
+                if ast is not None:
+                    try:
+                        function_info = ast.function_by_name(contract, function)
+                        (start_l, end_l) = function_info.line_num
+                        # Store function location for later use
+                        func_loc_dict[(contract, function)] = (
+                            start_l,
+                            end_l,
+                        )
+                    except Exception:
+                        continue
+
+            # Report the whole function for `DENIAL_OF_SERVICE`
+            location = self.parse_issue_location(
+                test_file,
+                contract,
+                function,
+                [start_l, end_l]
+            )
+
             all_issues = issue.record_new_issue_and_deduplicate(
                 all_issues,
                 issue_kind,
                 "",
                 location,
-                checker,
-                detected_time=detected_time
+                checker
+            )
+
+
+        # Passing for other bug types
+        for issue_kind, bug in other_bugs:
+            contract = bug.get("contract")
+            function = bug.get("function")
+            start_l = end_l = None
+            location = self.parse_issue_location(
+                test_file,
+                contract,
+                function,
+                bug.get("line_number"),
+            )
+            all_issues = issue.record_new_issue_and_deduplicate(
+                all_issues,
+                issue_kind,
+                "",
+                location,
+                checker
             )
 
         return all_issues
