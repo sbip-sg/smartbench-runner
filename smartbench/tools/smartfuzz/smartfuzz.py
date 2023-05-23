@@ -282,12 +282,10 @@ class SmartFuzz(Tool):
         # Passing for other bug types
         checker = self.parse_rule("fuzzing")
         for issue_kind, bug in other_bugs:
-            contract = bug.get("contract")
-            function = bug.get("function")
             location = self.parse_issue_location(
                 test_file,
-                contract,
-                function,
+                bug.get("contract"),
+                bug.get("function"),
                 bug.get("line_number"),
             )
             detected_time = bug.get("time")
