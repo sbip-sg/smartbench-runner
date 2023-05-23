@@ -228,13 +228,15 @@ class SmartFuzz(Tool):
                 function,
                 [start_l, end_l]
             )
+            detected_time = bug.get("time")
 
             all_issues = issue.record_new_issue_and_deduplicate(
                 all_issues,
                 issue_kind,
                 "",
                 location,
-                checker
+                checker,
+                detected_time=detected_time
             )
 
         return all_issues
@@ -288,12 +290,15 @@ class SmartFuzz(Tool):
                 function,
                 bug.get("line_number"),
             )
+            detected_time = bug.get("time")
+
             all_issues = issue.record_new_issue_and_deduplicate(
                 all_issues,
                 issue_kind,
                 "",
                 location,
-                checker
+                checker,
+                detected_time=detected_time
             )
 
         return all_issues
