@@ -186,96 +186,12 @@ class SmartFuzz(Tool):
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
 
-    def construct_ast(self, filename: str):
-        # Construct AST of test file to get bug location
+    # Parsing `denial_of_service` bugs
+    def parse_dos_bugs(self, dos_bugs, test_file: str):
         ast = None
-        if filename is not None:
-            best_solc_versions = solc.detect_best_solc_versions(filename)
-            for solc_version in best_solc_versions:
-                try:
-                    ast = SolidityAst(filename, version=solc_version)
-                    if ast is not None:
-                        break
-                except Exception:
-                    continue
-        if ast is None:
-            warning(f"Failed to get AST of: {filename}")
-
-        return ast
-
-    # def parse_dos_bugs(self):
-    #     checker = self.parse_rule("fuzzing")
-    #     issue_kind = self.parse_issue_kind(bug.get("bug_type"))
-    #     contract = bug.get("contract")
-    #     function = bug.get("function")
-    #     start_l = end_l = None
-    #     if (contract, function) in func_loc_dict:
-    #         (start_l, end_l) = func_loc_dict[(contract, function)]
-    #     else:
-    #         ast = self.construct_ast(test_file)
-    #         if ast is not None:
-    #             try:
-    #                 function_info = ast.function_by_name(contract, function)
-    #                 (start_l, end_l) = function_info.line_num
-    #                 # Store function location for later use
-    #                 func_loc_dict[(contract, function)] = (
-    #                     start_l,
-    #                     end_l,
-    #                 )
-    #             except Exception:
-    #                 continue
-
-    #             # Report the whole function for `DENIAL_OF_SERVICE`
-    #             location = self.parse_issue_location(
-    #                 test_file,
-    #                 contract,
-    #                 function,
-    #                 [start_l, end_l]
-    #             )
-
-    def parse_analysis_output(
-        self,
-        test_output_dir: str,
-    ) -> Optional[List[Issue]]:
-        """Parse output of Smartfuzz. Return a list of detected issues, or
-        `None` if the result parsing fails."""
-        output = None
-
-        test_file = None
-        if (log_file := self.configure_log_file(test_output_dir)) is not None:
-            test_file = logger.get_input_test_file(log_file)
-
-        if (
-            output_file := self.configure_json_result_file(test_output_dir)
-        ) is None:
-            error("Failed to configure Smartfuzz output file!")
-            return None
-
-        try:
-            with open(output_file, "r", encoding="utf-8") as file:
-                output = json.load(file)
-        except Exception:
-            error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
-            return None
-
-        reported_bugs = list(output.values())
-        all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
-
-        dos_bugs = []
-        other_bugs = []
-        for bug in reported_bugs:
-            issue_kind = self.parse_issue_kind(bug.get("bug_type"))
-            if issue_kind == IssueKind.DENIAL_OF_SERVICE:
-                dos_bugs.append((issue_kind, bug))
-            else:
-                other_bugs.append((issue_kind, bug))
-
-        # Similar element
+        all_issues: List[Issue] = []
         checker = self.parse_rule("fuzzing")
-
-        # Passing for DOS bugs
-        ast = None
         for issue_kind, bug in dos_bugs:
             contract = bug.get("contract")
             function = bug.get("function")
@@ -284,7 +200,14 @@ class SmartFuzz(Tool):
                 (start_l, end_l) = func_loc_dict[(contract, function)]
             else:
                 if ast is None:
-                    ast = self.construct_ast(test_file)
+                    best_solc_versions = solc.detect_best_solc_versions(test_file)
+                    for solc_version in best_solc_versions:
+                        try:
+                            ast = SolidityAst(test_file, version=solc_version)
+                            if ast is not None:
+                                break
+                        except Exception:
+                            continue
 
                 if ast is not None:
                     try:
@@ -314,12 +237,51 @@ class SmartFuzz(Tool):
                 checker
             )
 
+        return all_issues
+
+    def parse_analysis_output(
+        self,
+        test_output_dir: str,
+    ) -> Optional[List[Issue]]:
+        """Parse output of Smartfuzz. Return a list of detected issues, or
+        `None` if the result parsing fails."""
+        output = None
+
+        test_file = None
+        if (log_file := self.configure_log_file(test_output_dir)) is not None:
+            test_file = logger.get_input_test_file(log_file)
+
+        if (
+            output_file := self.configure_json_result_file(test_output_dir)
+        ) is None:
+            error("Failed to configure Smartfuzz output file!")
+            return None
+
+        try:
+            with open(output_file, "r", encoding="utf-8") as file:
+                output = json.load(file)
+        except Exception:
+            error_traceback(f"Failed to parse Smartfuzz output: {output_file}")
+            return None
+
+        reported_bugs = list(output.values())
+        dos_bugs = []
+        other_bugs = []
+        for bug in reported_bugs:
+            issue_kind = self.parse_issue_kind(bug.get("bug_type"))
+            if issue_kind == IssueKind.DENIAL_OF_SERVICE:
+                dos_bugs.append((issue_kind, bug))
+            else:
+                other_bugs.append((issue_kind, bug))
+
+        # Passing for DOS bugs
+        all_issues = self.parse_dos_bugs(dos_bugs, test_file)
 
         # Passing for other bug types
+        checker = self.parse_rule("fuzzing")
         for issue_kind, bug in other_bugs:
             contract = bug.get("contract")
             function = bug.get("function")
-            start_l = end_l = None
             location = self.parse_issue_location(
                 test_file,
                 contract,
