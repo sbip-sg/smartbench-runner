@@ -479,6 +479,14 @@ def classify_to_smartbench_kind(
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
         return SmartbenchKind.REENTRANCY
 
+    if issue_kind in [
+        IssueKind.INTEGER_BUG,
+        IssueKind.INTEGER_OVERFLOW,
+        IssueKind.INTEGER_UNDERFLOW,
+        IssueKind.INTEGER_TRUNCATION,
+    ]:
+        return SmartbenchKind.ARITHMETIC
+
     # Not matching any Smartbench Kind
     return None
 
