@@ -157,8 +157,9 @@ class Ilf(Tool):
         i = 0
         all_issues: List[Issue] = []
         func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
-        contract = ""
-        start_time = None
+        contract = None
+        contract_info = []
+        prev_line = None
         while i < len(log_lines):
             log_line = log_lines[i]
             i += 1
@@ -167,32 +168,40 @@ class Ilf(Tool):
             if match := re.search(
                 r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
             ):
+                if contract is not None and prev_line is not None:
+                    contract_info.append((contract, prev_line))
+                    prev_line = None
+
                 contract = match.groups(1)[0]
                 continue
 
             # Skip parsing if not fuzzing any contract yet
-            if contract == "":
+            if contract is None:
                 continue
 
             # Search for the JSON data containing analysis information
-            match = re.search(r"\[([0-9]+\.[0-9]+)\][^{]* ({.*})$", log_line)
+            # Skip if the log line is not a JSON object
+            match = re.search(r" ({.*})$", log_line)
             if match is None:
                 continue
 
-            # Parse analysis time
-            if start_time is None:
-                start_time = math.floor(float(match.group(1)))
+            prev_line = log_line
 
-            # Parse bug information
-            analysis_data = json.loads(match.group(2))
+        # Add the information of the last contract
+        if contract is not None and prev_line is not None:
+            contract_info.append((contract, prev_line))
+
+        for (contract, log_line) in contract_info:
+            match = re.search(r" ({.*})$", log_line)
+
+            # Parsing bug information
+            analysis_data = json.loads(match.group(1))
             reported_bugs = analysis_data[contract]["bugs"]
             if reported_bugs is None:
                 continue
 
             for bug_kind in reported_bugs:
                 issue_kind = self.parse_issue_kind(bug_kind)
-
-                bug_locations = []
                 functions = reported_bugs[bug_kind]
                 for func_name in functions:
                     start_l = end_l = None
@@ -217,20 +226,14 @@ class Ilf(Tool):
                         start_line=start_l,
                         end_line=end_l,
                     )
-                    bug_locations.append(loc)
 
-                detected_time = math.ceil(float(match.group(1)))
-                if start_time is not None:
-                    detected_time -= start_time
-
-                all_issues = issue.record_new_issue_and_deduplicate(
-                    all_issues,
-                    issue_kind,
-                    log_line,
-                    bug_locations,
-                    Checker("ILF", "fuzzing"),
-                    detected_time=detected_time
-                )
+                    all_issues = issue.record_new_issue_and_deduplicate(
+                        all_issues,
+                        issue_kind,
+                        log_line,
+                        [loc],
+                        Checker("ILF", "fuzzing"),
+                    )
 
         return all_issues
 
