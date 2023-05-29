@@ -66,7 +66,7 @@ def install_docker_containers(
     tool_id: str,
     num_containers: int,
     result_dir: Optional[str],
-    use_local_images: bool = True,
+    use_remote_images: bool = False,
     only_create_containers: bool = False,
 ) -> bool:
     """Build and install docker containers locally. Return `True` if the
@@ -79,7 +79,7 @@ def install_docker_containers(
     if result_dir is not None:
         cmd += f" --result-dir {result_dir}"
 
-    if not use_local_images:
+    if use_remote_images:
         cmd += " --use-remote-images"
 
     if only_create_containers:

@@ -156,20 +156,26 @@ def parse_cli_arguments():
     )
 
     analyze_argparser.add_argument(
-        "--install-local-docker",
+        "--build-local-docker-images",
+        "--install-local-docker",  # TODO: remove this flag later
         action="store_true",
+        default=False,
         help="Install Docker images of analysis tools locally.",
     )
 
     analyze_argparser.add_argument(
-        "--install-remote-docker",
+        "--use-remote-docker-images",
+        "--install-remote-docker", # TODO: remove this flag later
         action="store_true",
+        default=False,
         help="Install Docker containers of analysis tools from remote.",
     )
 
     analyze_argparser.add_argument(
-        "--only-create-containers",
+        "--only-create-docker-containers",
+        "--only-create-containers",  # TODO: remove this flag later
         action="store_true",
+        default=False,
         help="Automatically create Docker containers for analysis tools.",
     )
 
