@@ -213,7 +213,7 @@ DOCKER_BENCHMARKS_DIR="/root/benchmarks"
 DOCKER_EXAMPLES_DIR="/root/examples"
 DOCKER_RESULTS_DIR="/root/results"
 
-echo "Preapre building Docker containers for: ${TOOL_IDS[@]}"
+echo "Prepare building Docker containers for: ${TOOL_IDS[@]}"
 
 # Configure some arguments to build Docker image for each tool locally or remotely
 if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
