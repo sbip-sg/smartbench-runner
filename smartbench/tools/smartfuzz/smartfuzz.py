@@ -7,16 +7,20 @@ import json
 import math
 import os
 
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Tuple
+
+# Third Party
+from solc_json_parser.parser import SolidityAst
 
 # Library
 from smartbench import issue, logger
 from smartbench.annotation import BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback, safe_print
+from smartbench.printer import debug, error, error_traceback, safe_print, warning
 from smartbench.solidity.loc import Location
 from smartbench.tools.tool import Tool
+from smartbench.solidity import solc
 
 
 class SmartFuzz(Tool):
@@ -182,6 +186,61 @@ class SmartFuzz(Tool):
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
 
+    # Parsing `denial_of_service` bugs
+    def parse_dos_bugs(self, dos_bugs, test_file: str):
+        ast = None
+        func_loc_dict: Dict[Tuple[str, str], Tuple[int, int]] = {}
+        all_issues: List[Issue] = []
+        checker = self.parse_rule("fuzzing")
+        for issue_kind, bug in dos_bugs:
+            contract = bug.get("contract")
+            function = bug.get("function")
+            start_l = end_l = None
+            if (contract, function) in func_loc_dict:
+                (start_l, end_l) = func_loc_dict[(contract, function)]
+            else:
+                if ast is None:
+                    best_solc_versions = solc.detect_best_solc_versions(test_file)
+                    for solc_version in best_solc_versions:
+                        try:
+                            ast = SolidityAst(test_file, version=solc_version)
+                            if ast is not None:
+                                break
+                        except Exception:
+                            continue
+
+                if ast is not None:
+                    try:
+                        function_info = ast.function_by_name(contract, function)
+                        (start_l, end_l) = function_info.line_num
+                        # Store function location for later use
+                        func_loc_dict[(contract, function)] = (
+                            start_l,
+                            end_l,
+                        )
+                    except Exception:
+                        continue
+
+            # Report the whole function for `DENIAL_OF_SERVICE`
+            location = self.parse_issue_location(
+                test_file,
+                contract,
+                function,
+                [start_l, end_l]
+            )
+            detected_time = bug.get("time")
+
+            all_issues = issue.record_new_issue_and_deduplicate(
+                all_issues,
+                issue_kind,
+                "",
+                location,
+                checker,
+                detected_time=detected_time
+            )
+
+        return all_issues
+
     def parse_analysis_output(
         self,
         test_output_dir: str,
@@ -208,10 +267,21 @@ class SmartFuzz(Tool):
             return None
 
         reported_bugs = list(output.values())
-        all_issues: List[Issue] = []
+        dos_bugs = []
+        other_bugs = []
         for bug in reported_bugs:
-            checker = self.parse_rule("fuzzing")
             issue_kind = self.parse_issue_kind(bug.get("bug_type"))
+            if issue_kind == IssueKind.DENIAL_OF_SERVICE:
+                dos_bugs.append((issue_kind, bug))
+            else:
+                other_bugs.append((issue_kind, bug))
+
+        # Passing for DOS bugs
+        all_issues = self.parse_dos_bugs(dos_bugs, test_file)
+
+        # Passing for other bug types
+        checker = self.parse_rule("fuzzing")
+        for issue_kind, bug in other_bugs:
             location = self.parse_issue_location(
                 test_file,
                 bug.get("contract"),
@@ -242,6 +312,13 @@ class SmartFuzz(Tool):
             # location.
             if iloc.start_line is None or iloc.end_line is None:
                 return False
+
+            # Checking for `DENIAL_OF_SERVICE` issue
+            if (issue.issue_kind == IssueKind.DENIAL_OF_SERVICE
+                and annot.start_line >= iloc.start_line
+                and annot.end_line <= iloc.end_line
+            ):
+                return True
 
             # Checking whether the annotation location covers the issue
             # location detected by SmartFuzz

@@ -387,27 +387,31 @@ def parse_verismart_annotations(filename: str) -> List[BugAnnot]:
             start_line = end_line = index + 1
             line = line.strip()
             if (COMMENT_TAG in line):
-                bug_type = None
+                bug_types = []
 
                 if INTEGER_OVERFLOW_TAG in line or INTEGER_UNDERFLOW_TAG in line:
                     bug_type = "ARITHMETIC"
+                    bug_types.append(bug_type)
 
                 if LEAKING_VUL_TAG in line:
                     bug_type = "LEAKING_ETHER"
+                    bug_types.append(bug_type)
 
                 if SUICIDAL_VUL_TAG in line:
                     bug_type = "UNSAFE_SELFDESTRUCT"
+                    bug_types.append(bug_type)
 
-                if bug_type is not None:
-                    bug_annotation = BugAnnot(
-                        bug_type.strip(),
-                        True,
-                        AnnotFormat.VERISMART,
-                        filename,
-                        start_line,
-                        end_line,
-                    )
-                    bug_annots.append(bug_annotation)
+                if bug_types != []:
+                    for bug_type in bug_types:
+                        bug_annotation = BugAnnot(
+                            bug_type,
+                            True,
+                            AnnotFormat.VERISMART,
+                            filename,
+                            start_line,
+                            end_line,
+                        )
+                        bug_annots.append(bug_annotation)
     return bug_annots
 
 
