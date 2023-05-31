@@ -287,16 +287,36 @@ def analyze_test_file(
 
     res = None
     if not parallel_mode:
-        res = result.parse_test_file_output_dir(
-            tool, test_file, test_output_dir_host, None, validate
+        # Parse bug annotation in input test file
+        bug_annots = result.parse_test_file_bug_annots(test_file)
+
+        # Parse issues detected by an analysis tool
+        issues = result.parse_test_file_output_dir(
+            tool, bug_annots, test_output_dir_host, None, validate
         )
 
-        if res is None:
-            safe_print(f"No analysis result for: {test_file}")
-        elif res.is_successful:
-            res.print_detailed_summary()
-        else:
+        if issues is None:
             warning(f"Failed to analyze test file: {test_file}")
+        else:
+            # Validate detected issues against the bug annotations
+            validation = None
+            if validate and bug_annots is not None:
+                validation = validator.validate_issues(tool, issues, bug_annots)
+
+            res = AnalysisResult(
+                tool,
+                test_file,
+                test_output_dir_host,
+                bug_annots,
+                annot_format,
+                issues,
+                validation,
+            )
+
+            if not issues:
+                safe_print(f"No issue is detected for: {test_file}")
+            else:
+                res.print_detailed_summary()
 
     return res
 

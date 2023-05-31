@@ -67,19 +67,18 @@ def install_docker_containers(
     tools: List[Tool],
     jobs: int,
     result_dir: Optional[str],
-    use_local_images: bool = True,
+    use_remote_images: bool = False,
     only_create_containers: bool = False,
 ) -> None:
     """Build and install Docker images of analysis tools locally."""
-    if use_local_images:
-        safe_print("Installing Docker containers locally...\n")
-    else:
-        safe_print("Installing Docker containers from remote...\n")
-
     for tool in tools:
         safe_print(f"Install {jobs} Docker container(s) for: {tool.id}\n")
         if not docker.install_docker_containers(
-            tool.id, jobs, result_dir, use_local_images, only_create_containers
+            tool.id,
+            jobs,
+            result_dir,
+            use_remote_images,
+            only_create_containers,
         ):
             error(f"Failed to install docker containers for tool: {tool.id}!")
             sys.exit(1)
@@ -103,15 +102,17 @@ def analyze_smart_contracts(args) -> None:
             os.makedirs(result_dir)
 
     # Install Docker containers
-    only_create_containers = True if args.only_create_containers else False
-    use_local_images = True if args.install_local_docker else False
-    if args.install_local_docker or args.install_remote_docker:
+    if (
+        args.build_local_docker_images
+        or args.use_remote_docker_images
+        or args.only_create_docker_containers
+    ):
         install_docker_containers(
             tools,
             jobs,
             result_dir,
-            use_local_images,
-            only_create_containers,
+            args.use_remote_docker_images,
+            args.only_create_docker_containers,
         )
 
     if args.test_dir is None and args.test_config_file is not None:
