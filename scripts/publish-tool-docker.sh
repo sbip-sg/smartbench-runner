@@ -9,7 +9,7 @@
 
 SUPPORTED_TOOLS=(
     "confuzzius"
-    "confuzzius-sbip"
+    "confuzzius-patch"
     "ilf"
     "mythril"
     "sfuzz"

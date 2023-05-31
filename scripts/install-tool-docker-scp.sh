@@ -213,7 +213,7 @@ DOCKER_BENCHMARKS_DIR="/root/benchmarks"
 DOCKER_EXAMPLES_DIR="/root/examples"
 DOCKER_RESULTS_DIR="/root/results"
 
-echo "Prepare building Docker containers for: ${TOOL_IDS[@]}"
+echo "Preapre building Docker containers for: ${TOOL_IDS[@]}"
 
 # Configure some arguments to build Docker image for each tool locally or remotely
 if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
@@ -276,10 +276,10 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
         if [[ $ONLY_CREATE_CONTAINERS == true ]]; then
             echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
         elif [[ $TOOL_ID == "smartfuzz" ]]; then
-            docker build --network=host -f $TOOL_DOCKER_FILE \
+            docker build -f $TOOL_DOCKER_FILE \
                 -t $TOOL_DOCKER_IMAGE $GIT_TOKEN_ARG . $TOOL_CACHE_ARG
         else
-            docker build --network=host -f $TOOL_DOCKER_FILE \
+            docker build -f $TOOL_DOCKER_FILE \
                 -t $TOOL_DOCKER_IMAGE . $TOOL_CACHE_ARG
         fi
 
@@ -295,11 +295,13 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
         TOOL_DOCKER_IMAGE="taquangtrung/$TOOL_ID"
 
         if [[ $ONLY_CREATE_CONTAINERS == false ]]; then
-            rm -rf "/tmp/$TOOL_IMAGE_FILE"
-            scp "$G2_USER_NAME@sbip-g2.d2.comp.nus.edu.sg:/users/trung/share/docker/$TOOL_IMAGE_FILE" \
-                "/tmp/$TOOL_IMAGE_FILE"
-            docker load --input "/tmp/$TOOL_IMAGE_FILE"
-            rm -rf "/tmp/$TOOL_IMAGE_FILE"
+            rm -rf "/data/minh/docker_image_$TOOL_ID.tar"
+            mkdir -p "/data/minh/smartbench-images"
+            echo rsync "$G2_USER_NAME:/data/minh/smartbench-images/$TOOL_IMAGE_FILE" \
+                    "/data/minh/smartbench-images/$TOOL_IMAGE_FILE"
+            rsync "$G2_USER_NAME:/data/minh/smartbench-images/$TOOL_IMAGE_FILE" \
+                    "/data/minh/smartbench-images/$TOOL_IMAGE_FILE"
+            docker load --input "/data/minh/smartbench-images/$TOOL_IMAGE_FILE"
         else
             echo "Reusing existing Docker image $TOOL_DOCKER_IMAGE for: $TOOL_ID."
         fi

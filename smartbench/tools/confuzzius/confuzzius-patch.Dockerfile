@@ -5,7 +5,7 @@
 
 # Use the base image of Smartbench
 FROM smartbench/base:latest
-
+RUN apt update
 # Install ConFuzzius customized by SBIP
 WORKDIR /root/
 RUN git clone https://github.com/taquangtrung/ConFuzzius confuzzius
@@ -13,7 +13,7 @@ WORKDIR /root/confuzzius
 RUN pip install -r fuzzer/requirements.txt
 
 # Copy script running ConFuzzius
-ADD smartbench/tools/confuzzius/run-confuzzius.sh /root/
+# ADD smartbench/tools/confuzzius/run-confuzzius.sh /root/
 
 # Copy some sample contracts
 WORKDIR /root/

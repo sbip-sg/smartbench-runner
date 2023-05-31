@@ -55,14 +55,14 @@ class Tool:
         # Code coverage file in JSON format, some tools may not support this
         # output
         self.json_coverage_file = (
-            f"{self.id}_coverage.json"
+            f"{self.id if '-' not in self.id else self.id.split('-')[0]}_coverage.json"
             if self.id
             in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
             else None
         )
 
         # Log file for capturing execution log
-        self.log_file: str = f"{self.id}{EXECUTION_LOG_SUFFIX}"
+        self.log_file: str = f"{self.id if '-' not in self.id else self.id.split('-')[0]}{EXECUTION_LOG_SUFFIX}"
 
     def __str__(self):
         """Printing to string."""
