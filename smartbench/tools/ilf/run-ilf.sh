@@ -202,4 +202,4 @@ fi
 ################################################
 # Clean up after analysis
 
-# rm -rf $PROJECT_DIR
+rm -rf $PROJECT_DIR
