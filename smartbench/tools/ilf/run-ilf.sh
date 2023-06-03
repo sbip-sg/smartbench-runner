@@ -181,17 +181,24 @@ SOLC_VERSION=$SOLC_VER GOPATH=$GO_DIR \
 ################################################
 # Analyze contracts
 
-# Fuzz each contract using the pre-trained model of ILF
-cd $TOOL_DIR
-for CONTRACT in ${CONTRACT_NAMES[@]}; do
-    echo ""
-    echo "==============================================================="
-    echo "Fuzzing contract: $CONTRACT"
-    echo ""
-    GOPATH=$GO_DIR timeout -s SIGINT "$((2*TIMEOUT))" python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
+# Only run ILF when the contract deployment succeeds
+if [ -f "$PROJECT_DIR/transactions.json" ]; then
+    # Fuzz each contract using the pre-trained model of ILF
+    cd $TOOL_DIR
+    for CONTRACT in ${CONTRACT_NAMES[@]}; do
+        echo ""
+        echo "==============================================================="
+        echo "Fuzzing contract: $CONTRACT"
+        echo ""
+        GOPATH=$GO_DIR timeout -s SIGINT "$((2*TIMEOUT))" python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
         --timeout $TIMEOUT --limit 2000 --fuzzer imitation --model ./model/
-done
-
+    done
+else
+    echo ""
+    echo "================================================"
+    echo "Contract deployment failed!"
+    echo "Quit fuzzing process!"
+fi
 ################################################
 # Clean up after analysis
 
