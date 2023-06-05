@@ -46,6 +46,9 @@ class IssueKind(Enum):
     # Validation
     LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
 
+    # External calls
+    ARBITRARY_EXTERNAL_CALL = "Arbitrary External Call"
+
     # Low-level code
     UNCHECKED_LOW_LEVEL_CODE = "Unchecked Low-Level Code"
     LOW_LEVEL_CALL = "Low-Level Call"
@@ -473,11 +476,14 @@ def classify_to_smartbench_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartbenchKind]:
     """Classify an issue kind to a bug kind in Smartbench classification."""
-    if issue_kind in [IssueKind.ACCESS_CONTROL]:
+    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.UNSAFE_DELEGATECALL, IssueKind.ARBITRARY_EXTERNAL_CALL]:
         return SmartbenchKind.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
         return SmartbenchKind.REENTRANCY
+
+    if issue_kind in [IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION]:
+        return SmartbenchKind.ADDRESS_VALIDATION
 
     if issue_kind in [
         IssueKind.INTEGER_BUG,

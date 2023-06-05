@@ -174,6 +174,9 @@ class SmartFuzz(Tool):
         if "POSSIBLE_ACCESS_CONTROL" in description:
             return IssueKind.ACCESS_CONTROL
 
+        if "ERC20_ACCESS_CONTROL" in description:
+            return IssueKind.ACCESS_CONTROL
+
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
@@ -182,6 +185,9 @@ class SmartFuzz(Tool):
 
         if "OUTOFGAS" in description:
             return IssueKind.DENIAL_OF_SERVICE
+
+        if "ArbitraryExternalCall" in description:
+            return IssueKind.ARBITRARY_EXTERNAL_CALL
 
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.UNKNOWN
