@@ -204,7 +204,7 @@ def parse_analysis_results(args) -> None:
 def parse_instruction_coverage(args) -> None:
     """Parse instruction coverage from analysis results."""
     for result_dir in args.result_directories:
-        result.parse_instruction_coverage(result_dir)
+        result.parse_instruction_coverage(result_dir, args.tools)
 
 
 def parse_bug_annotations(args) -> None:

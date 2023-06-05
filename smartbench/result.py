@@ -316,7 +316,7 @@ def parse_result_directory(
     return all_results
 
 
-def parse_instruction_coverage(results_dir: str) -> None:
+def parse_instruction_coverage(results_dir: str, tool: str="") -> None:
     """Function to parse code coverage from analysis results of a tool.
 
     The input `result_dir` is the directory containing results of all
@@ -330,6 +330,9 @@ def parse_instruction_coverage(results_dir: str) -> None:
 
     # Parse results of each analysis tool
     items = list(os.listdir(results_dir))
+    if len(tool) > 0:
+        items = tool
+        print ("itemss", items)
     for item in items:
         item_path = os.path.join(results_dir, item)
         if not os.path.isdir(item_path):

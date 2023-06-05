@@ -13,7 +13,7 @@ ARG TZ=Asia/Singapore
 WORKDIR /root/
 
 # Install Ubuntu packages
-RUN apt update
+RUN apt-get update -y
 RUN apt -y install git wget tzdata
 RUN apt -y install vim
 

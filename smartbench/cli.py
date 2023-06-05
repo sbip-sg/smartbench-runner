@@ -271,6 +271,14 @@ def parse_cli_arguments():
         type=str,
         help="Input result directories.",
     )
+    coverage_argparser.add_argument(
+        "-t",
+        "--tools",
+        nargs="+",  # Accept multiple tools.
+        type=str,
+        help="Analysis tools to be evaluated.",
+    )
+
 
     ##########################################################
     # Parser for sub-command `parse-annotation`
