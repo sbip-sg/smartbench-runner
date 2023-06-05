@@ -125,7 +125,7 @@ class Tool:
 
     @abstractmethod
     def parse_analysis_output(
-        self, test_output_dir: str
+        self, test_output_dir: str, file_suffix=""
     ) -> Optional[List[Issue]]:
         """Process analysis result of each tool. Returns a list of detected
         issues, or `None` if the corresponding tool failed to analyze the test

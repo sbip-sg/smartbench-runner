@@ -253,6 +253,7 @@ class SmartFuzz(Tool):
     def parse_analysis_output(
         self,
         test_output_dir: str,
+        file_suffix: str="",
     ) -> Optional[List[Issue]]:
         """Parse output of Smartfuzz. Return a list of detected issues, or
         `None` if the result parsing fails."""
@@ -268,6 +269,8 @@ class SmartFuzz(Tool):
             error("Failed to configure Smartfuzz output file!")
             return None
 
+        output_file += file_suffix
+        print ("output file: ", output_file)
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)

@@ -255,12 +255,18 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
+        "--file-suffix",
+        type=str,
+        default="",
+        help=("File suffix of the result files"),
+    )
+
+    result_argparser.add_argument(
         "--annot-format",
         type=str,
         choices=["smartbugs", "smartbench", "solidifi", "verismart"],
         help=("Type of bug annotation format."),
     )
-
     ##########################################################
     # Parser for sub-command `parse-coverage`
 

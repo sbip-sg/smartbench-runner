@@ -16,6 +16,9 @@ class SmartbenchKind(Enum):
 
     REENTRANCY = "Reentrancy"
 
+    ARITHMETIC = "Arithmetic"
+
+    ADDRESS_VALIDATION = "Address Validation"
     def __str__(self) -> str:
         return self.value
 

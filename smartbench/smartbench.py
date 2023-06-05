@@ -198,6 +198,7 @@ def parse_analysis_results(args) -> None:
             summary_file_format,
             annot_format,
             summary_printing,
+            args.file_suffix,
         )
 
 
