@@ -35,6 +35,9 @@ class IssueKind():
     def __str__(self):
         return self.value + ("" if self.original_type is None else " (" + self.original_type + ")")
 
+    def __dict__(self):
+        return dict(value=self.value, original_type=self.original_type)
+
     def __repr__(self):
         return self.__str__()
 
@@ -292,6 +295,11 @@ class Issue:
         self.index = Issue.index_counter
         Issue.index_counter += 1
 
+    def __dict__(self):
+        return dict(issue_kind = self.issue_kind,
+                    locations = self.locations,
+                    severity = self.severity)
+
     def __str__(self):
         location = (
             f"{loc.print_concise_locations(self.locations)}"
@@ -313,6 +321,14 @@ class Issue:
 
     def __ne__(self, other):
         return not (self.__eq__(other))
+
+    def __lt__(self, other):
+        if isinstance(other, Issue):
+            return str(self.issue_kind) < str(other.issue_kind)
+        return NotImplemented
+
+    def __repr__(self):
+        return self.pretty_print()
 
     def pretty_print(
         self,

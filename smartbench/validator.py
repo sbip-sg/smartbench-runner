@@ -3,6 +3,7 @@
 """Module to validate analysis results with bug annotations."""
 
 # Standard Library
+from json import encoder
 from typing import List, Tuple
 
 # Third Party
@@ -10,7 +11,7 @@ import more_itertools as mit
 
 # Library
 from smartbench.annotation import AnnotFormat, BugAnnot
-from smartbench.issue import Issue
+from smartbench.issue import Issue, IssueKind
 from smartbench.printer import debug, safe_print
 from smartbench.tools.tool import Tool
 
@@ -19,11 +20,14 @@ class ValidationResult:
     def __init__(
         self,
         test_file: str,
+        tool: Tool,
         correct_bugs: List[Tuple[Issue, BugAnnot]], # TP for all bug types
         missing_bugs: List[BugAnnot],               # FN for all bug types
         unlabelled_issues: List[Issue],
     ):
         self.test_file = test_file
+        self.tool = tool
+
         # Issues that are reported.
         self.correct_bugs: List[(Issue, BugAnnot)] = list(correct_bugs)
 
@@ -74,15 +78,26 @@ class ValidationResult:
         for bug in self.missing_bugs:
             inc_in_path(r, 'num_not_detected_in_annot', bug.annot_name)
 
+        r['unlabeled'] = sorted(list(self.unlabelled_issues))
+
         for issue in self.unlabelled_issues:
             inc_in_path(r, 'num_detected_not_in_annot', issue.issue_kind )
 
-        print(f'Detected bugs not in annotation for {self.test_file}:')
+
+        f_stats = f'{self.test_file}_{self.tool.name.lower()}_stats.csv'
+        print(f'Detected bugs not in annotation for {self.test_file}\n Stats csv written to {f_stats}')
         for issue in self.unlabelled_issues:
             locs = ' '.join([str(s) for s in issue.locations])
             print(f'{issue.index} {issue.issue_kind} {locs}')
-        import pprint
-        pprint.pprint(r, indent=2)
+        with open(f_stats, 'w') as f:
+            f.write('file_name,bug_type,original_bug_type,locations,summary\n')
+            del r['unlabeled']
+            f.write(f',,,,{r}\n')
+            for issue in self.unlabelled_issues:
+                locs = ' '.join([str(s) for s in issue.locations])
+                f.write(f'{self.test_file},{issue.issue_kind.value},{issue.issue_kind.original_type},{locs},\n')
+            f.flush()
+
         return r
 
 
@@ -188,7 +203,7 @@ def validate_issues(
         if (not detected) and (issue not in unlabelled_issues):
             unlabelled_issues.append(issue)
 
-    return ValidationResult(test_file, correct_bugs, missing_bugs, unlabelled_issues)
+    return ValidationResult(test_file, tool, correct_bugs, missing_bugs, unlabelled_issues)
 
 
 def inc_in_path(d, *keys):
