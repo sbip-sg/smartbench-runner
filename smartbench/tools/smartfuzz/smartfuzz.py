@@ -175,7 +175,10 @@ class SmartFuzz(Tool):
             return IssueKind.ACCESS_CONTROL
 
         if "ERC20_ACCESS_CONTROL" in description:
-            return IssueKind.ACCESS_CONTROL
+            return IssueKind.ERC20_ACCESS_CONTROL
+
+        if "ERC20_LEAK" in description:
+            return IssueKind.ERC20_LEAK
 
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION

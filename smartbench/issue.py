@@ -49,6 +49,10 @@ class IssueKind(Enum):
     # External calls
     ARBITRARY_EXTERNAL_CALL = "Arbitrary External Call"
 
+    #token access control issues
+    ERC20_LEAK= "ERC20 Leak"
+    ERC20_ACCESS_CONTROL= "ERC20 Access Control"
+
     POSSIBLY_UNINITIALIZED = "POSSIBLY_UNINITIALIZED"
     # Low-level code
     UNCHECKED_LOW_LEVEL_CODE = "Unchecked Low-Level Code"
@@ -483,7 +487,8 @@ def classify_to_smartbench_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartbenchKind]:
     """Classify an issue kind to a bug kind in Smartbench classification."""
-    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.UNSAFE_DELEGATECALL, IssueKind.ARBITRARY_EXTERNAL_CALL]:
+    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.UNSAFE_DELEGATECALL, IssueKind.ARBITRARY_EXTERNAL_CALL, \
+                      IssueKind.UNCHECKED_SEND_ETHER, IssueKind.LEAKING_ETHER, IssueKind.ERC20_LEAK, IssueKind.ERC20_ACCESS_CONTROL]:
         return SmartbenchKind.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
