@@ -75,6 +75,10 @@ IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION = IssueKind("Lack of Zero-Address Vali
 
 # External calls
 IssueKind.ARBITRARY_EXTERNAL_CALL = IssueKind("Arbitrary External Call")
+
+#token access control issues
+IssueKind.ERC20_LEAK= IssueKind("ERC20 Leak")
+IssueKind.ERC20_ACCESS_CONTROL= IssueKind("ERC20 Access Control")
 IssueKind.POSSIBLY_UNINITIALIZED = IssueKind("POSSIBLY_UNINITIALIZED")
 
 # Low-level code
@@ -512,7 +516,8 @@ def classify_to_smartbench_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartbenchKind]:
     """Classify an issue kind to a bug kind in Smartbench classification."""
-    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.UNSAFE_DELEGATECALL, IssueKind.ARBITRARY_EXTERNAL_CALL]:
+    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.UNSAFE_DELEGATECALL, IssueKind.ARBITRARY_EXTERNAL_CALL, \
+                      IssueKind.UNCHECKED_SEND_ETHER, IssueKind.LEAKING_ETHER, IssueKind.ERC20_LEAK, IssueKind.ERC20_ACCESS_CONTROL]:
         return SmartbenchKind.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:

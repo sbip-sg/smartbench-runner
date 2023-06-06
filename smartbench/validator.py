@@ -203,15 +203,18 @@ def validate_issues(
     correct_bugs: List[Tuple[Issue, BugAnnot]] = []
     unlabelled_issues: List[Issue] = []
     missing_bugs: List[BugAnnot] = []
-
+    seen_annots = set()
     # Detect correct bugs
     for issue in issues:
         detected = False
         for annot in annots:
+            if annot in seen_annots:
+                continue
             if annot.is_real_bug and match_issue_to_annotation(
                 tool, issue, annot
             ):
                 correct_bugs.append((issue, annot))
+                seen_annots.add(annot)
                 break
 
     # Detect missing bugs

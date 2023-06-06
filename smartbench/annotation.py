@@ -306,6 +306,12 @@ def classify_bug_annot_to_smartbench_kind(
     if annot_name in ["REENTRANCY"]:
         return SmartbenchKind.REENTRANCY
 
+    if annot_name in ["INTEGER_OVERFLOW", "INTEGER_UNDERFLOW"]:
+        return SmartbenchKind.ARITHMETIC
+
+    if annot_name in ["ADDRESS_VALIDATION"]:
+        return SmartbenchKind.ADDRESS_VALIDATION
+
     return None
 
 def classify_bug_annot_to_verismart_kind(
