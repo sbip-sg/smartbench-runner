@@ -184,7 +184,7 @@ class SmartFuzz(Tool):
             return IssueKind.DENIAL_OF_SERVICE
 
         safe_print(f"unknown issue kind:{description}")
-        return IssueKind.UNKNOWN
+        return IssueKind.unknown_with_original_type(description)
 
     # Parsing `denial_of_service` bugs
     def parse_dos_bugs(self, dos_bugs, test_file: str):

@@ -15,7 +15,7 @@ from smartbench.solidity import loc
 from smartbench.solidity.loc import Location
 
 
-class IssueKind(Enum):
+class IssueKind():
     """Class representing the kind of issue.
     + Use for all annotation and bug parsing.
     + Different bug names can map to the same issue
@@ -24,159 +24,165 @@ class IssueKind(Enum):
     ##############################
     # Security Vulnerabilities
 
-    # Reentrancy, SWC-107
-    REENTRANCY = "Reentrancy"
-    REENTRANCY_READ_ONLY = "Reentrancy on Read-Only State"
+    def __init__(self, value, original_type = None):
+        self.value = value
+        self.original_type = original_type
 
-    # Unchecked calls
-    UNCHECKED_SEND_ETHER = "Unchecked Send Ether"
-    UNCHECKED_TRANSFER_ETHER = "Unchecked Transfer Ether"
-    UNCHECKED_CALL_RETURN_VALUE = "Unchecked Call Return Value"
-    UNUSED_RETURN_VALUE = "Unused Return Value"
-
-    # Exceptions
-    UNHANDLED_EXCEPTION = "Unhandled Exception"
-
-    # Leaking Ether
-    LEAKING_ETHER = "Leaking Ether"
-
-    # Locking Ether
-    LOCKING_ETHER = "Locking Ether"
-
-    # Validation
-    LACK_OF_ZERO_ADDRESS_VALIDATION = "Lack of Zero-Address Validation"
-
-    # Low-level code
-    UNCHECKED_LOW_LEVEL_CODE = "Unchecked Low-Level Code"
-    LOW_LEVEL_CALL = "Low-Level Call"
-    USE_ASSEMBLY = "Use Assembly"
-
-    # Event operations
-    SHOULD_EMIT_EVENT = "Should Emit Event"
-
-    # Interface
-    INCORRECT_ERC20_FUNCTION_INTERFACE = "Incorrect ERC20 Function Interface"
-
-    # Compiler
-    OUTDATED_COMPILER_VERSION = "Outdated Compiler Version"
-    VULNERABLE_COMPILER_VERSION = "Vulnerable Compiler Version"
-    COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT = (
-        "Compiler Not Recommended for Deployment"
-    )
-
-    # Logic
-    WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR = "Weak Pseudo Random Number Generator"
-    DANGEROUS_STRICT_EQUALITY = "Dangerous Strict Equality"
-
-    # User input
-    USER_CAN_MANIPULATE_ARRAY_LENGTH = "User Can Manipulate Array Length"
-
-    # Initialization
-    UNINITIALIZED_STATE_VARIABLE = "Uninitialized State Variable"
-    UNINITIALIZED_STORAGE_VARIABLE = "Uninitialized Storage Variable"
-    UNINITIALIZED_LOCAL_VARIABLE = "Uninitialized Local Variable"
-    FUNCTION_INIT_NON_CONSTANT_STATE = "Function Init with Non-Constant State"
-
-    # Inheritance
-    MISSING_INHERITANCE = "Missing Inheritance"
-
-    # Backdoor
-    BACKDOOR_FUNCTION = "Backdoor Function"
-
-    # Code complexity
-    EXTERNAL_CALLS_INSIDE_LOOP = "External Calls Inside Loop"
-
-    # Deprecated features
-    DEPRECATED_THROW = "Deprecated Throw"
-    DEPRECATED_SUICIDE = "Deprecated Suicide"
-    DEPRECATED_MSG_GAS = "Deprecated msg.gas"
-    DEPRECATED_SHA3 = "Deprecated SHA3"
-    DEPRECATED_BLOCK_DOT_BLOCKHASH = "Deprecated block.blockhash()"
-
-    # Integer bugs
-    INTEGER_BUG = "Integer Bug"
-    INTEGER_OVERFLOW = "Integer Overflow"
-    INTEGER_UNDERFLOW = "Integer Underflow"
-    INTEGER_TRUNCATION = "Integer Truncation"
-    DIVISION_BY_ZERO = "Division by Zero"
-
-    # SWC-110, assertion
-    ASSERTION_FAILURE = "Assertion Failure"
-
-    # SWC-124
-    WRITE_TO_ARBITRARY_STORAGE_LOCATION = "Write to Arbitrary Storage Location"
-
-    # SWC-113
-    DENIAL_OF_SERVICE_WITH_FAILED_CALL = "Denial of Service with Failed Call"
-    DENIAL_OF_SERVICE = "Denial of Service"
-
-    # SWC-115
-    AUTHORIZATION_THROUGH_TX_ORIGIN = "Authorization through tx.origin"
-
-    # SWC-116
-    BLOCK_VALUE_DEPENDENCY = "Block Values Dependency"
-
-    FRONT_RUNNING = "Front Running"
-    TRANSACTION_ORDER_DEPENDENCY = "Transaction Order Dependency"
-
-    ACCESS_CONTROL = "Access Control"
-
-    UNSAFE_SELFDESTRUCT = "Unsafe Selfdestruct"
-
-    # SWC-112
-    UNSAFE_DELEGATECALL = "Unsafe DelegateCall"
-
-    REQUIREMENT_VIOLATION = "Requirement Violation"
-
-    VIEW_FUNCTION_CONTAIN_ASM = "View Function Contains Assembly Code"
-
-    ##############################
-    # Coding style
-
-    PARAMETER_NAME_NOT_IN_MIXED_CASE = "Parameter Name Not in Mixed Case"
-    VARIABLE_NAME_NOT_IN_MIXED_CASE = "Variable Name Not in Mixed Case"
-    FUNCTION_NAME_NOT_IN_MIXED_CASE = "Function Name Not in Mixed Case"
-    MODIFIER_NAME_NOT_IN_MIXED_CASE = "Modifier Name Not in Mixed Case"
-    CONSTANT_NAME_NOT_IN_UPPER_CASE = "Constant Name Not in Upper Case"
-    CONTRACT_NAME_NOT_IN_CAP_WORDS = "Contract Name Not in CapWords"
-    STRUCT_NAME_NOT_IN_CAP_WORDS = "Struct Name Not in CapWords"
-    EVENT_NAME_NOT_IN_CAP_WORDS = "Event Name Not in CapWords"
-
-    SHADOWING_LOCAL_VARIABLE = "Shadowing Local Variable"
-    SHADOWING_STATE_VARIABLE = "Shadowing State Variable"
-    SHADOWING_ABSTRACT_FUNCTION = "Shadowing Abstract Function"
-    SHADOWING_BUILTIN_SYMBOL = "Shadowing Built-in Symbol"
-
-    SIMILAR_VARIABLE_NAME = "Similar Variable Name"
-
-    ##############################
-    # Code optimization
-
-    MULTIPLICATION_AFTER_DIVISION = "Multiplication after Division"
-    POSIBLE_UNREACHABLE_CODE = "Posible Unreachable Code"
-    UNUSED_FUNCTION = "Unused Function"
-    UNUSED_VARIABLE = "Unused Variable"
-    USE_LITERALS_WITH_TOO_MANY_DIGITS = "Literal with Too Many Digits"
-    USE_CONSTANT_INSTEAD_OF_VARIABLE = "Use Constant Instead of Variable"
-    FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = (
-        "Function Should Be Declared External"
-    )
-    COMPARE_TO_BOOLEAN_CONSTANT = "Compare to Boolean Constant"
-    COSTLY_LOOP = "Costly Loop"
-    TAUTOLOGY_OR_CONTRADICTION = "Tautology or Contradiction"
-    REDUNDANT_EXPRESSION = "Redundant Expression"
-
-    ##############################
-    # Unknown
-
-    UNKNOWN = "Unknown Issue"
+    @classmethod
+    def unknown_with_original_type(cls, original_type):
+        return cls("Unknown Issue", original_type)
 
     def __str__(self):
-        return self.value
+        return self.value + ("" if self.original_type is None else " (" + self.original_type + ")")
 
     def __eq__(self, other):
-        return other and self.value == other.value
+        return type(other) == IssueKind and self.value == other.value
 
+    def __hash__(self):
+        return hash(self.value)
+
+# Reentrancy, SWC-107
+IssueKind.REENTRANCY = IssueKind("Reentrancy")
+IssueKind.REENTRANCY_READ_ONLY = IssueKind("Reentrancy on Read-Only State")
+
+# Unchecked calls
+IssueKind.UNCHECKED_SEND_ETHER = IssueKind("Unchecked Send Ether")
+IssueKind.UNCHECKED_TRANSFER_ETHER = IssueKind("Unchecked Transfer Ether")
+IssueKind.UNCHECKED_CALL_RETURN_VALUE = IssueKind("Unchecked Call Return Value")
+IssueKind.UNUSED_RETURN_VALUE = IssueKind("Unused Return Value")
+
+# Exceptions
+IssueKind.UNHANDLED_EXCEPTION = IssueKind("Unhandled Exception")
+
+# Leaking Ether
+IssueKind.LEAKING_ETHER = IssueKind("Leaking Ether")
+
+# Locking Ether
+IssueKind.LOCKING_ETHER = IssueKind("Locking Ether")
+
+# Validation
+IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION = IssueKind("Lack of Zero-Address Validation")
+
+# Low-level code
+IssueKind.UNCHECKED_LOW_LEVEL_CODE = IssueKind("Unchecked Low-Level Code")
+IssueKind.LOW_LEVEL_CALL = IssueKind("Low-Level Call")
+IssueKind.USE_ASSEMBLY = IssueKind("Use Assembly")
+
+# Event operations
+IssueKind.SHOULD_EMIT_EVENT = IssueKind("Should Emit Event")
+
+# Interface
+IssueKind.INCORRECT_ERC20_FUNCTION_INTERFACE = IssueKind("Incorrect ERC20 Function Interface")
+
+# Compiler
+IssueKind.OUTDATED_COMPILER_VERSION = IssueKind("Outdated Compiler Version")
+IssueKind.VULNERABLE_COMPILER_VERSION = IssueKind("Vulnerable Compiler Version")
+IssueKind.COMPILER_NOT_RECOMMENDED_FOR_DEPLOYMENT = (
+    "Compiler Not Recommended for Deployment"
+)
+
+# Logic
+IssueKind.WEAK_PSEUDO_RANDOM_NUMBER_GENERATOR = IssueKind("Weak Pseudo Random Number Generator")
+IssueKind.DANGEROUS_STRICT_EQUALITY = IssueKind("Dangerous Strict Equality")
+
+# User input
+IssueKind.USER_CAN_MANIPULATE_ARRAY_LENGTH = IssueKind("User Can Manipulate Array Length")
+
+# Initialization
+IssueKind.UNINITIALIZED_STATE_VARIABLE = IssueKind("Uninitialized State Variable")
+IssueKind.UNINITIALIZED_STORAGE_VARIABLE = IssueKind("Uninitialized Storage Variable")
+IssueKind.UNINITIALIZED_LOCAL_VARIABLE = IssueKind("Uninitialized Local Variable")
+IssueKind.FUNCTION_INIT_NON_CONSTANT_STATE = IssueKind("Function Init with Non-Constant State")
+
+# Inheritance
+IssueKind.MISSING_INHERITANCE = IssueKind("Missing Inheritance")
+
+# Backdoor
+IssueKind.BACKDOOR_FUNCTION = IssueKind("Backdoor Function")
+
+# Code complexity
+IssueKind.EXTERNAL_CALLS_INSIDE_LOOP = IssueKind("External Calls Inside Loop")
+
+# Deprecated features
+IssueKind.DEPRECATED_THROW = IssueKind("Deprecated Throw")
+IssueKind.DEPRECATED_SUICIDE = IssueKind("Deprecated Suicide")
+IssueKind.DEPRECATED_MSG_GAS = IssueKind("Deprecated msg.gas")
+IssueKind.DEPRECATED_SHA3 = IssueKind("Deprecated SHA3")
+IssueKind.DEPRECATED_BLOCK_DOT_BLOCKHASH = IssueKind("Deprecated block.blockhash()")
+
+# Integer bugs
+IssueKind.INTEGER_BUG = IssueKind("Integer Bug")
+IssueKind.INTEGER_OVERFLOW = IssueKind("Integer Overflow")
+IssueKind.INTEGER_UNDERFLOW = IssueKind("Integer Underflow")
+IssueKind.INTEGER_TRUNCATION = IssueKind("Integer Truncation")
+IssueKind.DIVISION_BY_ZERO = IssueKind("Division by Zero")
+
+# SWC-110, assertion
+IssueKind.ASSERTION_FAILURE = IssueKind("Assertion Failure")
+
+# SWC-124
+IssueKind.WRITE_TO_ARBITRARY_STORAGE_LOCATION = IssueKind("Write to Arbitrary Storage Location")
+
+# SWC-113
+IssueKind.DENIAL_OF_SERVICE_WITH_FAILED_CALL = IssueKind("Denial of Service with Failed Call")
+IssueKind.DENIAL_OF_SERVICE = IssueKind("Denial of Service")
+
+# SWC-115
+IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN = IssueKind("Authorization through tx.origin")
+
+# SWC-116
+IssueKind.BLOCK_VALUE_DEPENDENCY = IssueKind("Block Values Dependency")
+
+IssueKind.FRONT_RUNNING = IssueKind("Front Running")
+IssueKind.TRANSACTION_ORDER_DEPENDENCY = IssueKind("Transaction Order Dependency")
+
+IssueKind.ACCESS_CONTROL = IssueKind("Access Control")
+
+IssueKind.UNSAFE_SELFDESTRUCT = IssueKind("Unsafe Selfdestruct")
+
+# SWC-112
+IssueKind.UNSAFE_DELEGATECALL = IssueKind("Unsafe DelegateCall")
+
+IssueKind.REQUIREMENT_VIOLATION = IssueKind("Requirement Violation")
+
+IssueKind.VIEW_FUNCTION_CONTAIN_ASM = IssueKind("View Function Contains Assembly Code")
+
+##############################
+# Coding style
+
+IssueKind.PARAMETER_NAME_NOT_IN_MIXED_CASE = IssueKind("Parameter Name Not in Mixed Case")
+IssueKind.VARIABLE_NAME_NOT_IN_MIXED_CASE = IssueKind("Variable Name Not in Mixed Case")
+IssueKind.FUNCTION_NAME_NOT_IN_MIXED_CASE = IssueKind("Function Name Not in Mixed Case")
+IssueKind.MODIFIER_NAME_NOT_IN_MIXED_CASE = IssueKind("Modifier Name Not in Mixed Case")
+IssueKind.CONSTANT_NAME_NOT_IN_UPPER_CASE = IssueKind("Constant Name Not in Upper Case")
+IssueKind.CONTRACT_NAME_NOT_IN_CAP_WORDS = IssueKind("Contract Name Not in CapWords")
+IssueKind.STRUCT_NAME_NOT_IN_CAP_WORDS = IssueKind("Struct Name Not in CapWords")
+EVENT_NAME_NOT_IN_CAP_WORDS = IssueKind("Event Name Not in CapWords")
+
+IssueKind.SHADOWING_LOCAL_VARIABLE = IssueKind("Shadowing Local Variable")
+IssueKind.SHADOWING_STATE_VARIABLE = IssueKind("Shadowing State Variable")
+IssueKind.SHADOWING_ABSTRACT_FUNCTION = IssueKind("Shadowing Abstract Function")
+IssueKind.SHADOWING_BUILTIN_SYMBOL = IssueKind("Shadowing Built-in Symbol")
+
+IssueKind.SIMILAR_VARIABLE_NAME = IssueKind("Similar Variable Name")
+
+##############################
+# Code optimization
+
+IssueKind.MULTIPLICATION_AFTER_DIVISION = IssueKind("Multiplication after Division")
+IssueKind.POSIBLE_UNREACHABLE_CODE = IssueKind("Posible Unreachable Code")
+IssueKind.UNUSED_FUNCTION = IssueKind("Unused Function")
+IssueKind.UNUSED_VARIABLE = IssueKind("Unused Variable")
+IssueKind.USE_LITERALS_WITH_TOO_MANY_DIGITS = IssueKind("Literal with Too Many Digits")
+IssueKind.USE_CONSTANT_INSTEAD_OF_VARIABLE = IssueKind("Use Constant Instead of Variable")
+IssueKind.FUNCTION_SHOULD_BE_DECLARED_EXTERNAL = IssueKind("Function Should Be Declared External")
+
+IssueKind.COMPARE_TO_BOOLEAN_CONSTANT = IssueKind("Compare to Boolean Constant")
+IssueKind.COSTLY_LOOP = IssueKind("Costly Loop")
+IssueKind.TAUTOLOGY_OR_CONTRADICTION = IssueKind("Tautology or Contradiction")
+IssueKind.REDUNDANT_EXPRESSION = IssueKind("Redundant Expression")
+
+IssueKind.UNKNOWN = IssueKind.unknown_with_original_type("")
 
 class Severity(Enum):
     """Class representing severity level of an issue."""
@@ -288,7 +294,7 @@ class Issue:
     def __eq__(self, other):
         return (
             self.issue_kind == other.issue_kind
-            and self.locations == other.location
+            and self.locations == other.locations
             and self.severity == other.severity
         )
 

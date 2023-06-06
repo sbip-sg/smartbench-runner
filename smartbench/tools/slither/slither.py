@@ -355,7 +355,7 @@ class Slither(Tool):
         if "Redundant expression" in description:
             return IssueKind.REDUNDANT_EXPRESSION
 
-        return IssueKind.UNKNOWN
+        return IssueKind.unknown_with_original_type(description)
 
     def parse_analysis_output(
         self,

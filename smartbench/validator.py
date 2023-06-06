@@ -18,8 +18,8 @@ from smartbench.tools.tool import Tool
 class ValidationResult:
     def __init__(
         self,
-        correct_bugs: List[Tuple[Issue, BugAnnot]],
-        missing_bugs: List[BugAnnot],
+        correct_bugs: List[Tuple[Issue, BugAnnot]], # TP for all bug types
+        missing_bugs: List[BugAnnot],               # FN for all bug types
         unlabelled_issues: List[Issue],
     ):
         # Issues that are reported.
@@ -30,6 +30,8 @@ class ValidationResult:
 
         # Issues unrelated to bug annotations.
         self.unlabelled_issues: List[Issue] = list(unlabelled_issues)
+
+        self.stats()
 
     def num_correct_bugs(self) -> int:
         return len(self.correct_bugs)
@@ -61,6 +63,25 @@ class ValidationResult:
         if len(unlabelled_idxs) > 0:
             unlabelled_info += f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
         safe_print(f"  + Unlabelled issues: {unlabelled_info}")
+
+    def stats(self) -> dict:
+        r = {}
+        for (issue, _bug) in self.correct_bugs:
+            inc_in_path(r, issue.issue_kind, 'TP')
+
+        # for bug in self.missing_bugs:
+        #     inc_in_path(r, bug.annot_name, 'FN')
+
+        # for issue in self.unlabelled_issues:
+        #     inc_in_path(r, issue.issue_kind, 'FP')
+
+        safe_print('Unlabelled_Issues:')
+        for issue in self.unlabelled_issues:
+            locs = ' '.join([str(s) for s in issue.locations])
+            print(f'{issue.index} {issue.issue_kind} {locs}')
+        safe_print(r)
+        return r
+
 
 
 def print_indices(indices: List[int]) -> str:
@@ -157,7 +178,25 @@ def validate_issues(
             ):
                 detected = True
                 break
-        if not detected:
+        if (not detected) and (issue not in unlabelled_issues):
             unlabelled_issues.append(issue)
 
     return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
+
+
+def inc_in_path(d, *keys):
+    if len(keys) == 0:
+        return d
+
+    key = keys[0]
+    if key not in d:
+        if len(keys) == 1:
+            d[key] = 0
+        else:
+            d[key] = {}
+
+    if len(keys) == 1:
+        d[key] += 1
+    else:
+        inc_in_path(d[key], *keys[1:])
+    return d

@@ -112,7 +112,7 @@ class Ilf(Tool):
         if bug_name == "Reentrancy":
             return IssueKind.REENTRANCY
 
-        return IssueKind.UNKNOWN
+        return IssueKind.unknown_with_original_type(bug_name)
 
     def parse_analysis_output(
         self, test_output_dir: str
