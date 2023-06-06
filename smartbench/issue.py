@@ -66,6 +66,10 @@ IssueKind.LOCKING_ETHER = IssueKind("Locking Ether")
 # Validation
 IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION = IssueKind("Lack of Zero-Address Validation")
 
+# External calls
+IssueKind.ARBITRARY_EXTERNAL_CALL = IssueKind("Arbitrary External Call")
+IssueKind.POSSIBLY_UNINITIALIZED = IssueKind("POSSIBLY_UNINITIALIZED")
+
 # Low-level code
 IssueKind.UNCHECKED_LOW_LEVEL_CODE = IssueKind("Unchecked Low-Level Code")
 IssueKind.LOW_LEVEL_CALL = IssueKind("Low-Level Call")
@@ -241,7 +245,7 @@ class Issue:
         checker: Checker,
         severity: Optional[Severity] = None,
         confidence: Optional[Confidence] = None,
-        time_detected: Optional[int] = None,
+        time_detected: int = 0,
     ):
         """Constructor."""
         self.issue_kind: IssueKind = issue_kind
@@ -255,6 +259,8 @@ class Issue:
         # Use a list of locations to support tools that reports multiple
         # potential bug locations of an issue.
         self.locations: List[Location] = locations
+
+        self.time_detected: int =  time_detected # Time in seconds when the issue is found.
 
         self.checker: Checker = checker
 
@@ -293,6 +299,10 @@ class Issue:
             else "Unknown Location"
         )
         return f"Issue ({self.index}): {self.issue_kind} ({location})\n"
+
+    def to_json(self):
+        return self.index, self.time_detected
+
 
     def __eq__(self, other):
         return (
@@ -482,11 +492,22 @@ def classify_to_smartbench_kind(
     issue_kind: IssueKind,
 ) -> Optional[SmartbenchKind]:
     """Classify an issue kind to a bug kind in Smartbench classification."""
-    if issue_kind in [IssueKind.ACCESS_CONTROL]:
+    if issue_kind in [IssueKind.ACCESS_CONTROL, IssueKind.UNSAFE_DELEGATECALL, IssueKind.ARBITRARY_EXTERNAL_CALL]:
         return SmartbenchKind.ACCESS_CONTROL
 
     if issue_kind in [IssueKind.REENTRANCY, IssueKind.REENTRANCY_READ_ONLY]:
         return SmartbenchKind.REENTRANCY
+
+    if issue_kind in [IssueKind.LACK_OF_ZERO_ADDRESS_VALIDATION]:
+        return SmartbenchKind.ADDRESS_VALIDATION
+
+    if issue_kind in [
+        IssueKind.INTEGER_BUG,
+        IssueKind.INTEGER_OVERFLOW,
+        IssueKind.INTEGER_UNDERFLOW,
+        IssueKind.INTEGER_TRUNCATION,
+    ]:
+        return SmartbenchKind.ARITHMETIC
 
     # Not matching any Smartbench Kind
     return None

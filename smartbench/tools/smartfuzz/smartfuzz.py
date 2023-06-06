@@ -174,6 +174,9 @@ class SmartFuzz(Tool):
         if "POSSIBLE_ACCESS_CONTROL" in description:
             return IssueKind.ACCESS_CONTROL
 
+        if "ERC20_ACCESS_CONTROL" in description:
+            return IssueKind.ACCESS_CONTROL
+
         if "EXCEPTION_DISORDER" in description:
             return IssueKind.UNHANDLED_EXCEPTION
 
@@ -182,6 +185,12 @@ class SmartFuzz(Tool):
 
         if "OUTOFGAS" in description:
             return IssueKind.DENIAL_OF_SERVICE
+
+        if "ArbitraryExternalCall" in description:
+            return IssueKind.ARBITRARY_EXTERNAL_CALL
+
+        if "POSSIBLY_UNINITIALIZED" in description:
+            return IssueKind.POSSIBLY_UNINITIALIZED
 
         safe_print(f"unknown issue kind:{description}")
         return IssueKind.unknown_with_original_type(description)
@@ -244,6 +253,7 @@ class SmartFuzz(Tool):
     def parse_analysis_output(
         self,
         test_output_dir: str,
+        file_suffix: str="",
     ) -> Optional[List[Issue]]:
         """Parse output of Smartfuzz. Return a list of detected issues, or
         `None` if the result parsing fails."""
@@ -259,6 +269,8 @@ class SmartFuzz(Tool):
             error("Failed to configure Smartfuzz output file!")
             return None
 
+        output_file += file_suffix
+        print ("output file: ", output_file)
         try:
             with open(output_file, "r", encoding="utf-8") as file:
                 output = json.load(file)
@@ -282,6 +294,8 @@ class SmartFuzz(Tool):
         # Passing for other bug types
         checker = self.parse_rule("fuzzing")
         for issue_kind, bug in other_bugs:
+            if issue_kind == IssueKind.POSSIBLY_UNINITIALIZED:
+                continue
             location = self.parse_issue_location(
                 test_file,
                 bug.get("contract"),
@@ -296,9 +310,10 @@ class SmartFuzz(Tool):
                 "",
                 location,
                 checker,
-                detected_time=detected_time
+                detected_time=int(detected_time)
             )
-
+        all_issues.sort(key=lambda x: x.time_detected)
+        print ("all issues: ", [issue.to_json() for issue in all_issues])
         return all_issues
 
     def match_location_of_issue_to_annotation(

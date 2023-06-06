@@ -190,8 +190,8 @@ if [ -f "$PROJECT_DIR/transactions.json" ]; then
         echo "==============================================================="
         echo "Fuzzing contract: $CONTRACT"
         echo ""
-        GOPATH=$GO_DIR python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
-            --timeout $TIMEOUT --limit 2000 --fuzzer imitation --model ./model/
+        GOPATH=$GO_DIR timeout -s SIGINT "$((2*TIMEOUT))" python3 -m ilf --proj $PROJECT_DIR --contract $CONTRACT \
+        --timeout $TIMEOUT --limit 2000 --fuzzer imitation --model ./model/
     done
 else
     echo ""

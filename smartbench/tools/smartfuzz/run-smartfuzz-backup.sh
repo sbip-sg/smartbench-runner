@@ -126,84 +126,21 @@ fi
 # Configure paths
 
 TOOL_DIR="/root/smartfuzz"
-# TOOL_DIR="/root/smartfuzz"
 
 ################################################
 # Analyze input test files
 
 # Run the first process of SmartFuzz to detect non-reentrancy bugs
-python "$TOOL_DIR/main.py" $TEST_FILE -r "$RESULT_FILE.original" \
+python "$TOOL_DIR/main.py" $TEST_FILE -r $RESULT_FILE \
     -j 1 --time $TIMEOUT \
-    -q --print-coverage "$COVERAGE_FILE.original" -s $RANDOM_SEED \
+    -q --print-coverage $COVERAGE_FILE -s $RANDOM_SEED \
     $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS ${ADDITIONAL_ARGS[@]} &
 
 # Run the sencond process of SmartFuzz to detect reentrancy bugs
-python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.original.reentrancy" \
+python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.reentrancy" \
     -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
     $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS ${ADDITIONAL_ARGS[@]}
 
 # Wait and merge results from 2 processes
 wait
-python "$TOOL_DIR/scripts/merge_json_result.py" "$RESULT_FILE.original"
-
-
-python "$TOOL_DIR/main.py" $TEST_FILE -r "$RESULT_FILE.no_txmut" \
-    -j 1 --time $TIMEOUT \
-    -q --print-coverage "$COVERAGE_FILE.no_txmut" -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-tx-mutation ${ADDITIONAL_ARGS[@]} &
-
-# Run the sencond process of SmartFuzz to detect reentrancy bugs
-python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.no_txmut.reentrancy" \
-    -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS  --disable-tx-mutation ${ADDITIONAL_ARGS[@]}
-
-# Wait and merge results from 2 processes
-wait
-python "$TOOL_DIR/scripts/merge_json_result.py" "$RESULT_FILE.no_txmut"
-
-
-python "$TOOL_DIR/main.py" $TEST_FILE -r "$RESULT_FILE.no_grammar" \
-    -j 1 --time $TIMEOUT \
-    -q --print-coverage "$COVERAGE_FILE.no_grammar" -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-grammar-aware ${ADDITIONAL_ARGS[@]} &
-
-python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.no_grammar.reentrancy" \
-    -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-grammar-aware ${ADDITIONAL_ARGS[@]}
-
-
-wait
-python "$TOOL_DIR/scripts/merge_json_result.py" "$RESULT_FILE.no_grammar"
-
-# no adaptive 1
-python "$TOOL_DIR/main.py" $TEST_FILE -r "$RESULT_FILE.no_adaptive_1" \
-    -j 1 --time $TIMEOUT \
-    -q --print-coverage "$COVERAGE_FILE.no_adaptive_1" -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-adaptive-mutation --depth 1 ${ADDITIONAL_ARGS[@]} &
-
-
-python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.no_adaptive_1.reentrancy" \
-    -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-adaptive-mutation ${ADDITIONAL_ARGS[@]}
-
-
-wait
-python "$TOOL_DIR/scripts/merge_json_result.py" "$RESULT_FILE.no_adaptive_1"
-
-
-# no adaptive 2
-python "$TOOL_DIR/main.py" $TEST_FILE -r "$RESULT_FILE.no_adaptive_50" \
-    -j 1 --time $TIMEOUT \
-    -q --print-coverage "$COVERAGE_FILE.no_adaptive_50" -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-adaptive-mutation --depth 50 ${ADDITIONAL_ARGS[@]} &
-
-
-python "$TOOL_DIR/main.py" $TEST_FILE -r "${RESULT_FILE}.no_adaptive_50.reentrancy" \
-    -j 1 -q --time $TIMEOUT --reentrancy -s $RANDOM_SEED \
-    $CONTRACT_ARGS $TIME_DISTRIBUTION_ARGS --disable-adaptive-mutation ${ADDITIONAL_ARGS[@]}
-
-
-wait
-python "$TOOL_DIR/scripts/merge_json_result.py" "$RESULT_FILE.no_adaptive_50"
-
-
+python "$TOOL_DIR/scripts/merge_json_result.py" $RESULT_FILE

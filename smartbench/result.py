@@ -7,6 +7,7 @@
 import bisect
 import os
 import pathlib
+import json
 
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, no_type_check
@@ -87,6 +88,14 @@ class AnalysisResult:
         other_file = other.test_file.casefold()
         return test_file.__lt__(other_file)
 
+    def simplify(self) -> Dict:
+        result = {}
+        # print (self, self.tool, self.test_file, self.test_output_dir, self.bug_annots, self.annot_format, self.issues, self.validation_result)
+        result["test_file"] = self.test_file
+        result["missing_annots"] = self.validation_result.missing_bugs
+        result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs]
+        result["unlabelled_issues"] = self.validation_result.unlabelled_issues
+        return result
     def print_detailed_summary(self) -> None:
         """Print statistic summary of detected issues for a test file"""
         safe_print("")
@@ -145,11 +154,12 @@ def parse_test_file_output_dir(
     test_output_dir: str,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
+    file_suffix: Optional[str] = "",
 ) -> Optional[List[Issue]]:
     """Parsing and printing analysis results"""
 
     tool.prepare_parsing_analysis_output()
-    issues = tool.parse_analysis_output(test_output_dir)
+    issues = tool.parse_analysis_output(test_output_dir, file_suffix)
     if (
         issues is not None
         and summary_printing != SummaryPrinting.DISABLE_PRINTING
@@ -189,6 +199,7 @@ def parse_test_file_result(
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
+    file_suffix: Optional[str] = "",
 ) -> Optional[AnalysisResult]:
     printer.print_medium_dashed_separator_line()
 
@@ -221,6 +232,7 @@ def parse_test_file_result(
             test_output_dir,
             annot_format,
             summary_printing,
+            file_suffix,
         )
 
         # Validate detected issues against the bug annotations
@@ -271,6 +283,7 @@ def parse_result_directory(
     export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
+    file_suffix: Optional[str] = "",
 ) -> List[AnalysisResult]:
     """Function to parse result directory of a tool.
 
@@ -306,17 +319,18 @@ def parse_result_directory(
                 export_summary,
                 annot_format,
                 summary_printing,
+                file_suffix=file_suffix,
             )
             if tool_result is not None:
                 all_results.append(tool_result)
 
     safe_print("Parsing result completed!")
-    print_benchmarking_results(results_dir, all_results)
+    print_benchmarking_results(results_dir, all_results, file_suffix=file_suffix)
 
     return all_results
 
 
-def parse_instruction_coverage(results_dir: str) -> None:
+def parse_instruction_coverage(results_dir: str, tool: str="") -> None:
     """Function to parse code coverage from analysis results of a tool.
 
     The input `result_dir` is the directory containing results of all
@@ -330,6 +344,9 @@ def parse_instruction_coverage(results_dir: str) -> None:
 
     # Parse results of each analysis tool
     items = list(os.listdir(results_dir))
+    if len(tool) > 0:
+        items = tool
+        print ("itemss", items)
     for item in items:
         item_path = os.path.join(results_dir, item)
         if not os.path.isdir(item_path):
@@ -383,6 +400,7 @@ def group_analysis_result_by_tools(
 def print_benchmarking_results(
     results_dir: str,
     results: List[AnalysisResult],
+    file_suffix: str = "",
 ) -> None:
     printer.print_long_double_separator_line()
     safe_print("BENCHMARKING SUMMARY")
@@ -449,12 +467,42 @@ def print_benchmarking_results(
             f"- {num_failed_result} failed to parse results"
         )
 
-    export_benchmarking_results_to_csv_format(results_dir, tools_results)
+    export_benchmarking_results_to_csv_format(results_dir, tools_results, file_suffix=file_suffix)
+    export_raw_results_to_json_format(results_dir, tools_results, file_suffix=file_suffix)
+
+def json_decoder(obj:object):
+    if isinstance(obj, BugAnnot) or isinstance(obj, Issue):
+        return obj.to_json()
+    else:
+        return obj.__dict__
+
+def export_raw_results_to_json_format(
+    result_dir: str,
+    tools_results: Dict[str, List[AnalysisResult]],
+    file_suffix: str = "",
+) -> None:
+    """Export raw results to JSON files."""
+    printer.print_short_dashed_separator_line()
+    safe_print("Exporting raw results to JSON files...")
+
+    for tool_id in tools_results.keys():
+        results: List[AnalysisResult] = tools_results[tool_id]
+        simplified_results = [result.simplify() for result in results]
+        result_file = f"raw_results_{tool_id}.json{file_suffix}"
+        result_file = os.path.join(result_dir, result_file)
+
+        safe_print(f"- {result_file}")
+
+        with open(result_file, "w", encoding="utf-8") as file:
+            json.dump(simplified_results, file, default=json_decoder)
+
+    safe_print("Exporting raw results to JSON files completed!")
 
 
 def export_benchmarking_results_to_csv_format(
     result_dir: str,
     tools_results: Dict[str, List[AnalysisResult]],
+    file_suffix: str = "",
 ) -> None:
     """Export benchmarking results to CSV files."""
     printer.print_short_dashed_separator_line()
@@ -462,11 +510,11 @@ def export_benchmarking_results_to_csv_format(
 
     for tool_id in tools_results.keys():
         results: List[AnalysisResult] = tools_results[tool_id]
-        result_file = f"results_{tool_id}.csv"
+        result_file = f"results_{tool_id}.csv{file_suffix}"
         result_file = os.path.join(result_dir, result_file)
 
         safe_print(f"- {result_file}")
-
+        total_correct = total_missing = total_unlabelled = 0
         with open(result_file, "w", encoding="utf-8") as file:
             file.write(f"Benchmarking result of {tool_id}\n")
             file.write("======================================\n\n")
@@ -517,6 +565,10 @@ def export_benchmarking_results_to_csv_format(
                     file.write(
                         f", {num_correct}, {num_missing}, {num_unlabelled}\n"
                     )
+                    total_correct += num_correct
+                    total_missing += num_missing
+                    total_unlabelled += num_unlabelled
+            safe_print(f"\ntotal_results: {total_correct} {total_missing} {total_unlabelled}")
 
             file.write(
                 f"\nOverall result: {tool_id}\n"

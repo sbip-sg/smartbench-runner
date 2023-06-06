@@ -168,6 +168,9 @@ def validate_issues(
         detected = False
         for issue in issues:
             if match_issue_to_annotation(tool, issue, annot):
+                # issues must be sorted ascending by detected_time
+                # this matches the earliest time the annot is detected
+                annot.time_detected = issue.time_detected
                 detected = True
                 break
         if not detected:

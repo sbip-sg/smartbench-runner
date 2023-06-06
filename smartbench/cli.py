@@ -231,6 +231,12 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
+        "--export-raw-results",
+        action="store_true",
+        help="Export raw results to JSON file",
+    )
+
+    result_argparser.add_argument(
         "--disable-print-details",
         action="store_true",
         help="Disable printing details of bug detection.",
@@ -249,12 +255,18 @@ def parse_cli_arguments():
     )
 
     result_argparser.add_argument(
+        "--file-suffix",
+        type=str,
+        default="",
+        help=("File suffix of the result files"),
+    )
+
+    result_argparser.add_argument(
         "--annot-format",
         type=str,
         choices=["smartbugs", "smartbench", "solidifi", "verismart"],
         help=("Type of bug annotation format."),
     )
-
     ##########################################################
     # Parser for sub-command `parse-coverage`
 
@@ -271,6 +283,14 @@ def parse_cli_arguments():
         type=str,
         help="Input result directories.",
     )
+    coverage_argparser.add_argument(
+        "-t",
+        "--tools",
+        nargs="+",  # Accept multiple tools.
+        type=str,
+        help="Analysis tools to be evaluated.",
+    )
+
 
     ##########################################################
     # Parser for sub-command `parse-annotation`

@@ -70,7 +70,10 @@ class Confuzzius(Tool):
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
-
+            if int(solc_version.split(".")[1]) <= 4 or \
+                (int(solc_version.split(".")[1]) == 5 \
+                    and int(solc_version.split(".")[2]) < 5):
+                cmd += " --evm byzantium"
         # Output directory
         cmd += f" -o {test_output_dir}"
 
@@ -80,7 +83,7 @@ class Confuzzius(Tool):
         cmd += f" -t {str(contract_timeout)}"
 
         # Tool ID (Confuzzius has multiple variants)
-        cmd += f" --tool-id {self.id}"
+        cmd += f" --tool-id confuzzius"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:
