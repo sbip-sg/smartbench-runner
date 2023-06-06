@@ -154,7 +154,7 @@ class SmartFuzz(Tool):
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "BlockValueDependency" in description:
-            return IssueKind.BLOCK_VALUE_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY.with_origin(description)
 
         if "LockedEthers" in description:
             return IssueKind.LOCKING_ETHER
@@ -163,7 +163,7 @@ class SmartFuzz(Tool):
             return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
         if "REENTRANCY" in description:
-            return IssueKind.REENTRANCY
+            return IssueKind.REENTRANCY.with_origin(description)
 
         if "UnauthorizedSend" in description:
             return IssueKind.UNCHECKED_SEND_ETHER

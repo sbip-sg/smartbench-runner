@@ -92,9 +92,10 @@ class AnalysisResult:
         result = {}
         # print (self, self.tool, self.test_file, self.test_output_dir, self.bug_annots, self.annot_format, self.issues, self.validation_result)
         result["test_file"] = self.test_file
-        result["missing_annots"] = self.validation_result.missing_bugs
-        result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs]
-        result["unlabelled_issues"] = self.validation_result.unlabelled_issues
+        if self.validation_result:
+            result["missing_annots"] = self.validation_result.missing_bugs
+            result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs]
+            result["unlabelled_issues"] = self.validation_result.unlabelled_issues
         return result
     def print_detailed_summary(self) -> None:
         """Print statistic summary of detected issues for a test file"""

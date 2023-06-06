@@ -32,6 +32,10 @@ class IssueKind():
     def unknown_with_original_type(cls, original_type):
         return cls("Unknown Issue", original_type)
 
+    def with_origin(self, origin_type):
+        self.original_type = origin_type
+        return self
+
     def __str__(self):
         return self.value + ("" if self.original_type is None else " (" + self.original_type + ")")
 

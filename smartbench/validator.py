@@ -22,9 +22,11 @@ global_stats = {
     #     'n_files': 0,
     #     'n_unlabeled': 0,
     #     'n_unlabeled_average': 0,
-    #     'n_by_bug_type':{}, # unlabeled bug-type -> unlabeld count
+    #     'n_unlabeled_by_bug_type':{}, # unlabeled bug-type -> unlabeld count
     # }
 }
+
+prev_annot_key = None
 
 class ValidationResult:
     def __init__(
@@ -83,17 +85,21 @@ class ValidationResult:
     def stats(self) -> dict:
         r = {}
         global global_stats
+        global prev_annot_key
+
         tool_key = self.tool.name.lower() # which tool we are using
         annot_key = self.missing_bugs and self.missing_bugs[0].annot_format
         annot_key = annot_key or (self.correct_bugs and self.correct_bugs[0][1].annot_format)
-        annot_key = str(annot_key.value).lower() # which annotation (test database) we are using. Assuing one ValidationResult object won't have multiple annotation databases
+        # which annotation (test database) we are using. Assuing one ValidationResult object won't have multiple annotation databases
+        annot_key = str(annot_key.value).lower() if annot_key else prev_annot_key # hacky way to just use the prev annot_key when no bug annotation found
+        prev_annot_key = annot_key
 
         if tool_key not in global_stats:
             global_stats[tool_key] = {
                 'n_files': 0,
                 'n_unlabeled': 0,
                 'n_unlabeled_average': 0,
-                'n_by_bug_type':{}, # unlabeled bug-type -> unlabeld count
+                'n_unlabeled_by_bug_type':{}, # unlabeled bug-type -> unlabeld count
             }
 
         for (issue, _bug) in self.correct_bugs:
@@ -106,7 +112,7 @@ class ValidationResult:
 
         for issue in self.unlabelled_issues:
             inc_in_path(r, 'num_detected_not_in_annot', str(issue.issue_kind))
-            inc_in_path(global_stats, tool_key, 'n_by_bug_type', str(issue.issue_kind))
+            inc_in_path(global_stats, tool_key, 'n_unlabeled_by_bug_type', str(issue.issue_kind))
 
         global_stats[tool_key]['n_files'] += 1
         global_stats[tool_key]['n_unlabeled'] += len(self.unlabelled_issues)
@@ -127,7 +133,7 @@ class ValidationResult:
             f.flush()
 
 
-        f_global_stats = f'{tool_key}_{annot_key}_global_stats.csv'
+        f_global_stats = f'{tool_key}_{annot_key}_global_stats.json'
         with open(f_global_stats, 'w') as f:
             import json
             f.write(json.dumps(global_stats[tool_key], indent=2))
