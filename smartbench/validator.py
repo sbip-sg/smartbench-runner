@@ -160,7 +160,7 @@ def validate_issues(
             ):
                 detected = True
                 break
-        if not detected:
+        if (not detected) and (issue not in unlabelled_issues):
             unlabelled_issues.append(issue)
 
     return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)

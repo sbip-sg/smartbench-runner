@@ -180,7 +180,8 @@ class IssueKind(Enum):
 
     def __eq__(self, other):
         return other and self.value == other.value
-
+    def __hash__(self):
+        return hash(self.value)
 
 class Severity(Enum):
     """Class representing severity level of an issue."""
@@ -294,7 +295,7 @@ class Issue:
     def __eq__(self, other):
         return (
             self.issue_kind == other.issue_kind
-            and self.locations == other.location
+            and self.locations == other.locations
             and self.severity == other.severity
         )
 
