@@ -1,6 +1,6 @@
 file_name,bug_type,original_bug_type,locations,summary
-,,,,{'num_detected_in_annot': {'Arbitrary External Call': 1}, 'num_detected_not_in_annot': {'Unknown Issue (IntegerDivByZero)': 1, 'Block Values Dependency (BlockValueDependency)': 8, 'Reentrancy (REENTRANCY)': 8, 'Lack of Zero-Address Validation': 9, 'Integer Truncation': 3}}
-benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Unknown Issue,IntegerDivByZero,StaxLPStaking.sol:481:None-481:None,
+,,,,{'num_detected_in_annot': {'Arbitrary External Call': 1}, 'num_detected_not_in_annot': {'Unknown Issue (IntegerDivByZero by YUL)': 1, 'Block Values Dependency (BlockValueDependency)': 8, 'Reentrancy (REENTRANCY)': 8, 'Lack of Zero-Address Validation': 9, 'Integer Truncation': 3}}
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Unknown Issue,IntegerDivByZero by YUL,StaxLPStaking.sol:481:None-481:None,
 benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:469:None-469:None,
 benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:472:None-472:None,
 benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Reentrancy,REENTRANCY,StaxLPStaking.sol:692:None-692:None,

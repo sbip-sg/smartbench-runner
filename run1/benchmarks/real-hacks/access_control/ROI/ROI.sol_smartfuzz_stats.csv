@@ -1,5 +1,5 @@
 file_name,bug_type,original_bug_type,locations,summary
-,,,,{'num_detected_in_annot': {'Access Control': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 4, 'Lack of Zero-Address Validation': 10, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Unknown Issue (IntegerDivByZero)': 1, 'Unchecked Send Ether': 1}}
+,,,,{'num_detected_in_annot': {'Access Control': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 4, 'Lack of Zero-Address Validation': 10, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Unknown Issue (IntegerDivByZero by YUL)': 1, 'Unchecked Send Ether': 1}}
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:552:None-552:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:198:None-198:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:204:None-204:None,
@@ -10,7 +10,7 @@ benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockVa
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1197:None-1197:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1015:None-1015:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1174:None-1174:None,
-benchmarks/real-hacks/access_control/ROI/ROI.sol,Unknown Issue,IntegerDivByZero,ROI.sol:849:None-849:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Unknown Issue,IntegerDivByZero by YUL,ROI.sol:849:None-849:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1191:None-1191:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1203:None-1203:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1118:None-1118:None,

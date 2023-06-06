@@ -1,0 +1,9 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY)': 1}}
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Lack of Zero-Address Validation,None,Revest.sol:2555:None-2555:None,
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Lack of Zero-Address Validation,None,Revest.sol:1981:None-1981:None,
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Lack of Zero-Address Validation,None,Revest.sol:711:None-711:None,
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Reentrancy,REENTRANCY,Revest.sol:2884:None-2884:None,
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Lack of Zero-Address Validation,None,Revest.sol:3040:None-3040:None,
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Lack of Zero-Address Validation,None,Revest.sol:2572:None-2572:None,
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Lack of Zero-Address Validation,None,Revest.sol:2589:None-2589:None,

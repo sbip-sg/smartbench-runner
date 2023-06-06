@@ -1,0 +1,14 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Unhandled Exception': 7, 'Arbitrary External Call': 1}}
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Lack of Zero-Address Validation,None,Dexible.sol:4196:None-4196:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Lack of Zero-Address Validation,None,Dexible.sol:4170:None-4170:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Lack of Zero-Address Validation,None,Dexible.sol:4206:None-4206:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Lack of Zero-Address Validation,None,Dexible.sol:4201:None-4201:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:4048:None-4048:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:329:None-329:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:4058:None-4058:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:3760:None-3760:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:1745:None-1745:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:485:None-485:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Unhandled Exception,None,Dexible.sol:3765:None-3765:None,
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Arbitrary External Call,None,Dexible.sol:4246:None-4246:None,

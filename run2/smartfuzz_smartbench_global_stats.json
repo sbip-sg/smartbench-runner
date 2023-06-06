@@ -16,7 +16,7 @@
     "Unchecked Send Ether": 2,
     "ERC20 Leak": 2,
     "Block Values Dependency (BlockValueDependency)": 39,
-    "Unknown Issue (IntegerDivByZero)": 3,
+    "Unknown Issue (IntegerDivByZero by YUL)": 3,
     "Authorization through tx.origin": 2,
     "Arbitrary External Call": 8,
     "Locking Ether": 2,
