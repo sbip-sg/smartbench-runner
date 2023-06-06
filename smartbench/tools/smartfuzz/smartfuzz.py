@@ -285,7 +285,12 @@ class SmartFuzz(Tool):
         dos_bugs = []
         other_bugs = []
         for bug in reported_bugs:
+
+
             issue_kind = self.parse_issue_kind(bug.get("bug_type"))
+            if bug.get("is_yul"):
+                issue_kind = issue_kind.with_origin(issue_kind.original_type + ' by YUL')
+
             if issue_kind == IssueKind.DENIAL_OF_SERVICE:
                 dos_bugs.append((issue_kind, bug))
             else:
