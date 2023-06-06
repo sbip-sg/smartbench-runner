@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Authorization through tx.origin': 7}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Lack of Zero-Address Validation': 3, 'Unchecked Send Ether': 2, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Block Values Dependency,BlockValueDependencySensitive,buggy_46.sol:33:None-33:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:30:None-30:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Unchecked Send Ether,None,buggy_46.sol:90:None-90:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Unchecked Send Ether,None,buggy_46.sol:151:None-151:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:88:None-88:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:149:None-149:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:88:None-88:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:149:None-149:None,

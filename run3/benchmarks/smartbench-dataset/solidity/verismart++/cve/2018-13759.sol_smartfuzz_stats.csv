@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Integer Overflow,None,2018-13759.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Lack of Zero-Address Validation,None,2018-13759.sol:124:None-124:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Lack of Zero-Address Validation,None,2018-13759.sol:69:None-69:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Integer Overflow,None,2018-13759.sol:126:None-126:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Lack of Zero-Address Validation,None,2018-13759.sol:63:None-63:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Lack of Zero-Address Validation,None,2018-13759.sol:131:None-131:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Reentrancy,REENTRANCY_READONLY,2018-13759.sol:74:None-74:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Lack of Zero-Address Validation,None,2018-13759.sol:87:None-87:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Arbitrary External Call,None,2018-13759.sol:69:None-69:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Lack of Zero-Address Validation,None,2018-13759.sol:12:None-12:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Integer Overflow,None,2018-13759.sol:148:None-148:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Integer Overflow,None,2018-13759.sol:150:None-150:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Integer Underflow,None,2018-13759.sol:82:None-82:None,

@@ -1,0 +1,18 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 9, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Overflow': 3, 'Integer Underflow': 1, 'Locking Ether': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:696:None-696:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:718:None-718:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:783:None-783:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:410:None-410:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:470:None-470:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Reentrancy,REENTRANCY_READONLY,2018-13762.sol:490:None-490:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Arbitrary External Call,None,2018-13762.sol:470:None-470:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:823:None-823:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Integer Overflow,None,2018-13762.sol:791:None-791:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:602:None-602:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:707:None-707:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Lack of Zero-Address Validation,None,2018-13762.sol:57:None-57:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Integer Underflow,None,2018-13762.sol:550:None-550:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Integer Overflow,None,2018-13762.sol:711:None-711:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Integer Overflow,None,2018-13762.sol:701:None-701:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Locking Ether,None,2018-13762.sol:662:None-662:None,

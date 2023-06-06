@@ -1,0 +1,14 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY)': 1, 'Integer Truncation': 1, 'Block Values Dependency (BlockValueDependencySensitive)': 2, 'Integer Overflow': 1}}
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:937:None-937:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:794:None-794:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:976:None-976:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:972:None-972:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Reentrancy,REENTRANCY,Poolz.sol:977:None-977:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Integer Truncation,None,Poolz.sol:1142:None-1151:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Block Values Dependency,BlockValueDependencySensitive,Poolz.sol:1257:None-1257:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:925:None-925:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Integer Overflow,None,Poolz.sol:1183:None-1183:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Block Values Dependency,BlockValueDependencySensitive,Poolz.sol:1037:None-1037:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:1130:None-1130:None,
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Lack of Zero-Address Validation,None,Poolz.sol:1107:None-1107:None,

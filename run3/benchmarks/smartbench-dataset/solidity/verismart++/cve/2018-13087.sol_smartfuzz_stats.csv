@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Integer Overflow,None,2018-13087.sol:43:None-43:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Lack of Zero-Address Validation,None,2018-13087.sol:104:None-104:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Lack of Zero-Address Validation,None,2018-13087.sol:146:None-146:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Reentrancy,REENTRANCY_READONLY,2018-13087.sol:122:None-122:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Lack of Zero-Address Validation,None,2018-13087.sol:117:None-117:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Arbitrary External Call,None,2018-13087.sol:117:None-117:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Integer Overflow,None,2018-13087.sol:195:None-195:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Lack of Zero-Address Validation,None,2018-13087.sol:203:None-203:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Lack of Zero-Address Validation,None,2018-13087.sol:193:None-193:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Lack of Zero-Address Validation,None,2018-13087.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Integer Underflow,None,2018-13087.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Integer Overflow,None,2018-13087.sol:225:None-225:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13087.sol,Integer Overflow,None,2018-13087.sol:227:None-227:None,

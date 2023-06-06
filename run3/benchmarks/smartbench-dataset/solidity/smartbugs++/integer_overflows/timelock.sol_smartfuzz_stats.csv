@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 2, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/timelock.sol,Block Values Dependency,BlockValueDependency,timelock.sol:17:None-17:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/timelock.sol,Block Values Dependency,BlockValueDependency,timelock.sol:27:None-27:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/timelock.sol,Unchecked Send Ether,None,timelock.sol:30:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/timelock.sol,Arbitrary External Call,None,timelock.sol:25:None-25:None,

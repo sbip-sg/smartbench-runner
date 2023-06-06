@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Unhandled Exception': 2, 'Unchecked Send Ether': 2, 'Lack of Zero-Address Validation': 2, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Block Values Dependency,BlockValueDependencySensitive,buggy_46.sol:39:None-39:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Unhandled Exception,None,buggy_46.sol:54:None-54:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Unhandled Exception,None,buggy_46.sol:25:None-25:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Unchecked Send Ether,None,buggy_46.sol:103:None-103:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:36:None-36:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Unchecked Send Ether,None,buggy_46.sol:54:None-54:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:102:None-102:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:102:None-102:None,

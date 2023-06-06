@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1}, 'num_detected_not_in_annot': {'Integer Truncation': 1, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/guess_the_random_number.sol,Integer Truncation,None,guess_the_random_number.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/guess_the_random_number.sol,Unchecked Send Ether,None,guess_the_random_number.sol:26:None-26:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/guess_the_random_number.sol,Arbitrary External Call,None,guess_the_random_number.sol:22:None-22:None,

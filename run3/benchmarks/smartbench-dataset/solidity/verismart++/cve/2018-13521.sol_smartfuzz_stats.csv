@@ -1,0 +1,16 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1, 'Lack of Zero-Address Validation': 6, 'Integer Overflow': 4, 'Integer Underflow': 2, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Reentrancy,REENTRANCY_READONLY,2018-13521.sol:157:None-157:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Lack of Zero-Address Validation,None,2018-13521.sol:152:None-152:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Lack of Zero-Address Validation,None,2018-13521.sol:185:None-185:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Integer Overflow,None,2018-13521.sol:75:None-75:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Integer Underflow,None,2018-13521.sol:197:None-197:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Integer Overflow,None,2018-13521.sol:198:None-198:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Lack of Zero-Address Validation,None,2018-13521.sol:137:None-137:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Lack of Zero-Address Validation,None,2018-13521.sol:41:None-41:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Lack of Zero-Address Validation,None,2018-13521.sol:73:None-73:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Arbitrary External Call,None,2018-13521.sol:152:None-152:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Integer Underflow,None,2018-13521.sol:172:None-172:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Integer Overflow,None,2018-13521.sol:91:None-91:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Integer Overflow,None,2018-13521.sol:98:None-98:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13521.sol,Lack of Zero-Address Validation,None,2018-13521.sol:122:None-122:None,

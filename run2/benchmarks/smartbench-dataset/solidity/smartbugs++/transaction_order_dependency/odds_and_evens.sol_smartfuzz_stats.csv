@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'FRONT_RUNNING': 2}, 'num_detected_not_in_annot': {'Integer Truncation': 1, 'Access Control': 1, 'Integer Overflow': 1, 'Unchecked Send Ether': 2, 'Unhandled Exception': 3, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Integer Truncation,None,odds_and_evens.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Access Control,None,odds_and_evens.sol:25:None-25:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Integer Overflow,None,odds_and_evens.sol:36:None-36:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Unchecked Send Ether,None,odds_and_evens.sol:38:None-38:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Unchecked Send Ether,None,odds_and_evens.sol:41:None-41:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Unhandled Exception,None,odds_and_evens.sol:38:None-38:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Unhandled Exception,None,odds_and_evens.sol:50:None-50:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Unhandled Exception,None,odds_and_evens.sol:41:None-41:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/transaction_order_dependency/odds_and_evens.sol,Arbitrary External Call,None,odds_and_evens.sol:25:None-25:None,

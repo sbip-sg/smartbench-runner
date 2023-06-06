@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'LEAKING_ETHER': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 1, 'Unchecked Send Ether': 2, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_02_refund_nosub.sol,Assertion Failure,None,wallet_02_refund_nosub.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_02_refund_nosub.sol,Unchecked Send Ether,None,wallet_02_refund_nosub.sol:36:None-36:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_02_refund_nosub.sol,Lack of Zero-Address Validation,None,wallet_02_refund_nosub.sol:41:None-41:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_02_refund_nosub.sol,Arbitrary External Call,None,wallet_02_refund_nosub.sol:34:None-34:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_02_refund_nosub.sol,Unchecked Send Ether,None,wallet_02_refund_nosub.sol:30:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_02_refund_nosub.sol,Arbitrary External Call,None,wallet_02_refund_nosub.sol:28:None-28:None,

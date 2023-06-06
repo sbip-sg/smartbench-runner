@@ -1,0 +1,12 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 3}, 'num_detected_not_in_annot': {'Assertion Failure': 2, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Assertion Failure,None,2018-13128.sol:18:None-18:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Lack of Zero-Address Validation,None,2018-13128.sol:159:None-159:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Lack of Zero-Address Validation,None,2018-13128.sol:189:None-189:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Reentrancy,REENTRANCY_READONLY,2018-13128.sol:82:None-82:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Reentrancy,REENTRANCY_READONLY,2018-13128.sol:113:None-113:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Lack of Zero-Address Validation,None,2018-13128.sol:184:None-184:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Lack of Zero-Address Validation,None,2018-13128.sol:179:None-179:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Arbitrary External Call,None,2018-13128.sol:184:None-184:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Assertion Failure,None,2018-13128.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13128.sol,Arbitrary External Call,None,2018-13128.sol:179:None-179:None,

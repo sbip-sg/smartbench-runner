@@ -1,0 +1,16 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 8, 'Integer Overflow': 3, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:61:None-61:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Integer Overflow,None,2018-13206.sol:168:None-168:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:166:None-166:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:154:None-154:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:68:None-68:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Reentrancy,REENTRANCY_READONLY,2018-13206.sol:72:None-72:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:119:None-119:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:146:None-146:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Integer Overflow,None,2018-13206.sol:167:None-167:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Lack of Zero-Address Validation,None,2018-13206.sol:173:None-173:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Arbitrary External Call,None,2018-13206.sol:68:None-68:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Integer Overflow,None,2018-13206.sol:193:None-193:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13206.sol,Arbitrary External Call,None,2018-13206.sol:191:None-191:None,

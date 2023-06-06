@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Authorization through tx.origin': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/phishable.sol,Lack of Zero-Address Validation,None,phishable.sol:18:None-18:None,

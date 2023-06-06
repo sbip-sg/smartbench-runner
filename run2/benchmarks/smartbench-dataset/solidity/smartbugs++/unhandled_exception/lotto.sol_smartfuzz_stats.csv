@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 2}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/lotto.sol,Unchecked Send Ether,None,lotto.sol:27:None-27:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/lotto.sol,Arbitrary External Call,None,lotto.sol:24:None-24:None,

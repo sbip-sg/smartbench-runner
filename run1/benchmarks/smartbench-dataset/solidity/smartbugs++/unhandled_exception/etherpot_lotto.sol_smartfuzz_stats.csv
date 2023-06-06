@@ -1,0 +1,9 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 2}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 4, 'Integer Overflow': 1, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Block Values Dependency,BlockValueDependency,etherpot_lotto.sol:52:None-52:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Block Values Dependency,BlockValueDependency,etherpot_lotto.sol:37:None-37:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Block Values Dependency,BlockValueDependency,etherpot_lotto.sol:116:None-116:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Integer Overflow,None,etherpot_lotto.sol:73:None-73:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Block Values Dependency,BlockValueDependency,etherpot_lotto.sol:98:None-98:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Unchecked Send Ether,None,etherpot_lotto.sol:109:None-109:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/etherpot_lotto.sol,Arbitrary External Call,None,etherpot_lotto.sol:89:None-89:None,

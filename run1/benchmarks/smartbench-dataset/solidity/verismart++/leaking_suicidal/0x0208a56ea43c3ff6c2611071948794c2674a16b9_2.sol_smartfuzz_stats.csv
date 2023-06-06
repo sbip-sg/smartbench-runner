@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unsafe Selfdestruct': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2, 'ERC20 Leak': 2, 'Unchecked Send Ether': 1, 'Integer Overflow': 3}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,Lack of Zero-Address Validation,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:154:None-154:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,ERC20 Leak,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:179:None-179:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,Unchecked Send Ether,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:180:None-180:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,Lack of Zero-Address Validation,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:135:None-135:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,Integer Overflow,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:99:None-99:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,Integer Overflow,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:100:None-100:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,Integer Overflow,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:102:None-102:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol,ERC20 Leak,None,0x0208a56ea43c3ff6c2611071948794c2674a16b9_2.sol:135:None-135:None,

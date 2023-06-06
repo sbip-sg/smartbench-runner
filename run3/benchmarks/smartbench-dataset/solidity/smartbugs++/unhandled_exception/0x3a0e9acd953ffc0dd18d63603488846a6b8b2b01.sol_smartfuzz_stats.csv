@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Access Control': 2, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Locking Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Lack of Zero-Address Validation,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:39:None-39:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Access Control,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:54:None-54:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Lack of Zero-Address Validation,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:14:None-14:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Reentrancy,REENTRANCY_READONLY,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:44:None-44:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Lack of Zero-Address Validation,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:76:None-76:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Lack of Zero-Address Validation,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:87:None-87:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Access Control,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Locking Ether,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:48:None-48:None,

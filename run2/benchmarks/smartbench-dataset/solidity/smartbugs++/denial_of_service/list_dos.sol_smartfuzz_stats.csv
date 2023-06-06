@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'DENIAL_OF_SERVICE': 2}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 2, 'Unhandled Exception': 1, 'Lack of Zero-Address Validation': 2, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/list_dos.sol,Block Values Dependency,BlockValueDependency,list_dos.sol:28:None-28:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/list_dos.sol,Block Values Dependency,BlockValueDependency,list_dos.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/list_dos.sol,Unhandled Exception,None,list_dos.sol:82:None-82:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/list_dos.sol,Lack of Zero-Address Validation,None,list_dos.sol:31:None-31:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/list_dos.sol,Lack of Zero-Address Validation,None,list_dos.sol:111:None-111:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/list_dos.sol,Arbitrary External Call,None,list_dos.sol:31:None-31:None,

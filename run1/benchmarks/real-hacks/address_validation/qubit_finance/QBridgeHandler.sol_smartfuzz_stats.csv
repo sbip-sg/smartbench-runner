@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Lack of Zero-Address Validation': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 5, 'Reentrancy (REENTRANCY_READONLY)': 5, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Access Control,None,QBridgeHandler.sol:1135:None-1135:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Lack of Zero-Address Validation,None,QBridgeHandler.sol:1135:None-1135:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Lack of Zero-Address Validation,None,QBridgeHandler.sol:1149:None-1149:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Lack of Zero-Address Validation,None,QBridgeHandler.sol:1243:None-1243:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Lack of Zero-Address Validation,None,QBridgeHandler.sol:1160:None-1160:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Reentrancy,REENTRANCY_READONLY,QBridgeHandler.sol:324:None-324:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Unchecked Send Ether,None,QBridgeHandler.sol:340:None-340:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Reentrancy,REENTRANCY_READONLY,QBridgeHandler.sol:340:None-340:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Lack of Zero-Address Validation,None,QBridgeHandler.sol:1155:None-1155:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Reentrancy,REENTRANCY_READONLY,QBridgeHandler.sol:335:None-335:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Arbitrary External Call,None,QBridgeHandler.sol:1243:None-1243:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Reentrancy,REENTRANCY_READONLY,QBridgeHandler.sol:1190:None-1190:None,
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Reentrancy,REENTRANCY_READONLY,QBridgeHandler.sol:1231:None-1231:None,

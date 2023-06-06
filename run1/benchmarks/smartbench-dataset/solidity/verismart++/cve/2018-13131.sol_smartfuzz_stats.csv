@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 3}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 7, 'Assertion Failure': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:206:None-206:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:165:None-165:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:121:None-121:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:171:None-171:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:234:None-234:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:143:None-143:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Lack of Zero-Address Validation,None,2018-13131.sol:229:None-229:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13131.sol,Assertion Failure,None,2018-13131.sol:44:None-44:None,

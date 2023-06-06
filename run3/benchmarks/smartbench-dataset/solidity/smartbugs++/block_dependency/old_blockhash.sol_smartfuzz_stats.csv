@@ -1,0 +1,7 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 2, 'Unchecked Send Ether': 1, 'Integer Truncation': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/old_blockhash.sol,Block Values Dependency,BlockValueDependencySensitive,old_blockhash.sol:33:None-33:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/old_blockhash.sol,Block Values Dependency,BlockValueDependencySensitive,old_blockhash.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/old_blockhash.sol,Unchecked Send Ether,None,old_blockhash.sol:39:None-39:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/old_blockhash.sol,Integer Truncation,None,old_blockhash.sol:24:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/old_blockhash.sol,Arbitrary External Call,None,old_blockhash.sol:32:None-32:None,

@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Integer Underflow': 1, 'Assertion Failure': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_04_confused_sign.sol,Integer Underflow,None,wallet_04_confused_sign.sol:32:None-32:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_04_confused_sign.sol,Assertion Failure,None,wallet_04_confused_sign.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_04_confused_sign.sol,Lack of Zero-Address Validation,None,wallet_04_confused_sign.sol:37:None-37:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_04_confused_sign.sol,Arbitrary External Call,None,wallet_04_confused_sign.sol:28:None-28:None,

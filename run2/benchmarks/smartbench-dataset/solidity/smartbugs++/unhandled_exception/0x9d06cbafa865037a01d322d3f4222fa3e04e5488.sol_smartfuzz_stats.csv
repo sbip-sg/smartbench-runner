@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 2}, 'num_detected_not_in_annot': {'Unhandled Exception': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x9d06cbafa865037a01d322d3f4222fa3e04e5488.sol,Unhandled Exception,None,0x9d06cbafa865037a01d322d3f4222fa3e04e5488.sol:48:None-48:None,

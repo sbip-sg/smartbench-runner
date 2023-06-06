@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'REENTRANCY': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/modifier_reentrancy.sol,Lack of Zero-Address Validation,None,modifier_reentrancy.sol:46:None-46:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/modifier_reentrancy.sol,Arbitrary External Call,None,modifier_reentrancy.sol:46:None-46:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/modifier_reentrancy.sol,Reentrancy,REENTRANCY_READONLY,modifier_reentrancy.sol:47:None-47:None,

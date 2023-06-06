@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2, 'Integer Truncation': 2, 'Reentrancy (REENTRANCY)': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol,Lack of Zero-Address Validation,None,0xec329ffc97d75fe03428ae155fc7793431487f63.sol:28:None-28:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol,Lack of Zero-Address Validation,None,0xec329ffc97d75fe03428ae155fc7793431487f63.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol,Integer Truncation,None,0xec329ffc97d75fe03428ae155fc7793431487f63.sol:75:None-75:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol,Reentrancy,REENTRANCY,0xec329ffc97d75fe03428ae155fc7793431487f63.sol:30:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol,Integer Truncation,None,0xec329ffc97d75fe03428ae155fc7793431487f63.sol:78:None-78:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol,Reentrancy,REENTRANCY,0xec329ffc97d75fe03428ae155fc7793431487f63.sol:102:None-102:None,

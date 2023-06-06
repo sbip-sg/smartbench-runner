@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'ACCESS_CONTROL': 1}, 'num_detected_not_in_annot': {'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/mapping_write.sol,Denial of Service,None,mapping_write.sol:15:None-21:None,

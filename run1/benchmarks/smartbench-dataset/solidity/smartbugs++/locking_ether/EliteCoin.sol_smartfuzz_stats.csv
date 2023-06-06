@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 2, 'Lack of Zero-Address Validation': 6, 'ERC20 Access Control': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Assertion Failure,None,EliteCoin.sol:25:None-25:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Lack of Zero-Address Validation,None,EliteCoin.sol:146:None-146:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Lack of Zero-Address Validation,None,EliteCoin.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Lack of Zero-Address Validation,None,EliteCoin.sol:77:None-77:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Lack of Zero-Address Validation,None,EliteCoin.sol:117:None-117:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Lack of Zero-Address Validation,None,EliteCoin.sol:92:None-92:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Lack of Zero-Address Validation,None,EliteCoin.sol:76:None-76:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,ERC20 Access Control,None,EliteCoin.sol:183:None-183:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/EliteCoin.sol,Assertion Failure,None,EliteCoin.sol:31:None-31:None,

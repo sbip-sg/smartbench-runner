@@ -1,0 +1,14 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Access Control': 1, 'ERC20 Access Control': 1, 'Integer Overflow': 2, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Lack of Zero-Address Validation,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:365:None-365:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Lack of Zero-Address Validation,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:348:None-348:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Lack of Zero-Address Validation,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:261:None-261:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Lack of Zero-Address Validation,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:99:None-99:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Lack of Zero-Address Validation,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:375:None-375:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Lack of Zero-Address Validation,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:246:None-246:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Access Control,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:99:None-99:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,ERC20 Access Control,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:375:None-375:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Integer Overflow,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:587:None-587:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Arbitrary External Call,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:397:None-397:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Arbitrary External Call,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:595:None-595:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol,Integer Overflow,None,0xf7a3c5e0310ed2bafde8e782f43ab38c1cfa279d_1.sol:596:None-596:None,

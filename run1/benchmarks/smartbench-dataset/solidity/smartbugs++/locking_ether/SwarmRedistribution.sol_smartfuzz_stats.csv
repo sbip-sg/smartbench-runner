@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 3, 'Lack of Zero-Address Validation': 2, 'Integer Underflow': 2, 'Locking Ether': 1, 'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Block Values Dependency,BlockValueDependencySensitive,SwarmRedistribution.sol:106:None-106:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Block Values Dependency,BlockValueDependencySensitive,SwarmRedistribution.sol:138:None-138:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Block Values Dependency,BlockValueDependencySensitive,SwarmRedistribution.sol:160:None-160:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Lack of Zero-Address Validation,None,SwarmRedistribution.sol:94:None-94:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Lack of Zero-Address Validation,None,SwarmRedistribution.sol:122:None-122:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Integer Underflow,None,SwarmRedistribution.sol:211:None-211:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Integer Underflow,None,SwarmRedistribution.sol:212:None-212:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Locking Ether,None,SwarmRedistribution.sol:10:None-10:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Denial of Service,None,SwarmRedistribution.sol:122:None-157:None,

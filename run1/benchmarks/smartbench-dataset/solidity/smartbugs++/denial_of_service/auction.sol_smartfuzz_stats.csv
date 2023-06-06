@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'DENIAL_OF_SERVICE': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/auction.sol,Access Control,None,auction.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/denial_of_service/auction.sol,Arbitrary External Call,None,auction.sol:15:None-15:None,

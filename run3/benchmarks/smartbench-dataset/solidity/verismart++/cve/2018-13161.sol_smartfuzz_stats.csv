@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Overflow': 3, 'Arbitrary External Call': 1, 'Integer Underflow': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Lack of Zero-Address Validation,None,2018-13161.sol:119:None-119:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Reentrancy,REENTRANCY_READONLY,2018-13161.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Lack of Zero-Address Validation,None,2018-13161.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Lack of Zero-Address Validation,None,2018-13161.sol:167:None-167:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Lack of Zero-Address Validation,None,2018-13161.sol:134:None-134:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Lack of Zero-Address Validation,None,2018-13161.sol:214:None-214:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Lack of Zero-Address Validation,None,2018-13161.sol:224:None-224:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Integer Overflow,None,2018-13161.sol:216:None-216:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Arbitrary External Call,None,2018-13161.sol:134:None-134:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Integer Underflow,None,2018-13161.sol:154:None-154:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Integer Overflow,None,2018-13161.sol:246:None-246:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Integer Overflow,None,2018-13161.sol:248:None-248:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Unchecked Send Ether,None,2018-13161.sol:248:None-248:None,

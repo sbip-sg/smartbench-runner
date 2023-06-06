@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Unhandled Exception': 1, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/simple_dao.sol,Lack of Zero-Address Validation,None,simple_dao.sol:12:None-12:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/simple_dao.sol,Unhandled Exception,None,simple_dao.sol:19:None-19:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/simple_dao.sol,Unchecked Send Ether,None,simple_dao.sol:19:None-19:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/simple_dao.sol,Arbitrary External Call,None,simple_dao.sol:16:None-16:None,

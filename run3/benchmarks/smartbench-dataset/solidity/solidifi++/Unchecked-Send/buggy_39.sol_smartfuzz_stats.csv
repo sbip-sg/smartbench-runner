@@ -1,0 +1,16 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 11}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 3, 'Arbitrary External Call': 11}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Lack of Zero-Address Validation,None,buggy_39.sol:52:None-52:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Lack of Zero-Address Validation,None,buggy_39.sol:34:None-34:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Lack of Zero-Address Validation,None,buggy_39.sol:63:None-63:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:23:None-23:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:18:None-18:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:8:None-8:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:76:None-76:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:60:None-60:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:31:None-31:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:12:None-12:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:48:None-48:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:41:None-41:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:44:None-44:None,

@@ -1,0 +1,14 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unsafe DelegateCall': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 2, 'Authorization through tx.origin': 1, 'Lack of Zero-Address Validation': 9}}
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Block Values Dependency,BlockValueDependencySensitive,Phoenix.sol:618:None-618:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Authorization through tx.origin,None,Phoenix.sol:599:None-599:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Block Values Dependency,BlockValueDependencySensitive,Phoenix.sol:784:None-784:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:1087:None-1087:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:938:None-938:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:1084:None-1084:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:931:None-931:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:836:None-836:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:606:None-606:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:636:None-636:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:1081:None-1081:None,
+benchmarks/real-hacks/access_control/Phoenix/Phoenix.sol,Lack of Zero-Address Validation,None,Phoenix.sol:1063:None-1063:None,

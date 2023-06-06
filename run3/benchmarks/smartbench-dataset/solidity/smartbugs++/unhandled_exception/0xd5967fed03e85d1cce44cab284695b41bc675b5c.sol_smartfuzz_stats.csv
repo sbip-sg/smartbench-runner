@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol,Lack of Zero-Address Validation,None,0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol,Reentrancy,REENTRANCY_READONLY,0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol:16:None-16:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol,Arbitrary External Call,None,0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol:11:None-11:None,

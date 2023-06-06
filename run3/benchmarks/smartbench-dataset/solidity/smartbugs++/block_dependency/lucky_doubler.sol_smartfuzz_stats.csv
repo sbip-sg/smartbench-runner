@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'BLOCK_DEPENDENCY': 1}, 'num_detected_not_in_annot': {'Unhandled Exception': 1, 'Lack of Zero-Address Validation': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/lucky_doubler.sol,Unhandled Exception,None,lucky_doubler.sol:60:None-60:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/lucky_doubler.sol,Lack of Zero-Address Validation,None,lucky_doubler.sol:137:None-137:None,

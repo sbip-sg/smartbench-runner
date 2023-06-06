@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'ERC20 Access Control': 1, 'Lack of Zero-Address Validation': 4, 'Integer Overflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13582.sol,ERC20 Access Control,None,2018-13582.sol:128:None-128:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13582.sol,Lack of Zero-Address Validation,None,2018-13582.sol:145:None-145:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13582.sol,Lack of Zero-Address Validation,None,2018-13582.sol:68:None-68:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13582.sol,Lack of Zero-Address Validation,None,2018-13582.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13582.sol,Lack of Zero-Address Validation,None,2018-13582.sol:67:None-67:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13582.sol,Integer Overflow,None,2018-13582.sol:147:None-147:None,

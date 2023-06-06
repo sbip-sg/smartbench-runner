@@ -1,0 +1,12 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 3, 'Unchecked Send Ether': 3}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Integer Overflow,None,2018-13533.sol:180:None-180:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Lack of Zero-Address Validation,None,2018-13533.sol:138:None-138:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Integer Overflow,None,2018-13533.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Lack of Zero-Address Validation,None,2018-13533.sol:67:None-67:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Integer Overflow,None,2018-13533.sol:109:None-109:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Lack of Zero-Address Validation,None,2018-13533.sol:19:None-19:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Integer Overflow,None,2018-13533.sol:110:None-110:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Unchecked Send Ether,None,2018-13533.sol:173:None-173:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Unchecked Send Ether,None,2018-13533.sol:114:None-114:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13533.sol,Unchecked Send Ether,None,2018-13533.sol:187:None-187:None,

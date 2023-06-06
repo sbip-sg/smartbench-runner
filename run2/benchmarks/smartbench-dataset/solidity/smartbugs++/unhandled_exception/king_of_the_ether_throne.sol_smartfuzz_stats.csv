@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 2}, 'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 2}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/king_of_the_ether_throne.sol,Block Values Dependency,BlockValueDependencySensitive,king_of_the_ether_throne.sol:80:None-80:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/king_of_the_ether_throne.sol,Lack of Zero-Address Validation,None,king_of_the_ether_throne.sol:178:None-178:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/king_of_the_ether_throne.sol,Arbitrary External Call,None,king_of_the_ether_throne.sol:103:None-103:None,

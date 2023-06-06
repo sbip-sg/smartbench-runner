@@ -1,0 +1,7 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 2, 'Lack of Zero-Address Validation': 2, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol,Block Values Dependency,BlockValueDependencySensitive,0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol:88:None-88:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol,Block Values Dependency,BlockValueDependencySensitive,0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol:89:None-89:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol,Lack of Zero-Address Validation,None,0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol:54:None-54:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol,Lack of Zero-Address Validation,None,0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol:38:None-38:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol,Reentrancy,REENTRANCY_READONLY,0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol:56:None-56:None,

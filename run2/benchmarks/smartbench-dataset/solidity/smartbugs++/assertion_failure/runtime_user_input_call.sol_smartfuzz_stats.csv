@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Assertion Failure': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/assertion_failure/runtime_user_input_call.sol,Lack of Zero-Address Validation,None,runtime_user_input_call.sol:10:None-10:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/assertion_failure/runtime_user_input_call.sol,Arbitrary External Call,None,runtime_user_input_call.sol:10:None-10:None,

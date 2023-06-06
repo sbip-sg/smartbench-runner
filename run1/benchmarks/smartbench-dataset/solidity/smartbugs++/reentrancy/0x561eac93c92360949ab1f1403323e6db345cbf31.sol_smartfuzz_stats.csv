@@ -1,0 +1,13 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2, 'Access Control': 2, 'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Reentrancy (REENTRANCY)': 2, 'Unhandled Exception': 1, 'Arbitrary External Call': 2, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Lack of Zero-Address Validation,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:26:None-26:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Access Control,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:26:None-26:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Block Values Dependency,BlockValueDependencySensitive,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:91:None-91:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Access Control,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:87:None-87:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Lack of Zero-Address Validation,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:87:None-87:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Reentrancy,REENTRANCY,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:57:None-57:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Reentrancy,REENTRANCY,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:44:None-44:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Unhandled Exception,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:54:None-54:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Arbitrary External Call,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:39:None-39:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Arbitrary External Call,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:47:None-47:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x561eac93c92360949ab1f1403323e6db345cbf31.sol,Unchecked Send Ether,None,0x561eac93c92360949ab1f1403323e6db345cbf31.sol:54:None-54:None,

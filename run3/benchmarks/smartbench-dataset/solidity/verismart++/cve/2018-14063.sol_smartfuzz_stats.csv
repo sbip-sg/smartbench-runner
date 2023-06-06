@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 5, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14063.sol,Lack of Zero-Address Validation,None,2018-14063.sol:145:None-145:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14063.sol,Unchecked Send Ether,None,2018-14063.sol:65:None-65:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14063.sol,Lack of Zero-Address Validation,None,2018-14063.sol:126:None-126:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14063.sol,Lack of Zero-Address Validation,None,2018-14063.sol:153:None-153:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14063.sol,Lack of Zero-Address Validation,None,2018-14063.sol:175:None-175:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14063.sol,Lack of Zero-Address Validation,None,2018-14063.sol:98:None-98:None,

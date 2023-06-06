@@ -1,0 +1,18 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Access Control': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Unknown Issue (IntegerDivByZero)': 1, 'Lack of Zero-Address Validation': 10}}
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:552:None-552:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:198:None-198:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Reentrancy,REENTRANCY_READONLY,ROI.sol:1177:None-1177:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:204:None-204:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Unknown Issue,IntegerDivByZero,ROI.sol:849:None-849:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:651:None-651:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Block Values Dependency,BlockValueDependencySensitive,ROI.sol:210:None-210:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1191:None-1191:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1118:None-1118:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1011:None-1011:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1197:None-1197:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1203:None-1203:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1015:None-1015:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1174:None-1174:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:1155:None-1155:None,
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Lack of Zero-Address Validation,None,ROI.sol:661:None-661:None,

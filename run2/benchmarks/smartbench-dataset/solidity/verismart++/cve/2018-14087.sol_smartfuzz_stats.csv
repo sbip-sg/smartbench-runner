@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Unhandled Exception': 2, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Overflow': 2, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Unhandled Exception,None,2018-14087.sol:160:None-160:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Lack of Zero-Address Validation,None,2018-14087.sol:85:None-85:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Lack of Zero-Address Validation,None,2018-14087.sol:135:None-135:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Reentrancy,REENTRANCY_READONLY,2018-14087.sol:90:None-90:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Lack of Zero-Address Validation,None,2018-14087.sol:104:None-104:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Integer Overflow,None,2018-14087.sol:137:None-137:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Arbitrary External Call,None,2018-14087.sol:85:None-85:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Lack of Zero-Address Validation,None,2018-14087.sol:142:None-142:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Lack of Zero-Address Validation,None,2018-14087.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Lack of Zero-Address Validation,None,2018-14087.sol:78:None-78:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Integer Overflow,None,2018-14087.sol:136:None-136:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Unhandled Exception,None,2018-14087.sol:168:None-168:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-14087.sol,Integer Underflow,None,2018-14087.sol:98:None-98:None,

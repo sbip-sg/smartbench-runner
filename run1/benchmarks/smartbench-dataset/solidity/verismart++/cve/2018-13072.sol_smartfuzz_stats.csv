@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'ERC20 Leak': 1, 'Integer Underflow': 1, 'Integer Overflow': 2, 'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,ERC20 Leak,None,2018-13072.sol:153:None-153:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Integer Underflow,None,2018-13072.sol:157:None-157:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Integer Overflow,None,2018-13072.sol:156:None-156:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:112:None-112:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Reentrancy,REENTRANCY_READONLY,2018-13072.sol:70:None-70:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:66:None-66:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:134:None-134:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:122:None-122:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:14:None-14:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Arbitrary External Call,None,2018-13072.sol:66:None-66:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:59:None-59:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Lack of Zero-Address Validation,None,2018-13072.sol:140:None-140:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13072.sol,Integer Overflow,None,2018-13072.sol:155:None-155:None,

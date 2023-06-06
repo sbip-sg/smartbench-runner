@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 2}, 'num_detected_not_in_annot': {'Authorization through tx.origin': 1, 'Reentrancy (REENTRANCY)': 1, 'Lack of Zero-Address Validation': 1, 'Block Values Dependency (BlockValueDependency)': 3, 'Unchecked Send Ether': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Authorization through tx.origin,None,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:30:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Reentrancy,REENTRANCY,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:201:None-201:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Lack of Zero-Address Validation,None,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:284:None-284:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Block Values Dependency,BlockValueDependency,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Block Values Dependency,BlockValueDependency,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:148:None-148:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Block Values Dependency,BlockValueDependency,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:153:None-153:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Unchecked Send Ether,None,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:213:None-213:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol,Unchecked Send Ether,None,0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol:190:None-190:None,

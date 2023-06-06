@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 2, 'Lack of Zero-Address Validation': 2, 'Reentrancy (REENTRANCY_READONLY)': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/unchecked_return_value.sol,Arbitrary External Call,None,unchecked_return_value.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/unchecked_return_value.sol,Lack of Zero-Address Validation,None,unchecked_return_value.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/unchecked_return_value.sol,Lack of Zero-Address Validation,None,unchecked_return_value.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/unchecked_return_value.sol,Arbitrary External Call,None,unchecked_return_value.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/unchecked_return_value.sol,Reentrancy,REENTRANCY_READONLY,unchecked_return_value.sol:17:None-17:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/unchecked_return_value.sol,Reentrancy,REENTRANCY_READONLY,unchecked_return_value.sol:12:None-12:None,

@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 3}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Access Control,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:110:None-110:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Lack of Zero-Address Validation,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:198:None-198:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Lack of Zero-Address Validation,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:209:None-209:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Reentrancy,REENTRANCY_READONLY,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:233:None-233:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Lack of Zero-Address Validation,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:186:None-186:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Lack of Zero-Address Validation,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:230:None-230:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Arbitrary External Call,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:209:None-209:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Arbitrary External Call,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:230:None-230:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol,Arbitrary External Call,None,0x781fb4f25d07de3f3cfe2476645e52e0c661eefc.sol:215:None-215:None,

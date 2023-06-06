@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 2, 'Arbitrary External Call': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/etherstore.sol,Block Values Dependency,BlockValueDependency,etherstore.sol:25:None-25:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/etherstore.sol,Block Values Dependency,BlockValueDependency,etherstore.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/etherstore.sol,Arbitrary External Call,None,etherstore.sol:20:None-20:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/etherstore.sol,Unchecked Send Ether,None,etherstore.sol:27:None-27:None,

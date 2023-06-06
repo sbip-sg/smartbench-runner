@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/Bitway.sol,Lack of Zero-Address Validation,None,Bitway.sol:131:None-131:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/Bitway.sol,Lack of Zero-Address Validation,None,Bitway.sol:117:None-117:None,

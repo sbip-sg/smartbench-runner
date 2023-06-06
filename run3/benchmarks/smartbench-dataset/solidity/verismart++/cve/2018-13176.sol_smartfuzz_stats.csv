@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Lack of Zero-Address Validation': 6, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Integer Overflow,None,2018-13176.sol:51:None-51:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Reentrancy,REENTRANCY_READONLY,2018-13176.sol:134:None-134:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Lack of Zero-Address Validation,None,2018-13176.sol:129:None-129:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Integer Overflow,None,2018-13176.sol:211:None-211:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Lack of Zero-Address Validation,None,2018-13176.sol:162:None-162:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Lack of Zero-Address Validation,None,2018-13176.sol:114:None-114:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Lack of Zero-Address Validation,None,2018-13176.sol:209:None-209:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Lack of Zero-Address Validation,None,2018-13176.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Arbitrary External Call,None,2018-13176.sol:129:None-129:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Lack of Zero-Address Validation,None,2018-13176.sol:219:None-219:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Integer Underflow,None,2018-13176.sol:149:None-149:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Integer Overflow,None,2018-13176.sol:241:None-241:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13176.sol,Integer Overflow,None,2018-13176.sol:243:None-243:None,

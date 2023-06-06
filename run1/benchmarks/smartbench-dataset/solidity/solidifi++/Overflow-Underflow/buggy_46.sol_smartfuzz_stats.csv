@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Underflow': 3, 'Integer Truncation': 2, 'Integer Overflow': 2}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 3, 'Unchecked Send Ether': 2, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Block Values Dependency,BlockValueDependency,buggy_46.sol:34:None-34:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Block Values Dependency,BlockValueDependency,buggy_46.sol:163:None-163:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Block Values Dependency,BlockValueDependency,buggy_46.sol:96:None-96:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Unchecked Send Ether,None,buggy_46.sol:98:None-98:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:31:None-31:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Unchecked Send Ether,None,buggy_46.sol:165:None-165:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:95:None-95:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:162:None-162:None,

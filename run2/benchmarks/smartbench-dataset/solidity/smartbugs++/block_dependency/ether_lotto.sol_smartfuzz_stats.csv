@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependency)': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 1, 'Arbitrary External Call': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/ether_lotto.sol,Assertion Failure,None,ether_lotto.sol:36:None-36:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/ether_lotto.sol,Arbitrary External Call,None,ether_lotto.sol:33:None-33:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/ether_lotto.sol,Unchecked Send Ether,None,ether_lotto.sol:52:None-52:None,
