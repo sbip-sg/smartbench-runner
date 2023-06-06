@@ -225,7 +225,7 @@ def parse_test_file_result(
 
         # Validate detected issues against the bug annotations
         if validate and issues is not None and bug_annots is not None:
-            validation = validator.validate_issues(tool, issues, bug_annots)
+            validation = validator.validate_issues(test_file, tool, issues, bug_annots)
 
     res = AnalysisResult(
         tool,

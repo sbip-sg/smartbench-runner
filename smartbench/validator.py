@@ -18,10 +18,12 @@ from smartbench.tools.tool import Tool
 class ValidationResult:
     def __init__(
         self,
+        test_file: str,
         correct_bugs: List[Tuple[Issue, BugAnnot]], # TP for all bug types
         missing_bugs: List[BugAnnot],               # FN for all bug types
         unlabelled_issues: List[Issue],
     ):
+        self.test_file = test_file
         # Issues that are reported.
         self.correct_bugs: List[(Issue, BugAnnot)] = list(correct_bugs)
 
@@ -67,19 +69,20 @@ class ValidationResult:
     def stats(self) -> dict:
         r = {}
         for (issue, _bug) in self.correct_bugs:
-            inc_in_path(r, issue.issue_kind, 'TP')
+            inc_in_path(r, 'num_detected_in_annot', issue.issue_kind)
 
-        # for bug in self.missing_bugs:
-        #     inc_in_path(r, bug.annot_name, 'FN')
+        for bug in self.missing_bugs:
+            inc_in_path(r, 'num_not_detected_in_annot', bug.annot_name)
 
-        # for issue in self.unlabelled_issues:
-        #     inc_in_path(r, issue.issue_kind, 'FP')
+        for issue in self.unlabelled_issues:
+            inc_in_path(r, 'num_detected_not_in_annot', issue.issue_kind )
 
-        safe_print('Unlabelled_Issues:')
+        print(f'Detected bugs not in annotation for {self.test_file}:')
         for issue in self.unlabelled_issues:
             locs = ' '.join([str(s) for s in issue.locations])
             print(f'{issue.index} {issue.issue_kind} {locs}')
-        safe_print(r)
+        import pprint
+        pprint.pprint(r, indent=2)
         return r
 
 
@@ -135,6 +138,7 @@ def match_issue_to_annotation(
 
 
 def validate_issues(
+    test_file: str,
     tool: Tool,
     issues: List[Issue],
     annots: List[BugAnnot],
@@ -181,7 +185,7 @@ def validate_issues(
         if (not detected) and (issue not in unlabelled_issues):
             unlabelled_issues.append(issue)
 
-    return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
+    return ValidationResult(test_file, correct_bugs, missing_bugs, unlabelled_issues)
 
 
 def inc_in_path(d, *keys):

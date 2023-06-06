@@ -35,6 +35,9 @@ class IssueKind():
     def __str__(self):
         return self.value + ("" if self.original_type is None else " (" + self.original_type + ")")
 
+    def __repr__(self):
+        return self.__str__()
+
     def __eq__(self, other):
         return type(other) == IssueKind and self.value == other.value
 
