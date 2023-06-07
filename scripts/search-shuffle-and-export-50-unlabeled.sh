@@ -1,6 +1,6 @@
 #!/bin/bash
 
-csv_folder="run3"
+csv_folder="run3/benchmarks/real-hacks/"
 
 # Array of bug types
 bug_types=(
