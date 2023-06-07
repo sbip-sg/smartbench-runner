@@ -1,3 +1,4 @@
+filename,bug_type,original_bug_type,locations,verified
 benchmarks/real-hacks/access_control/brahTOG/BrahTOPG.sol,Reentrancy,REENTRANCY_READONLY,BrahTOPG.sol:374:None-374:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Reentrancy,REENTRANCY_READONLY,ROI.sol:1177:None-1177:None,
 benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Reentrancy,REENTRANCY_READONLY,RubicProxy.sol:190:None-190:None,

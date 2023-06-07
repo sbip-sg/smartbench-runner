@@ -1,3 +1,4 @@
-benchmarks/real-hacks/access_control/ROI/ROI.sol,Unknown Issue,IntegerDivByZero by YUL,ROI.sol:849:None-849:None,
-benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Unknown Issue,IntegerDivByZero by YUL,StaxLPStaking.sol:481:None-481:None,
-benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Unknown Issue,IntegerDivByZero by YUL,JAY.sol:731:None-731:None,
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/ROI/ROI.sol,Unknown Issue,IntegerDivByZero by YUL,ROI.sol:849:None-849:None,possibly in external call
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Unknown Issue,IntegerDivByZero by YUL,StaxLPStaking.sol:481:None-481:None,possibly in external call
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Unknown Issue,IntegerDivByZero by YUL,JAY.sol:731:None-731:None,possibly in external call

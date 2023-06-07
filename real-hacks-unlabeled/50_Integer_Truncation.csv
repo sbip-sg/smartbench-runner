@@ -1,10 +1,11 @@
-benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Integer Truncation,None,StaxLPStaking.sol:362:None-363:None,
-benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Integer Truncation,None,StaxLPStaking.sol:479:None-479:None,
-benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Integer Truncation,None,StaxLPStaking.sol:483:None-483:None,
-benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Integer Truncation,None,Poolz.sol:1142:None-1151:None,
-benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1365:None-1365:None,
-benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1393:None-1393:None,
-benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1439:None-1439:None,
-benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1470:None-1470:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Integer Truncation,None,Curve.sol:4345:None-4345:None,
-benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Integer Truncation,None,PoolFunctionality.sol:1310:None-1313:None,
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Integer Truncation,None,StaxLPStaking.sol:362:None-363:None,n (unclear)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Integer Truncation,None,StaxLPStaking.sol:479:None-479:None,y
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Integer Truncation,None,StaxLPStaking.sol:483:None-483:None,y
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Integer Truncation,None,Poolz.sol:1142:None-1151:None,n (unclear)
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1365:None-1365:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1393:None-1393:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1439:None-1439:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Truncation,None,StakingRewards.sol:1470:None-1470:None,n (unclear)
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Integer Truncation,None,Curve.sol:4345:None-4345:None,n (source code is a requirement statement)
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Integer Truncation,None,PoolFunctionality.sol:1310:None-1313:None,n (unclear)
