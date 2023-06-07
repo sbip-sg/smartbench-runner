@@ -1,6 +1,3 @@
-,,,,{'num_detected_in_annot': {'Arbitrary External Call': 1}, 'num_detected_not_in_annot': {'Unknown Issue (IntegerDivByZero by YUL)': 1, 'Reentrancy (REENTRANCY_READONLY)': 8, 'Lack of Zero-Address Validation': 9, 'Block Values Dependency (BlockValueDependency)': 8, 'Integer Truncation': 3}}
-,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 6, 'Unknown Issue (IntegerDivByZero by YUL)': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY)': 4}}
-benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Unknown Issue,IntegerDivByZero by YUL,StaxLPStaking.sol:481:None-481:None,
 benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Unknown Issue,IntegerDivByZero by YUL,JAY.sol:731:None-731:None,
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Unknown Issue,IntegerDivByZero by YUL,StaxLPStaking.sol:481:None-481:None,
 benchmarks/real-hacks/access_control/ROI/ROI.sol,Unknown Issue,IntegerDivByZero by YUL,ROI.sol:849:None-849:None,
-,,,,{'num_detected_in_annot': {'Access Control': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 4, 'Lack of Zero-Address Validation': 10, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Unknown Issue (IntegerDivByZero by YUL)': 1}}

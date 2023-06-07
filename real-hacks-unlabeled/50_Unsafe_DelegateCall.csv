@@ -1,18 +1,14 @@
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4491:None-4491:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4507:None-4507:None,
-,,,,{'num_detected_in_annot': {'Unsafe DelegateCall': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 2, 'Authorization through tx.origin': 1, 'Lack of Zero-Address Validation': 9}}
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4442:None-4442:None,
-,,,,{'num_detected_in_annot': {'Unsafe DelegateCall': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 1, 'Lack of Zero-Address Validation': 1}}
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4689:None-4689:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4530:None-4530:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4546:None-4546:None,
 benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4756:None-4756:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4600:None-4600:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4681:None-4681:None,
-,,,,{'num_detected_in_annot': {'Unsafe DelegateCall': 2}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 1, 'Arbitrary External Call': 1, 'Denial of Service': 1}}
 benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4645:None-4645:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4653:None-4653:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4681:None-4681:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4600:None-4600:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4689:None-4689:None,
 benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4610:None-4610:None,
-benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4523:None-4523:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4507:None-4507:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4546:None-4546:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4491:None-4491:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4653:None-4653:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4530:None-4530:None,
 benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4668:None-4668:None,
-,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Unsafe DelegateCall': 14, 'Lack of Zero-Address Validation': 2, 'Block Values Dependency (BlockValueDependency)': 1, 'Integer Truncation': 1, 'Reentrancy (REENTRANCY)': 1, 'Integer Underflow': 1}}
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4523:None-4523:None,
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Unsafe DelegateCall,None,Curve.sol:4442:None-4442:None,

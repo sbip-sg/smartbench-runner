@@ -32,5 +32,5 @@ for bug_type in "${bug_types[@]}"; do
     filename=$(echo "$bug_type" | tr ' ' '_' | tr '(' '_' | tr ')' '_')
 
     # Search for the bug type, remove blank lines, shuffle the results, take the top 50, and write to a file
-    rg -I -tcsv "$bug_type" "$csv_folder" | grep . | shuf | head -n 50 > "50_${filename}.csv"
+    rg -I -tcsv "$bug_type" "$csv_folder" | grep -v '{' | shuf | head -n 50 > "50_${filename}.csv"
 done

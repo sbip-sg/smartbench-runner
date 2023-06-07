@@ -1,30 +1,13 @@
-benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_22.sol,Locking Ether,None,buggy_22.sol:37:None-37:None,
-,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Locking Ether': 1}}
-benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x8fd1e427396ddb511533cf9abdbebd0a7e08da35.sol,Locking Ether,None,0x8fd1e427396ddb511533cf9abdbebd0a7e08da35.sol:48:None-48:None,
-benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13517.sol,Locking Ether,None,2018-13517.sol:172:None-172:None,
 benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13519.sol,Locking Ether,None,2018-13519.sol:233:None-233:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_36.sol,Locking Ether,None,buggy_36.sol:37:None-37:None,
 benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Locking Ether,None,GymSinglePool.sol:1574:None-1574:None,
-,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1}}
-,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Integer Overflow': 2, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 36}, 'num_detected_not_in_annot': {'Integer Overflow': 17, 'Unchecked Send Ether': 7, 'Arbitrary External Call': 8, 'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Lack of Zero-Address Validation': 5, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Access Control': 10, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Lack of Zero-Address Validation': 7, 'Arbitrary External Call': 1, 'Integer Underflow': 1, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 1, 'Authorization through tx.origin': 1, 'Lack of Zero-Address Validation': 2, 'Reentrancy (REENTRANCY)': 3, 'Integer Overflow': 2, 'Integer Truncation': 1, 'Locking Ether': 1}}
 benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13762.sol,Locking Ether,None,2018-13762.sol:662:None-662:None,
 benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13755.sol,Locking Ether,None,2018-13755.sol:176:None-176:None,
-,,,,{'num_not_detected_in_annot': {'ACCESS_CONTROL': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 4, 'Lack of Zero-Address Validation': 10, 'Access Control': 1, 'Reentrancy (REENTRANCY)': 5, 'Arbitrary External Call': 1, 'Locking Ether': 1}}
-benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Locking Ether,None,SwarmRedistribution.sol:10:None-10:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_22.sol,Locking Ether,None,buggy_22.sol:37:None-37:None,
 benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol,Locking Ether,None,0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol:48:None-48:None,
-,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 9, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Overflow': 3, 'Integer Underflow': 1, 'Locking Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/locking_ether/SwarmRedistribution.sol,Locking Ether,None,SwarmRedistribution.sol:10:None-10:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x8fd1e427396ddb511533cf9abdbebd0a7e08da35.sol,Locking Ether,None,0x8fd1e427396ddb511533cf9abdbebd0a7e08da35.sol:48:None-48:None,
 benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Locking Ether,None,PoolFunctionality.sol:1226:None-1226:None,
-,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 2, 'Lack of Zero-Address Validation': 6, 'ERC20 Access Control': 1}}
-,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 36}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 5, 'Integer Overflow': 17, 'Unchecked Send Ether': 7, 'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Arbitrary External Call': 8, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Access Control': 15, 'Locking Ether': 1}}
 benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13194.sol,Locking Ether,None,2018-13194.sol:56:None-56:None,
-,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 3, 'Lack of Zero-Address Validation': 2, 'Integer Underflow': 2, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Integer Overflow': 1, 'Locking Ether': 1}}
-,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Access Control': 2, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Locking Ether': 1}}
 benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x39cfd754c85023648bf003bea2dd498c5612abfa.sol,Locking Ether,None,0x39cfd754c85023648bf003bea2dd498c5612abfa.sol:48:None-48:None,
-,,,,{'num_detected_in_annot': {'Locking Ether': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2}}
-benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_36.sol,Locking Ether,None,buggy_36.sol:37:None-37:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13517.sol,Locking Ether,None,2018-13517.sol:172:None-172:None,
