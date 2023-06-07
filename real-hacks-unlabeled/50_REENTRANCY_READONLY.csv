@@ -1,0 +1,50 @@
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 5, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Assertion Failure': 3, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_24.sol,Reentrancy,REENTRANCY_READONLY,buggy_24.sol:305:None-305:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 2, 'Integer Underflow': 1}}
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 3, 'Lack of Zero-Address Validation': 2, 'Access Control': 2, 'Integer Overflow': 1, 'Unhandled Exception': 1, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Arbitrary External Call': 2, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13462.sol,Reentrancy,REENTRANCY_READONLY,2018-13462.sol:134:None-134:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13759.sol,Reentrancy,REENTRANCY_READONLY,2018-13759.sol:74:None-74:None,
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2, 'Access Control': 2, 'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Unhandled Exception': 1, 'Arbitrary External Call': 2, 'Unchecked Send Ether': 1}}
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 5, 'Assertion Failure': 3, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 3}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_40.sol,Reentrancy,REENTRANCY_READONLY,buggy_40.sol:423:None-423:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x96edbe868531bd23a6c05e9d0c424ea64fb1b78b.sol,Reentrancy,REENTRANCY_READONLY,0x96edbe868531bd23a6c05e9d0c424ea64fb1b78b.sol:66:None-66:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 4, 'Unchecked Send Ether': 1, 'Lack of Zero-Address Validation': 2, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1}}
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 9}, 'num_detected_not_in_annot': {'Unhandled Exception': 8, 'Unchecked Send Ether': 8, 'Lack of Zero-Address Validation': 10, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 10, 'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-12063.sol,Reentrancy,REENTRANCY_READONLY,2018-12063.sol:86:None-86:None,
+,,,,{'num_not_detected_in_annot': {'ARITHMETIC': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 7, 'Integer Overflow': 3, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13161.sol,Reentrancy,REENTRANCY_READONLY,2018-13161.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_12.sol,Reentrancy,REENTRANCY_READONLY,buggy_12.sol:290:None-290:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_17.sol,Reentrancy,REENTRANCY_READONLY,buggy_17.sol:287:None-287:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_5.sol,Reentrancy,REENTRANCY_READONLY,buggy_5.sol:363:None-363:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_14.sol,Reentrancy,REENTRANCY_READONLY,buggy_14.sol:185:None-185:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Reentrancy,REENTRANCY_READONLY,ULME.sol:875:None-875:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0x7a8721a9d64c74da899424c1b52acbf58ddc9782.sol,Reentrancy,REENTRANCY_READONLY,0x7a8721a9d64c74da899424c1b52acbf58ddc9782.sol:55:None-55:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13182.sol,Reentrancy,REENTRANCY_READONLY,2018-13182.sol:157:None-157:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13077.sol,Reentrancy,REENTRANCY_READONLY,2018-13077.sol:98:None-98:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13468.sol,Reentrancy,REENTRANCY_READONLY,2018-13468.sol:157:None-157:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13523.sol,Reentrancy,REENTRANCY_READONLY,2018-13523.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13513.sol,Reentrancy,REENTRANCY_READONLY,2018-13513.sol:133:None-133:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Integer Overflow': 3, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_11.sol,Reentrancy,REENTRANCY_READONLY,buggy_11.sol:255:None-255:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_48.sol,Reentrancy,REENTRANCY_READONLY,buggy_48.sol:351:None-351:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Reentrancy,REENTRANCY_READONLY,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:24:None-29:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_31.sol,Reentrancy,REENTRANCY_READONLY,buggy_31.sol:151:None-151:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 3}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Assertion Failure': 1, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xcead721ef5b11f1a7b530171aab69b16c5e66b6e.sol,Reentrancy,REENTRANCY_READONLY,0xcead721ef5b11f1a7b530171aab69b16c5e66b6e.sol:32:None-32:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Reentrancy,REENTRANCY_READONLY,2018-13776.sol:161:None-161:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_37.sol,Reentrancy,REENTRANCY_READONLY,buggy_37.sol:307:None-307:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13641.sol,Reentrancy,REENTRANCY_READONLY,2018-13641.sol:108:None-108:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_8.sol,Reentrancy,REENTRANCY_READONLY,buggy_8.sol:363:None-363:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2, 'Integer Overflow': 1, 'Arbitrary External Call': 3, 'Reentrancy (REENTRANCY_READONLY)': 3}}
+,,,,{'num_not_detected_in_annot': {'ACCESS_CONTROL': 2}, 'num_detected_not_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1, 'Lack of Zero-Address Validation': 1}}
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Overflow': 2, 'Arbitrary External Call': 2}}
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Truncation': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13529.sol,Reentrancy,REENTRANCY_READONLY,2018-13529.sol:133:None-133:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13514.sol,Reentrancy,REENTRANCY_READONLY,2018-13514.sol:157:None-157:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1, 'Unsafe Selfdestruct': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 2, 'Lack of Zero-Address Validation': 16, 'Arbitrary External Call': 4, 'ERC20 Access Control': 1, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Access Control': 1, 'ERC20 Leak': 1, 'Unchecked Send Ether': 1}}
+,,,,{'num_detected_in_annot': {'Integer Overflow': 2}, 'num_detected_not_in_annot': {'Integer Overflow': 1, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Lack of Zero-Address Validation': 7, 'Arbitrary External Call': 1, 'Integer Underflow': 1}}
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 1}}

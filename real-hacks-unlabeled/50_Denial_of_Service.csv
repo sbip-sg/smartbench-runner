@@ -1,0 +1,50 @@
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Integer Underflow': 18, 'Integer Overflow': 30, 'Lack of Zero-Address Validation': 4, 'ERC20 Access Control': 2, 'Arbitrary External Call': 3, 'Denial of Service': 1}}
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Denial of Service,None,paraluni.sol:2599:None-2607:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/spank_chain_payment.sol,Denial of Service,None,spank_chain_payment.sol:495:None-546:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Denial of Service,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:100:None-143:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_24.sol,Denial of Service,None,buggy_24.sol:842:None-877:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_24.sol,Denial of Service,None,buggy_24.sol:987:None-996:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_24.sol,Denial of Service,None,buggy_24.sol:927:None-962:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a.sol,Denial of Service,None,0xa7ca36f7273d4d38fc2aec5a454c497f86728a7a.sol:209:None-211:None,
+,,,,{'num_detected_in_annot': {'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xb620cee6b52f96f3c6b253e6eea556aa2d214a99.sol,Denial of Service,None,0xb620cee6b52f96f3c6b253e6eea556aa2d214a99.sol:117:None-118:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_24.sol,Denial of Service,None,buggy_24.sol:935:None-940:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_24.sol,Denial of Service,None,buggy_24.sol:905:None-910:None,
+,,,,{'num_detected_in_annot': {'Unsafe Selfdestruct': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 28, 'Integer Underflow': 18, 'Lack of Zero-Address Validation': 3, 'Unchecked Send Ether': 2, 'Access Control': 1, 'Arbitrary External Call': 1, 'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x94603d4a41856bccb75cc3603af19fc161a7b6b6.sol,Denial of Service,None,0x94603d4a41856bccb75cc3603af19fc161a7b6b6.sol:185:None-187:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x1c98eea5fe5e15d77feeabc0dfcfad32314fd481.sol,Denial of Service,None,0x1c98eea5fe5e15d77feeabc0dfcfad32314fd481.sol:209:None-211:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_24.sol,Denial of Service,None,buggy_24.sol:883:None-892:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_24.sol,Denial of Service,None,buggy_24.sol:915:None-920:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 24}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 18, 'Lack of Zero-Address Validation': 21, 'Denial of Service': 3, 'Reentrancy (REENTRANCY_READONLY)': 4, 'Unhandled Exception': 12, 'Integer Overflow': 3, 'Arbitrary External Call': 23, 'Block Values Dependency (BlockValueDependencySensitive)': 9}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x07419940b9a2d1eb54e123bd4853240ffac77186.sol,Denial of Service,None,0x07419940b9a2d1eb54e123bd4853240ffac77186.sol:185:None-187:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_24.sol,Denial of Service,None,buggy_24.sol:951:None-960:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 3}, 'num_detected_not_in_annot': {'Access Control': 1, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Integer Underflow': 1, 'Denial of Service': 1, 'Arbitrary External Call': 1, 'Integer Overflow': 1, 'Unchecked Send Ether': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x43f208d94a82cc2749a140b5e82636f31ce0390d.sol,Denial of Service,None,0x43f208d94a82cc2749a140b5e82636f31ce0390d.sol:1097:None-1155:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 2}, 'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Integer Underflow': 4, 'Lack of Zero-Address Validation': 18, 'Block Values Dependency (BlockValueDependencySensitive)': 9, 'Reentrancy (REENTRANCY)': 9, 'Integer Truncation': 2, 'Integer Overflow': 2, 'Denial of Service': 1}}
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Integer Underflow': 18, 'Integer Overflow': 30, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 3, 'ERC20 Access Control': 2, 'Denial of Service': 1}}
+,,,,{'num_not_detected_in_annot': {'DENIAL_OF_SERVICE': 1}, 'num_detected_not_in_annot': {'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xe923dd860176d3ef69d7852257cc773900807f7c.sol,Denial of Service,None,0xe923dd860176d3ef69d7852257cc773900807f7c.sol:209:None-211:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Denial of Service,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1096:None-1154:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/smart_billions.sol,Denial of Service,None,smart_billions.sol:672:None-689:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Integer Underflow': 18, 'Integer Overflow': 30, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 3, 'Denial of Service': 1, 'ERC20 Access Control': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xf2570186500a46986f3139f65afedc2afe4f445d.sol,Denial of Service,None,0xf2570186500a46986f3139f65afedc2afe4f445d.sol:14:None-21:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf3dce610acbfbcbb4efc12c4c2e3be063128baad.sol,Denial of Service,None,0xf3dce610acbfbcbb4efc12c4c2e3be063128baad.sol:209:None-211:None,
+,,,,{'num_detected_in_annot': {'Authorization through tx.origin': 40}, 'num_detected_not_in_annot': {'Denial of Service': 3, 'Unchecked Send Ether': 22, 'Lack of Zero-Address Validation': 21, 'Integer Overflow': 3, 'Arbitrary External Call': 5, 'Block Values Dependency (BlockValueDependency)': 9}}
+,,,,{'num_not_detected_in_annot': {'REENTRANCY': 1}, 'num_detected_not_in_annot': {'Assertion Failure': 1, 'Block Values Dependency (BlockValueDependency)': 9, 'Reentrancy (REENTRANCY)': 3, 'Lack of Zero-Address Validation': 7, 'Denial of Service': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb34aa41593deabb2b17e7507e3e413c58f6e0c71.sol,Denial of Service,None,0xb34aa41593deabb2b17e7507e3e413c58f6e0c71.sol:373:None-375:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/mapping_write.sol,Denial of Service,None,mapping_write.sol:15:None-21:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/spank_chain_payment.sol,Denial of Service,None,spank_chain_payment.sol:62:None-88:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x663e4229142a27f00bafb5d087e1e730648314c3.sol,Denial of Service,None,0x663e4229142a27f00bafb5d087e1e730648314c3.sol:735:None-761:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_24.sol,Denial of Service,None,buggy_24.sol:831:None-836:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xc825aa83f12e4d225ea1f21511a68e7aa78a002f.sol,Denial of Service,None,0xc825aa83f12e4d225ea1f21511a68e7aa78a002f.sol:185:None-187:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Integer Truncation': 1, 'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9f4fd6c336388f2ab7dc7bbe4740ae7b88b880d7.sol,Denial of Service,None,0x9f4fd6c336388f2ab7dc7bbe4740ae7b88b880d7.sol:211:None-213:None,
+,,,,{'num_not_detected_in_annot': {'ACCESS_CONTROL': 1}, 'num_detected_not_in_annot': {'Denial of Service': 1}}
+,,,,{'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 4}, 'num_detected_not_in_annot': {'Denial of Service': 1, 'Access Control': 1, 'Integer Underflow': 1, 'Lack of Zero-Address Validation': 2, 'Integer Truncation': 3, 'Unchecked Send Ether': 1, 'Integer Overflow': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/spank_chain_payment.sol,Denial of Service,None,spank_chain_payment.sol:91:None-95:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Integer Underflow': 18, 'Integer Overflow': 30, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 3, 'Denial of Service': 1, 'ERC20 Access Control': 2}}
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Integer Underflow': 18, 'Integer Overflow': 30, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 3, 'Denial of Service': 1, 'ERC20 Access Control': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x3bcaf56923335062e8f272d011efd2e40fa42147.sol,Denial of Service,None,0x3bcaf56923335062e8f272d011efd2e40fa42147.sol:143:None-145:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 2}, 'num_detected_not_in_annot': {'Integer Underflow': 18, 'Integer Overflow': 30, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 3, 'ERC20 Access Control': 2, 'Denial of Service': 1}}
+,,,,{'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 1, 'Denial of Service': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 3}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb34aa41593deabb2b17e7507e3e413c58f6e0c71.sol,Denial of Service,None,0xb34aa41593deabb2b17e7507e3e413c58f6e0c71.sol:378:None-380:None,

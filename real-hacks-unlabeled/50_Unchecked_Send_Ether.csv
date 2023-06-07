@@ -1,0 +1,50 @@
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_37.sol,Unchecked Send Ether,None,buggy_37.sol:107:None-107:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 27}, 'num_detected_not_in_annot': {'Arbitrary External Call': 29, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY)': 1, 'Unchecked Send Ether': 1, 'Assertion Failure': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Re-entrancy/buggy_1.sol,Unchecked Send Ether,None,buggy_1.sol:122:None-122:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_18.sol,Unchecked Send Ether,None,buggy_18.sol:78:None-78:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_21.sol,Unchecked Send Ether,None,buggy_21.sol:121:None-121:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_7.sol,Unchecked Send Ether,None,buggy_7.sol:63:None-63:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 21}, 'num_detected_not_in_annot': {'Arbitrary External Call': 21, 'Lack of Zero-Address Validation': 1}}
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 5, 'Assertion Failure': 3, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_7.sol,Unchecked Send Ether,None,buggy_7.sol:182:None-182:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_25.sol,Unchecked Send Ether,None,buggy_25.sol:253:None-253:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_44.sol,Unchecked Send Ether,None,buggy_44.sol:322:None-322:None,
+,,,,{'num_not_detected_in_annot': {'FRONT_RUNNING': 2}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_35.sol,Unchecked Send Ether,None,buggy_35.sol:240:None-240:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_40.sol,Unchecked Send Ether,None,buggy_40.sol:254:None-254:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_43.sol,Unchecked Send Ether,None,buggy_43.sol:120:None-120:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_20.sol,Unchecked Send Ether,None,buggy_20.sol:366:None-366:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_43.sol,Unchecked Send Ether,None,buggy_43.sol:93:None-93:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_16.sol,Unchecked Send Ether,None,buggy_16.sol:164:None-164:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Re-entrancy/buggy_26.sol,Unchecked Send Ether,None,buggy_26.sol:328:None-328:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Unchecked Send Ether,None,buggy_39.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_7.sol,Unchecked Send Ether,None,buggy_7.sol:173:None-173:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_15.sol,Unchecked Send Ether,None,buggy_15.sol:36:None-36:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrancy_simple.sol,Unchecked Send Ether,None,reentrancy_simple.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_28.sol,Unchecked Send Ether,None,buggy_28.sol:122:None-122:None,
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 11}, 'num_detected_not_in_annot': {'Unhandled Exception': 7, 'Unchecked Send Ether': 10, 'Arbitrary External Call': 11, 'Lack of Zero-Address Validation': 16, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Assertion Failure': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_24.sol,Unchecked Send Ether,None,buggy_24.sol:499:None-499:None,
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Overflow': 3, 'Arbitrary External Call': 1, 'Integer Underflow': 1, 'Unchecked Send Ether': 1, 'ERC20 Access Control': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_43.sol,Unchecked Send Ether,None,buggy_43.sol:123:None-123:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_16.sol,Unchecked Send Ether,None,buggy_16.sol:296:None-296:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_15.sol,Unchecked Send Ether,None,buggy_15.sol:118:None-118:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Re-entrancy/buggy_36.sol,Unchecked Send Ether,None,buggy_36.sol:246:None-246:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_27.sol,Unchecked Send Ether,None,buggy_27.sol:213:None-213:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_22.sol,Unchecked Send Ether,None,buggy_22.sol:109:None-109:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_34.sol,Unchecked Send Ether,None,buggy_34.sol:169:None-169:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_37.sol,Unchecked Send Ether,None,buggy_37.sol:92:None-92:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_3.sol,Unchecked Send Ether,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_3.sol:102:None-102:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_30.sol,Unchecked Send Ether,None,buggy_30.sol:470:None-470:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Re-entrancy/buggy_45.sol,Unchecked Send Ether,None,buggy_45.sol:341:None-341:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_30.sol,Unchecked Send Ether,None,buggy_30.sol:608:None-608:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_47.sol,Unchecked Send Ether,None,buggy_47.sol:300:None-300:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xe82f0742a71a02b9e9ffc142fdcb6eb1ed06fb87.sol,Unchecked Send Ether,None,0xe82f0742a71a02b9e9ffc142fdcb6eb1ed06fb87.sol:21:None-21:None,
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 3}, 'num_detected_not_in_annot': {'Denial of Service': 1, 'Lack of Zero-Address Validation': 3, 'Arbitrary External Call': 4}}
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 1, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY)': 1}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_34.sol,Unchecked Send Ether,None,buggy_34.sol:418:None-418:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_34.sol,Unchecked Send Ether,None,buggy_34.sol:330:None-330:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_44.sol,Unchecked Send Ether,None,buggy_44.sol:327:None-327:None,
+,,,,{'num_detected_in_annot': {'Authorization through tx.origin': 32}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 24, 'Unchecked Send Ether': 16, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Arbitrary External Call': 10}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_27.sol,Unchecked Send Ether,None,buggy_27.sol:93:None-93:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_32.sol,Unchecked Send Ether,None,buggy_32.sol:203:None-203:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unhandled-Exceptions/buggy_8.sol,Unchecked Send Ether,None,buggy_8.sol:100:None-100:None,
