@@ -1,0 +1,3 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/SafeMoon/SafeMoon.sol,ERC20 Leak,None,SafeMoon.sol:996:None-996:None,"y (we can only detect at the contract level, can not distinguish which function directly responsible for the leak)"
+benchmarks/real-hacks/access_control/UERII/uerii.sol,ERC20 Leak,None,uerii.sol:272:None-272:None,"y (we can only detect at the contract level, can not distinguish which function directly responsible for the leak)"
