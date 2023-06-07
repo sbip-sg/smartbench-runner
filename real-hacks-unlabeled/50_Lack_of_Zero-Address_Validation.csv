@@ -1,4 +1,4 @@
-filename,bug_type,original_bug_type,locations,note
+filename,bug_type,original_bug_type,locations,verified
 benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Lack of Zero-Address Validation,None,Dexible.sol:4196:None-4196:None,y
 benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Lack of Zero-Address Validation,None,Dexible.sol:4206:None-4206:None,y
 benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Lack of Zero-Address Validation,None,GymSinglePool.sol:1756:None-1756:None,y

@@ -1,6 +1,7 @@
-benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Arbitrary External Call,None,Dexible.sol:4246:None-4246:None,
-benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Arbitrary External Call,None,GymSinglePool.sol:2235:None-2235:None,
-benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Arbitrary External Call,None,RubicProxy.sol:2366:None-2366:None,
-benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Arbitrary External Call,None,QBridgeHandler.sol:1243:None-1243:None,
-benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Arbitrary External Call,None,JAY.sol:1115:None-1115:None,
-benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Arbitrary External Call,None,paraluni.sol:2841:None-2841:None,
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/Dexible/Dexible.sol,Arbitrary External Call,None,Dexible.sol:4246:None-4246:None,n (protected by onlyRelay modifier)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Arbitrary External Call,None,GymSinglePool.sol:2235:None-2235:None,n (claiming sender's reward)
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Arbitrary External Call,None,RubicProxy.sol:2366:None-2366:None,y
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Arbitrary External Call,None,QBridgeHandler.sol:1243:None-1243:None,n (protected by onlyBridge which requires sender to be the bridge address)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Arbitrary External Call,None,JAY.sol:1115:None-1115:None,n (this method is for NFT purchasing)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Arbitrary External Call,None,paraluni.sol:2841:None-2841:None,y (though it's withdrawing from the sender's own account)

@@ -32,5 +32,6 @@ for bug_type in "${bug_types[@]}"; do
     filename=$(echo "$bug_type" | tr ' ' '_' | tr '(' '_' | tr ')' '_')
 
     # search bug type, ignore summaries (line with `{`), shuffle, take 50, then sort again
+    # rg -I -tcsv "Lack of Zero-Address Validation" "run3/benchmarks/real-hacks/" | grep -v '{' | shuf | head -n 60  | sort
     rg -I -tcsv "$bug_type" "$csv_folder" | grep -v '{' | shuf | head -n 50  | sort > "50_${filename}.csv"
 done
