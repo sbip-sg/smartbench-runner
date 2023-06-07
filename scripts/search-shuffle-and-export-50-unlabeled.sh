@@ -31,6 +31,6 @@ for bug_type in "${bug_types[@]}"; do
     # Replace spaces and parentheses in the bug type with underscores to create a valid filename
     filename=$(echo "$bug_type" | tr ' ' '_' | tr '(' '_' | tr ')' '_')
 
-    # Search for the bug type, remove blank lines, shuffle the results, take the top 50, and write to a file
-    rg -I -tcsv "$bug_type" "$csv_folder" | grep -v '{' | shuf | head -n 50 > "50_${filename}.csv"
+    # search bug type, ignore summaries (line with `{`), shuffle, take 50, then sort again
+    rg -I -tcsv "$bug_type" "$csv_folder" | grep -v '{' | shuf | head -n 50  | sort > "50_${filename}.csv"
 done
