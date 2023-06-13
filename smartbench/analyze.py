@@ -44,7 +44,7 @@ class AnalysisJob:
         self,
         id: int,
         tool: Tool,
-        test_files: List[str],
+        test_file: str,
         test_configs: Optional[Dict[str, TestConfig]],
         job_output_dir_host: str,
         job_output_dir_docker: str,
@@ -58,7 +58,7 @@ class AnalysisJob:
 
         # List of test file, which are relative path to the `/root/`
         # folder in a Docker container
-        self.test_files: List[str] = list(test_files)
+        self.test_file: str = test_file
         self.test_configs: Optional[Dict[str, TestConfig]] = test_configs
         self.job_output_dir_host: str = job_output_dir_host
         self.job_output_dir_docker: str = job_output_dir_docker
@@ -70,7 +70,7 @@ class AnalysisJob:
         self.timeout: Optional[int] = timeout
 
     def __str__(self):
-        return f"{self.docker_container.name}: {len(self.test_files)} tasks"
+        return f"{self.docker_container.name}: {len(self.test_file)} tasks"
 
 
 def log_input_test_file(
@@ -373,7 +373,7 @@ def run_analysis_job(
     """Run an analysis job. Output will be stored in `result_queue`."""
     all_results: List[AnalysisResult] = []
 
-    for test_file in job.test_files:
+    for test_file in job.test_file:
         # Configure test output directory for the current test file
         tool_output_dir_host = job.job_output_dir_host
         tool_output_dir_docker = job.job_output_dir_docker
