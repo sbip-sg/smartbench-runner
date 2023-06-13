@@ -16,7 +16,7 @@ from subprocess import CalledProcessError
 from typing import Dict, List, Optional, Tuple
 
 # Library
-from smartbench import printer, result
+from smartbench import printer, result, validator
 from smartbench.benchmark import TestConfig
 from smartbench.docker import DockerContainer
 from smartbench.printer import (
