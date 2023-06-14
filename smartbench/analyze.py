@@ -44,8 +44,6 @@ class AnalysisJob:
         self,
         id: int,
         tool: Tool,
-        test_file: str,
-        test_configs: Optional[Dict[str, TestConfig]],
         job_output_dir_host: str,
         job_output_dir_docker: str,
         docker_container: DockerContainer,
@@ -58,8 +56,6 @@ class AnalysisJob:
 
         # List of test file, which are relative path to the `/root/`
         # folder in a Docker container
-        self.test_file: str = test_file
-        self.test_configs: Optional[Dict[str, TestConfig]] = test_configs
         self.job_output_dir_host: str = job_output_dir_host
         self.job_output_dir_docker: str = job_output_dir_docker
         self.docker_container: DockerContainer = docker_container
@@ -365,6 +361,8 @@ def stop_docker_containers(containers: List[DockerContainer]):
 
 def run_analysis_job(
     job: AnalysisJob,
+    input_queue: Queue,
+    test_configs: Optional[Dict[str, TestConfig]],
     result_queue: Queue,
     validate: bool = False,
     benchmarking: bool = False,
@@ -373,37 +371,39 @@ def run_analysis_job(
     """Run an analysis job. Output will be stored in `result_queue`."""
     all_results: List[AnalysisResult] = []
 
-    for test_file in job.test_file:
-        # Configure test output directory for the current test file
-        tool_output_dir_host = job.job_output_dir_host
-        tool_output_dir_docker = job.job_output_dir_docker
+    # Get a test file from the input queue
+    test_file = input_queue.get()
 
-        test_output_dir_host = os.path.join(tool_output_dir_host, test_file)
-        test_output_dir_docker = os.path.join(tool_output_dir_docker, test_file)
+    # Configure test output directory for the current test file
+    tool_output_dir_host = job.job_output_dir_host
+    tool_output_dir_docker = job.job_output_dir_docker
 
-        # Analyze the test file
-        try:
-            if res := analyze_test_file(
-                job.tool,
-                test_file,
-                job.test_configs,
-                test_output_dir_host,
-                test_output_dir_docker,
-                job.docker_container,
-                job.annot_format,
-                job.solc_version,
-                job.id,
-                job.timeout,
-                validate,
-                parallel_mode,
-            ):
-                if res is not None:
-                    all_results.append(res)
-        except Exception as err:
-            error_traceback(
-                f"An exception occurred when running analysis job!\n\n{err}"
-            )
-            pass
+    test_output_dir_host = os.path.join(tool_output_dir_host, test_file)
+    test_output_dir_docker = os.path.join(tool_output_dir_docker, test_file)
+
+    # Analyze the test file
+    try:
+        if res := analyze_test_file(
+            job.tool,
+            test_file,
+            test_configs,
+            test_output_dir_host,
+            test_output_dir_docker,
+            job.docker_container,
+            job.annot_format,
+            job.solc_version,
+            job.id,
+            job.timeout,
+            validate,
+            parallel_mode,
+        ):
+            if res is not None:
+                all_results.append(res)
+    except Exception as err:
+        error_traceback(
+            f"An exception occurred when running analysis job!\n\n{err}"
+        )
+        pass
 
     result_queue.put(all_results)
 
@@ -442,18 +442,11 @@ def run_analysis_tool(
     printer.print_short_double_separator_line()
     safe_print("Running analysis jobs...")
 
-    # Distribute test files to containers
-    test_batches: List[List[str]] = []
-    for _ in range(jobs):
-        test_batches.append([])
-
-    for idx, test_file in enumerate(test_files):
-        idx = idx % jobs
-
-        # Get relative path of the test file compared to `SMARTBENCH_ROOT`
-        # so that the Docker container can access to it
+    # Put input files into a queue
+    input_queue = Queue()
+    for test_file in test_files:
         test_file_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
-        test_batches[idx].append(test_file_path)
+        input_queue.put(test_file_path)
 
     analysis_jobs = []
     for i in range(jobs):
@@ -461,8 +454,6 @@ def run_analysis_tool(
         analysis_job = AnalysisJob(
             i,
             tool,
-            test_batches[i],
-            test_configs,
             tool_output_dir_host,
             tool_output_dir_docker,
             container,
@@ -485,6 +476,8 @@ def run_analysis_tool(
             target=run_analysis_job,
             args=(
                 analysis_job,
+                input_queue,
+                test_configs,
                 result_queue,
                 validate,
                 benchmarking,
