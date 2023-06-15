@@ -86,10 +86,6 @@ def install_docker_containers(
 
 def analyze_smart_contracts(args) -> None:
     """Run analyzers to analyze input smart contracts"""
-    # Configure analysis tools and mode
-    tools: List[Tool] = configure_analysis_tools(args.tools)
-    jobs = 1 if args.jobs is None else args.jobs
-
     # Install Smartbench environment
     if args.install_smartbench_env:
         install_smartbench_environment()
@@ -100,20 +96,6 @@ def analyze_smart_contracts(args) -> None:
         result_dir = os.path.abspath(result_dir)
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
-
-    # Install Docker containers
-    if (
-        args.build_local_docker_images
-        or args.use_remote_docker_images
-        or args.only_create_docker_containers
-    ):
-        install_docker_containers(
-            tools,
-            jobs,
-            result_dir,
-            args.use_remote_docker_images,
-            args.only_create_docker_containers,
-        )
 
     if args.test_dir is None and args.test_config_file is not None:
         error(
@@ -147,6 +129,28 @@ def analyze_smart_contracts(args) -> None:
                 if file not in input_test_files:
                     input_test_files.append(file)
         all_test_files = benchmark.collect_test_files(input_test_files)
+
+    # Configure analysis tools
+    tools: List[Tool] = configure_analysis_tools(args.tools)
+
+    # Update jobs
+    jobs = 1 if args.jobs is None else args.jobs
+    if jobs > len(all_test_files):
+        jobs = len(all_test_files)
+
+    # Install Docker containers
+    if (
+        args.build_local_docker_images
+        or args.use_remote_docker_images
+        or args.only_create_docker_containers
+    ):
+        install_docker_containers(
+            tools,
+            jobs,
+            result_dir,
+            args.use_remote_docker_images,
+            args.only_create_docker_containers,
+        )
 
     # Perform the analysis
     analyze.perform_analysis(
