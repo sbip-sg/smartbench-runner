@@ -242,7 +242,7 @@ def analyze_test_file(
 
     if solc_version is None:
         warning(
-            f"No Solc version is specifieed or detected for: {test_file}\n\n"
+            f"No Solc version is specified or detected for: {test_file}\n\n"
             "Skip analyzing it!"
         )
         return None
@@ -365,47 +365,47 @@ def run_analysis_job(
     test_configs: Optional[Dict[str, TestConfig]],
     result_queue: Queue,
     validate: bool = False,
-    benchmarking: bool = False,
     parallel_mode: bool = False,
 ) -> None:
     """Run an analysis job. Output will be stored in `result_queue`."""
     all_results: List[AnalysisResult] = []
 
     # Get a test file from the input queue
-    test_file = input_queue.get()
+    while not input_queue.empty():
+        test_file = input_queue.get()
 
-    # Configure test output directory for the current test file
-    tool_output_dir_host = job.job_output_dir_host
-    tool_output_dir_docker = job.job_output_dir_docker
+        # Configure test output directory for the current test file
+        tool_output_dir_host = job.job_output_dir_host
+        tool_output_dir_docker = job.job_output_dir_docker
 
-    test_output_dir_host = os.path.join(tool_output_dir_host, test_file)
-    test_output_dir_docker = os.path.join(tool_output_dir_docker, test_file)
+        test_output_dir_host = os.path.join(tool_output_dir_host, test_file)
+        test_output_dir_docker = os.path.join(tool_output_dir_docker, test_file)
 
-    # Analyze the test file
-    try:
-        if res := analyze_test_file(
-            job.tool,
-            test_file,
-            test_configs,
-            test_output_dir_host,
-            test_output_dir_docker,
-            job.docker_container,
-            job.annot_format,
-            job.solc_version,
-            job.id,
-            job.timeout,
-            validate,
-            parallel_mode,
-        ):
-            if res is not None:
-                all_results.append(res)
-    except Exception as err:
-        error_traceback(
-            f"An exception occurred when running analysis job!\n\n{err}"
-        )
-        pass
+        # Analyze the test file
+        try:
+            if res := analyze_test_file(
+                job.tool,
+                test_file,
+                test_configs,
+                test_output_dir_host,
+                test_output_dir_docker,
+                job.docker_container,
+                job.annot_format,
+                job.solc_version,
+                job.id,
+                job.timeout,
+                validate,
+                parallel_mode,
+            ):
+                if res is not None:
+                    all_results.append(res)
+        except Exception as err:
+            error_traceback(
+                f"An exception occurred when running analysis job!\n\n{err}"
+            )
+            pass
 
-    result_queue.put(all_results)
+        result_queue.put(all_results)
 
 
 def run_analysis_tool(
@@ -419,7 +419,6 @@ def run_analysis_tool(
     keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
-    benchmarking: bool = False,
     annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
@@ -480,7 +479,6 @@ def run_analysis_tool(
                 test_configs,
                 result_queue,
                 validate,
-                benchmarking,
                 parallel_mode,
             ),
         )
@@ -551,7 +549,6 @@ def perform_analysis(
             keep_docker_alive,
             jobs,
             validate,
-            benchmarking,
             annot_format,
         )
 
