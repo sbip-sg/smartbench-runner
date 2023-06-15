@@ -16,7 +16,7 @@ from subprocess import CalledProcessError
 from typing import Dict, List, Optional, Tuple
 
 # Library
-from smartbench import printer, result
+from smartbench import printer, result, validator
 from smartbench.benchmark import TestConfig
 from smartbench.docker import DockerContainer
 from smartbench.printer import (
@@ -44,8 +44,6 @@ class AnalysisJob:
         self,
         id: int,
         tool: Tool,
-        test_files: List[str],
-        test_configs: Optional[Dict[str, TestConfig]],
         job_output_dir_host: str,
         job_output_dir_docker: str,
         docker_container: DockerContainer,
@@ -58,8 +56,6 @@ class AnalysisJob:
 
         # List of test file, which are relative path to the `/root/`
         # folder in a Docker container
-        self.test_files: List[str] = list(test_files)
-        self.test_configs: Optional[Dict[str, TestConfig]] = test_configs
         self.job_output_dir_host: str = job_output_dir_host
         self.job_output_dir_docker: str = job_output_dir_docker
         self.docker_container: DockerContainer = docker_container
@@ -70,7 +66,7 @@ class AnalysisJob:
         self.timeout: Optional[int] = timeout
 
     def __str__(self):
-        return f"{self.docker_container.name}: {len(self.test_files)} tasks"
+        return f"{self.docker_container.name}: {len(self.test_file)} tasks"
 
 
 def log_input_test_file(
@@ -246,7 +242,7 @@ def analyze_test_file(
 
     if solc_version is None:
         warning(
-            f"No Solc version is specifieed or detected for: {test_file}\n\n"
+            f"No Solc version is specified or detected for: {test_file}\n\n"
             "Skip analyzing it!"
         )
         return None
@@ -365,15 +361,19 @@ def stop_docker_containers(containers: List[DockerContainer]):
 
 def run_analysis_job(
     job: AnalysisJob,
+    input_queue: Queue,
+    test_configs: Optional[Dict[str, TestConfig]],
     result_queue: Queue,
     validate: bool = False,
-    benchmarking: bool = False,
     parallel_mode: bool = False,
 ) -> None:
     """Run an analysis job. Output will be stored in `result_queue`."""
     all_results: List[AnalysisResult] = []
 
-    for test_file in job.test_files:
+    # Get a test file from the input queue
+    while not input_queue.empty():
+        test_file = input_queue.get()
+
         # Configure test output directory for the current test file
         tool_output_dir_host = job.job_output_dir_host
         tool_output_dir_docker = job.job_output_dir_docker
@@ -386,7 +386,7 @@ def run_analysis_job(
             if res := analyze_test_file(
                 job.tool,
                 test_file,
-                job.test_configs,
+                test_configs,
                 test_output_dir_host,
                 test_output_dir_docker,
                 job.docker_container,
@@ -405,7 +405,7 @@ def run_analysis_job(
             )
             pass
 
-    result_queue.put(all_results)
+        result_queue.put(all_results)
 
 
 def run_analysis_tool(
@@ -419,7 +419,6 @@ def run_analysis_tool(
     keep_docker_alive: bool = False,
     jobs: int = 1,
     validate: bool = False,
-    benchmarking: bool = False,
     annot_format: Optional[str] = None,
 ) -> List[AnalysisResult]:
     """Run one analysis tool for all `test_files` and write all results
@@ -442,18 +441,11 @@ def run_analysis_tool(
     printer.print_short_double_separator_line()
     safe_print("Running analysis jobs...")
 
-    # Distribute test files to containers
-    test_batches: List[List[str]] = []
-    for _ in range(jobs):
-        test_batches.append([])
-
-    for idx, test_file in enumerate(test_files):
-        idx = idx % jobs
-
-        # Get relative path of the test file compared to `SMARTBENCH_ROOT`
-        # so that the Docker container can access to it
+    # Put input files into a queue
+    input_queue = Queue()
+    for test_file in test_files:
         test_file_path = os.path.relpath(test_file, SMARTBENCH_ROOT)
-        test_batches[idx].append(test_file_path)
+        input_queue.put(test_file_path)
 
     analysis_jobs = []
     for i in range(jobs):
@@ -461,8 +453,6 @@ def run_analysis_tool(
         analysis_job = AnalysisJob(
             i,
             tool,
-            test_batches[i],
-            test_configs,
             tool_output_dir_host,
             tool_output_dir_docker,
             container,
@@ -485,9 +475,10 @@ def run_analysis_tool(
             target=run_analysis_job,
             args=(
                 analysis_job,
+                input_queue,
+                test_configs,
                 result_queue,
                 validate,
-                benchmarking,
                 parallel_mode,
             ),
         )
@@ -558,7 +549,6 @@ def perform_analysis(
             keep_docker_alive,
             jobs,
             validate,
-            benchmarking,
             annot_format,
         )
 
