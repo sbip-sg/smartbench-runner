@@ -82,7 +82,7 @@ def install_solc_maybe(version) -> str:
 
 
 def detect_best_solc_versions(test_file: str) -> List[str]:
-    """Detect best Solc versions to copmile the input smart contacts."""
+    """Detect best Solc versions to compile the input smart contacts."""
     pragma = solc_detect.find_pragma_solc_version(test_file)
     best_versions = solc_detect.find_all_best_solc_versions_for_pragma(pragma)
     return best_versions

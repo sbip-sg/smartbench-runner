@@ -4,8 +4,10 @@
         "annots",
         "REENTRANCY",
         "SELFDESTRUCT",
+        "Slither",
         "SMARTBENCH",
         "smartbugs",
+        "Smartian",
         "solidifi",
         "verismart"
     ]
