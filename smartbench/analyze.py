@@ -229,23 +229,27 @@ def analyze_test_file(
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
 
-    (contracts, solc_version) = collect_target_contracts_and_solc_version(
-        tool, test_file, test_configs, solc_version
-    )
+    # NOTE: temporarily disable for auditing projects
+    # (contracts, solc_version) = collect_target_contracts_and_solc_version(
+    #     tool, test_file, test_configs, solc_version
+    # )
 
-    if not contracts:
-        warning(
-            f"No testing contract is specified for: {test_file}\n\n"
-            "Skip analyzing it!"
-        )
-        return None
+    # if not contracts:
+    #     warning(
+    #         f"No testing contract is specified for: {test_file}\n\n"
+    #         "Skip analyzing it!"
+    #     )
+    #     return None
 
-    if solc_version is None:
-        warning(
-            f"No Solc version is specified or detected for: {test_file}\n\n"
-            "Skip analyzing it!"
-        )
-        return None
+    # if solc_version is None:
+    #     warning(
+    #         f"No Solc version is specified or detected for: {test_file}\n\n"
+    #         "Skip analyzing it!"
+    #     )
+    #     return None
+
+    contracts = []
+    solc_version = "0.8.11"
 
     cmd = tool.make_analysis_command(
         test_file,

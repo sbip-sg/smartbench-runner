@@ -46,7 +46,7 @@ class Slither(Tool):
         contracts: List[str],
         test_output_dir: str,
         container: DockerContainer,
-        solc_version: str,
+        solc_version: Optional[str],
         timeout: Optional[int] = None,
     ) -> str:
         """Function to make an analysis command for Slither."""
@@ -71,6 +71,8 @@ class Slither(Tool):
         if self.additional_args:
             cmd += f" {self.additional_args}"
 
+        # NOTE: temporarily hardcoded to audit hardhat-based project
+        cmd += " --solc-remaps @=benchmarks/audit-dboe-smart-contract/node_modules/@"
         return cmd
 
     def parse_result_confidence(

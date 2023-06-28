@@ -114,6 +114,7 @@ def get_target_contracts_and_solc_version(
     ast = None
 
     # Run SolcJSONParser with different solc versions
+    debug(f"Getting contract names by SolidityAst...")
     for solc_version in best_solc_versions:
         try:
             ast = SolidityAst(test_file, version=solc_version)
@@ -143,6 +144,7 @@ def get_target_contracts_and_solc_version(
 
     # If `SolcJsonParser` fails to get contract names, then use `SolQuery` to
     # try get contract names by trying each of the detected best Solc versions.
+    debug(f"Getting contract names by SolQuery...")
     for solc_version in best_solc_versions:
         try:
             cmd = f"{SMARTBENCH_ROOT}/bin/solquery -q get-name {test_file}"
@@ -169,5 +171,5 @@ def get_target_contracts_and_solc_version(
             pass
 
     # Report an error if no contract names are found
-    error_traceback(f"Failed to get contract names from: {test_file}")
+    error_traceback(f"Unable to get contract names from: {test_file}")
     return ([], None)
