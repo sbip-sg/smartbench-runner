@@ -45,7 +45,8 @@ SUPPORTED_TOOLS = [
     "slither",
     "smartfuzz",
     "smartian",
-    "verismart"
+    "verismart",
+    "efcf"
 ]
 
 
