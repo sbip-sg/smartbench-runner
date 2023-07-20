@@ -142,18 +142,84 @@ ARG INSTALL_DIR=/root/efcf/
 # RUN make gitmodules  # to fetch the git submodules
 # RUN make container-enter
 
-# WORKDIR $INSTALL_DIR
+WORKDIR $INSTALL_DIR
 # COPY src/AFLplusplus/ AFLplusplus
-# VOLUME $INSTALL_DIR/ccache
-# env CCACHE_DIR=$INSTALL_DIR/ccache
-# ENV PATH="/usr/lib/ccache/:${PATH}"
-# WORKDIR $INSTALL_DIR/src/AFLplusplus
-# ENV NO_ARCH_OPT=1
-# ENV IS_DOCKER=1
-# ARG NO_PYTHON=1
-# ARG NO_NYX=1
-# ARG NO_CORESIGHT=1
-# # ARG NO_SPLICING=1
-# RUN make clean; make source-only && make install && afl-clang-lto --version >/dev/null
-# env PATH=$PATH:/usr/local/bin/
-  
+VOLUME $INSTALL_DIR/ccache
+env CCACHE_DIR=$INSTALL_DIR/ccache
+ENV PATH="/usr/lib/ccache/:${PATH}"
+WORKDIR $INSTALL_DIR/src/AFLplusplus
+ENV NO_ARCH_OPT=1
+ENV IS_DOCKER=1
+ARG NO_PYTHON=1
+ARG NO_NYX=1
+ARG NO_CORESIGHT=1
+# ARG NO_SPLICING=1
+RUN make clean; make source-only && make install && afl-clang-lto --version >/dev/null
+env PATH=$PATH:/usr/local/bin/
+
+WORKDIR $INSTALL_DIR/src/
+# COPY src/evm2cpp/ evm2cpp
+WORKDIR $INSTALL_DIR/src/evm2cpp
+RUN make clean; make && make install; \
+  rm -rf target/release/{deps,build} target/debug || true
+
+WORKDIR $INSTALL_DIR/src/
+# COPY src/ethmutator/ ethmutator
+WORKDIR $INSTALL_DIR/src/ethmutator
+RUN make clean; make && make install; \
+  rm -rf target/release/{deps,build} target/debug || true
+
+WORKDIR $INSTALL_DIR/src/
+# COPY src/launcher/ launcher
+WORKDIR $INSTALL_DIR/src/launcher
+RUN pip install .
+# share installed solc between solc-select and solcx
+RUN mkdir -p /root/.solcx \
+    && mkdir -p /usr/local/lib/python3.9/dist-packages/solcx/ \
+    && ln -s /root/.solcx /usr/local/lib/python3.9/dist-packages/solcx/bin; \
+    set -e; for solc in /root/.solc-select/artifacts/solc-* /root/.solc-select/artifacts/solc-*/solc-*; do \
+      echo "$solc"; if ! test -d "$solc"; then ln -s "$(realpath "$solc")" \
+        "/root/.solcx/solc-v$(basename $solc | cut -c 6-)"; fi \
+    done; \
+    python -c 'import solcx; print(solcx.get_installed_solc_versions())'
+ENV PATH="$PATH:/root/.solcx/"
+
+WORKDIR $INSTALL_DIR
+# COPY .git .git
+# COPY data data
+# COPY src/eEVM src/eEVM
+# COPY scripts scripts
+# COPY Makefile Makefile
+# COPY sol.Makefile sol.Makefile
+# COPY container.Makefile container.Makefile
+RUN chmod +x scripts/* ; \
+    echo "$EFCF_VERSION-$(git rev-parse HEAD)" > VERSION;
+
+WORKDIR $INSTALL_DIR/src/
+RUN tar cJf eEVM.orig.tar.xz ./eEVM/
+
+ARG REMOVE_GIT_DIR=0
+WORKDIR $INSTALL_DIR/
+RUN if test "$REMOVE_GIT_DIR" -eq 1; then rm -rf .git; fi
+
+# make sure to configure the host s.t., this doesn't matter..
+ENV AFL_SKIP_CPUFREQ=1
+ENV AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+# it seems if we run multiple containers in parallel, then we need to set this
+# or otherwise all AFL instances will bind to the first CPU core.
+ENV AFL_NO_AFFINITY=1
+ENV FUZZ_USE_SHM=0
+ENV FUZZ_USE_TMPFS=0
+
+VOLUME $INSTALL_DIR/out
+VOLUME $INSTALL_DIR/results
+
+WORKDIR $INSTALL_DIR
+ENV EFCF_INSTALL_DIR=$INSTALL_DIR
+
+ENV RUST_BACKTRACE=full
+
+ARG ETHERSCAN_API_KEY="FD7XHM4ZCJRNUAQTZJ3B35TG3ZNPQ29C4M"
+ENV ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY
+
+CMD [ "zsh" ]
