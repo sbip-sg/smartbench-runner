@@ -87,4 +87,4 @@ fi
 
 # Run Efcf
 efcfuzz --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_JSON_FILE \
-    ${ADDITIONAL_ARGS[@]} 2>&1
+    --timeout $TIMEOUT ${ADDITIONAL_ARGS[@]} 2>&1
