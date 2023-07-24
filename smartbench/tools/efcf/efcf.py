@@ -49,21 +49,25 @@ class EFCF(Tool):
         solc_version: str,
         timeout: Optional[int] = None,
     ) -> str:
-        """Function to make an analysis command for EF/CF."""
+        """Function to make analysis command for `Smartian`. This function
+        should have the same signature with other tools."""
 
-        # Configure command
+        # Executable file
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
-        # Input file
+        # Input file and contract names
         cmd += f" -f {test_file}"
 
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
 
-        # Output file
-        if output_file := self.configure_json_result_file(test_output_dir):
-            cmd += f" -o {output_file}"
+        # Output directory
+        cmd += f" -o {test_output_dir}"
+
+        # Timeout for each contract
+        timeout = self.default_timeout if timeout is None else timeout
+        cmd += f" -t {str(timeout)}"
 
         # Finally, pass default and additional arguments
         if self.default_arguments:

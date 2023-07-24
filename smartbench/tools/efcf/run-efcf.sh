@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Usage:
-#   ./run-slither.sh -f <test-file> [slither-arguments]
+#   ./run-efcf.sh -f <test-file> [efcf-arguments]
 #
 
 ################################################
@@ -10,15 +10,16 @@
 print_usage () {
     echo ""
     echo "Usage: "
-    echo "  run-slither.sh -f <test-file> [slither-arguments]"
+    echo "  run-efcf.sh -f <test-file> [efcf-arguments]"
     echo ""
     echo "Options:"
     echo "  -f <test-file>            Smart contract file to be analyzed."
     echo "  -o <output-file>          Output JSON file."
+    echo "  -t <timeout>              Timeout for each target contract."
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
     echo "  -h, --help                Print this usage."
     echo ""
-    echo "Addtional arguments passing to Slither can be put at the end of this command."
+    echo "Addtional arguments passing to Efcf can be put at the end of this command."
 }
 
 print_help () {
@@ -31,6 +32,7 @@ print_help () {
 
 TEST_FILE=""
 OUTPUT_JSON_FILE=""
+TIMEOUT=0
 ADDITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -42,6 +44,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         -o)
             OUTPUT_JSON_FILE="$2"
+            shift  # past argument
+            shift  # past value
+            ;;
+        -t)
+            TIMEOUT=$2
             shift  # past argument
             shift  # past value
             ;;
@@ -78,8 +85,6 @@ fi
 ################################################
 # Analyze test file
 
-rm -f $OUTPUT_JSON_FILE
-
-# Run Slither
-SOLC_VERSION=$SOLC_VER slither $TEST_FILE --json $OUTPUT_JSON_FILE \
+# Run Efcf
+efcfuzz --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_JSON_FILE \
     ${ADDITIONAL_ARGS[@]} 2>&1
