@@ -222,4 +222,21 @@ ENV RUST_BACKTRACE=full
 ARG ETHERSCAN_API_KEY="FD7XHM4ZCJRNUAQTZJ3B35TG3ZNPQ29C4M"
 ENV ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY
 
-CMD [ "zsh" ]
+# Install Solc-select and all Solc compilers
+RUN pip install solc-select
+RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
+
+# Install Solc libraries
+RUN pip install py-solc --force-reinstall
+
+# Entry point when running the container as an executable
+WORKDIR /root/
+
+# Prepare benchmarking environments
+RUN mkdir benchmarks
+RUN mkdir testing
+RUN mkdir results
+
+# Entry point when running the container as an executable
+WORKDIR /root/
+ENTRYPOINT [ "/bin/bash" ]
