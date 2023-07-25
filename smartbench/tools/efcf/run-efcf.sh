@@ -31,7 +31,7 @@ print_help () {
 # Parse arguments
 
 TEST_FILE=""
-OUTPUT_JSON_FILE=""
+OUTPUT_DIR=""
 TIMEOUT=0
 ADDITIONAL_ARGS=()
 
@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
             shift # past value
             ;;
         -o)
-            OUTPUT_JSON_FILE="$2"
+            OUTPUT_DIR="$2"
             shift  # past argument
             shift  # past value
             ;;
@@ -86,6 +86,6 @@ fi
 # Analyze test file
 
 # Run Efcf
-efcfuzz --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_JSON_FILE \
+efcfuzz --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_DIR \
         --timeout $TIMEOUT ${ADDITIONAL_ARGS[@]} --report-leaking-ether \
         --report-dos-selfdestruct 2>&1

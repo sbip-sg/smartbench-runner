@@ -62,7 +62,13 @@ class EFCF(Tool):
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
 
-        # Output directory
+        # Output directory: Need to add a sub-directory `output`
+        # Otherwise, the log file is deleted from the results directory
+        if test_output_dir.endswith("/"):
+            test_output_dir += "output"
+        else:
+            test_output_dir += "/output"
+
         cmd += f" -o {test_output_dir}"
 
         # Timeout for each contract
@@ -368,58 +374,60 @@ class EFCF(Tool):
         """Parse output of EF/CF. Return `None` if result parsing is not
         successful."""
 
-        if self.json_result_file is None:
-            error_traceback("JSON output file is not found!")
-            return None
+        return [];
 
-        output_file = os.path.join(test_output_dir, self.json_result_file)
-        log_file = self.configure_log_file(test_output_dir)
+        # if self.json_result_file is None:
+        #     error_traceback("JSON output file is not found!")
+        #     return None
 
-        output = None
+        # output_file = os.path.join(test_output_dir, self.json_result_file)
+        # log_file = self.configure_log_file(test_output_dir)
 
-        debug("EF/CF parse file: ", output_file)
-        try:
-            with open(output_file, "r", encoding="utf-8") as file:
-                output = json.load(file)
-        except Exception as err:
-            error(f"Failed to parse EF/CF output: {output_file}\n\n{err}")
-            return None
+        # output = None
 
-        success = output.get("success")
-        if not success:
-            error(f"An error happened when running EF/CF: {output_file}")
-            return None
+        # debug("EF/CF parse file: ", output_file)
+        # try:
+        #     with open(output_file, "r", encoding="utf-8") as file:
+        #         output = json.load(file)
+        # except Exception as err:
+        #     error(f"Failed to parse EF/CF output: {output_file}\n\n{err}")
+        #     return None
 
-        try:
-            results = output.get("results")
-            detectors = results.get("detectors")
-        except ValueError:
-            return None
+        # success = output.get("success")
+        # if not success:
+        #     error(f"An error happened when running EF/CF: {output_file}")
+        #     return None
 
-        all_issues: List[Issue] = []
-        for detector in detectors:
-            description = detector.get("description")
-            checker = Checker("EF/CF", detector.get("check"))
-            kind = self.parse_issue_kind(description, checker.detector)
-            location = self.parse_issue_location(
-                log_file, detector.get("elements")
-            )
-            severity = self.parse_issue_severity(detector.get("impact"))
-            confidence = self.parse_result_confidence(
-                detector.get("confidence")
-            )
+        # try:
+        #     results = output.get("results")
+        #     detectors = results.get("detectors")
+        # except ValueError:
+        #     return None
 
-            all_issues = issue.record_new_issue_and_deduplicate(
-                all_issues,
-                kind,
-                description,
-                location,
-                checker,
-                severity,
-                confidence
-            )
+        # all_issues: List[Issue] = []
+        # for detector in detectors:
+        #     description = detector.get("description")
+        #     checker = Checker("EF/CF", detector.get("check"))
+        #     kind = self.parse_issue_kind(description, checker.detector)
+        #     location = self.parse_issue_location(
+        #         log_file, detector.get("elements")
+        #     )
+        #     severity = self.parse_issue_severity(detector.get("impact"))
+        #     confidence = self.parse_result_confidence(
+        #         detector.get("confidence")
+        #     )
 
-        return all_issues
+        #     all_issues = issue.record_new_issue_and_deduplicate(
+        #         all_issues,
+        #         kind,
+        #         description,
+        #         location,
+        #         checker,
+        #         severity,
+        #         confidence
+        #     )
+
+        # return all_issues
 
     def match_location_of_issue_to_annotation(
         self, issue: Issue, annot: BugAnnot
