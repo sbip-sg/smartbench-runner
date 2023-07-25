@@ -87,4 +87,5 @@ fi
 
 # Run Efcf
 efcfuzz --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_JSON_FILE \
-    --timeout $TIMEOUT ${ADDITIONAL_ARGS[@]} 2>&1
+        --timeout $TIMEOUT ${ADDITIONAL_ARGS[@]} --report-leaking-ether \
+        --report-dos-selfdestruct 2>&1
