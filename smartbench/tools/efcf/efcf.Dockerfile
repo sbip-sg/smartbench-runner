@@ -79,9 +79,23 @@ RUN wget -q -O /tmp/rustup.sh https://sh.rustup.rs \
   && rm /tmp/rustup.sh
 ENV PATH=$PATH:$CARGO_HOME/bin/
 
-# Install Solc-select and all Solc compilers
-RUN pip install solc-select
-RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
+# we install all kinds of solidity versions
+RUN pip3 install -U solc-select
+# in case you are missing a version ->
+# RUN solc-select install all
+# but to keep image size somewhat reasonable we install only the most common ones in our dataset
+RUN solc-select install 0.4.10 0.4.11 0.4.12 0.4.13 0.4.14 0.4.15 0.4.16 0.4.17 0.4.18 0.4.19 \
+                        0.4.20 0.4.21 0.4.22 0.4.23 0.4.24 0.4.25 0.4.26 \
+                        0.5.0 0.5.1 0.5.2 0.5.3 0.5.4 0.5.6 0.5.7 0.5.8 0.5.9 0.5.10 \
+                        0.7.6 \
+                        0.8.13
+# incompatible with newest solc-select...
+ARG SOLC_SELECT_PATH_DIR=/root/.solc-select/PATH/
+RUN set -e; mkdir -p "$SOLC_SELECT_PATH_DIR"; for solc in /root/.solc-select/artifacts/solc-* /root/.solc-select/artifacts/solc-*/solc-*; do \
+      echo "$solc"; if ! test -d "$solc"; then ln -s "$(realpath "$solc")" \
+        "$SOLC_SELECT_PATH_DIR/$(basename $solc)"; fi \
+    done;
+ENV PATH="$SOLC_SELECT_PATH_DIR:$PATH"
 
 RUN cargo install --force ethabi-cli
 
@@ -207,10 +221,6 @@ ENV RUST_BACKTRACE=full
 
 ARG ETHERSCAN_API_KEY="FD7XHM4ZCJRNUAQTZJ3B35TG3ZNPQ29C4M"
 ENV ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY
-
-# Install Solc-select and all Solc compilers
-RUN pip install solc-select
-RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
 
 # Install Solc libraries
 RUN pip install py-solc --force-reinstall
