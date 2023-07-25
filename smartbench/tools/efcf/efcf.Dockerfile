@@ -129,19 +129,6 @@ RUN git clone  --recursive https://github.com/uni-due-syssec/efcf-framework.git 
 
 ARG INSTALL_DIR=/root/efcf/
 
-# WORKDIR /root/efcf/
-# # ETHERSCAN_API_KEY
-# RUN echo "FD7XHM4ZCJRNUAQTZJ3B35TG3ZNPQ29C4M" > .etherscan_api_key
-# RUN git submodule update --init
-# RUN cd src/eEVM/
-# RUN git submodule update --init
-# # RUN cd ../../
-# # RUN make gitmodules  # to fetch the git submodules
-# # docker build -f docker/ubuntu.Dockerfile -t efcf:latest .
-# WORKDIR /root/efcf/
-# RUN make gitmodules  # to fetch the git submodules
-# RUN make container-enter
-
 WORKDIR $INSTALL_DIR
 # COPY src/AFLplusplus/ AFLplusplus
 VOLUME $INSTALL_DIR/ccache
