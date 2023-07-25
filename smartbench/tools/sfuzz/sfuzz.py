@@ -218,7 +218,6 @@ class Sfuzz(Tool):
 
         # Find if a bug location matches with the annotation location.
         for iloc in issue.locations:
-            # The bug line number must be reported explicitly by Silther
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 

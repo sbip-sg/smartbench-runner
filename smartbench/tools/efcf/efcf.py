@@ -7,7 +7,7 @@ import json
 import os
 import re
 
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 # Third Party
 from solc_json_parser.parser import SolidityAst
@@ -54,7 +54,7 @@ class EFCF(Tool):
         solc_version: str,
         timeout: Optional[int] = None,
     ) -> str:
-        """Function to make analysis command for `Smartian`. This function
+        """Function to make analysis command for `EF/CF`. This function
         should have the same signature with other tools."""
 
         # Executable file
@@ -203,7 +203,6 @@ class EFCF(Tool):
 
         # Find if a bug location matches with the annotation location.
         for iloc in issue.locations:
-            # The bug line number must be reported explicitly by Silther
             if iloc.start_line is None or iloc.end_line is None:
                 return False
 
