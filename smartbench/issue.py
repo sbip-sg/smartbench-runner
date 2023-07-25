@@ -169,6 +169,9 @@ class IssueKind(Enum):
     TAUTOLOGY_OR_CONTRADICTION = "Tautology or Contradiction"
     REDUNDANT_EXPRESSION = "Redundant Expression"
 
+    # EF/CF Main Oracle: Balance gain
+    BALANCE_GAIN = "balance gain"
+
     ##############################
     # Unknown
 

@@ -128,7 +128,7 @@ class Sfuzz(Tool):
         if test_file is None:
             warning(f"Failed to get input test file from: {log_file}")
 
-        # Read analysis output from log file of ILF
+        # Read analysis output from log file of sFuzz
         log_lines = []
         has_fuzzing_result = False
         try:
