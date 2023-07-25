@@ -14,12 +14,12 @@ print_usage () {
     echo ""
     echo "Options:"
     echo "  -f <test-file>            Smart contract file to be analyzed."
-    echo "  -o <output-file>          Output JSON file."
+    echo "  -o <output-file>          Output directory."
     echo "  -t <timeout>              Timeout for each target contract."
     echo "  --solc-version <version>  Solidity version to be used, auto detect if omitted."
     echo "  -h, --help                Print this usage."
     echo ""
-    echo "Addtional arguments passing to Efcf can be put at the end of this command."
+    echo "Addtional arguments passing to EF/CF can be put at the end of this command."
 }
 
 print_help () {
@@ -85,7 +85,7 @@ fi
 ################################################
 # Analyze test file
 
-# Run Efcf
+# Run EF/CF
 efcfuzz --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_DIR \
         --timeout $TIMEOUT ${ADDITIONAL_ARGS[@]} --report-leaking-ether \
         --report-dos-selfdestruct 2>&1
