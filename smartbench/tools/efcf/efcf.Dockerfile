@@ -185,13 +185,6 @@ RUN mkdir -p /root/.solcx \
 ENV PATH="$PATH:/root/.solcx/"
 
 WORKDIR $INSTALL_DIR
-# COPY .git .git
-# COPY data data
-# COPY src/eEVM src/eEVM
-# COPY scripts scripts
-# COPY Makefile Makefile
-# COPY sol.Makefile sol.Makefile
-# COPY container.Makefile container.Makefile
 RUN chmod +x scripts/* ; \
     echo "$EFCF_VERSION-$(git rev-parse HEAD)" > VERSION;
 
