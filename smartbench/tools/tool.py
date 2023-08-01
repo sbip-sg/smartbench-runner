@@ -57,7 +57,7 @@ class Tool:
         self.json_coverage_file = (
             f"{self.id}_coverage.json"
             if self.id
-            in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz"]
+            in ["sfuzz", "confuzzius", "smartian", "ilf", "smartfuzz", "efcf"]
             else None
         )
 

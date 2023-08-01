@@ -28,6 +28,7 @@ from smartbench.tools.confuzzius.confuzzius import Confuzzius
 from smartbench.tools.ilf.ilf import Ilf
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.smartian.smartian import Smartian
+from smartbench.tools.efcf.efcf import EFCF
 from smartbench.tools.tool import EXECUTION_LOG_SUFFIX, Tool
 from smartbench.validator import ValidationResult
 
@@ -343,7 +344,7 @@ def parse_instruction_coverage(results_dir: str) -> None:
             warning(f"Unable to load tool configuration: {tool_id}")
             continue
 
-        if not isinstance(tool, (Sfuzz, Confuzzius, Smartian, Ilf)):
+        if not isinstance(tool, (Sfuzz, Confuzzius, Smartian, Ilf, EFCF)):
             safe_print(f"Parse coverage is not supported for: {tool.id}")
             continue
 
@@ -356,7 +357,7 @@ def parse_instruction_coverage(results_dir: str) -> None:
             if not is_tool_output_dir(tool, test_output_dir):
                 continue
 
-            if isinstance(tool, (Sfuzz, Confuzzius, Smartian, Ilf)):
+            if isinstance(tool, (Sfuzz, Confuzzius, Smartian, Ilf, EFCF)):
                 coverage = tool.parse_instruction_coverage(test_output_dir)
                 safe_print(f"test_output_dir: {test_output_dir}")
                 safe_print(f"coverage: {coverage}")

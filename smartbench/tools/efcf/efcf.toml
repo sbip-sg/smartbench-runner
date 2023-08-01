@@ -1,0 +1,7 @@
+[info]
+name = "EFCF"
+
+[command]
+executable = "run-efcf.sh"
+default_arguments = ""
+default_timeout = 60

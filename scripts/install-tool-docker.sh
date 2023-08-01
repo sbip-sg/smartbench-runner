@@ -12,6 +12,7 @@ SUPPORTED_TOOLS=(
     "smartian"
     "smartfuzz"
     "verismart"
+    "efcf"
 )
 
 ################################################
@@ -25,7 +26,7 @@ print_usage () {
     echo "Options:"
     echo "  -t <tool-id>              ID of analysis tool, currently support the followings:"
     echo "                              confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
-    echo "                              slither, smartfuzz, smartian, verismart."
+    echo "                              slither, smartfuzz, smartian, verismart, efcf."
     echo "                            Use `-t all` to install for all tools."
     echo "  -n <num_of_containers>    Number of containers to be installed, which are named"
     echo "                            as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."

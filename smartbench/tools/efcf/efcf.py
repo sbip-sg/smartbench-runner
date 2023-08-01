@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-"""Module handling sFuzz."""
+"""Module handling CF/EF."""
 
 # Standard Library
 import json
-import math
 import os
 import re
 
@@ -17,14 +16,14 @@ from solc_json_parser.parser import SolidityAst
 from smartbench import issue, logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
-from smartbench.issue import Checker, Issue, IssueKind
-from smartbench.printer import debug, error, safe_print, warning
+from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
+from smartbench.printer import debug, error, error_traceback, warning, safe_print
 from smartbench.solidity import solc
-from smartbench.solidity.loc import Location
+from smartbench.solidity.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
 
-class Sfuzz(Tool):
+class EFCF(Tool):
     def __init__(
         self,
         id: str,
@@ -55,33 +54,33 @@ class Sfuzz(Tool):
         solc_version: str,
         timeout: Optional[int] = None,
     ) -> str:
-        """
-        Function to make analysis command for Slither.
-        This function should have the same signature with other tools.
-        """
+        """Function to make analysis command for `EF/CF`. This function
+        should have the same signature with other tools."""
 
-        # Configure command
+        # Executable file
         cmd = f"docker exec -it {container.name} /root/{self.executable}"
 
         # Input file and contract names
         cmd += f" -f {test_file}"
-        if len(contracts) == 1:
-            cmd += f" -c {contracts[0]}"
 
         # Solc version
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
 
-        # Pass contract names to sFuzz
-        if len(contracts) > 0:
-            cmd += f" -c {' '.join(contracts)}"
+        # Output directory: Need to add a sub-directory `output`
+        # Otherwise, the log file is deleted from the results directory
+        if test_output_dir.endswith("/"):
+            test_output_dir += "output"
+        else:
+            test_output_dir += "/output"
 
-        # Timeout
+        cmd += f" -o {test_output_dir}"
+
+        # Timeout for each contract
         timeout = self.default_timeout if timeout is None else timeout
-        contract_timeout = math.ceil(timeout / len(contracts))
-        cmd += f" -t {str(contract_timeout)}"
+        cmd += f" -t {str(timeout)}"
 
-        # Pass arguments
+        # Finally, pass default and additional arguments
         if self.default_arguments:
             cmd += f" {self.default_arguments}"
         if self.additional_args:
@@ -90,58 +89,44 @@ class Sfuzz(Tool):
         return cmd
 
     def parse_issue_kind(self, description: str) -> Optional[IssueKind]:
-        if "gasless send : found" in description:
-            IssueKind.UNHANDLED_EXCEPTION
+        """Parse issue kind from issue description reported by EF/CF"""
+        if "[BUG] Violated Assertion/Event" in description:
+            return IssueKind.ASSERTION_FAILURE
 
-        if "exception disorder : found" in description:
-            return IssueKind.UNHANDLED_EXCEPTION
+        if "[BUG] balance gain" in description:
+            return IssueKind.BALANCE_GAIN
 
-        if "reentrancy : found" in description:
-            return IssueKind.REENTRANCY
+        if "[BUG] leaking ether" in description:
+            return IssueKind.LEAKING_ETHER
 
-        if "integer overflow : found" in description:
-            return IssueKind.INTEGER_OVERFLOW
-
-        if "integer underflow : found" in description:
-            return IssueKind.INTEGER_UNDERFLOW
-
-        if "dangerous delegatecall : found" in description:
+        if "[BUG] controlled delegatecall" in description:
             return IssueKind.UNSAFE_DELEGATECALL
 
-        if "freezing ether : found" in description:
-            return IssueKind.LOCKING_ETHER
-
-        if "block number dependency : found" in description:
-            return IssueKind.BLOCK_VALUE_DEPENDENCY
-
-        if "timestamp dependency : found" in description:
-            return IssueKind.BLOCK_VALUE_DEPENDENCY
+        if "[BUG] controlled selfdestruct" in description or "[BUG] selfdestruct DoS" in description:
+            return IssueKind.UNSAFE_SELFDESTRUCT
 
         return None
 
     def parse_analysis_output(
-        self, test_output_dir: str
+        self,
+        test_output_dir: str,
     ) -> Optional[List[Issue]]:
-        """Parse output of sFuzz"""
+        """Parse output of EF/CF. Return `None` if result parsing is not
+        successful."""
+
         log_file = self.configure_log_file(test_output_dir)
         test_file = logger.get_input_test_file(log_file)
         if test_file is None:
             warning(f"Failed to get input test file from: {log_file}")
 
-        # Read analysis output from log file of sFuzz
+        # Read analysis output from log file of EF/CF
         log_lines = []
-        has_fuzzing_result = False
         try:
             with open(log_file, "r", encoding="utf-8") as file:
                 while line := file.readline():
-                    if not has_fuzzing_result and "coverage :" in line:
-                        has_fuzzing_result = True
                     log_lines.append(line.strip())
         except Exception as err:
-            error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
-            return None
-
-        if not has_fuzzing_result:
+            error(f"Failed to parse EF/CF log file: {log_file}\n\n{err}")
             return None
 
         # Construct AST of test file to get bug location
@@ -169,7 +154,7 @@ class Sfuzz(Tool):
 
             # Parse contract name
             if match := re.search(
-                r"Fuzzing contract: ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
+                r"launch-aflfuzz.sh ([a-zA-Z$_][a-zA-Z0-9$_]*)", log_line
             ):
                 contract_name = match.groups(1)[0]
                 continue
@@ -205,7 +190,7 @@ class Sfuzz(Tool):
                     issue_kind,
                     log_line,
                     [loc],
-                    Checker("sFuzz", "fuzzing"),
+                    Checker("EF/CF", "fuzzing"),
                 )
 
         return all_issues
@@ -227,7 +212,7 @@ class Sfuzz(Tool):
                 or annot.annot_format == AnnotFormat.SMARTBENCH
                 or annot.annot_format == AnnotFormat.VERISMART
             ):
-                # SFuzz reports issue location as a range of the whole function.
+                # EF/CF reports issue location as a range of the whole function.
                 # If an issue and a bug annotation are relevant, then the
                 # issue's location should cover the bug annotation's location.
                 if (
@@ -241,7 +226,7 @@ class Sfuzz(Tool):
         return False
 
     def parse_instruction_coverage(self, test_output_dir: str):
-        """Parse instruction coverage of sFuzz"""
+        """Parse instruction coverage of CF/EF"""
         lines = None
         log_file = self.configure_log_file(test_output_dir)
         coverage_file = os.path.join(test_output_dir, self.json_coverage_file)
@@ -249,51 +234,21 @@ class Sfuzz(Tool):
             with open(log_file, "r", encoding="utf-8") as file:
                 lines = [line.rstrip() for line in file]
         except Exception as err:
-            error(f"Failed to parse sFuzz log file: {log_file}\n\n{err}")
+            error(f"Failed to parse CF/EF log file: {log_file}\n\n{err}")
             return None
 
-        contract_coverage_list = []
-        contract_name = ""
-        first_coverage = 0
-        contract_coverage = [first_coverage]
-
+        coverage_num = None
         for line in lines:
-            match_str = re.search(r"coverage : [0-9]+", line)
-            fuzz_match = re.search(r">> Fuzz [a-zA-Z0-9$_]+", line)
-            if fuzz_match:
-                contract = fuzz_match.group()
-                contract_name = contract.removeprefix(">> Fuzz ")
-                safe_print(f"contract: {contract_name}")
-                if len(contract_coverage) != 1:
-                    contract_coverage_list.append(
-                        (contract_name, contract_coverage)
-                    )
-                    contract_coverage = [first_coverage]
-
-            if match_str:
-                coverage = match_str.group()
-                coverage = coverage.removeprefix("coverage : ")
-                contract_coverage.append(int(coverage))
+            coverage_match = re.search(r"Code Coverage \(Basic Blocks\) => ([0-9]+[.])?[0-9]+", line)
+            if coverage_match:
+                coverage = coverage_match.group()
+                coverage_num = coverage.removeprefix("Code Coverage (Basic Blocks) => ")
 
         # Add the results of the last contract
-
-        if contract_coverage != [0]:
-            contract_coverage_list.append((contract_name, contract_coverage))
-
-        if contract_coverage_list == []:
-            return None
-
-        results_json_obj = {
-            "coverage-interval": 1,
-        }
-        for contract_name, contract_coverage in contract_coverage_list:
-            results_json_obj[contract_name] = contract_coverage
-
-        results_json_obj_str = json.dumps(results_json_obj, indent=2)
-        debug(f"coverage: {results_json_obj_str}")
-
+        debug(f"coverage: {coverage_num}")
         with open(coverage_file, "w", encoding="utf-8") as file:
-            file.write(results_json_obj_str)
+            file.write(str(coverage_num or "NONE"))
             file.close()
 
         return coverage_file
+
