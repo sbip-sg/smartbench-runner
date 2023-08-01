@@ -17,6 +17,7 @@ from smartbench.tools.mythril.mythril import Mythril
 from smartbench.tools.sfuzz.sfuzz import Sfuzz
 from smartbench.tools.slither.slither import Slither
 from smartbench.tools.efcf.efcf import EFCF
+from smartbench.tools.ityfuzz.ityfuzz import ItyFuzz
 from smartbench.tools.smartfuzz.smartfuzz import SmartFuzz
 from smartbench.tools.verismart.verismart import VeriSmart
 from smartbench.tools.smartian.smartian import Smartian
@@ -47,7 +48,8 @@ SUPPORTED_TOOLS = [
     "smartfuzz",
     "smartian",
     "verismart",
-    "efcf"
+    "efcf",
+    "ityfuzz"
 ]
 
 
@@ -132,6 +134,8 @@ def load_tool_configuration(tool_id: str) -> Optional[Tool]:
                 tool_constructor = VeriSmart
             elif tool_root_id == "efcf":
                 tool_constructor = EFCF
+            elif tool_root_id == "ityfuzz":
+                tool_constructor = ItyFuzz
 
             if tool_constructor is None:
                 error_traceback(f"Unknown analysis tool: {tool_id}")

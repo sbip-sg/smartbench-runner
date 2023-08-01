@@ -1,0 +1,7 @@
+[info]
+name = "ItyFuzz"
+
+[command]
+executable = "run-ityfuzz.sh"
+default_arguments = ""
+default_timeout = 60
