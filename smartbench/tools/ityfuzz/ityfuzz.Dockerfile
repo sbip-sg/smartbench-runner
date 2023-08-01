@@ -1,3 +1,5 @@
+# Dockerfile for ItyFuzz
+
 FROM rust:buster as run_environment
 RUN apt-get update && apt-get install -y \
     curl \
@@ -15,45 +17,21 @@ FROM run_environment as build_environment
 RUN apt-get update && apt-get install -y clang pkg-config cmake \
     && rm -rf /var/lib/apt/lists/*
 
-FROM build_environment as builder
-WORKDIR /builder
+# Install ItyFuzz
+WORKDIR /root/
+RUN git clone --recursive https://github.com/fuzzland/ityfuzz.git && cd ityfuzz && git checkout stable
 
-COPY Cargo.toml .
-COPY rust-toolchain.toml .
-COPY src ./src
-COPY cli ./cli
-COPY benches ./benches
-COPY externals ./externals
-
-# build offchain binary
-WORKDIR /builder/cli
+WORKDIR /root/ityfuzz/cli
 RUN cargo build --release
-RUN cp target/release/cli /bins/cli_offchain
 
-# build onchain binary
-RUN sed -i -e 's/"cmp"/"cmp","flashloan_v2"/g' ../Cargo.toml
-RUN cargo build --release
-RUN cp target/release/cli /bins/cli_onchain
+# Entry point when running the container as an executable
+WORKDIR /root/
 
-RUN sed -i -e 's/"deployer_is_attacker"/"print_logs"/g' ../Cargo.toml
-RUN sed -i -e 's/"print_txn_corpus",//g' ../Cargo.toml
-RUN sed -i -e 's/"full_trace",//g' ../Cargo.toml
-RUN cargo build --release
-RUN cp target/release/cli /bins/cli_print_logs
+# Prepare benchmarking environments
+RUN mkdir benchmarks
+RUN mkdir testing
+RUN mkdir results
 
-FROM run_environment
-WORKDIR /app
-COPY --from=builder /bins /bins
-
-COPY ui /app/ui
-RUN pip3 install -r ui/requirements.txt
-RUN pip3 install solc-select
-
-COPY ui/start.sh .
-RUN chmod +x start.sh
-
-EXPOSE 8000
-
-CMD ./start.sh
-
-
+# Entry point when running the container as an executable
+WORKDIR /root/
+ENTRYPOINT [ "/bin/bash" ]
