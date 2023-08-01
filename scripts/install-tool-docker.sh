@@ -13,6 +13,7 @@ SUPPORTED_TOOLS=(
     "smartfuzz"
     "verismart"
     "efcf"
+    "ityfuzz"
 )
 
 ################################################
