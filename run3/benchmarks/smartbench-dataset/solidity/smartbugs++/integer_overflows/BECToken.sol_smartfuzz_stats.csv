@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/BECToken.sol,Lack of Zero-Address Validation,None,BECToken.sol:93:None-93:None,

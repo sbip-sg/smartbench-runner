@@ -1,0 +1,43 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Block Values Dependency,BlockValueDependency,GymSinglePool.sol:1714:None-1714:None,y (to control event start time)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Block Values Dependency,BlockValueDependency,GymSinglePool.sol:1740:None-1740:None,n (usage in event)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Block Values Dependency,BlockValueDependency,GymSinglePool.sol:2172:None-2172:None,y (to calculate distribution based on how mange blocks has passed since last reward)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Block Values Dependency,BlockValueDependency,GymSinglePool.sol:2177:None-2177:None,"y (update prev blocknumber, used in above biz logic)"
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:348:None-348:None,y (for lock permission during certain time range)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:357:None-357:None,y (checking lock permisson)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:647:None-647:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:675:None-675:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:726:None-726:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:727:None-727:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:733:None-733:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:778:None-778:None,"unclear, used in external call"
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:799:None-799:None,"unclear, used in external call"
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:819:None-819:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:859:None-859:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/access_control/ShadowFi/ShadowFi.sol,Block Values Dependency,BlockValueDependency,ShadowFi.sol:860:None-860:None,n (usage in event)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:351:None-351:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:352:None-352:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:469:None-469:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:472:None-472:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:478:None-478:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:481:None-481:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:486:None-486:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/TempleDAO/StaxLPStaking.sol,Block Values Dependency,BlockValueDependency,StaxLPStaking.sol:487:None-487:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Block Values Dependency,BlockValueDependency,ULME.sol:910:None-910:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Block Values Dependency,BlockValueDependency,ULME.sol:992:None-992:None,"unclear, used in external call"
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Block Values Dependency,BlockValueDependency,Curve.sol:4367:None-4367:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1031:None-1031:None,y (ensure the transaction can happen only after certain time)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1039:None-1039:None,n (usage in event)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1080:None-1080:None,n (usage in event)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1155:None-1155:None,n (usage in event)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1202:None-1202:None,n (usage in event)
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1215:None-1215:None,n (usage in event)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2369:None-2369:None,y (use in biz logic serving as timestamp of event)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2443:None-2443:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2445:None-2445:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2469:None-2469:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2474:None-2474:None,y (use in biz logic serving as timestamp of event)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2477:None-2477:None,y (execute different biz logic based on whether certain block number is passed)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2487:None-2487:None,y (use in biz logic serving as timestamp of event)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2755:None-2755:None,"unclear, used in external call"
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Block Values Dependency,BlockValueDependency,paraluni.sol:2758:None-2758:None,"unclear, used in external call"

@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 3}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/tokensalechallenge.sol,Arbitrary External Call,None,tokensalechallenge.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/integer_overflows/tokensalechallenge.sol,Unchecked Send Ether,None,tokensalechallenge.sol:29:None-29:None,

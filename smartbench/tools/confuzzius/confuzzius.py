@@ -157,7 +157,7 @@ class Confuzzius(Tool):
         if "Unsafe Delegatecall" in type:
             return IssueKind.UNSAFE_DELEGATECALL
 
-        return IssueKind.UNKNOWN
+        return IssueKind.unknown_with_original_type(type)
 
     def parse_analysis_output(
         self,

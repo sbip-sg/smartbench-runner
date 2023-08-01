@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 3}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 1, 'Unhandled Exception': 4, 'Unchecked Send Ether': 1, 'Integer Overflow': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Access Control,None,rubixi.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Lack of Zero-Address Validation,None,rubixi.sol:110:None-110:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Unhandled Exception,None,rubixi.sol:72:None-72:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Unchecked Send Ether,None,rubixi.sol:72:None-72:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Unhandled Exception,None,rubixi.sol:84:None-84:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Integer Overflow,None,rubixi.sol:89:None-89:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Unhandled Exception,None,rubixi.sol:95:None-95:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/rubixi.sol,Unhandled Exception,None,rubixi.sol:105:None-105:None,

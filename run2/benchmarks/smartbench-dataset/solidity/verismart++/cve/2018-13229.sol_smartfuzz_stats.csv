@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'ARITHMETIC': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Overflow': 3, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:69:None-69:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:125:None-125:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Reentrancy,REENTRANCY_READONLY,2018-13229.sol:73:None-73:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:144:None-144:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:62:None-62:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:114:None-114:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Integer Overflow,None,2018-13229.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Arbitrary External Call,None,2018-13229.sol:69:None-69:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Integer Overflow,None,2018-13229.sol:138:None-138:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Lack of Zero-Address Validation,None,2018-13229.sol:137:None-137:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Arbitrary External Call,None,2018-13229.sol:162:None-162:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13229.sol,Integer Overflow,None,2018-13229.sol:164:None-164:None,

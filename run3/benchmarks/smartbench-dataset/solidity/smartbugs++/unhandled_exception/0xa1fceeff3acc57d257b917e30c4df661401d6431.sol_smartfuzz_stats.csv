@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xa1fceeff3acc57d257b917e30c4df661401d6431.sol,Arbitrary External Call,None,0xa1fceeff3acc57d257b917e30c4df661401d6431.sol:20:None-20:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xa1fceeff3acc57d257b917e30c4df661401d6431.sol,Reentrancy,REENTRANCY_READONLY,0xa1fceeff3acc57d257b917e30c4df661401d6431.sol:31:None-31:None,

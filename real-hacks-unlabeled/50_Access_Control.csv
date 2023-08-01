@@ -1,0 +1,4 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Access Control,None,GymSinglePool.sol:1705:None-1705:None,y (protected by initializer)
+benchmarks/real-hacks/access_control/SafeMoon/SafeMoon.sol,Access Control,None,SafeMoon.sol:832:None-832:None,y (protected by initializer)
+benchmarks/real-hacks/address_validation/qubit_finance/QBridgeHandler.sol,Access Control,None,QBridgeHandler.sol:1135:None-1135:None,y (protected by initializer)

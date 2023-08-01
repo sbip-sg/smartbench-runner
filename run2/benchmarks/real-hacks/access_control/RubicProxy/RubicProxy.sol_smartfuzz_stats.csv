@@ -1,0 +1,14 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Arbitrary External Call': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 9, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 2}}
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2211:None-2211:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2427:None-2427:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2202:None-2202:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:771:None-771:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2366:None-2366:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2133:None-2133:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2178:None-2178:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2165:None-2165:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Arbitrary External Call,None,RubicProxy.sol:2366:None-2366:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Lack of Zero-Address Validation,None,RubicProxy.sol:2094:None-2094:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Reentrancy,REENTRANCY_READONLY,RubicProxy.sol:190:None-190:None,
+benchmarks/real-hacks/access_control/RubicProxy/RubicProxy.sol,Reentrancy,REENTRANCY_READONLY,RubicProxy.sol:264:None-264:None,

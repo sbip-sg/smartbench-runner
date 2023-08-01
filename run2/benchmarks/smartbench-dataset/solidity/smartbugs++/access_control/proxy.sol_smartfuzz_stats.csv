@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unsafe DelegateCall': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 1, 'Lack of Zero-Address Validation': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/proxy.sol,Block Values Dependency,BlockValueDependency,proxy.sol:11:None-14:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/proxy.sol,Lack of Zero-Address Validation,None,proxy.sol:11:None-11:None,

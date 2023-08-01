@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 3}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 5, 'Arbitrary External Call': 3}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Unchecked Send Ether,None,blackjack.sol:186:None-186:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Unchecked Send Ether,None,blackjack.sol:223:None-223:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Unchecked Send Ether,None,blackjack.sol:240:None-240:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Unchecked Send Ether,None,blackjack.sol:236:None-236:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Unchecked Send Ether,None,blackjack.sol:183:None-183:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Arbitrary External Call,None,blackjack.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Arbitrary External Call,None,blackjack.sol:100:None-100:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/blackjack.sol,Arbitrary External Call,None,blackjack.sol:142:None-142:None,

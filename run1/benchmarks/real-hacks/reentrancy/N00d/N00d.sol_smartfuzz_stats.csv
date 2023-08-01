@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1}, 'num_detected_not_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1, 'Access Control': 1}}
+benchmarks/real-hacks/reentrancy/N00d/N00d.sol,Reentrancy,REENTRANCY_READONLY,N00d.sol:769:None-769:None,
+benchmarks/real-hacks/reentrancy/N00d/N00d.sol,Access Control,None,N00d.sol:750:None-750:None,

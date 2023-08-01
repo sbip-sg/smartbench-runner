@@ -96,10 +96,6 @@ class AnalysisResult:
             result["missing_annots"] = self.validation_result.missing_bugs
             result["detected_annots"] = [f[1] for f in self.validation_result.correct_bugs]
             result["unlabelled_issues"] = self.validation_result.unlabelled_issues
-        else:
-            result["missing_annots"] = []
-            result["detected_annots"] = []
-            result["unlabelled_issues"] = []
         return result
     def print_detailed_summary(self) -> None:
         """Print statistic summary of detected issues for a test file"""
@@ -242,7 +238,7 @@ def parse_test_file_result(
 
         # Validate detected issues against the bug annotations
         if validate and issues is not None and bug_annots is not None:
-            validation = validator.validate_issues(tool, issues, bug_annots)
+            validation = validator.validate_issues(test_file, tool, issues, bug_annots)
 
     res = AnalysisResult(
         tool,

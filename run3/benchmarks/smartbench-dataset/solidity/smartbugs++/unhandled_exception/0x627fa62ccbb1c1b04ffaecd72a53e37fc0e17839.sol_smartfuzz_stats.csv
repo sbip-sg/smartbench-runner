@@ -1,0 +1,12 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY)': 2, 'Unhandled Exception': 1, 'Integer Underflow': 1, 'Integer Overflow': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Access Control,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:54:None-54:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Lack of Zero-Address Validation,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:39:None-39:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Reentrancy,REENTRANCY,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:44:None-44:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Reentrancy,REENTRANCY,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:94:None-94:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Lack of Zero-Address Validation,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:76:None-76:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Lack of Zero-Address Validation,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:14:None-14:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Lack of Zero-Address Validation,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:87:None-87:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Unhandled Exception,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:94:None-94:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Integer Underflow,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:96:None-96:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol,Integer Overflow,None,0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol:72:None-72:None,

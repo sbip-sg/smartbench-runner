@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrancy_simple.sol,Arbitrary External Call,None,reentrancy_simple.sol:20:None-20:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrancy_simple.sol,Unchecked Send Ether,None,reentrancy_simple.sol:24:None-24:None,

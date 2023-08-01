@@ -1,0 +1,17 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Underflow': 2, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Integer Overflow,None,2018-13155.sol:261:None-261:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:259:None-259:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:145:None-145:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Reentrancy,REENTRANCY_READONLY,2018-13155.sol:153:None-153:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:43:None-43:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Integer Overflow,None,2018-13155.sol:204:None-204:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:126:None-126:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:268:None-268:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Integer Underflow,None,2018-13155.sol:189:None-189:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:185:None-185:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Integer Underflow,None,2018-13155.sol:172:None-172:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Integer Overflow,None,2018-13155.sol:73:None-73:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Integer Overflow,None,2018-13155.sol:80:None-80:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Lack of Zero-Address Validation,None,2018-13155.sol:107:None-107:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13155.sol,Arbitrary External Call,None,2018-13155.sol:145:None-145:None,

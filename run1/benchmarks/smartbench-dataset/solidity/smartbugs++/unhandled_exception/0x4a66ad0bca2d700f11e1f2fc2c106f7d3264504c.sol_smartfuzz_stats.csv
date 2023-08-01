@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x4a66ad0bca2d700f11e1f2fc2c106f7d3264504c.sol,Integer Overflow,None,0x4a66ad0bca2d700f11e1f2fc2c106f7d3264504c.sol:19:None-19:None,

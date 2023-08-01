@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Underflow': 1, 'Arbitrary External Call': 1, 'ERC20 Access Control': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Integer Overflow,None,2018-13776.sol:78:None-78:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:141:None-141:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Integer Overflow,None,2018-13776.sol:258:None-258:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:156:None-156:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Reentrancy,REENTRANCY_READONLY,2018-13776.sol:161:None-161:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:256:None-256:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:126:None-126:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:189:None-189:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:43:None-43:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Lack of Zero-Address Validation,None,2018-13776.sol:266:None-266:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Integer Underflow,None,2018-13776.sol:176:None-176:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,Arbitrary External Call,None,2018-13776.sol:156:None-156:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13776.sol,ERC20 Access Control,None,2018-13776.sol:173:None-173:None,

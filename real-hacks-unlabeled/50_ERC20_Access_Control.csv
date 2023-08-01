@@ -1,0 +1,2 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/SafeMoon/SafeMoon.sol,ERC20 Access Control,None,SafeMoon.sol:832:None-832:None,n (protected by an initializer)

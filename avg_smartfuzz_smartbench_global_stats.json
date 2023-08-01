@@ -1,0 +1,33 @@
+{
+    "n_files": {
+        "value": 23.0
+    },
+    "n_unlabeled": {
+        "value": 295.3333333333333
+    },
+    "n_unlabeled_average": {
+        "value": 12.840579710144928
+    },
+    "n_unlabeled_by_bug_type": {
+        "Lack of Zero-Address Validation": 122.0,
+        "Reentrancy (REENTRANCY)": 22.333333333333332,
+        "Integer Truncation": 9.0,
+        "Block Values Dependency (BlockValueDependencySensitive)": 14.666666666666666,
+        "Integer Overflow": 9.666666666666666,
+        "Integer Underflow": 4.666666666666667,
+        "Reentrancy (REENTRANCY_READONLY)": 23.0,
+        "ERC20 Access Control": 1.0,
+        "Access Control": 3.3333333333333335,
+        "Unhandled Exception": 11.0,
+        "Unchecked Send Ether": 2.3333333333333335,
+        "ERC20 Leak": 2.0,
+        "Unknown Issue (IntegerDivByZero by YUL)": 3.0,
+        "Block Values Dependency (BlockValueDependency)": 40.0,
+        "Authorization through tx.origin": 2.0,
+        "Arbitrary External Call": 7.666666666666667,
+        "Locking Ether": 2.0,
+        "Assertion Failure": 2.0,
+        "Denial of Service": 1.0,
+        "Unsafe DelegateCall": 13.333333333333334
+    }
+}

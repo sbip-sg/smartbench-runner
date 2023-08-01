@@ -1,0 +1,24 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/CowSwap/SwapGuard.sol,Reentrancy,REENTRANCY,SwapGuard.sol:365:None-365:None,y
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Reentrancy,REENTRANCY,GymSinglePool.sol:2131:None-2131:None,y
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Reentrancy,REENTRANCY,GymSinglePool.sol:2226:None-2226:None,y (recheck)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Reentrancy,REENTRANCY,GymSinglePool.sol:2235:None-2238:None,y (recheck)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Reentrancy,REENTRANCY,GymSinglePool.sol:2242:None-2245:None,y (recheck)
+benchmarks/real-hacks/access_control/GymNetwork/GymSinglePool.sol,Reentrancy,REENTRANCY,GymSinglePool.sol:231:None-231:None,"y (from lib internal function, to recheck)"
+benchmarks/real-hacks/access_control/Multicall/Multicall.sol,Reentrancy,REENTRANCY,Multicall.sol:113:None-118:None,y
+benchmarks/real-hacks/access_control/Multicall/Multicall.sol,Reentrancy,REENTRANCY,Multicall.sol:115:None-115:None,y
+benchmarks/real-hacks/access_control/SafeMoon/SafeMoon.sol,Reentrancy,REENTRANCY,SafeMoon.sol:1672:None-1672:None,y
+benchmarks/real-hacks/access_control/SafeMoon/SafeMoon.sol,Reentrancy,REENTRANCY,SafeMoon.sol:874:None-874:None,y
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Reentrancy,REENTRANCY,Poolz.sol:977:None-977:None,y
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Reentrancy,REENTRANCY,Curve.sol:309:None-309:None,"n (from lib, to recheck)"
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY,JAY.sol:1075:None-1075:None,y
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY,JAY.sol:1150:None-1150:None,y
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY,JAY.sol:1179:None-1185:None,y
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY,JAY.sol:1212:None-1212:None,y
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Reentrancy,REENTRANCY,PoolFunctionality.sol:1217:None-1217:None,y
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Reentrancy,REENTRANCY,PoolFunctionality.sol:361:None-361:None,"y (in lib, doc provides reentrancy warning)"
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Reentrancy,REENTRANCY,PoolFunctionality.sol:761:None-761:None,y
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Reentrancy,REENTRANCY,paraluni.sol:2610:None-2610:None,y
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Reentrancy,REENTRANCY,paraluni.sol:2841:None-2849:None,y
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Reentrancy,REENTRANCY,paraluni.sol:931:None-931:None,"y (from lib internal function, to recheck)"
+benchmarks/real-hacks/reentrancy/Revest/Revest.sol,Reentrancy,REENTRANCY,Revest.sol:2884:None-2884:None,y

@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Arbitrary External Call': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2, 'Reentrancy (REENTRANCY_READONLY)': 2}}
+benchmarks/real-hacks/access_control/Multicall/Multicall.sol,Lack of Zero-Address Validation,None,Multicall.sol:124:None-124:None,
+benchmarks/real-hacks/access_control/Multicall/Multicall.sol,Reentrancy,REENTRANCY_READONLY,Multicall.sol:115:None-115:None,
+benchmarks/real-hacks/access_control/Multicall/Multicall.sol,Lack of Zero-Address Validation,None,Multicall.sol:135:None-135:None,
+benchmarks/real-hacks/access_control/Multicall/Multicall.sol,Reentrancy,REENTRANCY_READONLY,Multicall.sol:113:None-118:None,

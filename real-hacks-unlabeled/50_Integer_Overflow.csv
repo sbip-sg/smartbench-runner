@@ -1,0 +1,13 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/access_control/CowSwap/SwapGuard.sol,Integer Overflow,None,SwapGuard.sol:379:None-379:None,n (contract above 0.8.0)
+benchmarks/real-hacks/access_control/Melo/MELO.sol,Integer Overflow,None,MELO.sol:216:None-216:None,y
+benchmarks/real-hacks/arithmetic/Poolz/Poolz.sol,Integer Overflow,None,Poolz.sol:1183:None-1183:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1351:None-1351:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1360:None-1360:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1469:None-1471:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1470:None-1470:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1475:None-1475:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1487:None-1487:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Overflow,None,StakingRewards.sol:1488:None-1488:None,y
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Integer Overflow,None,PoolFunctionality.sol:1201:None-1201:None,y
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Integer Overflow,None,PoolFunctionality.sol:1219:None-1219:None,y

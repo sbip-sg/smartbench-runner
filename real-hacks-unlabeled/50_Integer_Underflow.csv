@@ -1,0 +1,7 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Underflow,None,StakingRewards.sol:1393:None-1393:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Underflow,None,StakingRewards.sol:1414:None-1414:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Underflow,None,StakingRewards.sol:1470:None-1470:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Underflow,None,StakingRewards.sol:1475:None-1475:None,y
+benchmarks/real-hacks/arithmetic/Umbrella_Network/StakingRewards.sol,Integer Underflow,None,StakingRewards.sol:1507:None-1507:None,y
+benchmarks/real-hacks/reentrancy/DFX/Curve.sol,Integer Underflow,None,Curve.sol:4608:None-4611:None,n (unclear)

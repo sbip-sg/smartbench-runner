@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'ARITHMETIC': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 3}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13695.sol,Lack of Zero-Address Validation,None,2018-13695.sol:65:None-65:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13695.sol,Lack of Zero-Address Validation,None,2018-13695.sol:64:None-64:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13695.sol,Lack of Zero-Address Validation,None,2018-13695.sol:63:None-63:None,

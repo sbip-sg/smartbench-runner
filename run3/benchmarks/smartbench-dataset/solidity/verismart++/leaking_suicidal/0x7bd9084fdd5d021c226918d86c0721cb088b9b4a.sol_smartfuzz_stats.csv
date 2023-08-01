@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 2, 'Lack of Zero-Address Validation': 1, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol,Arbitrary External Call,None,0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol:34:None-34:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol,Lack of Zero-Address Validation,None,0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol:28:None-28:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol,Arbitrary External Call,None,0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol:28:None-28:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol,Reentrancy,REENTRANCY_READONLY,0x7bd9084fdd5d021c226918d86c0721cb088b9b4a.sol:31:None-31:None,

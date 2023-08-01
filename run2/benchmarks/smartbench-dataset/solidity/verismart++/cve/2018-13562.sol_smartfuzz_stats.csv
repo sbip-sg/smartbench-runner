@@ -1,0 +1,17 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 4, 'Lack of Zero-Address Validation': 6, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 1, 'Access Control': 1, 'ERC20 Access Control': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Integer Overflow,None,2018-13562.sol:97:None-97:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Integer Overflow,None,2018-13562.sol:417:None-417:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Lack of Zero-Address Validation,None,2018-13562.sol:253:None-253:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Lack of Zero-Address Validation,None,2018-13562.sol:223:None-223:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Reentrancy,REENTRANCY_READONLY,2018-13562.sol:263:None-263:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Lack of Zero-Address Validation,None,2018-13562.sol:413:None-413:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Arbitrary External Call,None,2018-13562.sol:253:None-253:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Lack of Zero-Address Validation,None,2018-13562.sol:319:None-319:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Lack of Zero-Address Validation,None,2018-13562.sol:27:None-27:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Lack of Zero-Address Validation,None,2018-13562.sol:433:None-433:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Integer Underflow,None,2018-13562.sol:293:None-293:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Access Control,None,2018-13562.sol:27:None-27:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Integer Overflow,None,2018-13562.sol:477:None-477:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,Integer Overflow,None,2018-13562.sol:481:None-481:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13562.sol,ERC20 Access Control,None,2018-13562.sol:413:None-413:None,

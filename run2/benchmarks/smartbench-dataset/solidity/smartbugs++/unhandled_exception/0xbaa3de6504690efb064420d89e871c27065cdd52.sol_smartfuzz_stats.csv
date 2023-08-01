@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Authorization through tx.origin': 1, 'Access Control': 1, 'Lack of Zero-Address Validation': 2, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol,Authorization through tx.origin,None,0xbaa3de6504690efb064420d89e871c27065cdd52.sol:25:None-25:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol,Access Control,None,0xbaa3de6504690efb064420d89e871c27065cdd52.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol,Lack of Zero-Address Validation,None,0xbaa3de6504690efb064420d89e871c27065cdd52.sol:12:None-12:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol,Arbitrary External Call,None,0xbaa3de6504690efb064420d89e871c27065cdd52.sol:12:None-12:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol,Lack of Zero-Address Validation,None,0xbaa3de6504690efb064420d89e871c27065cdd52.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol,Reentrancy,REENTRANCY_READONLY,0xbaa3de6504690efb064420d89e871c27065cdd52.sol:14:None-14:None,

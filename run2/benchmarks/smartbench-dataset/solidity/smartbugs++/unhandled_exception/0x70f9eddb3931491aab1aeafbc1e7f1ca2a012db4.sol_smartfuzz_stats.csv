@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol,Unchecked Send Ether,None,0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol:17:None-17:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol,Lack of Zero-Address Validation,None,0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol:26:None-26:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol,Arbitrary External Call,None,0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol:14:None-14:None,

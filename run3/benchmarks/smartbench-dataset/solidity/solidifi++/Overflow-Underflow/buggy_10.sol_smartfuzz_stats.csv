@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Underflow': 4, 'Integer Truncation': 2, 'Integer Overflow': 2}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 2, 'Unchecked Send Ether': 2, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_10.sol,Block Values Dependency,BlockValueDependency,buggy_10.sol:75:None-75:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_10.sol,Block Values Dependency,BlockValueDependency,buggy_10.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_10.sol,Unchecked Send Ether,None,buggy_10.sol:37:None-37:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_10.sol,Unchecked Send Ether,None,buggy_10.sol:77:None-77:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_10.sol,Arbitrary External Call,None,buggy_10.sol:74:None-74:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_10.sol,Arbitrary External Call,None,buggy_10.sol:34:None-34:None,

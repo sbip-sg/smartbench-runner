@@ -96,7 +96,7 @@ class VeriSmart(Tool):
         ):
             issue_kind = IssueKind.ASSERTION_FAILURE
         elif match := re.search(r"\[KA] line ([0-9]+).* unproven", log_line):
-            issue_kind = IssueKind.UNKNOWN
+            issue_kind = IssueKind.unknown_with_original_type(log_line)
         elif match := re.search(
             r"\[ETH_LEAK] line ([0-9]+).* unproven", log_line
         ):

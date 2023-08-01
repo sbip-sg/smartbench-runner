@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Lack of Zero-Address Validation': 1, 'Access Control': 1, 'Unhandled Exception': 1, 'Reentrancy (REENTRANCY_READONLY)': 2, 'Arbitrary External Call': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Block Values Dependency,BlockValueDependencySensitive,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:71:None-71:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Lack of Zero-Address Validation,None,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:67:None-67:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Access Control,None,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:67:None-67:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Unhandled Exception,None,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:40:None-40:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Reentrancy,REENTRANCY_READONLY,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Reentrancy,REENTRANCY_READONLY,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:43:None-43:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Arbitrary External Call,None,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:33:None-33:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol,Unchecked Send Ether,None,0xb5e1b1ee15c6fa0e48fce100125569d430f1bd12.sol:40:None-40:None,

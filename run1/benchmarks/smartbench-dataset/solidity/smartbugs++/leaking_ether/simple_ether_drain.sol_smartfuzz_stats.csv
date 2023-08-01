@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/simple_ether_drain.sol,Arbitrary External Call,None,simple_ether_drain.sol:11:None-11:None,

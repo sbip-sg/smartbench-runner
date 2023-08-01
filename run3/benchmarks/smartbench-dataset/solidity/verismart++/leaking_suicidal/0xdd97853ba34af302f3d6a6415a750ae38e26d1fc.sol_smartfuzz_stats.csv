@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 3}, 'num_detected_not_in_annot': {'Denial of Service': 1, 'Lack of Zero-Address Validation': 3, 'Arbitrary External Call': 4}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Denial of Service,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1096:None-1154:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Lack of Zero-Address Validation,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1163:None-1163:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Arbitrary External Call,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1071:None-1071:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Lack of Zero-Address Validation,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1156:None-1156:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Lack of Zero-Address Validation,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1168:None-1168:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Arbitrary External Call,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1168:None-1168:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Arbitrary External Call,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1163:None-1163:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol,Arbitrary External Call,None,0xdd97853ba34af302f3d6a6415a750ae38e26d1fc.sol:1156:None-1156:None,

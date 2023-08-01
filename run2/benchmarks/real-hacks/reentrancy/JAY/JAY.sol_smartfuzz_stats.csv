@@ -1,0 +1,16 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 6, 'Unknown Issue (IntegerDivByZero by YUL)': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 2, 'Reentrancy (REENTRANCY_READONLY)': 4}}
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1031:None-1031:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1039:None-1039:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Unknown Issue,IntegerDivByZero by YUL,JAY.sol:731:None-731:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Lack of Zero-Address Validation,None,JAY.sol:1043:None-1043:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1080:None-1080:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1215:None-1215:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1155:None-1155:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Block Values Dependency,BlockValueDependency,JAY.sol:1202:None-1202:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Arbitrary External Call,None,JAY.sol:1115:None-1115:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY_READONLY,JAY.sol:1150:None-1150:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY_READONLY,JAY.sol:1179:None-1185:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY_READONLY,JAY.sol:1075:None-1075:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Reentrancy,REENTRANCY_READONLY,JAY.sol:1212:None-1212:None,
+benchmarks/real-hacks/reentrancy/JAY/JAY.sol,Arbitrary External Call,None,JAY.sol:1056:None-1056:None,

@@ -1,0 +1,15 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Integer Overflow': 3, 'Arbitrary External Call': 1, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Underflow': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Lack of Zero-Address Validation,None,2018-13534.sol:128:None-128:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Lack of Zero-Address Validation,None,2018-13534.sol:161:None-161:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Integer Overflow,None,2018-13534.sol:219:None-219:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Arbitrary External Call,None,2018-13534.sol:128:None-128:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Reentrancy,REENTRANCY_READONLY,2018-13534.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Lack of Zero-Address Validation,None,2018-13534.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Lack of Zero-Address Validation,None,2018-13534.sol:217:None-217:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Lack of Zero-Address Validation,None,2018-13534.sol:113:None-113:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Lack of Zero-Address Validation,None,2018-13534.sol:227:None-227:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Integer Underflow,None,2018-13534.sol:148:None-148:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Integer Overflow,None,2018-13534.sol:249:None-249:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Integer Overflow,None,2018-13534.sol:251:None-251:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13534.sol,Unchecked Send Ether,None,2018-13534.sol:251:None-251:None,

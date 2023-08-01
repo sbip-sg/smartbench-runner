@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Assertion Failure': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-10299.sol,Lack of Zero-Address Validation,None,2018-10299.sol:87:None-87:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-10299.sol,Assertion Failure,None,2018-10299.sol:28:None-28:None,

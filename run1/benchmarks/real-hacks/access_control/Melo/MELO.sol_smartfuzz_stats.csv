@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'ERC20 Access Control': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 1}}
+benchmarks/real-hacks/access_control/Melo/MELO.sol,Integer Overflow,None,MELO.sol:216:None-216:None,

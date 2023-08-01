@@ -163,7 +163,7 @@ class Mythril(Tool):
         if "Unchecked return value from external call" in description:
             return IssueKind.UNCHECKED_CALL_RETURN_VALUE
 
-        return IssueKind.UNKNOWN
+        return IssueKind.unknown_with_original_type(description)
 
     def parse_analysis_output(
         self, test_output_dir: str

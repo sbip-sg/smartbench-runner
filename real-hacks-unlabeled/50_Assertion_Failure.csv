@@ -1,0 +1,3 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/reentrancy/Orion/PoolFunctionality.sol,Assertion Failure,None,PoolFunctionality.sol:1256:None-1256:None,y (should use require for input validation)
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Assertion Failure,None,paraluni.sol:2516:None-2516:None,y (should use require)

@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 5, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Access Control,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:108:None-108:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Lack of Zero-Address Validation,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:281:None-281:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Lack of Zero-Address Validation,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:251:None-251:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Lack of Zero-Address Validation,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:228:None-228:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Lack of Zero-Address Validation,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:240:None-240:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Reentrancy,REENTRANCY_READONLY,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:284:None-284:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Lack of Zero-Address Validation,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:287:None-287:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Arbitrary External Call,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:251:None-251:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol,Arbitrary External Call,None,0xf55a32f0107523c14027c4a1e6177cd7291395a0.sol:281:None-281:None,

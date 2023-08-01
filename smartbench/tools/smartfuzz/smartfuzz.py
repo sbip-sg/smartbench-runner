@@ -154,7 +154,7 @@ class SmartFuzz(Tool):
             return IssueKind.BLOCK_VALUE_DEPENDENCY
 
         if "BlockValueDependency" in description:
-            return IssueKind.BLOCK_VALUE_DEPENDENCY
+            return IssueKind.BLOCK_VALUE_DEPENDENCY.with_origin(description)
 
         if "LockedEthers" in description:
             return IssueKind.LOCKING_ETHER
@@ -163,7 +163,7 @@ class SmartFuzz(Tool):
             return IssueKind.AUTHORIZATION_THROUGH_TX_ORIGIN
 
         if "REENTRANCY" in description:
-            return IssueKind.REENTRANCY
+            return IssueKind.REENTRANCY.with_origin(description)
 
         if "UnauthorizedSend" in description:
             return IssueKind.UNCHECKED_SEND_ETHER
@@ -196,7 +196,7 @@ class SmartFuzz(Tool):
             return IssueKind.POSSIBLY_UNINITIALIZED
 
         safe_print(f"unknown issue kind:{description}")
-        return IssueKind.UNKNOWN
+        return IssueKind.unknown_with_original_type(description)
 
     # Parsing `denial_of_service` bugs
     def parse_dos_bugs(self, dos_bugs, test_file: str):
@@ -285,7 +285,12 @@ class SmartFuzz(Tool):
         dos_bugs = []
         other_bugs = []
         for bug in reported_bugs:
+
+
             issue_kind = self.parse_issue_kind(bug.get("bug_type"))
+            if bug.get("is_yul"):
+                issue_kind = issue_kind.with_origin(issue_kind.original_type + ' by YUL')
+
             if issue_kind == IssueKind.DENIAL_OF_SERVICE:
                 dos_bugs.append((issue_kind, bug))
             else:

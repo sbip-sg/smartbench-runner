@@ -1,0 +1,7 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependency)': 5}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 3, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/etheraffle.sol,Unchecked Send Ether,None,etheraffle.sol:93:None-93:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/etheraffle.sol,Arbitrary External Call,None,etheraffle.sol:64:None-64:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/etheraffle.sol,Unchecked Send Ether,None,etheraffle.sol:138:None-138:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/etheraffle.sol,Arbitrary External Call,None,etheraffle.sol:126:None-126:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/etheraffle.sol,Unchecked Send Ether,None,etheraffle.sol:122:None-122:None,

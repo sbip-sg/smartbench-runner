@@ -1,0 +1,9 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unsafe Selfdestruct': 1, 'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'ERC20 Access Control': 1, 'Assertion Failure': 1, 'ERC20 Leak': 2, 'Unchecked Send Ether': 1, 'Access Control': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,ERC20 Access Control,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:236:None-236:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,Assertion Failure,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:38:None-38:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,ERC20 Leak,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:101:None-101:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,Unchecked Send Ether,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:102:None-102:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,Access Control,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:90:None-90:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,ERC20 Leak,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:157:None-157:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol,Arbitrary External Call,None,0x860a8c64cbc7f9aac11428ef8df989f5770cda60_1.sol:108:None-108:None,

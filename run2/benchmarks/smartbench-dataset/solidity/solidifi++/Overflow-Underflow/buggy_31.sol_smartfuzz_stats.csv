@@ -1,0 +1,13 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Underflow': 9, 'Integer Truncation': 4, 'Integer Overflow': 2}, 'num_detected_not_in_annot': {'Authorization through tx.origin': 1, 'Block Values Dependency (BlockValueDependency)': 2, 'Unchecked Send Ether': 2, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Authorization through tx.origin,None,buggy_31.sol:272:None-272:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Block Values Dependency,BlockValueDependency,buggy_31.sol:291:None-291:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Block Values Dependency,BlockValueDependency,buggy_31.sol:251:None-251:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Unchecked Send Ether,None,buggy_31.sol:253:None-253:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Lack of Zero-Address Validation,None,buggy_31.sol:97:None-97:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Lack of Zero-Address Validation,None,buggy_31.sol:135:None-135:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Unchecked Send Ether,None,buggy_31.sol:293:None-293:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Lack of Zero-Address Validation,None,buggy_31.sol:120:None-120:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Arbitrary External Call,None,buggy_31.sol:290:None-290:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Arbitrary External Call,None,buggy_31.sol:250:None-250:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Overflow-Underflow/buggy_31.sol,Lack of Zero-Address Validation,None,buggy_31.sol:266:None-266:None,

@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 7}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 1, 'Lack of Zero-Address Validation': 1, 'Arbitrary External Call': 7}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Block Values Dependency,BlockValueDependencySensitive,buggy_46.sol:32:None-32:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Lack of Zero-Address Validation,None,buggy_46.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:84:None-84:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:19:None-19:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:118:None-118:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:96:None-96:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:45:None-45:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Unchecked-Send/buggy_46.sol,Arbitrary External Call,None,buggy_46.sol:69:None-69:None,

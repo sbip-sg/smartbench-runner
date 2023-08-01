@@ -1,0 +1,2 @@
+filename,bug_type,original_bug_type,locations,verified
+benchmarks/real-hacks/reentrancy/Paraluni/paraluni.sol,Denial of Service,None,paraluni.sol:2599:None-2607:None,y

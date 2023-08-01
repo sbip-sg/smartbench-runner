@@ -1,0 +1,14 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 6, 'Integer Overflow': 3, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Integer Truncation': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Lack of Zero-Address Validation,None,2018-13703.sol:234:None-234:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Lack of Zero-Address Validation,None,2018-13703.sol:228:None-228:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Integer Overflow,None,2018-13703.sol:151:None-151:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Integer Overflow,None,2018-13703.sol:153:None-153:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Reentrancy,REENTRANCY_READONLY,2018-13703.sol:238:None-238:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Lack of Zero-Address Validation,None,2018-13703.sol:189:None-189:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Integer Overflow,None,2018-13703.sol:65:None-65:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Integer Truncation,None,2018-13703.sol:116:None-119:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Lack of Zero-Address Validation,None,2018-13703.sol:166:None-166:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Lack of Zero-Address Validation,None,2018-13703.sol:252:None-252:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Arbitrary External Call,None,2018-13703.sol:234:None-234:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13703.sol,Lack of Zero-Address Validation,None,2018-13703.sol:160:None-160:None,

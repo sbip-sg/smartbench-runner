@@ -1,0 +1,8 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Unchecked Send Ether': 1, 'Lack of Zero-Address Validation': 1, 'Assertion Failure': 1, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_03_wrong_constructor.sol,Access Control,None,wallet_03_wrong_constructor.sol:18:None-18:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_03_wrong_constructor.sol,Unchecked Send Ether,None,wallet_03_wrong_constructor.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_03_wrong_constructor.sol,Lack of Zero-Address Validation,None,wallet_03_wrong_constructor.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_03_wrong_constructor.sol,Assertion Failure,None,wallet_03_wrong_constructor.sol:23:None-23:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_03_wrong_constructor.sol,Arbitrary External Call,None,wallet_03_wrong_constructor.sol:27:None-27:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/leaking_ether/wallet_03_wrong_constructor.sol,Arbitrary External Call,None,wallet_03_wrong_constructor.sol:35:None-35:None,

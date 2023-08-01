@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1, 'Unsafe Selfdestruct': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 5, 'Arbitrary External Call': 1, 'Unchecked Send Ether': 2}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Access Control,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:102:None-102:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Lack of Zero-Address Validation,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:162:None-162:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Arbitrary External Call,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:162:None-162:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Lack of Zero-Address Validation,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:173:None-173:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Lack of Zero-Address Validation,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:219:None-219:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Lack of Zero-Address Validation,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:178:None-178:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Unchecked Send Ether,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:225:None-225:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Lack of Zero-Address Validation,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:204:None-204:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol,Unchecked Send Ether,None,0x9ac4883b0226fb37fa362dbd76564c539c4f0ee6_3.sol:208:None-208:None,

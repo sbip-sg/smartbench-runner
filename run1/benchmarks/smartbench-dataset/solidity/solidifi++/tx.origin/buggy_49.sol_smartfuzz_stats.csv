@@ -1,0 +1,17 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Authorization through tx.origin': 11}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 4, 'Lack of Zero-Address Validation': 7, 'Arbitrary External Call': 4}}
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Unchecked Send Ether,None,buggy_49.sol:16:None-16:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Unchecked Send Ether,None,buggy_49.sol:77:None-77:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:75:None-75:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:45:None-45:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Unchecked Send Ether,None,buggy_49.sol:58:None-58:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:80:None-80:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:67:None-67:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:14:None-14:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Unchecked Send Ether,None,buggy_49.sol:10:None-10:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:8:None-8:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Lack of Zero-Address Validation,None,buggy_49.sol:56:None-56:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Arbitrary External Call,None,buggy_49.sol:14:None-14:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Arbitrary External Call,None,buggy_49.sol:56:None-56:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Arbitrary External Call,None,buggy_49.sol:8:None-8:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/tx.origin/buggy_49.sol,Arbitrary External Call,None,buggy_49.sol:75:None-75:None,

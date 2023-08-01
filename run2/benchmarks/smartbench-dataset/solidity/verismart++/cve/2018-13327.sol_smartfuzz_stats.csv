@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'ERC20 Leak': 1, 'Integer Underflow': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Lack of Zero-Address Validation,None,2018-13327.sol:13:None-13:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Lack of Zero-Address Validation,None,2018-13327.sol:86:None-86:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Reentrancy,REENTRANCY_READONLY,2018-13327.sol:89:None-89:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Lack of Zero-Address Validation,None,2018-13327.sol:9:None-9:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Arbitrary External Call,None,2018-13327.sol:86:None-86:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,ERC20 Leak,None,2018-13327.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Lack of Zero-Address Validation,None,2018-13327.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13327.sol,Integer Underflow,None,2018-13327.sol:36:None-36:None,

@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 4}, 'num_detected_not_in_annot': {'Integer Underflow': 1, 'Access Control': 1, 'Integer Truncation': 2, 'Denial of Service': 1, 'Lack of Zero-Address Validation': 2, 'Integer Overflow': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Integer Underflow,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:65:None-65:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Access Control,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:100:None-100:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Integer Truncation,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:126:None-126:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Denial of Service,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:100:None-143:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Lack of Zero-Address Validation,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:100:None-100:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Lack of Zero-Address Validation,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:63:None-63:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Integer Overflow,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:75:None-75:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Integer Overflow,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:74:None-74:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol,Integer Truncation,None,0x89c1b3807d4c67df034fffb62f3509561218d30b.sol:218:None-218:None,

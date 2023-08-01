@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Arbitrary External Call': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependency)': 2, 'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 3}}
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Block Values Dependency,BlockValueDependency,ULME.sol:992:None-992:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Lack of Zero-Address Validation,None,ULME.sol:982:None-982:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Reentrancy,REENTRANCY_READONLY,ULME.sol:839:None-839:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Lack of Zero-Address Validation,None,ULME.sol:826:None-826:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Lack of Zero-Address Validation,None,ULME.sol:836:None-836:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Lack of Zero-Address Validation,None,ULME.sol:833:None-833:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Reentrancy,REENTRANCY_READONLY,ULME.sol:883:None-883:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Reentrancy,REENTRANCY_READONLY,ULME.sol:875:None-875:None,
+benchmarks/real-hacks/access_control/ULME/ULME.sol,Block Values Dependency,BlockValueDependency,ULME.sol:910:None-910:None,

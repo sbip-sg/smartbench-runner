@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Access Control': 1}, 'num_detected_not_in_annot': {'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/incorrect_constructor_name2.sol,Unchecked Send Ether,None,incorrect_constructor_name2.sol:30:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/access_control/incorrect_constructor_name2.sol,Arbitrary External Call,None,incorrect_constructor_name2.sol:26:None-26:None,

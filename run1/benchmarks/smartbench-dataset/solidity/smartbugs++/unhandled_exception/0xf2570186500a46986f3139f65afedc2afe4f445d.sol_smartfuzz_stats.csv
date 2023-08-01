@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Integer Truncation': 1, 'Denial of Service': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xf2570186500a46986f3139f65afedc2afe4f445d.sol,Integer Truncation,None,0xf2570186500a46986f3139f65afedc2afe4f445d.sol:14:None-20:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0xf2570186500a46986f3139f65afedc2afe4f445d.sol,Denial of Service,None,0xf2570186500a46986f3139f65afedc2afe4f445d.sol:14:None-21:None,

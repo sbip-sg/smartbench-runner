@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'ASSERTION_FAILURE': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/assertion_failure/return_memory.sol,Lack of Zero-Address Validation,None,return_memory.sol:25:None-25:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/assertion_failure/return_memory.sol,Lack of Zero-Address Validation,None,return_memory.sol:31:None-31:None,

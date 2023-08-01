@@ -1,0 +1,17 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Lack of Zero-Address Validation': 7, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 1, 'Integer Underflow': 3, 'Access Control': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Integer Overflow,None,2018-13783.sol:58:None-58:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:226:None-226:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Integer Overflow,None,2018-13783.sol:228:None-228:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Reentrancy,REENTRANCY_READONLY,2018-13783.sol:144:None-144:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:172:None-172:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:106:None-106:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:124:None-124:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Lack of Zero-Address Validation,None,2018-13783.sol:236:None-236:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Arbitrary External Call,None,2018-13783.sol:139:None-139:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Integer Underflow,None,2018-13783.sol:159:None-159:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Integer Underflow,None,2018-13783.sol:267:None-267:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Integer Underflow,None,2018-13783.sol:269:None-269:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-13783.sol,Access Control,None,2018-13783.sol:156:None-156:None,

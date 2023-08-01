@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'UNCHECKED_LL_CALLS': 1}, 'num_detected_not_in_annot': {'Denial of Service': 1, 'Reentrancy (REENTRANCY_READONLY)': 3, 'Unchecked Send Ether': 1, 'Lack of Zero-Address Validation': 2, 'Arbitrary External Call': 2}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Denial of Service,None,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:24:None-30:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Reentrancy,REENTRANCY_READONLY,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:19:None-19:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Unchecked Send Ether,None,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:22:None-22:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Lack of Zero-Address Validation,None,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Arbitrary External Call,None,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Arbitrary External Call,None,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:17:None-17:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Lack of Zero-Address Validation,None,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:17:None-17:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Reentrancy,REENTRANCY_READONLY,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:27:None-27:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol,Reentrancy,REENTRANCY_READONLY,0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol:24:None-29:None,

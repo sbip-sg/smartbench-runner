@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unhandled Exception': 1}, 'num_detected_not_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 4, 'Lack of Zero-Address Validation': 2, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Block Values Dependency,BlockValueDependencySensitive,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:115:None-115:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Block Values Dependency,BlockValueDependencySensitive,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:118:None-118:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Lack of Zero-Address Validation,None,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:37:None-37:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Reentrancy,REENTRANCY_READONLY,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:55:None-55:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Block Values Dependency,BlockValueDependencySensitive,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:140:None-140:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Block Values Dependency,BlockValueDependencySensitive,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:132:None-132:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Unchecked Send Ether,None,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:138:None-138:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Lack of Zero-Address Validation,None,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:53:None-53:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol,Arbitrary External Call,None,0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol:136:None-136:None,

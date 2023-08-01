@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Reentrancy (REENTRANCY)': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 1, 'Unhandled Exception': 1, 'Arbitrary External Call': 1, 'Unchecked Send Ether': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrance.sol,Lack of Zero-Address Validation,None,reentrance.sol:13:None-13:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrance.sol,Unhandled Exception,None,reentrance.sol:24:None-24:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrance.sol,Arbitrary External Call,None,reentrance.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/reentrancy/reentrance.sol,Unchecked Send Ether,None,reentrance.sol:24:None-24:None,

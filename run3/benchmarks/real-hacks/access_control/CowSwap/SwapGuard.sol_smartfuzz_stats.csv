@@ -1,0 +1,5 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Integer Overflow': 1, 'Lack of Zero-Address Validation': 1, 'Reentrancy (REENTRANCY)': 1}}
+benchmarks/real-hacks/access_control/CowSwap/SwapGuard.sol,Integer Overflow,None,SwapGuard.sol:379:None-379:None,
+benchmarks/real-hacks/access_control/CowSwap/SwapGuard.sol,Lack of Zero-Address Validation,None,SwapGuard.sol:348:None-348:None,
+benchmarks/real-hacks/access_control/CowSwap/SwapGuard.sol,Reentrancy,REENTRANCY,SwapGuard.sol:365:None-365:None,

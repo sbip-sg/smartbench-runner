@@ -1,0 +1,4 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'ACCESS_CONTROL': 2}, 'num_detected_not_in_annot': {'Reentrancy (REENTRANCY_READONLY)': 1, 'Lack of Zero-Address Validation': 1}}
+benchmarks/real-hacks/access_control/brahTOG/BrahTOPG.sol,Reentrancy,REENTRANCY_READONLY,BrahTOPG.sol:374:None-374:None,
+benchmarks/real-hacks/access_control/brahTOG/BrahTOPG.sol,Lack of Zero-Address Validation,None,BrahTOPG.sol:364:None-364:None,

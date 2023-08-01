@@ -1,0 +1,12 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 11}, 'num_detected_not_in_annot': {'Integer Overflow': 3, 'Lack of Zero-Address Validation': 3, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1, 'Access Control': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Integer Overflow,None,buggy_39.sol:63:None-63:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Lack of Zero-Address Validation,None,buggy_39.sol:67:None-67:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Lack of Zero-Address Validation,None,buggy_39.sol:48:None-48:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Integer Overflow,None,buggy_39.sol:11:None-11:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Integer Overflow,None,buggy_39.sol:32:None-32:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Lack of Zero-Address Validation,None,buggy_39.sol:77:None-77:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Unchecked Send Ether,None,buggy_39.sol:21:None-21:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Arbitrary External Call,None,buggy_39.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Access Control,None,buggy_39.sol:61:None-61:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_39.sol,Access Control,None,buggy_39.sol:9:None-9:None,

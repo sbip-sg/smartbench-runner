@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Integer Overflow': 3}, 'num_detected_not_in_annot': {'Assertion Failure': 2, 'Lack of Zero-Address Validation': 4, 'Access Control': 2, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Assertion Failure,None,2018-11335.sol:22:None-22:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Lack of Zero-Address Validation,None,2018-11335.sol:210:None-210:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Lack of Zero-Address Validation,None,2018-11335.sol:215:None-215:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Lack of Zero-Address Validation,None,2018-11335.sol:185:None-185:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Lack of Zero-Address Validation,None,2018-11335.sol:234:None-234:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Access Control,None,2018-11335.sol:234:None-234:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Assertion Failure,None,2018-11335.sol:28:None-28:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Access Control,None,2018-11335.sol:240:None-240:None,
+benchmarks/smartbench-dataset/solidity/verismart++/cve/2018-11335.sol,Reentrancy,REENTRANCY_READONLY,2018-11335.sol:229:None-229:None,

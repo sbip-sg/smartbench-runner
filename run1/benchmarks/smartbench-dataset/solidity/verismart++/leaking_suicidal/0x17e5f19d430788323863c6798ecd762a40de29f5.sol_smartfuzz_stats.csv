@@ -1,0 +1,11 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Access Control': 1, 'Reentrancy (REENTRANCY_READONLY)': 1, 'Arbitrary External Call': 3}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Lack of Zero-Address Validation,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:183:None-183:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Access Control,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:95:None-95:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Lack of Zero-Address Validation,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:194:None-194:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Lack of Zero-Address Validation,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:215:None-215:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Reentrancy,REENTRANCY_READONLY,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:218:None-218:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Lack of Zero-Address Validation,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:171:None-171:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Arbitrary External Call,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:194:None-194:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Arbitrary External Call,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:215:None-215:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x17e5f19d430788323863c6798ecd762a40de29f5.sol,Arbitrary External Call,None,0x17e5f19d430788323863c6798ecd762a40de29f5.sol:200:None-200:None,

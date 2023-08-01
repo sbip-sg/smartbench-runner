@@ -1,0 +1,27 @@
+{
+  "n_files": 23,
+  "n_unlabeled": 301,
+  "n_unlabeled_average": 13.08695652173913,
+  "n_unlabeled_by_bug_type": {
+    "Lack of Zero-Address Validation": 122,
+    "Integer Truncation": 11,
+    "Block Values Dependency (BlockValueDependencySensitive)": 17,
+    "Reentrancy (REENTRANCY)": 15,
+    "Integer Overflow": 12,
+    "Integer Underflow": 5,
+    "Reentrancy (REENTRANCY_READONLY)": 30,
+    "ERC20 Access Control": 1,
+    "Access Control": 3,
+    "Unhandled Exception": 11,
+    "Unchecked Send Ether": 2,
+    "ERC20 Leak": 2,
+    "Block Values Dependency (BlockValueDependency)": 39,
+    "Unknown Issue (IntegerDivByZero by YUL)": 3,
+    "Authorization through tx.origin": 2,
+    "Arbitrary External Call": 8,
+    "Locking Ether": 2,
+    "Assertion Failure": 2,
+    "Denial of Service": 1,
+    "Unsafe DelegateCall": 13
+  }
+}

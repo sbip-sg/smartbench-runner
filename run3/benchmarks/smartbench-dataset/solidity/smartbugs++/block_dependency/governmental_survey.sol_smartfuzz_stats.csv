@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_not_detected_in_annot': {'BLOCK_DEPENDENCY': 1}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1, 'Lack of Zero-Address Validation': 1, 'Block Values Dependency (BlockValueDependency)': 1, 'Integer Underflow': 1, 'Unchecked Send Ether': 1, 'Unhandled Exception': 2, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Arbitrary External Call,None,governmental_survey.sol:45:None-45:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Lack of Zero-Address Validation,None,governmental_survey.sol:45:None-45:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Block Values Dependency,BlockValueDependency,governmental_survey.sol:31:None-31:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Integer Underflow,None,governmental_survey.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Unchecked Send Ether,None,governmental_survey.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Unhandled Exception,None,governmental_survey.sol:34:None-34:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Unhandled Exception,None,governmental_survey.sol:35:None-35:None,
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/governmental_survey.sol,Reentrancy,REENTRANCY_READONLY,governmental_survey.sol:50:None-50:None,

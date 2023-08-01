@@ -1,0 +1,3 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 2}, 'num_detected_not_in_annot': {'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/smartbugs++/block_dependency/lottery.sol,Arbitrary External Call,None,lottery.sol:34:None-34:None,

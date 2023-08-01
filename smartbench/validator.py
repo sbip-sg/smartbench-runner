@@ -3,6 +3,7 @@
 """Module to validate analysis results with bug annotations."""
 
 # Standard Library
+from json import encoder
 from typing import List, Tuple
 
 # Third Party
@@ -10,18 +11,35 @@ import more_itertools as mit
 
 # Library
 from smartbench.annotation import AnnotFormat, BugAnnot
-from smartbench.issue import Issue
+from smartbench.issue import Issue, IssueKind
 from smartbench.printer import debug, safe_print
 from smartbench.tools.tool import Tool
 
+# Global stats, don't share among threads
+global_stats = {
+    # tools_name -> a dict:
+    # {
+    #     'n_files': 0,
+    #     'n_unlabeled': 0,
+    #     'n_unlabeled_average': 0,
+    #     'n_unlabeled_by_bug_type':{}, # unlabeled bug-type -> unlabeld count
+    # }
+}
+
+prev_annot_key = None
 
 class ValidationResult:
     def __init__(
         self,
-        correct_bugs: List[Tuple[Issue, BugAnnot]],
-        missing_bugs: List[BugAnnot],
+        test_file: str,
+        tool: Tool,
+        correct_bugs: List[Tuple[Issue, BugAnnot]], # TP for all bug types
+        missing_bugs: List[BugAnnot],               # FN for all bug types
         unlabelled_issues: List[Issue],
     ):
+        self.test_file = test_file
+        self.tool = tool
+
         # Issues that are reported.
         self.correct_bugs: List[(Issue, BugAnnot)] = list(correct_bugs)
 
@@ -30,6 +48,8 @@ class ValidationResult:
 
         # Issues unrelated to bug annotations.
         self.unlabelled_issues: List[Issue] = list(unlabelled_issues)
+
+        self.stats()
 
     def num_correct_bugs(self) -> int:
         return len(self.correct_bugs)
@@ -61,6 +81,64 @@ class ValidationResult:
         if len(unlabelled_idxs) > 0:
             unlabelled_info += f" [Issue IDs: {print_indices(unlabelled_idxs)}]"
         safe_print(f"  + Unlabelled issues: {unlabelled_info}")
+
+    def stats(self) -> dict:
+        r = {}
+        global global_stats
+        global prev_annot_key
+
+        tool_key = self.tool.name.lower() # which tool we are using
+        annot_key = self.missing_bugs and self.missing_bugs[0].annot_format
+        annot_key = annot_key or (self.correct_bugs and self.correct_bugs[0][1].annot_format)
+        # which annotation (test database) we are using. Assuing one ValidationResult object won't have multiple annotation databases
+        annot_key = str(annot_key.value).lower() if annot_key else prev_annot_key # hacky way to just use the prev annot_key when no bug annotation found
+        prev_annot_key = annot_key
+
+        if tool_key not in global_stats:
+            global_stats[tool_key] = {
+                'n_files': 0,
+                'n_unlabeled': 0,
+                'n_unlabeled_average': 0,
+                'n_unlabeled_by_bug_type':{}, # unlabeled bug-type -> unlabeld count
+            }
+
+        for (issue, _bug) in self.correct_bugs:
+            inc_in_path(r, 'num_detected_in_annot', str(issue.issue_kind))
+
+        for bug in self.missing_bugs:
+            inc_in_path(r, 'num_not_detected_in_annot', bug.annot_name)
+
+        r['unlabeled'] = sorted(list(self.unlabelled_issues))
+
+        for issue in self.unlabelled_issues:
+            inc_in_path(r, 'num_detected_not_in_annot', str(issue.issue_kind))
+            inc_in_path(global_stats, tool_key, 'n_unlabeled_by_bug_type', str(issue.issue_kind))
+
+        global_stats[tool_key]['n_files'] += 1
+        global_stats[tool_key]['n_unlabeled'] += len(self.unlabelled_issues)
+        global_stats[tool_key]['n_unlabeled_average'] = global_stats[tool_key]['n_unlabeled'] / global_stats[tool_key]['n_files']
+
+        f_stats = f'{self.test_file}_{tool_key}_stats.csv'
+        print(f'Detected bugs not in annotation for {self.test_file}\n Stats csv written to {f_stats}')
+        for issue in self.unlabelled_issues:
+            locs = ' '.join([str(s) for s in issue.locations])
+            print(f'{issue.index} {issue.issue_kind} {locs}')
+        with open(f_stats, 'w') as f:
+            f.write('file_name,bug_type,original_bug_type,locations,summary\n')
+            del r['unlabeled']
+            f.write(f',,,,{r}\n')
+            for issue in self.unlabelled_issues:
+                locs = ' '.join([str(s) for s in issue.locations])
+                f.write(f'{self.test_file},{issue.issue_kind.value},{issue.issue_kind.original_type},{locs},\n')
+            f.flush()
+
+
+        f_global_stats = f'{tool_key}_{annot_key}_global_stats.json'
+        with open(f_global_stats, 'w') as f:
+            import json
+            f.write(json.dumps(global_stats[tool_key], indent=2))
+        return r
+
 
 
 def print_indices(indices: List[int]) -> str:
@@ -114,6 +192,7 @@ def match_issue_to_annotation(
 
 
 def validate_issues(
+    test_file: str,
     tool: Tool,
     issues: List[Issue],
     annots: List[BugAnnot],
@@ -166,4 +245,22 @@ def validate_issues(
         if (not detected) and (issue not in unlabelled_issues):
             unlabelled_issues.append(issue)
 
-    return ValidationResult(correct_bugs, missing_bugs, unlabelled_issues)
+    return ValidationResult(test_file, tool, correct_bugs, missing_bugs, unlabelled_issues)
+
+
+def inc_in_path(d, *keys):
+    if len(keys) == 0:
+        return d
+
+    key = keys[0]
+    if key not in d:
+        if len(keys) == 1:
+            d[key] = 0
+        else:
+            d[key] = {}
+
+    if len(keys) == 1:
+        d[key] += 1
+    else:
+        inc_in_path(d[key], *keys[1:])
+    return d

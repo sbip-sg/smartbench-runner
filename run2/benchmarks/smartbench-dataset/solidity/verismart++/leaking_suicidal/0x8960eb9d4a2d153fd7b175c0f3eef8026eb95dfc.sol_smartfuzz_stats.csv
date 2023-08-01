@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unchecked Send Ether': 1}, 'num_detected_not_in_annot': {'Access Control': 1, 'Lack of Zero-Address Validation': 4, 'Arbitrary External Call': 2, 'Reentrancy (REENTRANCY_READONLY)': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Access Control,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:95:None-95:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Lack of Zero-Address Validation,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:215:None-215:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Lack of Zero-Address Validation,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:194:None-194:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Lack of Zero-Address Validation,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:171:None-171:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Lack of Zero-Address Validation,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:183:None-183:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Arbitrary External Call,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:194:None-194:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Reentrancy,REENTRANCY_READONLY,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:218:None-218:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol,Arbitrary External Call,None,0x8960eb9d4a2d153fd7b175c0f3eef8026eb95dfc.sol:215:None-215:None,

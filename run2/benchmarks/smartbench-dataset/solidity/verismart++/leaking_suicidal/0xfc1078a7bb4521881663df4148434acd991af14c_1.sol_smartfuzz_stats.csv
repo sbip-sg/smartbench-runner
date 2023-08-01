@@ -1,0 +1,12 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unsafe Selfdestruct': 1}, 'num_detected_not_in_annot': {'ERC20 Leak': 2, 'Unchecked Send Ether': 1, 'Lack of Zero-Address Validation': 5, 'Assertion Failure': 1, 'Access Control': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,ERC20 Leak,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:370:None-370:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Unchecked Send Ether,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:371:None-371:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Lack of Zero-Address Validation,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:92:None-92:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Lack of Zero-Address Validation,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:201:None-201:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Lack of Zero-Address Validation,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:195:None-195:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Assertion Failure,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:31:None-31:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Lack of Zero-Address Validation,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:330:None-330:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Access Control,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:68:None-68:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,Lack of Zero-Address Validation,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:322:None-322:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xfc1078a7bb4521881663df4148434acd991af14c_1.sol,ERC20 Leak,None,0xfc1078a7bb4521881663df4148434acd991af14c_1.sol:330:None-330:None,

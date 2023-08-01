@@ -1,0 +1,6 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Block Values Dependency (BlockValueDependencySensitive)': 9}, 'num_detected_not_in_annot': {'Integer Overflow': 2, 'Access Control': 2}}
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_10.sol,Integer Overflow,None,buggy_10.sol:15:None-15:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_10.sol,Integer Overflow,None,buggy_10.sol:40:None-40:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_10.sol,Access Control,None,buggy_10.sol:38:None-38:None,
+benchmarks/smartbench-dataset/solidity/solidifi++/Timestamp-Dependency/buggy_10.sol,Access Control,None,buggy_10.sol:13:None-13:None,

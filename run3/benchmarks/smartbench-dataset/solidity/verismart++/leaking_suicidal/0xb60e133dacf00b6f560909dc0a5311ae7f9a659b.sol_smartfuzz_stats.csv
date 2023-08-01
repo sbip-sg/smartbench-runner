@@ -1,0 +1,10 @@
+file_name,bug_type,original_bug_type,locations,summary
+,,,,{'num_detected_in_annot': {'Unsafe Selfdestruct': 1}, 'num_detected_not_in_annot': {'Lack of Zero-Address Validation': 4, 'Reentrancy (REENTRANCY_READONLY)': 1, 'ERC20 Leak': 1, 'Unchecked Send Ether': 1, 'Arbitrary External Call': 1}}
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Lack of Zero-Address Validation,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Lack of Zero-Address Validation,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:29:None-29:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Reentrancy,REENTRANCY_READONLY,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:140:None-140:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Lack of Zero-Address Validation,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:16:None-16:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,ERC20 Leak,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:98:None-98:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Unchecked Send Ether,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:100:None-100:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Arbitrary External Call,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:133:None-133:None,
+benchmarks/smartbench-dataset/solidity/verismart++/leaking_suicidal/0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol,Lack of Zero-Address Validation,None,0xb60e133dacf00b6f560909dc0a5311ae7f9a659b.sol:23:None-23:None,
