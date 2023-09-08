@@ -35,18 +35,20 @@ RUN apt-get install -y \
     build-essential \
     curl
 
-# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install ItyFuzz
 WORKDIR /root/
-RUN git clone --recursive https://github.com/fuzzland/ityfuzz.git && cd ityfuzz && git checkout stable
+RUN git clone --recursive https://github.com/thanhtoantnt/ityfuzz.git
+RUN cd ityfuzz
+# RUN git clone --recursive https://github.com/fuzzland/ityfuzz.git && cd ityfuzz && git checkout stable
 
 WORKDIR /root/ityfuzz/cli
 RUN apt-get install -y pkg-config libssl-dev cmake libclang-dev
-RUN rustup default nightly-2023-04-10
-# RUN cargo build --release
+# RUN rustup default nightly-2023-04-10
+RUN git checkout master
+RUN cargo build --release
 # RUN cargo +nightly build --release
 
 # Install Solc-select and all Solc compilers
