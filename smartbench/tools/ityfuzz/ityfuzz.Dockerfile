@@ -19,8 +19,8 @@ RUN apt -y install git wget tzdata
 RUN apt -y install vim
 
 # Install Python3.9
-RUN apt-get install -y python3.9 python3-pip python-is-python3
-RUN ln -sf /usr/bin/python3.9 /usr/bin/python3
+RUN apt-get install -y python3-pip python-is-python3
+RUN ln -sf /usr/bin/python3.10 /usr/bin/python3
 
 # Prepare benchmarking environments
 RUN mkdir benchmarks
@@ -46,13 +46,23 @@ RUN cd ityfuzz
 
 WORKDIR /root/ityfuzz/cli
 RUN apt-get install -y pkg-config libssl-dev cmake libclang-dev
-# RUN rustup default nightly-2023-04-10
 RUN git checkout master
 RUN cargo build --release
-# RUN cargo +nightly build --release
 
 # Install Solc-select and all Solc compilers
-# RUN pip3 install solc-select
+RUN pip3 install solc-select
+RUN solc-select install 0.4.0
+RUN solc-select install 0.4.1
+RUN solc-select install 0.4.2
+RUN solc-select install 0.4.3
+RUN solc-select install 0.4.4
+RUN solc-select install 0.5.0
+RUN solc-select install 0.6.0
+RUN solc-select install 0.7.0
+RUN solc-select install 0.8.0
+RUN solc-select install 0.8.19
+
+
 # RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
 
 # Install Solc libraries
