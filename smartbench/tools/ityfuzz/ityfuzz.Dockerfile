@@ -50,20 +50,8 @@ RUN git checkout master
 RUN cargo build --release
 
 # Install Solc-select and all Solc compilers
-RUN pip3 install solc-select
-RUN solc-select install 0.4.0
-RUN solc-select install 0.4.1
-RUN solc-select install 0.4.2
-RUN solc-select install 0.4.3
-RUN solc-select install 0.4.4
-RUN solc-select install 0.5.0
-RUN solc-select install 0.6.0
-RUN solc-select install 0.7.0
-RUN solc-select install 0.8.0
-RUN solc-select install 0.8.19
-
-
-# RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
+RUN pip install solc-select
+RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select install $v; done
 
 # Install Solc libraries
 # RUN pip install py-solc --force-reinstall
