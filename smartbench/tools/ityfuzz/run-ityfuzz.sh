@@ -85,6 +85,17 @@ fi
 ################################################
 # Analyze test file
 
+# Compile test file
+echo "Start compiling files"
+rm -rf test_dir
+mkdir test_dir
+cp $TEST_FILE test_dir
+cd test_dir
+solc-select use $SOLC_VER
+solc *.sol -o . --bin --abi --overwrite
+cd ../
+./ityfuzz/cli/target/release/cli evm -t 'test_dir/*'
+
 # Run ItyFuzz
  # --solc-version $SOLC_VER --source  $TEST_FILE --out $OUTPUT_DIR \
  #        --timeout $TIMEOUT ${ADDITIONAL_ARGS[@]} --report-leaking-ether \

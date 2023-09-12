@@ -67,15 +67,6 @@ class ItyFuzz(Tool):
         if solc_version is not None:
             cmd += f" --solc-version {solc_version}"
 
-        # Output directory: Need to add a sub-directory `output`
-        # Otherwise, the log file is deleted from the results directory
-        if test_output_dir.endswith("/"):
-            test_output_dir += "output"
-        else:
-            test_output_dir += "/output"
-
-        cmd += f" -o {test_output_dir}"
-
         # Timeout for each contract
         timeout = self.default_timeout if timeout is None else timeout
         cmd += f" -t {str(timeout)}"
@@ -85,6 +76,8 @@ class ItyFuzz(Tool):
             cmd += f" {self.default_arguments}"
         if self.additional_args:
             cmd += f" {self.additional_args}"
+
+        debug(f"cmd: {cmd}")
 
         return cmd
 
