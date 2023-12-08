@@ -110,6 +110,8 @@ def analyze_smart_contracts(args) -> None:
         )
         return None
 
+    print("Test files: " + str(args.input_files_directories))
+
     # Collect test files
     all_test_files = []
     test_configs = None
@@ -131,6 +133,8 @@ def analyze_smart_contracts(args) -> None:
         all_test_files = benchmark.collect_test_files(input_test_files)
 
     # Configure analysis tools
+    if args.tools is None:
+        sys.exit("Please indicate the target analysis tool!")
     tools: List[Tool] = configure_analysis_tools(args.tools)
 
     # Update jobs

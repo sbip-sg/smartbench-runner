@@ -27,3 +27,6 @@ solquery
 
 # Python temporarily files
 .ipynb_checkpoints
+
+# VSCode files
+*.code-workspace

@@ -60,26 +60,26 @@ def report_config_error(
     )
 
 
-def load_tool_configuration(tool_id: str) -> Optional[Tool]:
+def load_tool_configuration(tool_name: str) -> Optional[Tool]:
     """Parse configuration of an analysis tool"""
     # Normalize tool ID
-    tool_id = tool_id.casefold()
+    tool_name = tool_name.casefold()
 
     # Find tool root ID. This is to handle the case where a tool can
     # have multiple variants, like confuzzius, confuzzius-sbip,
-    tool_root_id = tool_id
-    if (idx := tool_id.find("-")) >= 0:
-        tool_root_id = tool_id[:idx]
-    elif (idx := tool_id.find("_")) >= 0:
-        tool_root_id = tool_id[:idx]
+    tool_base_name = tool_name
+    if (idx := tool_name.find("-")) >= 0:
+        tool_base_name = tool_name[:idx]
+    elif (idx := tool_name.find("_")) >= 0:
+        tool_base_name = tool_name[:idx]
 
-    if tool_root_id not in SUPPORTED_TOOLS:
-        warning(f"Invalid or unspported tool ID: {tool_id}")
+    if tool_base_name not in SUPPORTED_TOOLS:
+        warning(f"Invalid or unspported tool ID: {tool_name}")
         return None
 
     # Get path of the configuration file
-    config_file_name = tool_root_id + ".toml"
-    config_file_path = os.path.join(TOOLS_DIR, tool_root_id, config_file_name)
+    config_file_name = tool_base_name + ".toml"
+    config_file_path = os.path.join(TOOLS_DIR, tool_base_name, config_file_name)
 
     # Read configuration file
     with open(config_file_path, "r", encoding="utf-8") as file:
@@ -89,79 +89,81 @@ def load_tool_configuration(tool_id: str) -> Optional[Tool]:
         try:
             # Parse tool info
             if (info := config.get(INFO)) is None:
-                report_config_error(tool_id, INFO, config_file_path)
+                report_config_error(tool_name, INFO, config_file_path)
 
             assert info is not None
 
             if (tool_name := info.get(NAME)) is None:
-                report_config_error(tool_id, NAME, config_file_path)
+                report_config_error(tool_name, NAME, config_file_path)
 
             # Parse tool command
             if (command := config.get(COMMAND)) is None:
-                report_config_error(tool_id, COMMAND, config_file_path)
+                report_config_error(tool_name, COMMAND, config_file_path)
 
             assert command is not None
 
             if (executable := command.get(EXECUTABLE)) is None:
-                report_config_error(tool_id, EXECUTABLE, config_file_path)
+                report_config_error(tool_name, EXECUTABLE, config_file_path)
 
             if (default_args := command.get(DEFAULT_ARGUMENTS)) is None:
                 report_config_error(
-                    tool_id, DEFAULT_ARGUMENTS, config_file_path
+                    tool_name, DEFAULT_ARGUMENTS, config_file_path
                 )
 
             if (default_timeout := command.get(DEFAULT_TIMEOUT)) is None:
-                report_config_error(tool_id, DEFAULT_TIMEOUT, config_file_path)
+                report_config_error(tool_name, DEFAULT_TIMEOUT, config_file_path)
 
             tool_constructor: Optional[Callable] = None
-            if tool_root_id == "confuzzius":
+            if tool_base_name == "confuzzius":
                 tool_constructor = Confuzzius
-            elif tool_root_id == "ilf":
+            elif tool_base_name == "ilf":
                 tool_constructor = Ilf
-            elif tool_root_id == "mythril":
+            elif tool_base_name == "mythril":
                 tool_constructor = Mythril
-            elif tool_root_id == "sfuzz":
+            elif tool_base_name == "sfuzz":
                 tool_constructor = Sfuzz
-            elif tool_root_id == "slither":
+            elif tool_base_name == "slither":
                 tool_constructor = Slither
-            elif tool_root_id == "smartian":
+            elif tool_base_name == "smartian":
                 tool_constructor = Smartian
-            elif tool_root_id == "smartfuzz":
+            elif tool_base_name == "smartfuzz":
                 tool_constructor = SmartFuzz
-            elif tool_root_id == "verismart":
+            elif tool_base_name == "verismart":
                 tool_constructor = VeriSmart
-            elif tool_root_id == "efcf":
+            elif tool_base_name == "efcf":
                 tool_constructor = EFCF
 
             if tool_constructor is None:
-                error_traceback(f"Unknown analysis tool: {tool_id}")
+                error_traceback(f"Unknown analysis tool: {tool_name}")
                 return None
             else:
                 return tool_constructor(
-                    tool_id,
-                    tool_root_id,
+                    tool_name,
+                    tool_base_name,
                     tool_name,
                     executable,
                     default_args,
                     default_timeout,
                 )
         except AttributeError:
-            warning("Error in configuration of tool: " + str(tool_id))
+            warning("Error in configuration of tool: " + str(tool_name))
             return None
 
 
-def configure_analysis_tools(tool_ids: List[str]) -> List[Tool]:
-    """Configure all analysis tools."""
-    safe_print("Configure analysis tools...")
+def configure_analysis_tools(tools: str) -> List[Tool]:
+    """
+    Configure all analysis tools.
+    Input is a comma-separated list of tools.
+    """
 
-    if len(tool_ids) == 0:
-        sys.exit("No analysis tool is selected!")
+    tool_names = [s.strip() for s in tools.split(",")]
+    safe_print(f"Configure analysis tools: {', '.join(tool_names)}")
 
     all_tool_configs = []
-    for tool_id in tool_ids:
-        config = load_tool_configuration(tool_id)
+    for tool_name in tool_names:
+        config = load_tool_configuration(tool_name)
         if config is None:
-            error("Failed to read configuration of: " + tool_id)
+            error("Failed to read configuration of: " + tool_name)
         else:
             all_tool_configs.append(config)
 

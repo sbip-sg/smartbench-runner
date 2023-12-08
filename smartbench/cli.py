@@ -19,6 +19,10 @@ class Command(str, Enum):
     PARSE_ANNOTS = "parse-annots"
     QUERY = "query"
 
+    # Print Enum in human readable format
+    def __str__(self):
+        return self.value
+
 
 def parse_cli_arguments():
     """Configure command arguments line."""
@@ -104,9 +108,8 @@ def parse_cli_arguments():
     analyze_argparser.add_argument(
         "-t",
         "--tools",
-        nargs="+",  # Accept multiple tools.
         type=str,
-        help="Analysis tools to be evaluated.",
+        help="Analysis tools to be evaluated. Multiple tool names are separated by a comma (`,`).",
     )
 
     analyze_argparser.add_argument(
@@ -165,7 +168,7 @@ def parse_cli_arguments():
 
     analyze_argparser.add_argument(
         "--use-remote-docker-images",
-        "--install-remote-docker", # TODO: remove this flag later
+        "--install-remote-docker",  # TODO: remove this flag later
         action="store_true",
         default=False,
         help="Install Docker containers of analysis tools from remote.",

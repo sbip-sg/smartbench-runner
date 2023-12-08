@@ -1,6 +1,4 @@
-# List of tasks
-
-## Bug annotation
+# Bug annotation
 
 - [ ] Parse `SmartBench` annotations:
 
@@ -14,11 +12,11 @@
   // </bug>
   ```
 
-## Analysis
+# Analysis
 
 - [ ] Validate analysis results with bug annotations.
 
-## Supporting analyzers
+# Supporting analyzers
 
 - [ ] Slither
 
@@ -32,3 +30,7 @@
 - [ ] SmartFuzz
   - [ ] Running from command line
   - [ ] Running from Docker
+
+# Input/Output
+
+- Copy input files to Docker images, analyze, and then copy the output out.
