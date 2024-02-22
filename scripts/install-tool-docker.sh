@@ -24,12 +24,12 @@ print_usage () {
     echo "  install-tool-docker.sh -t <tool-ids> [options] [container_1, ... , container_n]"
     echo ""
     echo "Options:"
-    echo "  -t <tool-id>              ID of analysis tool, currently support the followings:"
+    echo "  -t TOOL_ID                ID of analysis tool, currently support the followings:"
     echo "                              confuzzius, confuzzius-sbip, ilf, mythril, sfuzz,"
     echo "                              slither, smartfuzz, smartian, verismart, efcf."
-    echo "                            Use `-t all` to install for all tools."
-    echo "  -n <num_of_containers>    Number of containers to be installed, which are named"
-    echo "                            as {tool-id}-1, {tool-id}-2,..., {tool-id}-n."
+    echo "                            Use \"-t all\" to install all tools."
+    echo "  -n NUM_OF_CONTAINERS      Number of containers to be installed, which are named"
+    echo "                            as TOOL_ID_1, TOOL_ID_2, TOOL_ID_3, ..."
     echo "  --result-dir              Directory to store analysis results."
     echo "  --force-install           Force install new containers."
     echo "  --only-create-containers  Only creating new containers, not build or download images."
@@ -206,8 +206,8 @@ SMARTBENCH_EXAMPLES_DIR="$SMARTBENCH_ROOT/examples"
 if [[ $SMARTBENCH_RESULTS_DIR == "" ]]; then
    SMARTBENCH_RESULTS_DIR="$SMARTBENCH_ROOT/results"
 fi
-SMARTBENCH_DOCKER_FILE="$SMARTBENCH_ROOT/smartbench/tools/smartbench.Dockerfile"
-SMARTBENCH_DOCKER_IMAGE="smartbench/base"
+BASE_DOCKER_FILE="$SMARTBENCH_ROOT/smartbench/tools/base.dockerfile"
+BASE_DOCKER_IMAGE="smartbench/base"
 
 # Docker container directories
 DOCKER_BENCHMARKS_DIR="/root/benchmarks"
@@ -252,7 +252,7 @@ if [[ $INSTALL_LOCALLY == true && $ONLY_CREATE_CONTAINERS == false ]]; then
     fi
 
     cd $SMARTBENCH_ROOT
-    docker build -f $SMARTBENCH_DOCKER_FILE -t $SMARTBENCH_DOCKER_IMAGE . $BASE_CACHE_ARG
+    docker build -f $BASE_DOCKER_FILE -t $BASE_DOCKER_IMAGE . $BASE_CACHE_ARG
 fi
 
 for TOOL_ID in ${TOOL_IDS[@]}; do
@@ -271,7 +271,7 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
 
         # Configure tool docker file and image
         TOOL_DIR="$SMARTBENCH_ROOT/smartbench/tools/$TOOL_ROOT_ID"
-        TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.Dockerfile"
+        TOOL_DOCKER_FILE="$TOOL_DIR/$TOOL_ID.dockerfile"
         TOOL_DOCKER_IMAGE="smartbench/$TOOL_ID"
 
         if [[ $ONLY_CREATE_CONTAINERS == true ]]; then
@@ -326,7 +326,7 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
 
     # Generate new container names
     for ((i=1; i<=$NUM_CONTAINERS; i++)); do
-        CONTAINER_NAMES+=("$TOOL_ID-$i")
+        CONTAINER_NAMES+=("${TOOL_ID}_$i")
     done
 
     if [[ ${#CONTAINER_NAMES[@]} == 0 ]]; then

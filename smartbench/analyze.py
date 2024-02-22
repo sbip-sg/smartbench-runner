@@ -148,7 +148,7 @@ def collect_target_contracts_and_solc_version(
     tool: Tool,
     test_file: str,
     test_config_dict: Optional[Dict[str, TestConfig]],
-    solc_version: Optional[str] = None,
+    solc_ver: Optional[str] = None,
 ) -> Tuple[List[str], Optional[str]]:
     """Collect list of testing contracts directly from the test file or from a
     contract list file."""
@@ -156,7 +156,7 @@ def collect_target_contracts_and_solc_version(
         # Auto detect target contracts and compiler version if no test config is
         # specified
         return solc.get_target_contracts_and_solc_version(
-            test_file, True, solc_version
+            test_file, True, solc_ver
         )
     else:
         # Collect target contracts and compiler versions that are explicitly
@@ -177,27 +177,27 @@ def collect_target_contracts_and_solc_version(
         # Always use the compiler version specified in test configure if
         # possible, otherwise, use the compiler version specified by CLI
         if test_config.compiler_version is not None:
-            solc_version = test_config.compiler_version
+            solc_ver = test_config.compiler_version
 
         # Use contract names from test config
         contract_names = test_config.target_contracts
 
         # If contract names or compiler version are not specified in test
         # config, auto-detect them
-        if contract_names == [] or solc_version is None:
+        if contract_names == [] or solc_ver is None:
             (
                 contract_names_detected,
-                solc_version_detected,
+                solc_ver_detected,
             ) = solc.get_target_contracts_and_solc_version(
-                test_file, True, solc_version
+                test_file, True, solc_ver
             )
 
         if contract_names == []:
             contract_names = contract_names_detected
-        if solc_version is None:
-            solc_version = solc_version_detected
+        if solc_ver is None:
+            solc_ver = solc_ver_detected
 
-        return (contract_names, solc_version)
+        return (contract_names, solc_ver)
 
 
 def analyze_test_file(
@@ -208,7 +208,7 @@ def analyze_test_file(
     test_output_dir_docker: str,
     container: DockerContainer,
     annot_format: Optional[str] = None,
-    solc_version: Optional[str] = None,
+    solc_ver: Optional[str] = None,
     job_id: Optional[int] = None,
     timeout: Optional[int] = None,
     validate: bool = False,  # REVIEW: consider merging `validate` with `benchmarking` as 1 param
@@ -229,9 +229,11 @@ def analyze_test_file(
         printer.print_medium_dashed_separator_line()
         safe_print(f"Analyzing: {test_file}\n")
 
-    (contracts, solc_version) = collect_target_contracts_and_solc_version(
-        tool, test_file, test_configs, solc_version
+    (contracts, solc_ver) = collect_target_contracts_and_solc_version(
+        tool, test_file, test_configs, solc_ver
     )
+
+    safe_print(f"SOLC VERSION: {solc_ver}")
 
     if not contracts:
         warning(
@@ -240,19 +242,20 @@ def analyze_test_file(
         )
         return None
 
-    if solc_version is None:
+    if solc_ver is None:
         warning(
             f"No Solc version is specified or detected for: {test_file}\n\n"
             "Skip analyzing it!"
         )
         return None
 
+    # TODO: need to copy input file into Docker manually!
     cmd = tool.make_analysis_command(
         test_file,
         contracts,
         test_output_dir_docker,
         container,
-        solc_version,
+        solc_ver,
         timeout,
     )
 
@@ -264,7 +267,7 @@ def analyze_test_file(
         warning(f"Failed to log analysis command for tool: {tool.name}\n")
         return None
 
-    debug(f"Analysis Command: {cmd}")
+    safe_print(f"Analysis Command: {cmd}")
     print_unless(parallel_mode, f"Output dir: {test_output_dir_host}\n")
 
     try:
