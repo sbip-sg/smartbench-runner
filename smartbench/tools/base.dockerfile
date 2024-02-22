@@ -30,8 +30,8 @@ RUN for v in $(echo $(solc-select install) | sed 's/^.*: //'); do solc-select in
 RUN pip install py-solc --force-reinstall
 
 # Prepare benchmarking environments
-RUN mkdir results
 RUN mkdir contracts
+RUN mkdir results
 
 # Entry point when running the container as an executable
 WORKDIR /root/

@@ -13,7 +13,7 @@ from smartbench import issue, logger
 from smartbench.annotation import AnnotFormat, BugAnnot
 from smartbench.docker import DockerContainer
 from smartbench.issue import Checker, Confidence, Issue, IssueKind, Severity
-from smartbench.printer import debug, error, error_traceback, warning
+from smartbench.printer import debug, error, error_traceback, safe_print, warning
 from smartbench.solidity.loc import Localizer, Location
 from smartbench.tools.tool import Tool
 
@@ -62,6 +62,7 @@ class Slither(Tool):
             cmd += f" --solc-version {solc_version}"
 
         # Output file
+        safe_print(f"CONFIG JSON RESULT FILE TO: {test_output_dir}")
         if output_file := self.configure_json_result_file(test_output_dir):
             cmd += f" -o {output_file}"
 

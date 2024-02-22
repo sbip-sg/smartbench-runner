@@ -72,37 +72,26 @@ class Tool:
         )
 
     def configure_json_result_file(self, result_dir: str) -> Optional[str]:
-        """Configure result file in JSON format of the tool for a test file."""
-
+        """
+        Configure result file in JSON format of the tool for a test file.
+        """
         if self.json_result_file is None:
             return None
-
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-
-        return os.path.join(result_dir, self.json_result_file)
+        else:
+            return os.path.join(result_dir, self.json_result_file)
 
     def configure_json_coverage_file(self, result_dir: str) -> Optional[str]:
         """Configure code coverage file in JSON format of the tool for a test
         file."""
-
         if self.json_coverage_file is None:
             return None
-
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-
-        return os.path.join(result_dir, self.json_coverage_file)
+        else:
+            return os.path.join(result_dir, self.json_coverage_file)
 
     def configure_log_file(self, result_dir: str) -> str:
         """
         Configure log file of a tool for a test file.
         """
-        # Prepare output directory
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
 
     @abstractmethod

@@ -200,12 +200,26 @@ def collect_target_contracts_and_solc_version(
         return (contract_names, solc_ver)
 
 
+def run_shell_command(cmd: str, tool, test_output_dir_host):
+    try:
+        with subprocess.Popen(
+            shlex.split(cmd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,
+        ) as proc:
+            # Read process output and write to log file on the fly
+            log_analysis_output(tool, proc, test_output_dir_host)
+    except Exception:
+        error_traceback(f"Failed to run command: {cmd}")
+        return None
+
+
 def analyze_test_file(
     tool: Tool,
     test_file: str,
     test_configs: Optional[Dict[str, TestConfig]],
-    test_output_dir_host: str,
-    test_output_dir_docker: str,
+    test_output_dir: str,
     container: DockerContainer,
     annot_format: Optional[str] = None,
     solc_ver: Optional[str] = None,
@@ -219,7 +233,15 @@ def analyze_test_file(
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files."""
 
-    if not log_input_test_file(tool, test_file, test_output_dir_host):
+    # Get file name of test file
+    basename = os.path.basename(test_file)
+
+    # Create output dir on the host machine
+    output_dir_host = f"{test_output_dir}/{basename}"
+    safe_print(f"OUTPUT DIR HOST: {output_dir_host}")
+    os.makedirs(output_dir_host)
+
+    if not log_input_test_file(tool, test_file, test_output_dir):
         return None
 
     # Run the analysis
@@ -249,11 +271,35 @@ def analyze_test_file(
         )
         return None
 
-    # TODO: need to copy input file into Docker manually!
+    # Copy the target test file into the Docker container
+    run_shell_command(
+        f"docker exec -it {container} mkdir /root/contracts/{basename}",
+        tool,
+        test_output_dir,
+    )
+
+    test_file_docker = f"/root/contracts/{basename}/{basename}"
+    run_shell_command(
+        f"docker cp {test_file} {container}:{test_file_docker}",
+        tool,
+        test_output_dir,
+    )
+
+    # Prepare output directory
+    output_dir_docker = f"/root/results/{basename}"
+    run_shell_command(
+        f"docker exec -it {container} mkdir {output_dir_docker}",
+        tool,
+        test_output_dir,
+    )
+
+    safe_print(f"OUTPUT DIR: {output_dir_docker}")
+
+    # Run the analysis tool
     cmd = tool.make_analysis_command(
-        test_file,
+        test_file_docker,
         contracts,
-        test_output_dir_docker,
+        output_dir_docker,
         container,
         solc_ver,
         timeout,
@@ -263,13 +309,14 @@ def analyze_test_file(
         warning(f"Failed to make analysis command for tool: {tool.name}\n")
         return None
 
-    if not log_analysis_command(tool, test_file, cmd, test_output_dir_host):
+    if not log_analysis_command(tool, test_file, cmd, test_output_dir):
         warning(f"Failed to log analysis command for tool: {tool.name}\n")
         return None
 
     safe_print(f"Analysis Command: {cmd}")
-    print_unless(parallel_mode, f"Output dir: {test_output_dir_host}\n")
+    print_unless(parallel_mode, f"Output dir: {test_output_dir}\n")
 
+    safe_print(f"ANALYZE TEST FILE: {cmd}")
     try:
         # Run the analyzer
         with subprocess.Popen(
@@ -279,10 +326,19 @@ def analyze_test_file(
             shell=False,
         ) as proc:
             # Read process output and write to log file on the fly
-            log_analysis_output(tool, proc, test_output_dir_host)
+            safe_print(f"READ RESULTS")
+            log_analysis_output(tool, proc, output_dir_host)
     except Exception:
         error_traceback(f"{container.name}: failed to run command: {cmd}")
         return None
+
+    # Copy the result back to the host folder
+    safe_print(f"COPY RESULTS BACK TO: {test_output_dir}")
+    run_shell_command(
+        f"docker cp {container}:{output_dir_docker} {test_output_dir}",
+        tool,
+        test_output_dir,
+    )
 
     res = None
     if not parallel_mode:
@@ -291,7 +347,7 @@ def analyze_test_file(
 
         # Parse issues detected by an analysis tool
         issues = result.parse_test_file_output_dir(
-            tool, bug_annots, test_output_dir_host, None, validate
+            tool, bug_annots, test_output_dir, None, validate
         )
 
         if issues is None:
@@ -305,7 +361,7 @@ def analyze_test_file(
             res = AnalysisResult(
                 tool,
                 test_file,
-                test_output_dir_host,
+                test_output_dir,
                 bug_annots,
                 annot_format,
                 issues,
@@ -326,7 +382,7 @@ def start_docker_containers(tool: Tool, jobs) -> List[DockerContainer]:
     safe_print("Preparing docker containers...")
 
     # By convention, containers are named as ${TOOL_ID}-${JOB_ID}
-    container_names = [f"{tool.id}-{i}" for i in range(1, jobs + 1)]
+    container_names = [f"{tool.id}_{i}" for i in range(1, jobs + 1)]
 
     containers = []
     for name in container_names:
@@ -379,10 +435,7 @@ def run_analysis_job(
 
         # Configure test output directory for the current test file
         tool_output_dir_host = job.job_output_dir_host
-        tool_output_dir_docker = job.job_output_dir_docker
-
         test_output_dir_host = os.path.join(tool_output_dir_host, test_file)
-        test_output_dir_docker = os.path.join(tool_output_dir_docker, test_file)
 
         # Analyze the test file
         try:
@@ -391,7 +444,6 @@ def run_analysis_job(
                 test_file,
                 test_configs,
                 test_output_dir_host,
-                test_output_dir_docker,
                 job.docker_container,
                 job.annot_format,
                 job.solc_version,

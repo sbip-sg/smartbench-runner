@@ -209,11 +209,6 @@ fi
 BASE_DOCKER_FILE="$SMARTBENCH_ROOT/smartbench/tools/base.dockerfile"
 BASE_DOCKER_IMAGE="smartbench/base"
 
-# Docker container directories
-DOCKER_BENCHMARKS_DIR="/root/benchmarks"
-DOCKER_EXAMPLES_DIR="/root/examples"
-DOCKER_RESULTS_DIR="/root/results"
-
 echo "Prepare building Docker containers for: ${TOOL_IDS[@]}"
 
 # Configure some arguments to build Docker image for each tool locally or remotely
@@ -371,11 +366,7 @@ for TOOL_ID in ${TOOL_IDS[@]}; do
         # run your container
         echo ""
         echo "Installing container \"$CONTAINER\" ..."
-        docker run -itd \
-            --name $CONTAINER \
-            -v $SMARTBENCH_BENCHMARKS_DIR:$DOCKER_BENCHMARKS_DIR \
-            -v $SMARTBENCH_RESULTS_DIR:$DOCKER_RESULTS_DIR \
-            $TOOL_DOCKER_IMAGE
+        docker run -itd --name $CONTAINER $TOOL_DOCKER_IMAGE
         echo ""
     done
 

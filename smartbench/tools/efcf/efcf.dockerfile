@@ -208,11 +208,6 @@ RUN pip install py-solc --force-reinstall
 # Entry point when running the container as an executable
 WORKDIR /root/
 
-# Prepare benchmarking environments
-RUN mkdir benchmarks
-RUN mkdir testing
-RUN mkdir results
-
 # Entry point when running the container as an executable
 WORKDIR /root/
 ENTRYPOINT [ "/bin/bash" ]
