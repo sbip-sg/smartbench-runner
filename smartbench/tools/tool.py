@@ -92,6 +92,8 @@ class Tool:
         """
         Configure log file of a tool for a test file.
         """
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
         return os.path.join(result_dir, self.log_file)
 
     @abstractmethod

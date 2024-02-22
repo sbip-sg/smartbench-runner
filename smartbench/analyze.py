@@ -233,14 +233,6 @@ def analyze_test_file(
     If `validate` is True, the detected issues will be validated with
     bug annotations in the testing files."""
 
-    # Get file name of test file
-    basename = os.path.basename(test_file)
-
-    # Create output dir on the host machine
-    output_dir_host = f"{test_output_dir}/{basename}"
-    safe_print(f"OUTPUT DIR HOST: {output_dir_host}")
-    os.makedirs(output_dir_host)
-
     if not log_input_test_file(tool, test_file, test_output_dir):
         return None
 
@@ -272,6 +264,7 @@ def analyze_test_file(
         return None
 
     # Copy the target test file into the Docker container
+    basename = os.path.basename(test_file)
     run_shell_command(
         f"docker exec -it {container} mkdir /root/contracts/{basename}",
         tool,
@@ -327,15 +320,16 @@ def analyze_test_file(
         ) as proc:
             # Read process output and write to log file on the fly
             safe_print(f"READ RESULTS")
-            log_analysis_output(tool, proc, output_dir_host)
+            log_analysis_output(tool, proc, test_output_dir)
     except Exception:
         error_traceback(f"{container.name}: failed to run command: {cmd}")
         return None
 
     # Copy the result back to the host folder
-    safe_print(f"COPY RESULTS BACK TO: {test_output_dir}")
+    test_output_dir_root = os.path.dirname(test_output_dir)
+    safe_print(f"COPY RESULTS BACK TO: {test_output_dir_root}")
     run_shell_command(
-        f"docker cp {container}:{output_dir_docker} {test_output_dir}",
+        f"docker cp {container}:{output_dir_docker}/ {test_output_dir_root}",
         tool,
         test_output_dir,
     )
