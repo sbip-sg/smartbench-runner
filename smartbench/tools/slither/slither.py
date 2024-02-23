@@ -62,7 +62,6 @@ class Slither(Tool):
             cmd += f" --solc-version {solc_version}"
 
         # Output file
-        safe_print(f"CONFIG JSON RESULT FILE TO: {test_output_dir}")
         if output_file := self.configure_json_result_file(test_output_dir):
             cmd += f" -o {output_file}"
 
