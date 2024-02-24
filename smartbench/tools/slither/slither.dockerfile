@@ -8,7 +8,7 @@ FROM smartbench/base:latest
 
 # Install Slither 0.9.3
 WORKDIR /root/
-RUN pip install slither-analyzer==0.9.4
+RUN pip install slither-analyzer==0.10.0
 
 # Entry point when running the container as an executable
 WORKDIR /root/

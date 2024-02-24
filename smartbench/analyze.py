@@ -197,6 +197,7 @@ def collect_target_contracts_and_solc_version(
 
 def run_shell_command(cmd: str, tool, test_output_dir_host):
     try:
+        debug(f"Run comand: {cmd}")
         with subprocess.Popen(
             shlex.split(cmd),
             stdout=subprocess.PIPE,
@@ -264,7 +265,7 @@ def analyze_test_file(
 
     # Copy the target test file into the Docker container
     run_shell_command(
-        f"docker exec -it {container} mkdir /root/contracts/{test_file_suffix_dir}",
+        f"docker exec -it {container} mkdir -p /root/contracts/{test_file_suffix_dir}",
         tool,
         test_result_dir,
     )
@@ -280,7 +281,7 @@ def analyze_test_file(
     # Prepare output directory
     test_result_dir_docker = f"/root/results/{test_file_suffix_dir}"
     run_shell_command(
-        f"docker exec -it {container} mkdir {test_result_dir_docker}",
+        f"docker exec -it {container} mkdir -p {test_result_dir_docker}",
         tool,
         test_result_dir,
     )
