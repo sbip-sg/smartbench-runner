@@ -362,6 +362,8 @@ def analyze_test_file(
             else:
                 res.print_detailed_summary()
 
+    safe_print("----- DONE ----- ")
+
     return res
 
 
@@ -447,7 +449,10 @@ def run_analysis_job(
             )
             pass
 
+        # FIXME: need to consume result_queue to avoid deadlock in analysis processes.
         result_queue.put(all_results)
+
+    safe_print("FINISH: analysis job\n")
 
 
 def run_analysis_tool(
@@ -532,16 +537,36 @@ def run_analysis_tool(
         processes.append(proc)
         proc.start()
 
-    # Get result from queue
-    for proc in processes:
+    safe_print("== AFTER starting processes ==")
+
+    # # Get result from queue
+    # for proc in processes:
+    #     all_results.extend(result_queue.get())
+
+    while (not result_queue.empty()):
         all_results.extend(result_queue.get())
 
+    safe_print("== START TO JOIN processes ==")
+
+    safe_print(f"== RESULT QUEUE SIZE: {result_queue.qsize()}")
+
+    safe_print(f"== NUMBER OF PROCESSES: {len(processes)}")
+
     for proc in processes:
+        safe_print("== Start to join process ==")
         proc.join()
+        safe_print("== Finish join process ==")
+
+
+    safe_print("== STOP DOCKERS ==")
 
     if not keep_docker_alive:
         # Stop Docker containers after analysis
         stop_docker_containers(docker_containers)
+
+    safe_print("== AFTER STOP DOCKERS ==")
+
+    safe_print("== FINISH: analysis tool ==")
 
     return all_results
 
