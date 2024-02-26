@@ -187,13 +187,12 @@ def parse_test_file_result(
     tool: Tool,
     test_output_dir: str,
     validate: Optional[bool] = False,
-    export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
 ) -> Optional[AnalysisResult]:
     printer.print_medium_dashed_separator_line()
 
-    safe_print(f"Output directory: {test_output_dir}\n")
+    safe_print(f"Result directory: {test_output_dir}\n")
 
     safe_print(f"Analysis tool: {tool.id}\n")
 
@@ -269,7 +268,6 @@ def parse_result_directory(
     results_dir: str,
     only_tools: Optional[List[str]] = None,
     validate: Optional[bool] = False,
-    export_summary: Optional[str] = None,
     annot_format: Optional[AnnotFormat] = None,
     summary_printing: SummaryPrinting = SummaryPrinting.CONCISE_PRINTING,
 ) -> List[AnalysisResult]:
@@ -304,7 +302,6 @@ def parse_result_directory(
                 tool,
                 test_output_dir,
                 validate,
-                export_summary,
                 annot_format,
                 summary_printing,
             )

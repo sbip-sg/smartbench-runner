@@ -110,8 +110,6 @@ def analyze_smart_contracts(args) -> None:
         )
         return None
 
-    print("Test files: " + str(args.input_files_directories))
-
     # Collect test files
     all_test_files = []
     test_configs = None
@@ -179,11 +177,6 @@ def parse_analysis_results(args) -> None:
     if args.result_directories is not None:
         result_directories.extend(args.result_directories)
 
-    # Format of summary files to be exported.
-    summary_file_format = None
-    if args.export_summary != "":
-        summary_file_format = args.export_summary
-
     annot_format = None
     if args.annot_format is not None:
         annot_format = annotation.parse_annot_format_kind(args.annot_format)
@@ -203,7 +196,6 @@ def parse_analysis_results(args) -> None:
             result_dir,
             args.tools,
             args.validate,
-            summary_file_format,
             annot_format,
             summary_printing,
         )
