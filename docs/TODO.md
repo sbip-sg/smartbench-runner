@@ -16,20 +16,13 @@
 
 - [ ] Validate analysis results with bug annotations.
 
-# Supporting analyzers
 
-- [ ] Slither
+# Fix Dockerfiles
 
-  - [ ] Running from command line
-  - [ ] Running from Docker
+- [x] Slither
+- [x] Mythril
+- [ ] ItyFuzz
 
-- [ ] Confuzzius
-  - [ ] Running from command line
-  - [ ] Running from Docker
-
-- [ ] SmartFuzz
-  - [ ] Running from command line
-  - [ ] Running from Docker
 
 # Input/Output
 
