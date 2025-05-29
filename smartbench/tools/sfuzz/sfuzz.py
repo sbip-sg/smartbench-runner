@@ -11,7 +11,7 @@ import re
 from typing import Dict, List, Optional, Tuple
 
 # Third Party
-from solc_json_parser.parser import SolidityAst
+from solc_json_parser.combined_json_parser import CombinedJsonParser
 
 # Library
 from smartbench import issue, logger
@@ -150,7 +150,7 @@ class Sfuzz(Tool):
             best_solc_versions = solc.detect_best_solc_versions(test_file)
             for solc_version in best_solc_versions:
                 try:
-                    ast = SolidityAst(test_file, version=solc_version)
+                    ast = CombinedJsonParser(test_file, version=solc_version)
                     if ast is not None:
                         break
                 except Exception:
