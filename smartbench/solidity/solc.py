@@ -18,7 +18,7 @@ from typing import List, Optional, Tuple
 import nodesemver
 import solc_detect
 
-from solc_json_parser.combined_json_parser import CombinedJsonParser
+from solc_json_parser.standard_json_parser import StandardJsonParser
 
 # Library
 from smartbench.printer import debug, error_traceback, safe_print, warning
@@ -116,7 +116,7 @@ def get_target_contracts_and_solc_version(
     # Run SolcJSONParser with different solc versions
     for solc_version in best_solc_versions:
         try:
-            ast = CombinedJsonParser(test_file, version=solc_version)
+            ast = StandardJsonParser(test_file, version=solc_version)
             if ast is not None:
                 break
         except Exception as err:
