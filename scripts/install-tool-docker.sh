@@ -4,12 +4,15 @@
 
 SUPPORTED_TOOLS=(
     "confuzzius"
+    "confuzzius-sbip"
     "ilf"
     "mythril"
     "sfuzz"
     "slither"
     "smartian"
+    "smartfuzz"
     "verismart"
+    "efcf"
 )
 
 ################################################
