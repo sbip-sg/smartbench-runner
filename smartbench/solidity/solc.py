@@ -18,7 +18,7 @@ from typing import List, Optional, Tuple
 import nodesemver
 import solc_detect
 
-from solc_json_parser.parser import SolidityAst
+from solc_json_parser.standard_json_parser import StandardJsonParser
 
 # Library
 from smartbench.printer import debug, error_traceback, safe_print, warning
@@ -116,12 +116,11 @@ def get_target_contracts_and_solc_version(
     # Run SolcJSONParser with different solc versions
     for solc_version in best_solc_versions:
         try:
-            ast = SolidityAst(test_file, version=solc_version)
-            # ast = SolidityAst(test_file, version=solc_version)
+            ast = StandardJsonParser(test_file, version=solc_version)
             if ast is not None:
                 break
         except Exception as err:
-            warning(f"Exception while compiling {test_file}:\n\n{err}")
+            error_traceback(f"Exception while compiling {test_file}:\n\n{err} solc version: {type(solc_version)}")
             pass
 
     # Get contract information from AST parsed by SolcJSONParser

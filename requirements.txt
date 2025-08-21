@@ -5,6 +5,7 @@ tomli == 2.0.1
 toml == 0.10.2
 solc-select == 1.0.2
 docker
+semantic_version==2.10.0
 
 git+https://github.com/taquangtrung/solc-detect.git@v0.0.9#egg=solc_detect
-git+https://github.com/sbip-sg/solc-json-parser
+git+https://github.com/sbip-sg/solc-json-parser.git@main#egg=solc-json-parser
